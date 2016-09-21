@@ -33,8 +33,8 @@ public class TripGeneration {
 
         logger.info("  Started microscopic trip generation model.");
         microgenerateTrips();
-        if (ResourceUtil.getBooleanProperty(rb, "remove.non.motorized.trips", true)) removeNonMotorizedTrips();
-        dampenTripGenAtStudyAreaBorder();
+        if (ResourceUtil.getBooleanProperty(rb, "remove.non.motorized.trips", false)) removeNonMotorizedTrips();
+        if (ResourceUtil.getBooleanProperty(rb, "reduce.trips.at.outer.border", false)) reduceTripGenAtStudyAreaBorder();
         calculateTripAttractions();
         balanceTripGeneration();
         scaleTripGeneration();
@@ -286,6 +286,7 @@ public class TripGeneration {
                         nonMotCounter[purp][td.getZoneIndex(thh.getHomeZone())]++;
                     }
                 thh.setNonMotorizedNumberOfTrips(purp, nonMot);
+                thh.setNumberOfTrips(purp, (thh.getNumberOfTrips(purp) - nonMot));
             }
         }
 
@@ -305,35 +306,34 @@ public class TripGeneration {
     }
 
 
-    private void dampenTripGenAtStudyAreaBorder () {
+    private void reduceTripGenAtStudyAreaBorder() {
         // as trips near border of study area that travel to destinations outside of study area are not represented,
-        // trip generation near border of study area is artificially reduced
+        // trip generation near border of study area can be reduced artificially with this method
 
-        logger.info("  Removing short-distance trips that would cross border of MSTM study area");
-        TableDataSet damperNearMstmBorder = SiloUtil.readCSVfile(rb.getString("damper.near.mstm.border"));
-        damperNearMstmBorder.buildIndex(damperNearMstmBorder.getColumnPosition("SMZ"));
+        logger.info("  Removing short-distance trips that would cross border study area");
+        TableDataSet reductionNearBorder = TimoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
+        reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
 
-        PrintWriter pw = SiloUtil.openFileForSequentialWriting(rb.getString("removd.trips.near.mstm.border"), false);
-        pw.println("SMZ,removedTrips");
-        int[] zones = geoData.getZones();
-        float removedTripsSum = 0;
-        for (int zone: zones) {
-//            if (zone > mstmData.highestSmz) continue;
-            float damper = damperNearMstmBorder.getIndexedValueAt(zone, "damper");
+        float[] removedTrips = new float[td.getZones().length];
+        for (TimoHousehold thh: td.getTimoHouseholds()) {
+            float damper = reductionNearBorder.getIndexedValueAt(thh.getHomeZone(), "damper");
             if (damper == 0) continue;
-            float removedTripsThisZone = 0;
-            for (int purp = 0; purp < tripPurposes.values().length; purp++) {
-                for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
-                    float removedTrips = tripProd[zone][purp][mstmInc] * damper;
-                    tripProd[zone][purp][mstmInc] -= removedTrips;
-                    removedTripsThisZone += removedTrips;
+            for (int purp = 0; purp < td.getPurposes().length; purp++) {
+                int eliminatedTrips = 0;
+                for (int trip=1; trip <= thh.getNumberOfTrips(purp); trip++) {
+                    if (td.getRand().nextFloat() < damper) eliminatedTrips++;
+                }
+                if (eliminatedTrips > 0) {
+                    thh.setNumberOfTrips(purp, (thh.getNumberOfTrips(purp) - eliminatedTrips));
+                    removedTrips[td.getZoneIndex(thh.getHomeZone())] += eliminatedTrips;
                 }
             }
-            pw.println(zone + "," + removedTripsThisZone);
-            removedTripsSum += removedTripsThisZone;
         }
+        PrintWriter pw = TimoUtil.openFileForSequentialWriting(rb.getString("removed.trips.near.border"), false);
+        pw.println("Zone,removedTrips");
+        for (int zone: td.getZones()) pw.println(zone + "," + removedTrips[td.getZoneIndex(zone)]);
         pw.close();
-        logger.info("  Removed " + SiloUtil.customFormat("###,###", removedTripsSum) +
+        logger.info("  Removed " + TimoUtil.customFormat("###,###", TimoUtil.getSum(removedTrips)) +
                 " short-distance trips near border of MSTM study area");
     }
 

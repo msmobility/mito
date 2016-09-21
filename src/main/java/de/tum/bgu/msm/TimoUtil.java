@@ -80,6 +80,12 @@ public class TimoUtil {
         return sm;
     }
 
+    public static float getSum (float[] array) {
+        float sm = 0;
+        for (float value: array) sm += value;
+        return sm;
+    }
+
     public static int getSum(int[][] array) {
         // return array of two-dimensional int array
         int sm = 0;

@@ -66,6 +66,8 @@ public class TimoHousehold implements Serializable {
     }
 
     public void setNumberOfTrips (int purposeNumber, int numberOfTrips) {
+        // note: if non-motorized trips are calculated, this variable stores motorized trips only; otherwise, this
+        //       variable stores total trips
         tripsByPurpose[purposeNumber] = numberOfTrips;
     }
 
