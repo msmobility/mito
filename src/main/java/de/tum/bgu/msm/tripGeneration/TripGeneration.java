@@ -1,10 +1,10 @@
-package main.java.de.tum.bgu.msm.tripGeneration;
+package de.tum.bgu.msm.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.util.ResourceUtil;
-import main.java.de.tum.bgu.msm.TimoData;
-import main.java.de.tum.bgu.msm.TimoTravelDemand;
-import main.java.de.tum.bgu.msm.TimoUtil;
+import de.tum.bgu.msm.TimoData;
+import de.tum.bgu.msm.TimoTravelDemand;
+import de.tum.bgu.msm.TimoUtil;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;

@@ -1,7 +1,7 @@
-package main.java.de.tum.bgu.msm;
+package de.tum.bgu.msm;
 
 import edu.umd.ncsg.transportModel.TravelDemandData;
-import main.java.de.tum.bgu.msm.tripGeneration.TripGeneration;
+import de.tum.bgu.msm.tripGeneration.TripGeneration;
 import org.apache.log4j.Logger;
 
 import java.util.ResourceBundle;

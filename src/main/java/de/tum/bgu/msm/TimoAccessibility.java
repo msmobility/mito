@@ -1,4 +1,4 @@
-package main.java.de.tum.bgu.msm;
+package de.tum.bgu.msm;
 
 import com.pb.common.util.ResourceUtil;
 import org.apache.log4j.Logger;
