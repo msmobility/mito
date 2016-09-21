@@ -21,19 +21,12 @@ public class TimoAccessibility {
     private float[] autoAccessibilityRetail;
     private float[] autoAccessibilityOther;
     private float[] transitAccessibilityOther;
-    private int[] householdsByZone;
-    private int[] retailEmplByZone;
-    private int[] otherEmplByZone;
 
 
     public TimoAccessibility(ResourceBundle rb, TimoData td) {
         this.td = td;
         this.rb = rb;
     }
-
-        this.householdsByZone = householdsByZone;
-        this.retailEmplByZone = retailEmplByZone;
-        this.otherEmplByZone = otherEmplByZone ;
 
 
     public void calculateAccessibilities () {
@@ -67,10 +60,10 @@ public class TimoAccessibility {
                     transitImpedance = Math.exp(beta * td.getTransitTravelTimes(zones[i], zone));
                 }
 
-                autoAccessibilityHouseholds[i] += Math.pow(householdsByZone[td.getZoneIndex(zone)], alpha) * autoImpedance;
-                autoAccessibilityRetail[i] += Math.pow(retailEmplByZone[td.getZoneIndex(zone)], alpha) * autoImpedance;
-                autoAccessibilityOther[i] += Math.pow(otherEmplByZone[td.getZoneIndex(zone)], alpha) * autoImpedance;
-                transitAccessibilityOther[i] += Math.pow(otherEmplByZone[td.getZoneIndex(zone)], alpha) * transitImpedance;
+                autoAccessibilityHouseholds[i] += Math.pow(td.getHouseholdsByZone(zone), alpha) * autoImpedance;
+                autoAccessibilityRetail[i] += Math.pow(td.getRetailEmplByZone(zone), alpha) * autoImpedance;
+                autoAccessibilityOther[i] += Math.pow(td.getOtherEmplByZone(zone), alpha) * autoImpedance;
+                transitAccessibilityOther[i] += Math.pow(td.getOtherEmplByZone(zone), alpha) * transitImpedance;
             }
         }
         autoAccessibilityHouseholds = TimoUtil.scaleArray(autoAccessibilityHouseholds, 100);

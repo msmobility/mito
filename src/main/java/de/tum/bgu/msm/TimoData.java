@@ -22,6 +22,12 @@ public class TimoData {
     private ResourceBundle rb;
     private int[] zones;
     private int[] zoneIndex;
+    private float[] sizeOfZonesInAcre;
+    private TimoHousehold[] timoHouseholds;
+    private int[] householdsByZone;
+    private int[] retailEmplByZone;
+    private int[] otherEmplByZone;
+    private int[] totalEmplByZone;
     private Matrix autoTravelTimes;
     private Matrix transitTravelTimes;
     private TableDataSet htsHH;
@@ -80,13 +86,61 @@ public class TimoData {
         return transitTravelTimes.getValueAt(origin, destination);
     }
 
+    public void setHouseholds(TimoHousehold[] timoHouseholds) {
+        // store households in memory as TimoHousehold objects
+        this.timoHouseholds = timoHouseholds;
+        // fill householdsByZone array
+        householdsByZone = new int[getZones().length];
+        for (TimoHousehold thh: timoHouseholds) householdsByZone[getZoneIndex(thh.getHomeZone())]++;
+    }
+
+    public TimoHousehold[] getTimoHouseholds () {
+        return timoHouseholds;
+    }
+
+    public int getHouseholdsByZone (int zone) {
+        return householdsByZone[getZoneIndex(zone)];
+    }
 
     public void readInputData() {
         // read all required input data
         readHouseholdTravelSurvey();
         purposes = ResourceUtil.getArray(rb, "trip.purposes");
+        // create placeholder for number of trips by purpose for every household
+        for (TimoHousehold thh: timoHouseholds) thh.createTripByPurposeArray(purposes.length);
     }
 
+    public void setRetailEmplByZone(int[] retailEmplByZone) {
+        this.retailEmplByZone = retailEmplByZone;
+    }
+
+    public int getRetailEmplByZone (int zone) {
+        return retailEmplByZone[zone];
+    }
+
+    public void setOtherEmplByZone(int[] otherEmplByZone) {
+        this.otherEmplByZone = otherEmplByZone;
+    }
+
+    public int getOtherEmplByZone (int zone) {
+        return otherEmplByZone[zone];
+    }
+
+    public void setTotalEmplByZone(int[] totalEmplByZone) {
+        this.totalEmplByZone = totalEmplByZone;
+    }
+
+    public int getTotalEmplByZone (int zone) {
+        return totalEmplByZone[zone];
+    }
+
+    public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre) {
+        this.sizeOfZonesInAcre = sizeOfZonesInAcre;
+    }
+
+    public float getSizeOfZoneInAcre (int zone) {
+        return sizeOfZonesInAcre[zone];
+    }
 
     private void readHouseholdTravelSurvey() {
         // read household travel survey

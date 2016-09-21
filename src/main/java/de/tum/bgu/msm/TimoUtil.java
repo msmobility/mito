@@ -5,7 +5,7 @@ import com.pb.common.datafile.TableDataSet;
 import com.pb.common.util.ResourceUtil;
 import org.apache.log4j.Logger;
 
-import java.io.File;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -80,6 +80,15 @@ public class TimoUtil {
         return sm;
     }
 
+    public static int getSum(int[][] array) {
+        // return array of two-dimensional int array
+        int sm = 0;
+        for (int[] anArray : array) {
+            for (int i = 0; i < array[0].length; i++)  sm += anArray[i];
+        }
+        return sm;
+    }
+
 
     public static double getSum (double[] array) {
         // return sum of all elements in array
@@ -144,6 +153,21 @@ public class TimoUtil {
         for (float val: array) highestVal = Math.max(val, highestVal);
         for (int i = 0; i < array.length; i++) array[i] = (float) ((array[i] * maxVal * 1.) / (highestVal * 1.));
         return array;
+    }
+
+
+    public static PrintWriter openFileForSequentialWriting(String fileName, boolean appendFile) {
+        // open file and return PrintWriter object
+
+        File outputFile = new File(fileName);
+        try {
+            FileWriter fw = new FileWriter(outputFile, appendFile);
+            BufferedWriter bw = new BufferedWriter(fw);
+            return new PrintWriter(bw);
+        } catch (IOException e) {
+            logger.error("Could not open file <" + fileName + ">.");
+            return null;
+        }
     }
 
 }

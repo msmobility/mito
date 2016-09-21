@@ -2,9 +2,7 @@ package de.tum.bgu.msm.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.TimoData;
-import de.tum.bgu.msm.TimoTravelDemand;
-import de.tum.bgu.msm.TimoUtil;
+import de.tum.bgu.msm.*;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -35,7 +33,7 @@ public class TripGeneration {
 
         logger.info("  Started microscopic trip generation model.");
         microgenerateTrips();
-        removeNonMotorizedTrips();
+        if (ResourceUtil.getBooleanProperty(rb, "remove.non.motorized.trips", true)) removeNonMotorizedTrips();
         dampenTripGenAtStudyAreaBorder();
         calculateTripAttractions();
         balanceTripGeneration();
@@ -61,7 +59,7 @@ public class TripGeneration {
         regionDefinition.buildIndex(regionDefinition.getColumnPosition("SMZRMZ"));
 
         // Generate trips for each purpose
-        float[][][] tripProd = new float[TimoUtil.getHighestVal(td.getZones()) + 1][td.getPurposes().length][6];
+        int tripCounter = 0;
         for (int purp = 0; purp < td.getPurposes().length; purp++) {
             String strPurp = td.getPurposes()[purp];
             logger.info("  Generating trips with purpose " + strPurp);
@@ -69,9 +67,9 @@ public class TripGeneration {
             int[] hhTypeArray = td.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = td.collectTripFrequencyDistribution(hhTypeArray);
             // Generate trips for each household
-            for (Household hh: Household.getHouseholdArray()) {
+            for (TimoHousehold hh: td.getTimoHouseholds()) {
                 int region = (int) regionDefinition.getIndexedValueAt(hh.getHomeZone(), "Regions");
-                int incCategory = translateIncomeIntoCategory (hh.getHhIncome());
+                int incCategory = translateIncomeIntoCategory (hh.getIncome());
                 int hhType = td.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
                         incCategory, hh.getAutos(), region);
                 String token = hhType + "_" + strPurp;
@@ -81,11 +79,12 @@ public class TripGeneration {
                 }
                 if (TimoUtil.getSum(tripFrequencies) == 0) continue;
                 int numTrips = selectNumberOfTrips(tripFrequencies);
-                int mstmIncCat = defineMstmIncomeCategory(hh.getHhIncome());
-                tripProd[hh.getHomeZone()][purp][mstmIncCat] += numTrips;
+                int mstmIncCat = defineMstmIncomeCategory(hh.getIncome());
+                hh.setNumberOfTrips(purp, numTrips);
+                tripCounter++;
             }
         }
-        logger.info("  Generated " + TimoUtil.customFormat("###,###", TimoUtil.getSum(tripProd)) + " raw trips.");
+        logger.info("  Generated " + TimoUtil.customFormat("###,###", tripCounter) + " raw trips.");
     }
 
 
@@ -233,71 +232,76 @@ public class TripGeneration {
     private void removeNonMotorizedTrips () {
         // subtract fixed share of trips by purpose and zone that is assumed to be non-motorized
 
-        int[] householdsByZone = summarizeData.getHouseholdsByZone();
-        int[] retailEmplByZone = summarizeData.getRetailEmploymentByZone();
-        int[] otherEmplByZone = summarizeData.getOtherEmploymentByZone();
-        int[] totalEmplByZone = summarizeData.getTotalEmploymentByZone();
-        TripGenAccessibility acc = new TripGenAccessibility(rb, year, householdsByZone, retailEmplByZone, otherEmplByZone);
-        int[] zones = geoData.getZones();
+        TimoAccessibility ta = new TimoAccessibility(rb, td);
+        ta.calculateAccessibilities();
+
+        int[] zones = td.getZones();
         float[] hhDensity = new float[zones.length];
         float[] actDensity = new float[zones.length];
         for (int zone: zones) {
-            hhDensity[geoData.getZoneIndex(zone)] = householdsByZone[geoData.getZoneIndex(zone)] /
-                    geoData.getSizeOfZoneInAcres(zone);
-            actDensity[geoData.getZoneIndex(zone)] = (householdsByZone[geoData.getZoneIndex(zone)] +
-                    retailEmplByZone[geoData.getZoneIndex(zone)]) +
-                    totalEmplByZone[geoData.getZoneIndex(zone)] /
-                            geoData.getSizeOfZoneInAcres(zone);
+            hhDensity[td.getZoneIndex(zone)] = td.getHouseholdsByZone(zone) /
+                    td.getSizeOfZoneInAcre(zone);
+            actDensity[td.getZoneIndex(zone)] = (td.getHouseholdsByZone(zone) + td.getRetailEmplByZone(zone) +
+                    td.getTotalEmplByZone(zone)) / td.getSizeOfZoneInAcre(zone);
         }
         logger.info("  Removing non-motorized trips");
-        TableDataSet nmFunctions = SiloUtil.readCSVfile(rb.getString("non.motorized.share.functions"));
+        TableDataSet nmFunctions = TimoUtil.readCSVfile(rb.getString("non.motorized.share.functions"));
         nmFunctions.buildStringIndex(nmFunctions.getColumnPosition("Purpose"));
 
-        float[][][] nonMotTrips = new float[6][5][zones.length];  // non-motorized trips by purpose, income and zone
+        float[][][] nonMotShare = new float[6][5][zones.length];  // non-motorized share by purpose, income and zone
         for (int zone: zones) {
-//            if (zone > mstmData.highestSmz) continue;
-            for (int purp = 0; purp < tripPurposes.values().length; purp++) {
-                String purpTxt = tripPurposes.values()[purp].toString();
-                for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
+            for (int purp = 0; purp < td.getPurposes().length; purp++) {
+                for (int incomeCategory = 1; incomeCategory <= 5; incomeCategory++) {
                     String purpose;
                     if (purp < 3) {
-                        purpose = purpTxt + mstmInc;
+                        purpose = td.getPurposes()[purp] + incomeCategory;
                     } else {
-                        purpose = purpTxt;
+                        purpose = td.getPurposes()[purp];
                     }
-                    float nonMotShare =
-                            hhDensity[geoData.getZoneIndex(zone)] * nmFunctions.getStringIndexedValueAt(purpose, "hhDensity") +
-                                    actDensity[geoData.getZoneIndex(zone)] * nmFunctions.getStringIndexedValueAt(purpose, "actDensity") +
-                                    acc.getAutoAccessibilityHouseholds(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccHH") +
-                                    acc.getAutoAccessibilityRetail(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccRetailEmp") +
-                                    acc.getAutoAccessibilityOther(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccOtherEmp") +
-                                    acc.getTransitAccessibilityOther(zone) * nmFunctions.getStringIndexedValueAt(purpose, "trnAccOtherEmp");
-                    nonMotTrips[purp][mstmInc-1][geoData.getZoneIndex(zone)] = tripProd[zone][purp][mstmInc] * nonMotShare;
-                    tripProd[zone][purp][mstmInc] -= nonMotTrips[purp][mstmInc-1][geoData.getZoneIndex(zone)];
+                    nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)] =
+                            hhDensity[td.getZoneIndex(zone)] * nmFunctions.getStringIndexedValueAt(purpose, "hhDensity") +
+                                    actDensity[td.getZoneIndex(zone)] * nmFunctions.getStringIndexedValueAt(purpose, "actDensity") +
+                                    ta.getAutoAccessibilityHouseholds(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccHH") +
+                                    ta.getAutoAccessibilityRetail(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccRetailEmp") +
+                                    ta.getAutoAccessibilityOther(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccOtherEmp") +
+                                    ta.getTransitAccessibilityOther(zone) * nmFunctions.getStringIndexedValueAt(purpose, "trnAccOtherEmp");
+                    if (nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)] < 0 ||
+                            nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)] > 1) logger.warn("Non-motorized share" +
+                            "out of range in zone " + zone + ": " + nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)]);
                 }
             }
         }
-        PrintWriter pw = SiloUtil.openFileForSequentialWriting(rb.getString("non.motorized.trips"), false);
-        pw.println("SMZ,HBW1,HBW2,HBW3,HBW4,HBW5,HBS1,HBS2,HBS3,HBS4,HBS5,HBO1,HBO2,HBO3,HBO4,HBO5,HBE,NHBW,NHBO");
-        float nonMotSum = 0;
+
+        // loop over every household and every trip and randomly remove trips based on nonMotShare[][][]
+        int[][] nonMotCounter = new int[td.getPurposes().length][td.getZones().length];
+        for (TimoHousehold thh: td.getTimoHouseholds()) {
+            int inc = defineMstmIncomeCategory(thh.getIncome());
+            for (int purp = 0; purp < td.getPurposes().length; purp++) {
+
+                int allTrips = thh.getNumberOfTrips(purp);
+                int nonMot = 0;
+                for (int trip = 1; trip <= allTrips; trip++)
+                    if (td.getRand().nextFloat() < nonMotShare[purp][inc - 1][td.getZoneIndex(thh.getHomeZone())]) {
+                        nonMot++;
+                        nonMotCounter[purp][td.getZoneIndex(thh.getHomeZone())]++;
+                    }
+                thh.setNonMotorizedNumberOfTrips(purp, nonMot);
+            }
+        }
+
+        PrintWriter pw = TimoUtil.openFileForSequentialWriting(rb.getString("non.motorized.trips"), false);
+        pw.print("Zone");
+        for (String purpose: td.getPurposes()) pw.print("," + purpose);
+        pw.println();
+
         for (int zone: zones) {
             pw.print(zone);
-            for (int purp = 0; purp < tripPurposes.values().length; purp++) {
-                float purpSum = 0;
-                for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
-                    if (purp < 3) {
-                        pw.print("," + nonMotTrips[purp][mstmInc-1][geoData.getZoneIndex(zone)]);
-                    } else {
-                        purpSum += nonMotTrips[purp][mstmInc-1][geoData.getZoneIndex(zone)];
-                    }
-                    nonMotSum += nonMotTrips[purp][mstmInc-1][geoData.getZoneIndex(zone)];
-                }
-                if (purp >= 3) pw.print("," + purpSum);
-            }
+            for (int purp = 0; purp < td.getPurposes().length; purp++)
+                pw.print("," + nonMotCounter[purp][td.getZoneIndex(zone)]);
             pw.println();
         }
         pw.close();
-        logger.info("  Removed " + SiloUtil.customFormat("###,###", nonMotSum) + " non-motorized trips");
+        logger.info("  Removed " + TimoUtil.customFormat("###,###", TimoUtil.getSum(nonMotCounter)) + " non-motorized trips");
     }
 
 
