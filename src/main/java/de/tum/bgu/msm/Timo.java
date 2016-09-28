@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
  * - transitTravelTimes: public void setTransitTravelTimes (Matrix transitTravelTimes)
  * - timoHouseholds:     public void setHouseholds(TimoHousehold[] timoHouseholds)
  * - retailEmplByZone:   public void setRetailEmplByZone(int[] retailEmplByZone)
+ * - officeEmplByZone:   public void setOfficeEmplByZone(int[] officeEmplByZone)
  * - otherEmplByZone:    public void setOtherEmplByZone(int[] otherEmplByZone)
  * - totalEmplByZone:    public void setTotalEmplByZone(int[] totalEmplByZone)
  * - sizeOfZonesInAcre:  public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre)
@@ -44,17 +45,20 @@ public class Timo {
 
 
     public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, TimoHousehold[] timoHouseholds,
-                         int[] retailEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
+                         int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone,
+                         int[] schoolEnrollment, float[] sizeOfZonesInAcre) {
         // Feed data from other program. Need to write new methods to read these data from files if Timo is used as
         // stand-alone program.
         td.setZones(zones);                           // zone are stored consecutively starting at position 0
         td.setAutoTravelTimes(autoTravelTimes);
         td.setTransitTravelTimes(transitTravelTimes);
         td.setHouseholds(timoHouseholds);
-        td.setRetailEmplByZone(retailEmplByZone);     // All employment and acre values are stored in the position of
-        td.setOtherEmplByZone(otherEmplByZone);       // the zone ID. Position 0 will be empty, data for zone 1 is
-        td.setTotalEmplByZone(totalEmplByZone);       // stored in position 1, for zone 5 in position 5, etc.
-        td.setSizeOfZonesInAcre(sizeOfZonesInAcre);   //
+        td.setRetailEmplByZone(retailEmplByZone);       // All employment and acre values are stored in the position of
+        td.setOfficeEmplByZone(officeEmplByZone);       // the zone ID. Position 0 will be empty, data for zone 1 is
+        td.setOtherEmplByZone(otherEmplByZone);         // stored in position 1, for zone 5 in position 5, etc.
+        td.setTotalEmplByZone(totalEmplByZone);         //
+        td.setSchoolEnrollmentByZone(schoolEnrollment); //
+        td.setSizeOfZonesInAcre(sizeOfZonesInAcre);     //
     }
 
 

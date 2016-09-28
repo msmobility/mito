@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 
 /**
  * Runs trip generation for the Transport in Microsimulation Orchestrator (TIMO)
@@ -35,10 +34,9 @@ public class TripGeneration {
         microgenerateTrips();
         if (ResourceUtil.getBooleanProperty(rb, "remove.non.motorized.trips", false)) removeNonMotorizedTrips();
         if (ResourceUtil.getBooleanProperty(rb, "reduce.trips.at.outer.border", false)) reduceTripGenAtStudyAreaBorder();
-        calculateTripAttractions();
-        balanceTripGeneration();
-        scaleTripGeneration();
-        writeTrips();
+        float[][] rawTripAttr = calculateTripAttractions();
+        float[][] balancedAttr = balanceTripGeneration(rawTripAttr);
+        writeTripSummary(balancedAttr);
         logger.info("  Completed microscopic trip generation model.");
 
     }
@@ -338,31 +336,34 @@ public class TripGeneration {
     }
 
 
-    private void calculateTripAttractions () {
+    private float[][] calculateTripAttractions () {
         // calculate zonal trip attractions
 
         logger.info("  Calculating trip attractions");
-        TableDataSet attrRates = SiloUtil.readCSVfile(rb.getString("trip.attraction.rates"));
+        TableDataSet attrRates = TimoUtil.readCSVfile(rb.getString("trip.attraction.rates"));
         HashMap<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
-        TableDataSet attrData = SiloUtil.readCSVfile(rb.getString("smz.demographics") + year + ".csv");
-        attrData.buildIndex(attrData.getColumnPosition(";SMZ_N"));
-
-        int[] zones = geoData.getZones();
-        tripAttr = new float[SiloUtil.getHighestVal(geoData.getZones()) + 1][tripPurposes.values().length][6];
+        int[] zones = td.getZones();
+        float[][] tripAttr = new float[td.getZones().length][td.getPurposes().length];  // by zones, purposes and income
         for (int zone: zones) {
-//            if (zone > mstmData.highestSmz) continue;
-            for (int purp = 0; purp < tripPurposes.values().length; purp++) {
+            for (int purp = 0; purp < td.getPurposes().length; purp++) {
                 for (String variable: independentVariables) {
-                    String token = tripPurposes.values()[purp].toString() + "_" + variable;
+                    String token = td.getPurposes()[purp] + "_" + variable;
                     if (attractionRates.containsKey(token)) {
-                        tripAttr[zone][purp][0] += attrData.getIndexedValueAt(zone, variable + year) *
-                                attractionRates.get(token);
+                        float attribute = 0;
+                        if (variable.equals("HH")) attribute = td.getHouseholdsByZone(zone);
+                        else if (variable.equals("TOT")) td.getTotalEmplByZone(zone);
+                        else if (variable.equals("RE")) td.getRetailEmplByZone(zone);
+                        else if (variable.equals("OFF")) td.getOfficeEmplByZone(zone);
+                        else if (variable.equals("OTH")) td.getOtherEmplByZone(zone);
+                        else if (variable.equals("ENR")) td.getSchoolEnrollmentByZone(zone);
+                        tripAttr[zone][purp] += attribute * attractionRates.get(token);
                     }
                 }
             }
         }
+        return tripAttr;
     }
 
 
@@ -372,9 +373,9 @@ public class TripGeneration {
         HashMap<String, Float> attractionRates = new HashMap<>();
         for (int row = 1; row <= attrRates.getRowCount(); row++) {
             String generator = attrRates.getStringValueAt(row, "IndependentVariable");
-            for (tripPurposes purp: tripPurposes.values()) {
-                float rate = attrRates.getValueAt(row, purp.toString());
-                String token = purp.toString() + "_" + generator;
+            for (String purp: td.getPurposes()) {
+                float rate = attrRates.getValueAt(row, purp);
+                String token = purp + "_" + generator;
                 attractionRates.put(token, rate);
             }
         }
@@ -382,123 +383,105 @@ public class TripGeneration {
     }
 
 
-    private void balanceTripGeneration() {
+    private float[][] balanceTripGeneration (float[][] tripAttr) {
         // Balance trip production and trip attraction
 
         logger.info("  Balancing trip production and attractions");
-        int[] zones = geoData.getZones();
-        for (int purp = 0; purp < tripPurposes.values().length; purp++) {
-            for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
-                float prodSum = 0;
-                float attrSum = 0;
-                for (int zone: zones) {
-//                    if (zone > mstmData.highestSmz) continue;
-                    attrSum += tripAttr[zone][purp][0];
-                    prodSum += tripProd[zone][purp][mstmInc];
-                }
-                // adjust attractions (or productions for NHBW and NHBO)
-                for (int zone: zones) {
-//                    if (zone > mstmData.highestSmz) continue;
-                    tripAttr[zone][purp][mstmInc] = tripAttr[zone][purp][0] * prodSum / attrSum;
 
-                    // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
-                    // travel survey. The distribution, however, is better represented by attraction rates. Therefore,
-                    // attractions are first scaled to productions (step above) and then productions are replaced with
-                    // zonal level attractions (step below).
-                    if (tripPurposes.values()[purp] == tripPurposes.NHBW || tripPurposes.values()[purp] == tripPurposes.NHBO) {
-                        tripProd[zone][purp][mstmInc] = tripAttr[zone][purp][mstmInc];
-                    }
-                }
+        for (int purp = 0; purp < td.getPurposes().length; purp++) {
+            float attrSum = 0;
+            for (int zone: td.getZones()) {
+                attrSum += tripAttr[zone][purp];
+            }
+            // adjust attractions (or productions for NHBW and NHBO)
+            for (int zone: td.getZones()) {
+                tripAttr[zone][purp] = tripAttr[zone][purp] * td.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
+
+                // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
+                // travel survey. The distribution, however, is better represented by attraction rates. Therefore,
+                // attractions are first scaled to productions (step above) and then productions are replaced with
+                // zonal level attractions (step below).
+                // todo: fix scaling towards attractions. Difficult, because individual households need to give up trips
+                // or add trips to match attractions. Maybe it is alright to rely on productions instead.
+//                if (tripPurposes.values()[purp] == tripPurposes.NHBW || tripPurposes.values()[purp] == tripPurposes.NHBO)
+//                    tripProd[zone][purp][mstmInc] = tripAttr[zone][purp][mstmInc];
             }
         }
+        return tripAttr;
     }
 
 
-    private void scaleTripGeneration() {
-        // scale trip generation to account for underreporting in survey
+    // Scaling trips is challenging, because individual households would have to add or give up trips. The trip frequency distribution of the survey would need to be scaled up or down.
+//    private void scaleTripGeneration() {
+//        // scale trip generation to account for underreporting in survey
+//
+//        logger.info("  Scaling trip production and attraction to account for underreporting in survey");
+//        String[] token = ResourceUtil.getArray(rb, "trip.gen.scaler.purpose");
+//        double[] scaler = ResourceUtil.getDoubleArray(rb, "trip.gen.scaler.factor");
+//        HashMap<String, Double[]> scale = new HashMap<>();
+//        for (tripPurposes purp: tripPurposes.values()) scale.put(purp.toString(), new Double[]{0d,0d,0d,0d,0d});
+//        for (int i = 0; i < token.length; i++) {
+//            String[] tokenParts = token[i].split(Pattern.quote("."));
+//            if (tokenParts.length == 2) {
+//                // purpose is split by income categories
+//                Double[] values = scale.get(tokenParts[0]);
+//                values[Integer.parseInt(tokenParts[1]) - 1] = scaler[i];
+//            } else {
+//                // purpose is not split by income categories
+//                Double[] values = scale.get(token[i]);
+//                for (int inc = 0; inc < values.length; inc++) values[inc] = scaler[i];
+//            }
+//        }
+//        for (int purp = 0; purp < tripPurposes.values().length; purp++) {
+//            Double[] scalingFactors = scale.get(tripPurposes.values()[purp].toString());
+//            for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
+//                if (scalingFactors[mstmInc-1] == 1) continue;
+//                for (int zone: geoData.getZones()) {
+//                    tripProd[zone][purp][mstmInc] *= scalingFactors[mstmInc-1];
+//                    tripAttr[zone][purp][mstmInc] *= scalingFactors[mstmInc-1];
+//                }
+//            }
+//        }
+//    }
 
-        logger.info("  Scaling trip production and attraction to account for underreporting in survey");
-        String[] token = ResourceUtil.getArray(rb, "trip.gen.scaler.purpose");
-        double[] scaler = ResourceUtil.getDoubleArray(rb, "trip.gen.scaler.factor");
-        HashMap<String, Double[]> scale = new HashMap<>();
-        for (tripPurposes purp: tripPurposes.values()) scale.put(purp.toString(), new Double[]{0d,0d,0d,0d,0d});
-        for (int i = 0; i < token.length; i++) {
-            String[] tokenParts = token[i].split(Pattern.quote("."));
-            if (tokenParts.length == 2) {
-                // purpose is split by income categories
-                Double[] values = scale.get(tokenParts[0]);
-                values[Integer.parseInt(tokenParts[1]) - 1] = scaler[i];
-            } else {
-                // purpose is not split by income categories
-                Double[] values = scale.get(token[i]);
-                for (int inc = 0; inc < values.length; inc++) values[inc] = scaler[i];
+
+    private void writeTripSummary(float[][] tripAttraction) {
+        // write number of trips by purpose and zone to output file
+
+        PrintWriter pwProd = TimoUtil.openFileForSequentialWriting(rb.getString("trip.production.output"), false);
+        PrintWriter pwAttr = TimoUtil.openFileForSequentialWriting(rb.getString("trip.attraction.output"), false);
+        pwProd.print("Zone");
+        pwAttr.print("Zone");
+        for (String tripPurpose: td.getPurposes()) {
+            pwProd.print("," + tripPurpose + "P");
+            pwAttr.print("," + tripPurpose + "A");
+        }
+
+        float[][] tripProd = new float[td.getZones().length][td.getPurposes().length];
+        for (TimoHousehold thh: td.getTimoHouseholds()) {
+            for (int purp = 0; purp < td.getPurposes().length; purp++) {
+                tripProd[td.getZoneIndex(thh.getHomeZone())][purp] += thh.getNumberOfTrips(purp);
             }
         }
-        for (int purp = 0; purp < tripPurposes.values().length; purp++) {
-            Double[] scalingFactors = scale.get(tripPurposes.values()[purp].toString());
-            for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
-                if (scalingFactors[mstmInc-1] == 1) continue;
-                for (int zone: geoData.getZones()) {
-                    tripProd[zone][purp][mstmInc] *= scalingFactors[mstmInc-1];
-                    tripAttr[zone][purp][mstmInc] *= scalingFactors[mstmInc-1];
-                }
-            }
-        }
-    }
 
-
-    private void writeTrips() {
-        // write trips by five income groups to output file
-
-        PrintWriter pwProd = SiloUtil.openFileForSequentialWriting(rb.getString("trip.production.output"), false);
-        PrintWriter pwAttr = SiloUtil.openFileForSequentialWriting(rb.getString("trip.attraction.output"), false);
-        pwProd.print(";SMZ");
-        pwAttr.print(";SMZ");
-        for (tripPurposes tripPurpose: tripPurposes.values()) {
-            if (tripPurpose.toString().equalsIgnoreCase("HBW") || tripPurpose.toString().equalsIgnoreCase("HBS") ||
-                    tripPurpose.toString().equalsIgnoreCase("HBO")) {
-                // split purpose by 5 MSTM income categories
-                for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
-                    pwProd.print("," + tripPurpose.toString() + "P" + mstmInc);
-                    pwAttr.print("," + tripPurpose.toString() + "A" + mstmInc);
-                }
-            } else {
-                // purpose are not split by income
-                pwProd.print("," + tripPurpose.toString() + "P");
-                pwAttr.print("," + tripPurpose.toString() + "A");
-            }
-        }
         pwProd.println();
         pwAttr.println();
-        for (int zone: geoData.getZones()) {
-//            if (zone > mstmData.highestSmz) break;
-
+        for (int zone: td.getZones()) {
             pwProd.print(zone);
             pwAttr.print(zone);
-            for (int purp = 0; purp < tripProd[0].length; purp++) {
-                if (purp < 3) {
-                    // split tripProd by 5 income categories
-                    for (int mstmInc = 1; mstmInc <= 5; mstmInc++) {
-                        pwProd.print("," + tripProd[zone][purp][mstmInc]);
-                        pwAttr.print("," + tripAttr[zone][purp][mstmInc]);
-                    }
-                } else {
-                    float prod = tripProd[zone][purp][1] + tripProd[zone][purp][2] + tripProd[zone][purp][3] +
-                            tripProd[zone][purp][4] + tripProd[zone][purp][5];
-                    pwProd.print("," + prod);
-                    float attr = tripAttr[zone][purp][1] + tripAttr[zone][purp][2] + tripAttr[zone][purp][3] +
-                            tripAttr[zone][purp][4] + tripAttr[zone][purp][5];
-                    pwAttr.print("," + attr);
-                }
+            for (int purp = 0; purp < td.getPurposes().length; purp++) {
+                pwProd.print("," + tripProd[td.getZoneIndex(zone)][purp]);
+                pwAttr.print("," + tripAttraction[td.getZoneIndex(zone)][purp]);
             }
+
             pwProd.println();
             pwAttr.println();
 
         }
         pwProd.close();
         pwAttr.close();
-        logger.info("  Wrote out a total of " + SiloUtil.customFormat("###,###.#", SiloUtil.getSum(tripProd)) + " trips.");
+        logger.info("  Wrote out a total of " + TimoUtil.customFormat("###,###.#", TimoUtil.getSum(tripProd)) + " trips.");
     }
 }
 
-}
+

@@ -96,6 +96,16 @@ public class TimoUtil {
     }
 
 
+    public static float getSum(float[][] array) {
+        // return array of two-dimensional int array
+        int sm = 0;
+        for (float[] anArray : array) {
+            for (int i = 0; i < array[0].length; i++)  sm += anArray[i];
+        }
+        return sm;
+    }
+
+
     public static double getSum (double[] array) {
         // return sum of all elements in array
         double sum = 0;

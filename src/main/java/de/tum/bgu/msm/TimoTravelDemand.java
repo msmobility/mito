@@ -1,6 +1,5 @@
 package de.tum.bgu.msm;
 
-import edu.umd.ncsg.transportModel.TravelDemandData;
 import de.tum.bgu.msm.tripGeneration.TripGeneration;
 import org.apache.log4j.Logger;
 
