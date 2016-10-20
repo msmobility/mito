@@ -15,44 +15,44 @@ import java.util.ResourceBundle;
  * - zones:              public void setZones(int[] zones)
  * - autoTravelTimes:    public void setAutoTravelTimes (Matrix autoTravelTimes)
  * - transitTravelTimes: public void setTransitTravelTimes (Matrix transitTravelTimes)
- * - timoHouseholds:     public void setHouseholds(TimoHousehold[] timoHouseholds)
+ * - timoHouseholds:     public void setHouseholds(MitoHousehold[] timoHouseholds)
  * - retailEmplByZone:   public void setRetailEmplByZone(int[] retailEmplByZone)
  * - officeEmplByZone:   public void setOfficeEmplByZone(int[] officeEmplByZone)
  * - otherEmplByZone:    public void setOtherEmplByZone(int[] otherEmplByZone)
  * - totalEmplByZone:    public void setTotalEmplByZone(int[] totalEmplByZone)
  * - sizeOfZonesInAcre:  public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre)
- * All other data are read by function TimoData.readInputData().
+ * All other data are read by function MitoData.readInputData().
  */
 
-public class Timo {
+public class Mito {
 
-    private static Logger logger = Logger.getLogger(Timo.class);
-    private TimoData td;
+    private static Logger logger = Logger.getLogger(Mito.class);
+    private MitoData td;
     private ResourceBundle rb;
 
-    public Timo(ResourceBundle rb) {
+    public Mito(ResourceBundle rb) {
         this.rb = rb;
-        td = new TimoData(rb);
+        td = new MitoData(rb);
     }
 
     public static void main(String[] args) {
         // main run method
-        logger.warn("Stand-alone method for Timo not yet implemented. Call program with initialize() instead");
+        logger.warn("Stand-alone method for Mito not yet implemented. Call program with initialize() instead");
         //long startTime = System.currentTimeMillis();
         //logger.info("Started the Transport in Microsimulation Orchestrator (TIMO)");
-        ResourceBundle rb = TimoUtil.createResourceBundle(args[0]);
+        ResourceBundle rb = MitoUtil.createResourceBundle(args[0]);
     }
 
 
-    public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, TimoHousehold[] timoHouseholds,
+    public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] mitoHouseholds,
                          int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone,
                          int[] schoolEnrollment, float[] sizeOfZonesInAcre) {
-        // Feed data from other program. Need to write new methods to read these data from files if Timo is used as
+        // Feed data from other program. Need to write new methods to read these data from files if Mito is used as
         // stand-alone program.
         td.setZones(zones);                           // zone are stored consecutively starting at position 0
         td.setAutoTravelTimes(autoTravelTimes);
         td.setTransitTravelTimes(transitTravelTimes);
-        td.setHouseholds(timoHouseholds);
+        td.setHouseholds(mitoHouseholds);
         td.setRetailEmplByZone(retailEmplByZone);       // All employment and acre values are stored in the position of
         td.setOfficeEmplByZone(officeEmplByZone);       // the zone ID. Position 0 will be empty, data for zone 1 is
         td.setOtherEmplByZone(otherEmplByZone);         // stored in position 1, for zone 5 in position 5, etc.
@@ -63,7 +63,7 @@ public class Timo {
 
 
     public void run() {
-        // initialize Timo from other program
+        // initialize Mito from other program
         long startTime = System.currentTimeMillis();
         logger.info("Started the Transport in Microsimulation Orchestrator (TIMO)");
 
@@ -74,11 +74,11 @@ public class Timo {
         // todo: needs to read synthetic population if used as a stand-alone program
 
         // generate travel demand
-        TimoTravelDemand ttd = new TimoTravelDemand(rb, td);
+        MitoTravelDemand ttd = new MitoTravelDemand(rb, td);
         ttd.generateTravelDemand();
 
         logger.info("Completed the Transport in Microsimulation Orchestrator (TIMO)");
-        float endTime = TimoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
+        float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
         int hours = (int) (endTime / 60);
         int min = (int) (endTime - 60 * hours);
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");

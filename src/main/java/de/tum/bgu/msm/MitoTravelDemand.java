@@ -12,13 +12,13 @@ import java.util.ResourceBundle;
  *
  */
 
-public class TimoTravelDemand {
+public class MitoTravelDemand {
 
-    private static Logger logger = Logger.getLogger(TimoTravelDemand.class);
-    private TimoData td;
+    private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
+    private MitoData td;
     private ResourceBundle rb;
 
-    public TimoTravelDemand(ResourceBundle rb, TimoData td) {
+    public MitoTravelDemand(ResourceBundle rb, MitoData td) {
         this.rb = rb;
         this.td = td;
     }

@@ -3,8 +3,6 @@ package de.tum.bgu.msm;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Holds households objects for the Transport in Microsimulation Orchestrator (TIMO)
@@ -13,8 +11,8 @@ import java.util.Map;
  *
  */
 
-public class TimoHousehold implements Serializable {
-    static Logger logger = Logger.getLogger(TimoHousehold.class);
+public class MitoHousehold implements Serializable {
+    static Logger logger = Logger.getLogger(MitoHousehold.class);
 
     private int hhId;
     private int hhSize;
@@ -26,8 +24,8 @@ public class TimoHousehold implements Serializable {
     private int[] nonMotorizedTripsByPurpose;
 
 
-    public TimoHousehold(int id, int hhSize, int numberOfWorkers, int income, int autos, int homeZone) {
-        // create new TimoHousehold
+    public MitoHousehold(int id, int hhSize, int numberOfWorkers, int income, int autos, int homeZone) {
+        // create new MitoHousehold
         this.hhId = id;
         this.hhSize = hhSize;
         this.numberOfWorkers = numberOfWorkers;

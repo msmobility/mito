@@ -17,9 +17,9 @@ import java.util.ResourceBundle;
  *
  */
 
-public class TimoUtil {
+public class MitoUtil {
 
-    private static Logger logger = Logger.getLogger(TimoUtil.class);
+    private static Logger logger = Logger.getLogger(MitoUtil.class);
 
 
     public static float rounder(float value, int digits) {

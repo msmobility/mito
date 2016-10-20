@@ -18,11 +18,11 @@ import java.util.ResourceBundle;
 
 public class TripGeneration {
 
-    private static Logger logger = Logger.getLogger(TimoTravelDemand.class);
+    private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
     private ResourceBundle rb;
-    private TimoData td;
+    private MitoData td;
 
-    public TripGeneration(ResourceBundle rb, TimoData td) {
+    public TripGeneration(ResourceBundle rb, MitoData td) {
         this.rb = rb;
         this.td = td;
     }
@@ -53,7 +53,7 @@ public class TripGeneration {
 
     private void microgenerateTrips () {
 
-        TableDataSet regionDefinition = TimoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
+        TableDataSet regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
         regionDefinition.buildIndex(regionDefinition.getColumnPosition("SMZRMZ"));
 
         // Generate trips for each purpose
@@ -65,7 +65,7 @@ public class TripGeneration {
             int[] hhTypeArray = td.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = td.collectTripFrequencyDistribution(hhTypeArray);
             // Generate trips for each household
-            for (TimoHousehold hh: td.getTimoHouseholds()) {
+            for (MitoHousehold hh: td.getMitoHouseholds()) {
                 int region = (int) regionDefinition.getIndexedValueAt(hh.getHomeZone(), "Regions");
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
                 int hhType = td.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
@@ -75,14 +75,14 @@ public class TripGeneration {
                 if (tripFrequencies == null) {
                     logger.error("Could not find trip frequencies for this hhType/Purpose: " + token);
                 }
-                if (TimoUtil.getSum(tripFrequencies) == 0) continue;
+                if (MitoUtil.getSum(tripFrequencies) == 0) continue;
                 int numTrips = selectNumberOfTrips(tripFrequencies);
                 int mstmIncCat = defineMstmIncomeCategory(hh.getIncome());
                 hh.setNumberOfTrips(purp, numTrips);
                 tripCounter++;
             }
         }
-        logger.info("  Generated " + TimoUtil.customFormat("###,###", tripCounter) + " raw trips.");
+        logger.info("  Generated " + MitoUtil.customFormat("###,###", tripCounter) + " raw trips.");
     }
 
 
@@ -223,14 +223,14 @@ public class TripGeneration {
         // select number of trips
         double[] probabilities = new double[tripFrequencies.length];
         for (int i = 0; i < tripFrequencies.length; i++) probabilities[i] = (double) tripFrequencies[i];
-        return TimoUtil.select(td.getRand(), probabilities);
+        return MitoUtil.select(td.getRand(), probabilities);
     }
 
 
     private void removeNonMotorizedTrips () {
         // subtract fixed share of trips by purpose and zone that is assumed to be non-motorized
 
-        TimoAccessibility ta = new TimoAccessibility(rb, td);
+        MitoAccessibility ta = new MitoAccessibility(rb, td);
         ta.calculateAccessibilities();
 
         int[] zones = td.getZones();
@@ -243,7 +243,7 @@ public class TripGeneration {
                     td.getTotalEmplByZone(zone)) / td.getSizeOfZoneInAcre(zone);
         }
         logger.info("  Removing non-motorized trips");
-        TableDataSet nmFunctions = TimoUtil.readCSVfile(rb.getString("non.motorized.share.functions"));
+        TableDataSet nmFunctions = MitoUtil.readCSVfile(rb.getString("non.motorized.share.functions"));
         nmFunctions.buildStringIndex(nmFunctions.getColumnPosition("Purpose"));
 
         float[][][] nonMotShare = new float[6][5][zones.length];  // non-motorized share by purpose, income and zone
@@ -272,7 +272,7 @@ public class TripGeneration {
 
         // loop over every household and every trip and randomly remove trips based on nonMotShare[][][]
         int[][] nonMotCounter = new int[td.getPurposes().length][td.getZones().length];
-        for (TimoHousehold thh: td.getTimoHouseholds()) {
+        for (MitoHousehold thh: td.getMitoHouseholds()) {
             int inc = defineMstmIncomeCategory(thh.getIncome());
             for (int purp = 0; purp < td.getPurposes().length; purp++) {
 
@@ -288,7 +288,7 @@ public class TripGeneration {
             }
         }
 
-        PrintWriter pw = TimoUtil.openFileForSequentialWriting(rb.getString("non.motorized.trips"), false);
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(rb.getString("non.motorized.trips"), false);
         pw.print("Zone");
         for (String purpose: td.getPurposes()) pw.print("," + purpose);
         pw.println();
@@ -300,7 +300,7 @@ public class TripGeneration {
             pw.println();
         }
         pw.close();
-        logger.info("  Removed " + TimoUtil.customFormat("###,###", TimoUtil.getSum(nonMotCounter)) + " non-motorized trips");
+        logger.info("  Removed " + MitoUtil.customFormat("###,###", MitoUtil.getSum(nonMotCounter)) + " non-motorized trips");
     }
 
 
@@ -309,11 +309,11 @@ public class TripGeneration {
         // trip generation near border of study area can be reduced artificially with this method
 
         logger.info("  Removing short-distance trips that would cross border study area");
-        TableDataSet reductionNearBorder = TimoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
+        TableDataSet reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
         reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
 
         float[] removedTrips = new float[td.getZones().length];
-        for (TimoHousehold thh: td.getTimoHouseholds()) {
+        for (MitoHousehold thh: td.getMitoHouseholds()) {
             float damper = reductionNearBorder.getIndexedValueAt(thh.getHomeZone(), "damper");
             if (damper == 0) continue;
             for (int purp = 0; purp < td.getPurposes().length; purp++) {
@@ -327,11 +327,11 @@ public class TripGeneration {
                 }
             }
         }
-        PrintWriter pw = TimoUtil.openFileForSequentialWriting(rb.getString("removed.trips.near.border"), false);
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(rb.getString("removed.trips.near.border"), false);
         pw.println("Zone,removedTrips");
         for (int zone: td.getZones()) pw.println(zone + "," + removedTrips[td.getZoneIndex(zone)]);
         pw.close();
-        logger.info("  Removed " + TimoUtil.customFormat("###,###", TimoUtil.getSum(removedTrips)) +
+        logger.info("  Removed " + MitoUtil.customFormat("###,###", MitoUtil.getSum(removedTrips)) +
                 " short-distance trips near border of MSTM study area");
     }
 
@@ -340,7 +340,7 @@ public class TripGeneration {
         // calculate zonal trip attractions
 
         logger.info("  Calculating trip attractions");
-        TableDataSet attrRates = TimoUtil.readCSVfile(rb.getString("trip.attraction.rates"));
+        TableDataSet attrRates = MitoUtil.readCSVfile(rb.getString("trip.attraction.rates"));
         HashMap<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
@@ -448,8 +448,8 @@ public class TripGeneration {
     private void writeTripSummary(float[][] tripAttraction) {
         // write number of trips by purpose and zone to output file
 
-        PrintWriter pwProd = TimoUtil.openFileForSequentialWriting(rb.getString("trip.production.output"), false);
-        PrintWriter pwAttr = TimoUtil.openFileForSequentialWriting(rb.getString("trip.attraction.output"), false);
+        PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(rb.getString("trip.production.output"), false);
+        PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(rb.getString("trip.attraction.output"), false);
         pwProd.print("Zone");
         pwAttr.print("Zone");
         for (String tripPurpose: td.getPurposes()) {
@@ -458,7 +458,7 @@ public class TripGeneration {
         }
 
         float[][] tripProd = new float[td.getZones().length][td.getPurposes().length];
-        for (TimoHousehold thh: td.getTimoHouseholds()) {
+        for (MitoHousehold thh: td.getMitoHouseholds()) {
             for (int purp = 0; purp < td.getPurposes().length; purp++) {
                 tripProd[td.getZoneIndex(thh.getHomeZone())][purp] += thh.getNumberOfTrips(purp);
             }
@@ -480,7 +480,7 @@ public class TripGeneration {
         }
         pwProd.close();
         pwAttr.close();
-        logger.info("  Wrote out a total of " + TimoUtil.customFormat("###,###.#", TimoUtil.getSum(tripProd)) + " trips.");
+        logger.info("  Wrote out a total of " + MitoUtil.customFormat("###,###.#", MitoUtil.getSum(tripProd)) + " trips.");
     }
 }
 

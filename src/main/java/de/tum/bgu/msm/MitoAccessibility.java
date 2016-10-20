@@ -7,15 +7,16 @@ import java.util.ResourceBundle;
 
 /**
  * Calculates and stores accessibilities
- * Author: Rolf Moeckel, University of Maryland
+ * Author: Rolf Moeckel, Technical University of Munich
  * Created on 15 December 2014 in College Park, MD
+ * Revised on 20 October 2016 in Munich
  **/
 
-public class TimoAccessibility {
+public class MitoAccessibility {
 
 
-    static Logger logger = Logger.getLogger(TimoAccessibility.class);
-    private TimoData td;
+    static Logger logger = Logger.getLogger(MitoAccessibility.class);
+    private MitoData td;
     private ResourceBundle rb;
     private float[] autoAccessibilityHouseholds;
     private float[] autoAccessibilityRetail;
@@ -23,7 +24,7 @@ public class TimoAccessibility {
     private float[] transitAccessibilityOther;
 
 
-    public TimoAccessibility(ResourceBundle rb, TimoData td) {
+    public MitoAccessibility(ResourceBundle rb, MitoData td) {
         this.td = td;
         this.rb = rb;
     }
@@ -66,10 +67,10 @@ public class TimoAccessibility {
                 transitAccessibilityOther[i] += Math.pow(td.getOtherEmplByZone(zone), alpha) * transitImpedance;
             }
         }
-        autoAccessibilityHouseholds = TimoUtil.scaleArray(autoAccessibilityHouseholds, 100);
-        autoAccessibilityRetail = TimoUtil.scaleArray(autoAccessibilityRetail, 100);
-        autoAccessibilityOther = TimoUtil.scaleArray(autoAccessibilityOther, 100);
-        transitAccessibilityOther = TimoUtil.scaleArray(transitAccessibilityOther, 100);
+        autoAccessibilityHouseholds = MitoUtil.scaleArray(autoAccessibilityHouseholds, 100);
+        autoAccessibilityRetail = MitoUtil.scaleArray(autoAccessibilityRetail, 100);
+        autoAccessibilityOther = MitoUtil.scaleArray(autoAccessibilityOther, 100);
+        transitAccessibilityOther = MitoUtil.scaleArray(transitAccessibilityOther, 100);
     }
 
 
