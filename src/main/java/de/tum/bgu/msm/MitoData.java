@@ -110,6 +110,14 @@ public class MitoData {
         purposes = ResourceUtil.getArray(rb, "trip.purposes");
         // create placeholder for number of trips by purpose for every household
         for (MitoHousehold thh: mitoHouseholds) thh.createTripByPurposeArray(purposes.length);
+
+        // read enrollment data
+        TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString("school.enrollment.data"));
+        schoolEnrollmentByZone = new int[getZones().length];
+        for (int row = 1; row <= enrollmentData.getRowCount(); row++) {
+            schoolEnrollmentByZone[getZoneIndex((int) enrollmentData.getValueAt(row, "SMZ_N"))] =
+                    (int) enrollmentData.getValueAt(row, "ENR");
+        }
     }
 
     public void setRetailEmplByZone(int[] retailEmplByZone) {
@@ -142,10 +150,6 @@ public class MitoData {
 
     public int getTotalEmplByZone (int zone) {
         return totalEmplByZone[zone];
-    }
-
-    public void setSchoolEnrollmentByZone(int[] schoolEnrollmentByZone) {
-        this.schoolEnrollmentByZone = schoolEnrollmentByZone;
     }
 
     public int getSchoolEnrollmentByZone (int zone) {

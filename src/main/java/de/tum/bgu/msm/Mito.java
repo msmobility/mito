@@ -46,7 +46,7 @@ public class Mito {
 
     public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] mitoHouseholds,
                          int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone,
-                         int[] schoolEnrollment, float[] sizeOfZonesInAcre) {
+                         float[] sizeOfZonesInAcre) {
         // Feed data from other program. Need to write new methods to read these data from files if Mito is used as
         // stand-alone program.
         td.setZones(zones);                           // zone are stored consecutively starting at position 0
@@ -57,7 +57,6 @@ public class Mito {
         td.setOfficeEmplByZone(officeEmplByZone);       // the zone ID. Position 0 will be empty, data for zone 1 is
         td.setOtherEmplByZone(otherEmplByZone);         // stored in position 1, for zone 5 in position 5, etc.
         td.setTotalEmplByZone(totalEmplByZone);         //
-        td.setSchoolEnrollmentByZone(schoolEnrollment); //
         td.setSizeOfZonesInAcre(sizeOfZonesInAcre);     //
     }
 
