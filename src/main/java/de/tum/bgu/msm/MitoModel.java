@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
  * All other data are read by function MitoData.readInputData().
  */
 
-public class MitoModel {
+public abstract class MitoModel implements TransportModelI {
 
     private static Logger logger = Logger.getLogger(MitoModel.class);
     private MitoData td;
