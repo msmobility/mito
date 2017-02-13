@@ -24,30 +24,22 @@ import java.util.ResourceBundle;
  * All other data are read by function MitoData.readInputData().
  */
 
-public class Mito {
+public class MitoModel {
 
-    private static Logger logger = Logger.getLogger(Mito.class);
+    private static Logger logger = Logger.getLogger(MitoModel.class);
     private MitoData td;
     private ResourceBundle rb;
 
-    public Mito(ResourceBundle rb) {
+    public MitoModel(ResourceBundle rb) {
         this.rb = rb;
         td = new MitoData(rb);
-    }
-
-    public static void main(String[] args) {
-        // main run method
-        logger.warn("Stand-alone method for Mito not yet implemented. Call program with initialize() instead");
-        //long startTime = System.currentTimeMillis();
-        //logger.info("Started the Transport in Microsimulation Orchestrator (TIMO)");
-        ResourceBundle rb = MitoUtil.createResourceBundle(args[0]);
     }
 
 
     public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] mitoHouseholds,
                          int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone,
                          float[] sizeOfZonesInAcre) {
-        // Feed data from other program. Need to write new methods to read these data from files if Mito is used as
+        // Feed data from other program. Need to write new methods to read these data from files if MitoModel is used as
         // stand-alone program.
         td.setZones(zones);                           // zone are stored consecutively starting at position 0
         td.setAutoTravelTimes(autoTravelTimes);
@@ -61,8 +53,18 @@ public class Mito {
     }
 
 
-    public void run() {
-        // initialize Mito from other program
+    public void readData() {
+        // Read data if MITO is used as a stand-alone program and data are not fed from other program
+        logger.info("  Reading input data for TIMO");
+        td.readZones();
+        td.readSkims();
+        td.readHouseholdData();
+        td.readPersonData();
+    }
+
+
+    public void runModel() {
+        // initialize MitoModel from other program
         long startTime = System.currentTimeMillis();
         logger.info("Started the Transport in Microsimulation Orchestrator (TIMO)");
 

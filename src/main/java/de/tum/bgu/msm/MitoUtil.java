@@ -2,7 +2,10 @@ package de.tum.bgu.msm;
 
 import com.pb.common.datafile.TableDataFileReader;
 import com.pb.common.datafile.TableDataSet;
+import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
+import omx.OmxMatrix;
+import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -182,6 +185,34 @@ public class MitoUtil {
             return new PrintWriter(bw);
         } catch (IOException e) {
             logger.error("Could not open file <" + fileName + ">.");
+            return null;
+        }
+    }
+
+
+    public static Matrix convertOmxToMatrix (OmxMatrix omxMatrix) {
+        // convert OMX matrix into java matrix
+
+        OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
+        String name = omxMatrix.getName();
+        int[] dimensions = omxMatrix.getShape();
+        if (type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
+            float[][] fArray = (float[][]) omxMatrix.getData();
+            Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
+            for (int i = 0; i < dimensions[0]; i++)
+                for (int j = 0; j < dimensions[1]; j++)
+                    mat.setValueAt(i + 1, j + 1, fArray[i][j]);
+            return mat;
+        } else if (type.equals(OmxHdf5Datatype.OmxJavaType.DOUBLE)) {
+            double[][] dArray = (double[][]) omxMatrix.getData();
+            Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
+            for (int i = 0; i < dimensions[0]; i++)
+                for (int j = 0; j < dimensions[1]; j++)
+                    mat.setValueAt(i + 1, j + 1, (float) dArray[i][j]);
+            return mat;
+        } else {
+            logger.info("OMX Matrix type " + type.toString() + " not yet implemented. Program exits.");
+            System.exit(1);
             return null;
         }
     }

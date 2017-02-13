@@ -3,6 +3,8 @@ package de.tum.bgu.msm;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holds households objects for the Transport in Microsimulation Orchestrator (TIMO)
@@ -22,6 +24,7 @@ public class MitoHousehold implements Serializable {
     private int homeZone;
     private int[] tripsByPurpose;
     private int[] nonMotorizedTripsByPurpose;
+    private static final Map<Integer,MitoHousehold> householdMap = new HashMap<>();
 
 
     public MitoHousehold(int id, int hhSize, int numberOfWorkers, int income, int autos, int homeZone) {
@@ -32,11 +35,16 @@ public class MitoHousehold implements Serializable {
         this.income = income;
         this.autos = autos;
         this.homeZone = homeZone;
+        householdMap.put(id, this);
     }
 
     public void createTripByPurposeArray (int numberOfPurposes) {
         this.tripsByPurpose = new int[numberOfPurposes];
         this.nonMotorizedTripsByPurpose = new int[numberOfPurposes];
+    }
+
+    public static MitoHousehold getHouseholdFromId (int id) {
+        return householdMap.get(id);
     }
 
     public int getHhId() {
@@ -51,8 +59,16 @@ public class MitoHousehold implements Serializable {
         return numberOfWorkers;
     }
 
+    public void setNumberOfWorkers(int workers) {
+        numberOfWorkers = workers;
+    }
+
     public int getIncome() {
         return income;
+    }
+
+    public void setIncome(int inc) {
+        income = inc;
     }
 
     public int getAutos() {

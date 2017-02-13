@@ -37,6 +37,7 @@ public class TripGeneration {
         float[][] rawTripAttr = calculateTripAttractions();
         float[][] balancedAttr = balanceTripGeneration(rawTripAttr);
         writeTripSummary(balancedAttr);
+
         logger.info("  Completed microscopic trip generation model.");
 
     }

@@ -3,8 +3,13 @@ package de.tum.bgu.msm;
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
+import omx.OmxFile;
+import omx.OmxMatrix;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -17,6 +22,12 @@ import java.util.ResourceBundle;
  */
 
 public class MitoData {
+
+    protected static final String PROPERTIES_ZONAL_DATA_FILE          = "zonal.data.file";
+    protected static final String PROPERTIES_AUTO_PEAK_SKIM           = "auto.peak.sov.skim";
+    protected static final String PROPERTIES_TRANSIT_PEAK_SKIM        = "transit.peak.time";
+    protected static final String PROPERTIES_HH_FILE_ASCII            = "household.file.ascii";
+    protected static final String PROPERTIES_PP_FILE_ASCII            = "person.file.ascii";
 
     private static Logger logger = Logger.getLogger(MitoData.class);
     private ResourceBundle rb;
@@ -59,6 +70,17 @@ public class MitoData {
     }
 
 
+    public void readZones () {
+        // read in zones from file
+        String fileName = ResourceUtil.getProperty(rb, PROPERTIES_ZONAL_DATA_FILE);
+        TableDataSet zonalData = MitoUtil.readCSVfile(fileName);
+        //zonalData.buildIndex(zonalData.getColumnPosition("ZoneId"));
+
+        zones = zonalData.getColumnAsInt("ZoneId");
+        zoneIndex = MitoUtil.createIndexArray(zones);
+    }
+
+
     public void setZones(int[] zones) {
         this.zones = zones;
         zoneIndex = MitoUtil.createIndexArray(zones);
@@ -88,6 +110,26 @@ public class MitoData {
         return transitTravelTimes.getValueAt(origin, destination);
     }
 
+    public void readSkims() {
+        // Read highway and transit skims
+        logger.info("  Reading skims");
+
+        // Read highway hwySkim
+        String hwyFileName = rb.getString(PROPERTIES_AUTO_PEAK_SKIM);
+        OmxFile hSkim = new OmxFile(hwyFileName);
+        hSkim.openReadOnly();
+        OmxMatrix timeOmxSkimAutos = hSkim.getMatrix("HOVTime");
+        autoTravelTimes = MitoUtil.convertOmxToMatrix(timeOmxSkimAutos);
+
+        // Read transit hwySkim
+        String transitFileName = rb.getString(PROPERTIES_TRANSIT_PEAK_SKIM);
+        OmxFile tSkim = new OmxFile(transitFileName);
+        tSkim.openReadOnly();
+        OmxMatrix timeOmxSkimTransit = tSkim.getMatrix("CheapJrnyTime");
+        transitTravelTimes = MitoUtil.convertOmxToMatrix(timeOmxSkimTransit);
+    }
+
+
     public void setHouseholds(MitoHousehold[] mitoHouseholds) {
         // store households in memory as MitoHousehold objects
         this.mitoHouseholds = mitoHouseholds;
@@ -103,6 +145,84 @@ public class MitoData {
     public int getHouseholdsByZone (int zone) {
         return householdsByZone[getZoneIndex(zone)];
     }
+
+
+    public void readHouseholdData() {
+        logger.info("  Reading household micro data from ascii file");
+
+        String fileName = ResourceUtil.getProperty(rb, PROPERTIES_HH_FILE_ASCII);
+
+        String recString = "";
+        int recCount = 0;
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(fileName));
+            recString = in.readLine();
+
+            // read header
+            String[] header = recString.split(",");
+            int posId    = MitoUtil.findPositionInArray("id", header);
+            int posDwell = MitoUtil.findPositionInArray("dwelling",header);
+            int posTaz   = MitoUtil.findPositionInArray("zone",header);
+            int posSize  = MitoUtil.findPositionInArray("hhSize",header);
+            int posAutos = MitoUtil.findPositionInArray("autos",header);
+
+            // read line
+            while ((recString = in.readLine()) != null) {
+                recCount++;
+                String[] lineElements = recString.split(",");
+                int id         = Integer.parseInt(lineElements[posId]);
+                int dwellingID = Integer.parseInt(lineElements[posDwell]);
+                int taz        = Integer.parseInt(lineElements[posTaz]);
+                int hhSize     = Integer.parseInt(lineElements[posSize]);
+                int autos      = Integer.parseInt(lineElements[posAutos]);
+
+                new MitoHousehold(id, hhSize, 0, 0, autos, taz);
+            }
+        } catch (IOException e) {
+            logger.fatal("IO Exception caught reading synpop household file: " + fileName);
+            logger.fatal("recCount = " + recCount + ", recString = <" + recString + ">");
+        }
+        logger.info("  Finished reading " + recCount + " households.");
+    }
+
+
+    public void readPersonData() {
+        logger.info("  Reading person micro data from ascii file");
+
+        String fileName = ResourceUtil.getProperty(rb, PROPERTIES_PP_FILE_ASCII);
+
+        String recString = "";
+        int recCount = 0;
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(fileName));
+            recString = in.readLine();
+
+            // read header
+            String[] header = recString.split(",");
+            int posHhId = MitoUtil.findPositionInArray("hhid",header);
+            int posOccupation = MitoUtil.findPositionInArray("occupation",header);
+            int posIncome = MitoUtil.findPositionInArray("income",header);
+
+            // read line
+            while ((recString = in.readLine()) != null) {
+                recCount++;
+                String[] lineElements = recString.split(",");
+                int hhid = Integer.parseInt(lineElements[posHhId]);
+                MitoHousehold hh = MitoHousehold.getHouseholdFromId(hhid);
+                if (Integer.parseInt(lineElements[posOccupation]) == 1) {
+                    hh.setNumberOfWorkers(hh.getNumberOfWorkers() + 1);
+                }
+                int income = Integer.parseInt(lineElements[posIncome]);
+                hh.setIncome(hh.getIncome() + income);
+            }
+        } catch (IOException e) {
+            logger.fatal("IO Exception caught reading synpop household file: " + fileName);
+            logger.fatal("recCount = " + recCount + ", recString = <" + recString + ">");
+        }
+        logger.info("  Finished reading " + recCount + " persons.");
+    }
+
+
 
     public void readInputData() {
         // read all required input data
