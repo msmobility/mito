@@ -47,6 +47,11 @@ public class MitoHousehold implements Serializable {
         return householdMap.get(id);
     }
 
+    public static MitoHousehold[] getHouseholdArray() {
+        return householdMap.values().toArray(new MitoHousehold[householdMap.size()]);
+    }
+
+
     public int getHhId() {
         return hhId;
     }

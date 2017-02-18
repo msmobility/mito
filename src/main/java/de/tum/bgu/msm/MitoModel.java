@@ -55,11 +55,12 @@ public class MitoModel {
 
     public void readData() {
         // Read data if MITO is used as a stand-alone program and data are not fed from other program
-        logger.info("  Reading input data for TIMO");
+        logger.info("  Reading input data for MITO");
         td.readZones();
         td.readSkims();
         td.readHouseholdData();
         td.readPersonData();
+        td.readEmploymentData();
     }
 
 
@@ -70,9 +71,6 @@ public class MitoModel {
 
         // setup
         td.readInputData();
-
-        // readSyntheticPopulation
-        // todo: needs to read synthetic population if used as a stand-alone program
 
         // generate travel demand
         MitoTravelDemand ttd = new MitoTravelDemand(rb, td);

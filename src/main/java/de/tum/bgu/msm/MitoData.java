@@ -28,6 +28,8 @@ public class MitoData {
     protected static final String PROPERTIES_TRANSIT_PEAK_SKIM        = "transit.peak.time";
     protected static final String PROPERTIES_HH_FILE_ASCII            = "household.file.ascii";
     protected static final String PROPERTIES_PP_FILE_ASCII            = "person.file.ascii";
+    protected static final String PROPERTIES_EMPLOYMENT_FILE          = "employment.forecast";
+    protected static final String PROPERTIES_SCHOOL_ENROLLMENT_FILE   = "school.enrollment.data";
 
     private static Logger logger = Logger.getLogger(MitoData.class);
     private ResourceBundle rb;
@@ -78,6 +80,7 @@ public class MitoData {
 
         zones = zonalData.getColumnAsInt("ZoneId");
         zoneIndex = MitoUtil.createIndexArray(zones);
+        setSizeOfZonesInAcre(zonalData.getColumnAsFloat("ACRES"));
     }
 
 
@@ -182,6 +185,7 @@ public class MitoData {
             logger.fatal("IO Exception caught reading synpop household file: " + fileName);
             logger.fatal("recCount = " + recCount + ", recString = <" + recString + ">");
         }
+        setHouseholds(MitoHousehold.getHouseholdArray());
         logger.info("  Finished reading " + recCount + " households.");
     }
 
@@ -232,7 +236,7 @@ public class MitoData {
         for (MitoHousehold thh: mitoHouseholds) thh.createTripByPurposeArray(purposes.length);
 
         // read enrollment data
-        TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString("school.enrollment.data"));
+        TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
         schoolEnrollmentByZone = new int[getZones().length];
         for (int row = 1; row <= enrollmentData.getRowCount(); row++) {
             schoolEnrollmentByZone[getZoneIndex((int) enrollmentData.getValueAt(row, "SMZ_N"))] =
@@ -240,12 +244,27 @@ public class MitoData {
         }
     }
 
+    public void readEmploymentData () {
+        // SMZ,State,RET00,OFF00,IND00,OTH00,RET07,OFF07,IND07,OTH07,RET10,OFF10,IND10,OTH10,RET30,OFF30,IND30,OTH30,RET40,OFF40,IND40,OTH40
+        TableDataSet employment = MitoUtil.readCSVfile(rb.getString(PROPERTIES_EMPLOYMENT_FILE));
+        int[] indEmpl = employment.getColumnAsInt("IND00");
+        int[] retEmpl = employment.getColumnAsInt("RET00");
+        int[] offEmpl = employment.getColumnAsInt("OFF00");
+        int[] othEmpl = employment.getColumnAsInt("OTH00");
+        int[] totEmpl = new int[indEmpl.length];
+        for (int i = 0; i < indEmpl.length; i++) totEmpl[i] = indEmpl[i] + retEmpl[i] + offEmpl[i] * othEmpl[i];
+        setRetailEmplByZone(retEmpl);
+        setOfficeEmplByZone(offEmpl);
+        setOtherEmplByZone(othEmpl);
+        setTotalEmplByZone(totEmpl);
+    }
+
     public void setRetailEmplByZone(int[] retailEmplByZone) {
         this.retailEmplByZone = retailEmplByZone;
     }
 
     public int getRetailEmplByZone (int zone) {
-        return retailEmplByZone[zone];
+        return retailEmplByZone[getZoneIndex(zone)];
     }
 
     public void setOfficeEmplByZone(int[] officeEmplByZone) {
@@ -253,7 +272,7 @@ public class MitoData {
     }
 
     public int getOfficeEmplByZone(int zone) {
-        return officeEmplByZone[zone];
+        return officeEmplByZone[getZoneIndex(zone)];
     }
 
     public void setOtherEmplByZone(int[] otherEmplByZone) {
@@ -261,7 +280,7 @@ public class MitoData {
     }
 
     public int getOtherEmplByZone (int zone) {
-        return otherEmplByZone[zone];
+        return otherEmplByZone[getZoneIndex(zone)];
     }
 
     public void setTotalEmplByZone(int[] totalEmplByZone) {
@@ -269,11 +288,11 @@ public class MitoData {
     }
 
     public int getTotalEmplByZone (int zone) {
-        return totalEmplByZone[zone];
+        return totalEmplByZone[getZoneIndex(zone)];
     }
 
     public int getSchoolEnrollmentByZone (int zone) {
-        return schoolEnrollmentByZone[zone];
+        return schoolEnrollmentByZone[getZoneIndex(zone)];
     }
 
     public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre) {
@@ -281,7 +300,7 @@ public class MitoData {
     }
 
     public float getSizeOfZoneInAcre (int zone) {
-        return sizeOfZonesInAcre[zone];
+        return sizeOfZonesInAcre[getZoneIndex(zone)];
     }
 
     private void readHouseholdTravelSurvey() {

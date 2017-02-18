@@ -55,7 +55,7 @@ public class TripGeneration {
     private void microgenerateTrips () {
 
         TableDataSet regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
-        regionDefinition.buildIndex(regionDefinition.getColumnPosition("SMZRMZ"));
+        regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
 
         // Generate trips for each purpose
         int tripCounter = 0;
@@ -67,7 +67,7 @@ public class TripGeneration {
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = td.collectTripFrequencyDistribution(hhTypeArray);
             // Generate trips for each household
             for (MitoHousehold hh: td.getMitoHouseholds()) {
-                int region = (int) regionDefinition.getIndexedValueAt(hh.getHomeZone(), "Regions");
+                int region = (int) regionDefinition.getIndexedValueAt(hh.getHomeZone(), "Region");
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
                 int hhType = td.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
                         incCategory, hh.getAutos(), region);
@@ -359,7 +359,7 @@ public class TripGeneration {
                         else if (variable.equals("OFF")) td.getOfficeEmplByZone(zone);
                         else if (variable.equals("OTH")) td.getOtherEmplByZone(zone);
                         else if (variable.equals("ENR")) td.getSchoolEnrollmentByZone(zone);
-                        tripAttr[zone][purp] += attribute * attractionRates.get(token);
+                        tripAttr[td.getZoneIndex(zone)][purp] += attribute * attractionRates.get(token);
                     }
                 }
             }
@@ -392,11 +392,11 @@ public class TripGeneration {
         for (int purp = 0; purp < td.getPurposes().length; purp++) {
             float attrSum = 0;
             for (int zone: td.getZones()) {
-                attrSum += tripAttr[zone][purp];
+                attrSum += tripAttr[td.getZoneIndex(zone)][purp];
             }
             // adjust attractions (or productions for NHBW and NHBO)
             for (int zone: td.getZones()) {
-                tripAttr[zone][purp] = tripAttr[zone][purp] * td.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
+                tripAttr[td.getZoneIndex(zone)][purp] = tripAttr[td.getZoneIndex(zone)][purp] * td.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
 
                 // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
                 // travel survey. The distribution, however, is better represented by attraction rates. Therefore,

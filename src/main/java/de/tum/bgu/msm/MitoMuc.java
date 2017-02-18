@@ -33,6 +33,7 @@ public class MitoMuc {
         this.rb = rb;
         MitoModel model = new MitoModel(rb);
         model.readData();
+        model.runModel();
 
         logger.info("Finished the Microsimulation Transport Orchestrator (MITO)");
         float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
