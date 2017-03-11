@@ -236,15 +236,11 @@ public class MitoData {
         for (MitoHousehold thh: mitoHouseholds) thh.createTripByPurposeArray(purposes.length);
 
         // read enrollment data
-
-        System.out.println("Debugging: "+rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
-
         TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
+        enrollmentData.buildIndex(enrollmentData.getColumnPosition("SMZ_N"));
         schoolEnrollmentByZone = new int[getZones().length];
-        for (int row = 1; row <= enrollmentData.getRowCount(); row++) {
-            schoolEnrollmentByZone[getZoneIndex((int) enrollmentData.getValueAt(row, "SMZ_N"))] =
-                    (int) enrollmentData.getValueAt(row, "ENR");
-        }
+        for (int zone: getZones())
+            schoolEnrollmentByZone[getZoneIndex(zone)] = (int) enrollmentData.getIndexedValueAt(zone, "ENR");
     }
 
     public void readEmploymentData () {
