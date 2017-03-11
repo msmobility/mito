@@ -32,7 +32,7 @@ public class MitoModel {
 
     public MitoModel(ResourceBundle rb) {
         this.rb = rb;
-        td = new MitoData(rb);
+        this.td = new MitoData(rb);
     }
 
 
