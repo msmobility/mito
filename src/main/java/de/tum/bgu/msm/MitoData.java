@@ -33,6 +33,7 @@ public class MitoData {
 
     private static Logger logger = Logger.getLogger(MitoData.class);
     private ResourceBundle rb;
+    private static String scenarioName;
     private int[] zones;
     private int[] zoneIndex;
     private float[] sizeOfZonesInAcre;
@@ -66,6 +67,13 @@ public class MitoData {
             rand = new Random(seed);
     }
 
+    public void setScenarioName (String scenarioName) {
+        this.scenarioName = scenarioName;
+    }
+
+    public static String getScenarioName() {
+        return scenarioName;
+    }
 
     public Random getRand () {
         return rand;

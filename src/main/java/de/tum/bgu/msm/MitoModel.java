@@ -52,6 +52,9 @@ public class MitoModel {
         td.setSizeOfZonesInAcre(sizeOfZonesInAcre);     //
     }
 
+    public void setScenarioName (String scenarioName) {
+        td.setScenarioName(scenarioName);
+    }
 
     public void readData() {
         // Read data if MITO is used as a stand-alone program and data are not fed from other program

@@ -5,6 +5,7 @@ import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.*;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -328,7 +329,16 @@ public class TripGeneration {
                 }
             }
         }
-        PrintWriter pw = MitoUtil.openFileForSequentialWriting(rb.getString("removed.trips.near.border"), false);
+        String fileName = rb.getString("removed.trips.near.border");
+        if (MitoData.getScenarioName() != null) {
+            File dir = new File("output\\" + MitoData.getScenarioName() + "\\tripGeneration");
+            if(!dir.exists()){
+                boolean directoryCreated = dir.mkdir();
+                if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
+            }
+            fileName = "output\\" + MitoData.getScenarioName() + "\\" + fileName;
+        }
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileName, false);
         pw.println("Zone,removedTrips");
         for (int zone: td.getZones()) pw.println(zone + "," + removedTrips[td.getZoneIndex(zone)]);
         pw.close();
