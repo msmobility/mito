@@ -5,7 +5,7 @@
 	<groupId>de.tum.bgu.msm</groupId>
 	<artifactId>mito</artifactId>
 	<name>MITO</name>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<description>Microscopic Transportation Orchestrator</description>
 	<url>mito.zone</url>
 	<inceptionYear>2015</inceptionYear>
