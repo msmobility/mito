@@ -290,6 +290,7 @@ public class TripGeneration {
             }
         }
 
+        logger.info("  writing to file " + rb.getString("non.motorized.trips"));
         PrintWriter pw = MitoUtil.openFileForSequentialWriting(rb.getString("non.motorized.trips"), false);
         pw.print("Zone");
         for (String purpose: td.getPurposes()) pw.print("," + purpose);
