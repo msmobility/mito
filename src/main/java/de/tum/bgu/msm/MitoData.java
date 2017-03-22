@@ -8,6 +8,7 @@ import omx.OmxMatrix;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -73,6 +74,18 @@ public class MitoData {
 
     public static String getScenarioName() {
         return scenarioName;
+    }
+
+    public static String generateOutputFileName (String fileName) {
+        if (MitoData.getScenarioName() != null) {
+            File dir = new File("scenOutput\\" + MitoData.getScenarioName() + "\\tripGeneration");
+            if(!dir.exists()){
+                boolean directoryCreated = dir.mkdir();
+                if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
+            }
+            fileName = "scenOutput\\" + MitoData.getScenarioName() + "\\" + fileName;
+        }
+        return fileName;
     }
 
     public Random getRand () {

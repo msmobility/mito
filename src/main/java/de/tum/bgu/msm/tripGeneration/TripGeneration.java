@@ -290,7 +290,7 @@ public class TripGeneration {
             }
         }
 
-        String fileName = "output\\" + MitoData.getScenarioName() + "\\" + rb.getString("non.motorized.trips");
+        String fileName = MitoData.generateOutputFileName(rb.getString("non.motorized.trips"));
         PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileName, false);
         pw.print("Zone");
         for (String purpose: td.getPurposes()) pw.print("," + purpose);
@@ -330,15 +330,7 @@ public class TripGeneration {
                 }
             }
         }
-        String fileName = rb.getString("removed.trips.near.border");
-        if (MitoData.getScenarioName() != null) {
-            File dir = new File("output\\" + MitoData.getScenarioName() + "\\tripGeneration");
-            if(!dir.exists()){
-                boolean directoryCreated = dir.mkdir();
-                if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
-            }
-            fileName = "output\\" + MitoData.getScenarioName() + "\\" + fileName;
-        }
+        String fileName = MitoData.generateOutputFileName(rb.getString("removed.trips.near.border"));
         PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileName, false);
         pw.println("Zone,removedTrips");
         for (int zone: td.getZones()) pw.println(zone + "," + removedTrips[td.getZoneIndex(zone)]);
@@ -460,8 +452,10 @@ public class TripGeneration {
     private void writeTripSummary(float[][] tripAttraction) {
         // write number of trips by purpose and zone to output file
 
-        PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(rb.getString("trip.production.output"), false);
-        PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(rb.getString("trip.attraction.output"), false);
+        String fileNameProd = MitoData.generateOutputFileName(rb.getString("trip.production.output"));
+        PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
+        String fileNameAttr = MitoData.generateOutputFileName(rb.getString("trip.attraction.output"));
+        PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("Zone");
         pwAttr.print("Zone");
         for (String tripPurpose: td.getPurposes()) {
