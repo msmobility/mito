@@ -78,12 +78,12 @@ public class MitoData {
 
     public static String generateOutputFileName (String fileName) {
         if (MitoData.getScenarioName() != null) {
-            File dir = new File("scenOutput\\" + MitoData.getScenarioName() + "\\tripGeneration");
+            File dir = new File("scenOutput/" + MitoData.getScenarioName() + "/tripGeneration");
             if(!dir.exists()){
                 boolean directoryCreated = dir.mkdir();
                 if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
             }
-            fileName = "scenOutput\\" + MitoData.getScenarioName() + "\\" + fileName;
+            fileName = "scenOutput/" + MitoData.getScenarioName() + "/" + fileName;
         }
         return fileName;
     }
