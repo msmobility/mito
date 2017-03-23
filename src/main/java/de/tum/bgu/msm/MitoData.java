@@ -83,7 +83,7 @@ public class MitoData {
                 boolean directoryCreated = dir.mkdir();
                 if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
             }
-            fileName = "scenOutput/" + MitoData.getScenarioName() + "/" + fileName;
+            fileName = "scenOutput/" + MitoData.getScenarioName() + "/tripGeneration/" + fileName;
         }
         return fileName;
     }
