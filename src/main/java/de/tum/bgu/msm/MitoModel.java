@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import java.util.ResourceBundle;
 
 /**
- * Implements the Transport in Microsimulation Orchestrator (TIMO)
+ * Implements the Microsimulation Transport Orchestrator (TIMO)
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  *
@@ -70,7 +70,7 @@ public class MitoModel {
     public void runModel() {
         // initialize MitoModel from other program
         long startTime = System.currentTimeMillis();
-        logger.info("Started the Transport in Microsimulation Orchestrator (TIMO)");
+        logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
         // setup
         td.readInputData();
@@ -79,7 +79,7 @@ public class MitoModel {
         MitoTravelDemand ttd = new MitoTravelDemand(rb, td);
         ttd.generateTravelDemand();
 
-        logger.info("Completed the Transport in Microsimulation Orchestrator (TIMO)");
+        logger.info("Completed the Microsimulation Transport Orchestrator (MITO)");
         float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
         int hours = (int) (endTime / 60);
         int min = (int) (endTime - 60 * hours);
