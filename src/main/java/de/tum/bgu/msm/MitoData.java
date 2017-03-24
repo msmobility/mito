@@ -56,6 +56,7 @@ public class MitoData {
     public MitoData(ResourceBundle rb) {
         this.rb = rb;
         initializeRandomNumber();
+        readHouseholdTravelSurvey();
     }
 
 
@@ -251,7 +252,7 @@ public class MitoData {
 
     public void readInputData() {
         // read all required input data
-        readHouseholdTravelSurvey();
+        // already done when MitoData object was created: readHouseholdTravelSurvey();
         purposes = ResourceUtil.getArray(rb, "trip.purposes");
         // create placeholder for number of trips by purpose for every household
         for (MitoHousehold thh: mitoHouseholds) thh.createTripByPurposeArray(purposes.length);
