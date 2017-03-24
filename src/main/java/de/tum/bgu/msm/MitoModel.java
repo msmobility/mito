@@ -85,4 +85,9 @@ public class MitoModel {
         int min = (int) (endTime - 60 * hours);
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
+
+
+    public MitoData getTravelDemand() {
+        return td;
+    }
 }

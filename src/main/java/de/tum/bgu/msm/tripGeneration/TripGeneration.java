@@ -5,7 +5,6 @@ import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.*;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -33,8 +32,8 @@ public class TripGeneration {
 
         logger.info("  Started microscopic trip generation model.");
         microgenerateTrips();
-        if (ResourceUtil.getBooleanProperty(rb, "remove.non.motorized.trips", false)) removeNonMotorizedTrips();
         if (ResourceUtil.getBooleanProperty(rb, "reduce.trips.at.outer.border", false)) reduceTripGenAtStudyAreaBorder();
+        if (ResourceUtil.getBooleanProperty(rb, "remove.non.motorized.trips", false)) selectNonMotorizedTrips();
         float[][] rawTripAttr = calculateTripAttractions();
         float[][] balancedAttr = balanceTripGeneration(rawTripAttr);
         writeTripSummary(balancedAttr);
@@ -229,8 +228,41 @@ public class TripGeneration {
     }
 
 
-    private void removeNonMotorizedTrips () {
-        // subtract fixed share of trips by purpose and zone that is assumed to be non-motorized
+    private void reduceTripGenAtStudyAreaBorder() {
+        // as trips near border of study area that travel to destinations outside of study area are not represented,
+        // trip generation near border of study area can be reduced artificially with this method
+
+        logger.info("  Removing short-distance trips that would cross border study area");
+        TableDataSet reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
+        reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
+
+        float[] removedTrips = new float[td.getZones().length];
+        for (MitoHousehold thh: td.getMitoHouseholds()) {
+            float damper = reductionNearBorder.getIndexedValueAt(thh.getHomeZone(), "damper");
+            if (damper == 0) continue;
+            for (int purp = 0; purp < td.getPurposes().length; purp++) {
+                int eliminatedTrips = 0;
+                for (int trip = 1; trip <= thh.getNumberOfTrips(purp); trip++) {
+                    if (td.getRand().nextFloat() < damper) eliminatedTrips++;
+                }
+                if (eliminatedTrips > 0) {
+                    thh.setNumberOfTrips(purp, (thh.getNumberOfTrips(purp) - eliminatedTrips));
+                    removedTrips[td.getZoneIndex(thh.getHomeZone())] += eliminatedTrips;
+                }
+            }
+        }
+        String fileName = MitoData.generateOutputFileName(rb.getString("removed.trips.near.border"));
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileName, false);
+        pw.println("Zone,removedTrips");
+        for (int zone: td.getZones()) pw.println(zone + "," + removedTrips[td.getZoneIndex(zone)]);
+        pw.close();
+        logger.info("  Removed " + MitoUtil.customFormat("###,###", MitoUtil.getSum(removedTrips)) +
+                " short-distance trips near border of MSTM study area");
+    }
+
+
+    private void selectNonMotorizedTrips() {
+        // select non-motorized trips based on fixed share of trips by purpose and zone
 
         MitoAccessibility ta = new MitoAccessibility(rb, td);
         ta.calculateAccessibilities();
@@ -244,7 +276,7 @@ public class TripGeneration {
             actDensity[td.getZoneIndex(zone)] = (td.getHouseholdsByZone(zone) + td.getRetailEmplByZone(zone) +
                     td.getTotalEmplByZone(zone)) / td.getSizeOfZoneInAcre(zone);
         }
-        logger.info("  Removing non-motorized trips");
+        logger.info("  Selecting non-motorized trips");
         TableDataSet nmFunctions = MitoUtil.readCSVfile(rb.getString("non.motorized.share.functions"));
         nmFunctions.buildStringIndex(nmFunctions.getColumnPosition("Purpose"));
 
@@ -303,40 +335,7 @@ public class TripGeneration {
             pw.println();
         }
         pw.close();
-        logger.info("  Removed " + MitoUtil.customFormat("###,###", MitoUtil.getSum(nonMotCounter)) + " non-motorized trips");
-    }
-
-
-    private void reduceTripGenAtStudyAreaBorder() {
-        // as trips near border of study area that travel to destinations outside of study area are not represented,
-        // trip generation near border of study area can be reduced artificially with this method
-
-        logger.info("  Removing short-distance trips that would cross border study area");
-        TableDataSet reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
-        reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
-
-        float[] removedTrips = new float[td.getZones().length];
-        for (MitoHousehold thh: td.getMitoHouseholds()) {
-            float damper = reductionNearBorder.getIndexedValueAt(thh.getHomeZone(), "damper");
-            if (damper == 0) continue;
-            for (int purp = 0; purp < td.getPurposes().length; purp++) {
-                int eliminatedTrips = 0;
-                for (int trip=1; trip <= thh.getNumberOfTrips(purp); trip++) {
-                    if (td.getRand().nextFloat() < damper) eliminatedTrips++;
-                }
-                if (eliminatedTrips > 0) {
-                    thh.setNumberOfTrips(purp, (thh.getNumberOfTrips(purp) - eliminatedTrips));
-                    removedTrips[td.getZoneIndex(thh.getHomeZone())] += eliminatedTrips;
-                }
-            }
-        }
-        String fileName = MitoData.generateOutputFileName(rb.getString("removed.trips.near.border"));
-        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileName, false);
-        pw.println("Zone,removedTrips");
-        for (int zone: td.getZones()) pw.println(zone + "," + removedTrips[td.getZoneIndex(zone)]);
-        pw.close();
-        logger.info("  Removed " + MitoUtil.customFormat("###,###", MitoUtil.getSum(removedTrips)) +
-                " short-distance trips near border of MSTM study area");
+        logger.info("  Selected " + MitoUtil.customFormat("###,###", MitoUtil.getSum(nonMotCounter)) + " trips to be non-motorized");
     }
 
 
