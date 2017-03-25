@@ -50,6 +50,7 @@ public class MitoModel {
         td.setOtherEmplByZone(otherEmplByZone);         // stored in position 1, for zone 5 in position 5, etc.
         td.setTotalEmplByZone(totalEmplByZone);         //
         td.setSizeOfZonesInAcre(sizeOfZonesInAcre);     //
+        td.readHouseholdTravelSurvey();
     }
 
     public void setBaseDirectory (String baseDirectory) {
