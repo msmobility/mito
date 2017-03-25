@@ -50,6 +50,8 @@ public class MitoModel {
         td.setOtherEmplByZone(otherEmplByZone);         // stored in position 1, for zone 5 in position 5, etc.
         td.setTotalEmplByZone(totalEmplByZone);         //
         td.setSizeOfZonesInAcre(sizeOfZonesInAcre);     //
+        // todo: the household travel survey should not be read every year the model runs, but only in the first year.
+        // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
         td.readHouseholdTravelSurvey();
     }
 
