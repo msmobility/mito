@@ -87,6 +87,10 @@ public class MitoModel {
     }
 
 
+    public void setBaseDirectory(String baseDirectory) {
+        MitoUtil.setBaseDirectory(baseDirectory);
+    }
+
     public MitoData getTravelDemand() {
         return td;
     }

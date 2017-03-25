@@ -22,6 +22,7 @@ public class MitoMuc {
 
         MitoMuc mito = new MitoMuc();
         ResourceBundle rb = MitoUtil.createResourceBundle(args[0]);
+        MitoUtil.setBaseDirectory(rb.getString("base.directory"));
         mito.run(rb);
     }
 

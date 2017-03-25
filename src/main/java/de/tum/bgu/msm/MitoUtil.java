@@ -24,6 +24,15 @@ public class MitoUtil {
 
     private static Logger logger = Logger.getLogger(MitoUtil.class);
 
+    private static String baseDirectory = "";
+
+    public static String getBaseDirectory() {
+        return baseDirectory;
+    }
+
+    public static void setBaseDirectory(String baseDirectoryInput) {
+        baseDirectory = baseDirectoryInput;
+    }
 
     public static float rounder(float value, int digits) {
         // rounds value to digits behind the decimal point

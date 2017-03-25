@@ -24,13 +24,13 @@ import java.util.ResourceBundle;
 
 public class MitoData {
 
-    protected static final String PROPERTIES_ZONAL_DATA_FILE          = "zonal.data.file";
-    protected static final String PROPERTIES_AUTO_PEAK_SKIM           = "auto.peak.sov.skim";
-    protected static final String PROPERTIES_TRANSIT_PEAK_SKIM        = "transit.peak.time";
-    protected static final String PROPERTIES_HH_FILE_ASCII            = "household.file.ascii";
-    protected static final String PROPERTIES_PP_FILE_ASCII            = "person.file.ascii";
-    protected static final String PROPERTIES_EMPLOYMENT_FILE          = "employment.forecast";
-    protected static final String PROPERTIES_SCHOOL_ENROLLMENT_FILE   = "school.enrollment.data";
+    private static final String PROPERTIES_ZONAL_DATA_FILE          = "zonal.data.file";
+    private static final String PROPERTIES_AUTO_PEAK_SKIM           = "auto.peak.sov.skim";
+    private static final String PROPERTIES_TRANSIT_PEAK_SKIM        = "transit.peak.time";
+    private static final String PROPERTIES_HH_FILE_ASCII            = "household.file.ascii";
+    private static final String PROPERTIES_PP_FILE_ASCII            = "person.file.ascii";
+    private static final String PROPERTIES_EMPLOYMENT_FILE          = "employment.forecast";
+    private static final String PROPERTIES_SCHOOL_ENROLLMENT_FILE   = "school.enrollment.data";
 
     private static Logger logger = Logger.getLogger(MitoData.class);
     private ResourceBundle rb;
@@ -53,7 +53,7 @@ public class MitoData {
     private Random rand;
 
 
-    public MitoData(ResourceBundle rb) {
+    MitoData(ResourceBundle rb) {
         this.rb = rb;
         initializeRandomNumber();
         readHouseholdTravelSurvey();
@@ -69,7 +69,7 @@ public class MitoData {
             rand = new Random(seed);
     }
 
-    public void setScenarioName (String scenarioName) {
+    void setScenarioName (String scenarioName) {
         this.scenarioName = scenarioName;
     }
 
@@ -328,8 +328,8 @@ public class MitoData {
         // read household travel survey
 
         logger.info("  Reading household travel survey");
-        htsHH = MitoUtil.readCSVfile(rb.getString("household.travel.survey.hh"));
-        htsTR = MitoUtil.readCSVfile(rb.getString("household.travel.survey.trips"));
+        htsHH = MitoUtil.readCSVfile(MitoUtil.getBaseDirectory() + "/" + rb.getString("household.travel.survey.hh"));
+        htsTR = MitoUtil.readCSVfile(MitoUtil.getBaseDirectory() + "/" + rb.getString("household.travel.survey.trips"));
     }
 
 
