@@ -56,7 +56,6 @@ public class MitoData {
     MitoData(ResourceBundle rb) {
         this.rb = rb;
         initializeRandomNumber();
-        readHouseholdTravelSurvey();
     }
 
 
@@ -324,7 +323,7 @@ public class MitoData {
         return sizeOfZonesInAcre[getZoneIndex(zone)];
     }
 
-    private void readHouseholdTravelSurvey() {
+    public void readHouseholdTravelSurvey() {
         // read household travel survey
 
         logger.info("  Reading household travel survey");

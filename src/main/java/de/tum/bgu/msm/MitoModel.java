@@ -52,6 +52,11 @@ public class MitoModel {
         td.setSizeOfZonesInAcre(sizeOfZonesInAcre);     //
     }
 
+    public void setBaseDirectory (String baseDirectory) {
+        MitoUtil.setBaseDirectory(baseDirectory);
+    }
+
+
     public void setScenarioName (String scenarioName) {
         td.setScenarioName(scenarioName);
     }
@@ -59,6 +64,7 @@ public class MitoModel {
     public void readData() {
         // Read data if MITO is used as a stand-alone program and data are not fed from other program
         logger.info("  Reading input data for MITO");
+        td.readHouseholdTravelSurvey();
         td.readZones();
         td.readSkims();
         td.readHouseholdData();
@@ -86,10 +92,6 @@ public class MitoModel {
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
-
-    public void setBaseDirectory(String baseDirectory) {
-        MitoUtil.setBaseDirectory(baseDirectory);
-    }
 
     public MitoData getTravelDemand() {
         return td;
