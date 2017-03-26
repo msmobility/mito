@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.tripGeneration;
+package de.tum.bgu.msm;
 
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.util.ResourceUtil;
@@ -136,7 +136,7 @@ public class TripGeneration {
     }
 
 
-    public TableDataSet createHouseholdTypeTableDataSet (int numCategories, String[] sizePortions, String[] workerPortions,
+    private TableDataSet createHouseholdTypeTableDataSet (int numCategories, String[] sizePortions, String[] workerPortions,
                                                          String[] incomePortions, String[] autoPortions, String[] regionPortions) {
         // create household type TableDataSet
 
@@ -218,19 +218,6 @@ public class TripGeneration {
     }
 
 
-    private int defineMstmIncomeCategory (int hhIncome) {
-        // translate income in absolute dollars into MSTM income categories
-
-        if (hhIncome < 20000) return 1;
-        else if (hhIncome >= 20000 && hhIncome < 40000) return 2;
-        else if (hhIncome >= 40000 && hhIncome < 60000) return 3;
-        else if (hhIncome >= 60000 && hhIncome < 100000) return 4;
-        else if (hhIncome >= 100000) return 5;
-        logger.error("Unknown MSTM income: " + hhIncome);
-        return -1;
-    }
-
-
     private int selectNumberOfTrips (Integer[] tripFrequencies) {
         // select number of trips
         double[] probabilities = new double[tripFrequencies.length];
@@ -266,12 +253,26 @@ public class TripGeneration {
                     String token = mitoData.getPurposes()[purp] + "_" + variable;
                     if (attractionRates.containsKey(token)) {
                         float attribute = 0;
-                        if (variable.equals("HH")) attribute = mitoData.getHouseholdsByZone(zone);
-                        else if (variable.equals("TOT")) mitoData.getTotalEmplByZone(zone);
-                        else if (variable.equals("RE")) mitoData.getRetailEmplByZone(zone);
-                        else if (variable.equals("OFF")) mitoData.getOfficeEmplByZone(zone);
-                        else if (variable.equals("OTH")) mitoData.getOtherEmplByZone(zone);
-                        else if (variable.equals("ENR")) mitoData.getSchoolEnrollmentByZone(zone);
+                        switch (variable) {
+                            case "HH":
+                                attribute = mitoData.getHouseholdsByZone(zone);
+                                break;
+                            case "TOT":
+                                mitoData.getTotalEmplByZone(zone);
+                                break;
+                            case "RE":
+                                mitoData.getRetailEmplByZone(zone);
+                                break;
+                            case "OFF":
+                                mitoData.getOfficeEmplByZone(zone);
+                                break;
+                            case "OTH":
+                                mitoData.getOtherEmplByZone(zone);
+                                break;
+                            case "ENR":
+                                mitoData.getSchoolEnrollmentByZone(zone);
+                                break;
+                        }
                         tripAttr[mitoData.getZoneIndex(zone)][purp] += attribute * attractionRates.get(token);
                     }
                 }
