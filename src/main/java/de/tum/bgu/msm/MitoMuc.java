@@ -14,7 +14,6 @@ import java.util.ResourceBundle;
 public class MitoMuc {
 
     private static Logger logger = Logger.getLogger(MitoMuc.class);
-    private ResourceBundle rb;
 
 
     public static void main(String[] args) {
@@ -29,19 +28,10 @@ public class MitoMuc {
 
     private void run (ResourceBundle rb) {
         // main run method
-        long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        this.rb = rb;
         MitoModel model = new MitoModel(rb);
         model.readData();
         model.runModel();
-
-        logger.info("Finished the Microsimulation Transport Orchestrator (MITO)");
-        float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
-        int hours = (int) (endTime / 60);
-        int min = (int) (endTime - 60 * hours);
-        logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
-
     }
 
 }

@@ -1,4 +1,4 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
 
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds households objects for the Transport in Microsimulation Orchestrator (TIMO)
+ * Holds households objects for the Microsimulation Transport Orchestrator (MITO)
  * @author Rolf Moeckel
  * Created on Sep 21, 2016 in Munich, Germany
  *
@@ -22,8 +22,7 @@ public class MitoHousehold implements Serializable {
     private int income;
     private int autos;
     private int homeZone;
-    private int[] tripsByPurpose;
-    private int[] nonMotorizedTripsByPurpose;
+    private MitoTrip[] trips;
     private static final Map<Integer,MitoHousehold> householdMap = new HashMap<>();
 
 
@@ -35,13 +34,10 @@ public class MitoHousehold implements Serializable {
         this.income = income;
         this.autos = autos;
         this.homeZone = homeZone;
+        this.trips = new MitoTrip[0];
         householdMap.put(id, this);
     }
 
-    public void createTripByPurposeArray (int numberOfPurposes) {
-        this.tripsByPurpose = new int[numberOfPurposes];
-        this.nonMotorizedTripsByPurpose = new int[numberOfPurposes];
-    }
 
     public static MitoHousehold getHouseholdFromId (int id) {
         return householdMap.get(id);
@@ -84,18 +80,10 @@ public class MitoHousehold implements Serializable {
         return homeZone;
     }
 
-    public void setNumberOfTrips (int purposeNumber, int numberOfTrips) {
-        // note: if non-motorized trips are calculated, this variable stores motorized trips only; otherwise, this
-        //       variable stores total trips
-        tripsByPurpose[purposeNumber] = numberOfTrips;
+    public void addTrip(MitoTrip trip) {
+        MitoTrip[] newTrips = new MitoTrip[trips.length + 1];
+        System.arraycopy(trips, 0, newTrips, 0, trips.length);
+        newTrips[trips.length] = trip;
+        trips = newTrips;
     }
-
-    public int getNumberOfTrips (int purposeNumber) {
-        return tripsByPurpose[purposeNumber];
-    }
-
-    public void setNonMotorizedNumberOfTrips (int purposeNumber, int numberOfNonMotorizedTrips) {
-        nonMotorizedTripsByPurpose[purposeNumber] = numberOfNonMotorizedTrips;
-    }
-
 }

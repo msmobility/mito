@@ -3,6 +3,9 @@ package de.tum.bgu.msm.tripGeneration;
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.*;
+import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.TripDataManager;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -20,11 +23,13 @@ public class TripGeneration {
 
     private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
     private ResourceBundle rb;
-    private MitoData td;
+    private MitoData mitoData;
+    private TripDataManager tripDataManager;
 
-    public TripGeneration(ResourceBundle rb, MitoData td) {
+    public TripGeneration(ResourceBundle rb, MitoData td, TripDataManager tripDataManager) {
         this.rb = rb;
-        this.td = td;
+        this.mitoData = td;
+        this.tripDataManager = tripDataManager;
     }
 
     public void generateTrips () {
@@ -32,14 +37,10 @@ public class TripGeneration {
 
         logger.info("  Started microscopic trip generation model.");
         microgenerateTrips();
-        if (ResourceUtil.getBooleanProperty(rb, "reduce.trips.at.outer.border", false)) reduceTripGenAtStudyAreaBorder();
-        if (ResourceUtil.getBooleanProperty(rb, "remove.non.motorized.trips", false)) selectNonMotorizedTrips();
         float[][] rawTripAttr = calculateTripAttractions();
         float[][] balancedAttr = balanceTripGeneration(rawTripAttr);
         writeTripSummary(balancedAttr);
-
         logger.info("  Completed microscopic trip generation model.");
-
     }
 
 
@@ -56,20 +57,21 @@ public class TripGeneration {
 
         TableDataSet regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
         regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
+        int counterDroppedTripsAtBorder = 0;
 
         // Generate trips for each purpose
         int tripCounter = 0;
-        for (int purp = 0; purp < td.getPurposes().length; purp++) {
-            String strPurp = td.getPurposes()[purp];
+        for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
+            String strPurp = mitoData.getPurposes()[purp];
             logger.info("  Generating trips with purpose " + strPurp);
             TableDataSet hhTypeDef = createHHTypeDefinition(strPurp);
-            int[] hhTypeArray = td.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
-            HashMap<String, Integer[]> tripsByHhTypeAndPurpose = td.collectTripFrequencyDistribution(hhTypeArray);
+            int[] hhTypeArray = mitoData.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
+            HashMap<String, Integer[]> tripsByHhTypeAndPurpose = mitoData.collectTripFrequencyDistribution(hhTypeArray);
             // Generate trips for each household
-            for (MitoHousehold hh: td.getMitoHouseholds()) {
+            for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
                 int region = (int) regionDefinition.getIndexedValueAt(hh.getHomeZone(), "Region");
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
-                int hhType = td.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
+                int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
                         incCategory, hh.getAutos(), region);
                 String token = hhType + "_" + strPurp;
                 Integer[] tripFrequencies = tripsByHhTypeAndPurpose.get(token);
@@ -78,12 +80,21 @@ public class TripGeneration {
                 }
                 if (MitoUtil.getSum(tripFrequencies) == 0) continue;
                 int numTrips = selectNumberOfTrips(tripFrequencies);
-                int mstmIncCat = defineMstmIncomeCategory(hh.getIncome());
-                hh.setNumberOfTrips(purp, numTrips);
-                tripCounter++;
+                for (int i = 0; i < numTrips; i++) {
+                    // todo: for non-home based trips, do not set origin as home
+                    int tripOrigin = hh.getHomeZone();
+                    boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
+                    if (dropThisTrip) counterDroppedTripsAtBorder++;
+                    if (dropThisTrip) continue;
+                    MitoTrip trip = new MitoTrip(TripDataManager.getNextTripId(), hh.getHhId(), purp, tripOrigin);
+                    hh.addTrip(trip);
+                }
+                tripCounter += numTrips;
             }
         }
         logger.info("  Generated " + MitoUtil.customFormat("###,###", tripCounter) + " raw trips.");
+        if (counterDroppedTripsAtBorder > 0)
+            logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder) + " trips were dropped at boundary of study area.");
     }
 
 
@@ -104,7 +115,7 @@ public class TripGeneration {
         String[] regionPortions = regionToken.split("\\.");
         TableDataSet hhTypeDef = createHouseholdTypeTableDataSet(numCategories, sizePortions, workerPortions,
                 incomePortions, autoPortions, regionPortions);
-        int[] hhCounter = td.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(purpose), hhTypeDef);
+        int[] hhCounter = mitoData.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(purpose), hhTypeDef);
         HashMap<Integer, Integer> numHhByType = new HashMap<>();
         for (int hhType: hhCounter) {
             if (numHhByType.containsKey(hhType)) {
@@ -228,114 +239,14 @@ public class TripGeneration {
     }
 
 
-    private void reduceTripGenAtStudyAreaBorder() {
+    private boolean reduceTripGenAtStudyAreaBorder(int tripOrigin) {
         // as trips near border of study area that travel to destinations outside of study area are not represented,
         // trip generation near border of study area can be reduced artificially with this method
 
-        logger.info("  Removing short-distance trips that would cross border study area");
-        TableDataSet reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
-        reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
+        if (!mitoData.shallWeRemoveTripsAtBorder()) return false;
 
-        float[] removedTrips = new float[td.getZones().length];
-        for (MitoHousehold thh: td.getMitoHouseholds()) {
-            float damper = reductionNearBorder.getIndexedValueAt(thh.getHomeZone(), "damper");
-            if (damper == 0) continue;
-            for (int purp = 0; purp < td.getPurposes().length; purp++) {
-                int eliminatedTrips = 0;
-                for (int trip = 1; trip <= thh.getNumberOfTrips(purp); trip++) {
-                    if (MitoUtil.getRand().nextFloat() < damper) eliminatedTrips++;
-                }
-                if (eliminatedTrips > 0) {
-                    thh.setNumberOfTrips(purp, (thh.getNumberOfTrips(purp) - eliminatedTrips));
-                    removedTrips[td.getZoneIndex(thh.getHomeZone())] += eliminatedTrips;
-                }
-            }
-        }
-        String fileName = MitoData.generateOutputFileName(rb.getString("removed.trips.near.border"));
-        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileName, false);
-        pw.println("Zone,removedTrips");
-        for (int zone: td.getZones()) pw.println(zone + "," + removedTrips[td.getZoneIndex(zone)]);
-        pw.close();
-        logger.info("  Removed " + MitoUtil.customFormat("###,###", MitoUtil.getSum(removedTrips)) +
-                " short-distance trips near border of MSTM study area");
-    }
-
-
-    private void selectNonMotorizedTrips() {
-        // select non-motorized trips based on fixed share of trips by purpose and zone
-
-        MitoAccessibility ta = new MitoAccessibility(rb, td);
-        ta.calculateAccessibilities();
-
-        int[] zones = td.getZones();
-        float[] hhDensity = new float[zones.length];
-        float[] actDensity = new float[zones.length];
-        for (int zone: zones) {
-            hhDensity[td.getZoneIndex(zone)] = td.getHouseholdsByZone(zone) /
-                    td.getSizeOfZoneInAcre(zone);
-            actDensity[td.getZoneIndex(zone)] = (td.getHouseholdsByZone(zone) + td.getRetailEmplByZone(zone) +
-                    td.getTotalEmplByZone(zone)) / td.getSizeOfZoneInAcre(zone);
-        }
-        logger.info("  Selecting non-motorized trips");
-        TableDataSet nmFunctions = MitoUtil.readCSVfile(rb.getString("non.motorized.share.functions"));
-        nmFunctions.buildStringIndex(nmFunctions.getColumnPosition("Purpose"));
-
-        float[][][] nonMotShare = new float[6][5][zones.length];  // non-motorized share by purpose, income and zone
-        for (int zone: zones) {
-            for (int purp = 0; purp < td.getPurposes().length; purp++) {
-                for (int incomeCategory = 1; incomeCategory <= 5; incomeCategory++) {
-                    String purpose;
-                    if (purp < 3) {
-                        purpose = td.getPurposes()[purp] + incomeCategory;
-                    } else {
-                        purpose = td.getPurposes()[purp];
-                    }
-                    nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)] =
-                            hhDensity[td.getZoneIndex(zone)] * nmFunctions.getStringIndexedValueAt(purpose, "hhDensity") +
-                                    actDensity[td.getZoneIndex(zone)] * nmFunctions.getStringIndexedValueAt(purpose, "actDensity") +
-                                    ta.getAutoAccessibilityHouseholds(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccHH") +
-                                    ta.getAutoAccessibilityRetail(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccRetailEmp") +
-                                    ta.getAutoAccessibilityOther(zone) * nmFunctions.getStringIndexedValueAt(purpose, "carAccOtherEmp") +
-                                    ta.getTransitAccessibilityOther(zone) * nmFunctions.getStringIndexedValueAt(purpose, "trnAccOtherEmp");
-                    if (nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)] < 0 ||
-                            nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)] > 1) logger.warn("Non-motorized share" +
-                            "out of range in zone " + zone + ": " + nonMotShare[purp][incomeCategory-1][td.getZoneIndex(zone)]);
-                }
-            }
-        }
-
-        // loop over every household and every trip and randomly remove trips based on nonMotShare[][][]
-        int[][] nonMotCounter = new int[td.getPurposes().length][td.getZones().length];
-        for (MitoHousehold thh: td.getMitoHouseholds()) {
-            int inc = defineMstmIncomeCategory(thh.getIncome());
-            for (int purp = 0; purp < td.getPurposes().length; purp++) {
-
-                int allTrips = thh.getNumberOfTrips(purp);
-                int nonMot = 0;
-                for (int trip = 1; trip <= allTrips; trip++)
-                    if (MitoUtil.getRand().nextFloat() < nonMotShare[purp][inc - 1][td.getZoneIndex(thh.getHomeZone())]) {
-                        nonMot++;
-                        nonMotCounter[purp][td.getZoneIndex(thh.getHomeZone())]++;
-                    }
-                thh.setNonMotorizedNumberOfTrips(purp, nonMot);
-                thh.setNumberOfTrips(purp, (thh.getNumberOfTrips(purp) - nonMot));
-            }
-        }
-
-        String fileName = MitoData.generateOutputFileName(rb.getString("non.motorized.trips"));
-        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileName, false);
-        pw.print("Zone");
-        for (String purpose: td.getPurposes()) pw.print("," + purpose);
-        pw.println();
-
-        for (int zone: zones) {
-            pw.print(zone);
-            for (int purp = 0; purp < td.getPurposes().length; purp++)
-                pw.print("," + nonMotCounter[purp][td.getZoneIndex(zone)]);
-            pw.println();
-        }
-        pw.close();
-        logger.info("  Selected " + MitoUtil.customFormat("###,###", MitoUtil.getSum(nonMotCounter)) + " trips to be non-motorized");
+        float damper = mitoData.getReductionAtBorderOfStudyArea(tripOrigin);
+        return MitoUtil.getRand().nextFloat() < damper;
     }
 
 
@@ -347,21 +258,21 @@ public class TripGeneration {
         HashMap<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
-        int[] zones = td.getZones();
-        float[][] tripAttr = new float[td.getZones().length][td.getPurposes().length];  // by zones, purposes and income
+        int[] zones = mitoData.getZones();
+        float[][] tripAttr = new float[mitoData.getZones().length][mitoData.getPurposes().length];  // by zones, purposes and income
         for (int zone: zones) {
-            for (int purp = 0; purp < td.getPurposes().length; purp++) {
+            for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
                 for (String variable: independentVariables) {
-                    String token = td.getPurposes()[purp] + "_" + variable;
+                    String token = mitoData.getPurposes()[purp] + "_" + variable;
                     if (attractionRates.containsKey(token)) {
                         float attribute = 0;
-                        if (variable.equals("HH")) attribute = td.getHouseholdsByZone(zone);
-                        else if (variable.equals("TOT")) td.getTotalEmplByZone(zone);
-                        else if (variable.equals("RE")) td.getRetailEmplByZone(zone);
-                        else if (variable.equals("OFF")) td.getOfficeEmplByZone(zone);
-                        else if (variable.equals("OTH")) td.getOtherEmplByZone(zone);
-                        else if (variable.equals("ENR")) td.getSchoolEnrollmentByZone(zone);
-                        tripAttr[td.getZoneIndex(zone)][purp] += attribute * attractionRates.get(token);
+                        if (variable.equals("HH")) attribute = mitoData.getHouseholdsByZone(zone);
+                        else if (variable.equals("TOT")) mitoData.getTotalEmplByZone(zone);
+                        else if (variable.equals("RE")) mitoData.getRetailEmplByZone(zone);
+                        else if (variable.equals("OFF")) mitoData.getOfficeEmplByZone(zone);
+                        else if (variable.equals("OTH")) mitoData.getOtherEmplByZone(zone);
+                        else if (variable.equals("ENR")) mitoData.getSchoolEnrollmentByZone(zone);
+                        tripAttr[mitoData.getZoneIndex(zone)][purp] += attribute * attractionRates.get(token);
                     }
                 }
             }
@@ -376,7 +287,7 @@ public class TripGeneration {
         HashMap<String, Float> attractionRates = new HashMap<>();
         for (int row = 1; row <= attrRates.getRowCount(); row++) {
             String generator = attrRates.getStringValueAt(row, "IndependentVariable");
-            for (String purp: td.getPurposes()) {
+            for (String purp: mitoData.getPurposes()) {
                 float rate = attrRates.getValueAt(row, purp);
                 String token = purp + "_" + generator;
                 attractionRates.put(token, rate);
@@ -391,14 +302,14 @@ public class TripGeneration {
 
         logger.info("  Balancing trip production and attractions");
 
-        for (int purp = 0; purp < td.getPurposes().length; purp++) {
+        for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
             float attrSum = 0;
-            for (int zone: td.getZones()) {
-                attrSum += tripAttr[td.getZoneIndex(zone)][purp];
+            for (int zone: mitoData.getZones()) {
+                attrSum += tripAttr[mitoData.getZoneIndex(zone)][purp];
             }
             // adjust attractions (or productions for NHBW and NHBO)
-            for (int zone: td.getZones()) {
-                tripAttr[td.getZoneIndex(zone)][purp] = tripAttr[td.getZoneIndex(zone)][purp] * td.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
+            for (int zone: mitoData.getZones()) {
+                tripAttr[mitoData.getZoneIndex(zone)][purp] = tripAttr[mitoData.getZoneIndex(zone)][purp] * tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
 
                 // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
                 // travel survey. The distribution, however, is better represented by attraction rates. Therefore,
@@ -457,26 +368,24 @@ public class TripGeneration {
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("Zone");
         pwAttr.print("Zone");
-        for (String tripPurpose: td.getPurposes()) {
+        for (String tripPurpose: mitoData.getPurposes()) {
             pwProd.print("," + tripPurpose + "P");
             pwAttr.print("," + tripPurpose + "A");
         }
 
-        float[][] tripProd = new float[td.getZones().length][td.getPurposes().length];
-        for (MitoHousehold thh: td.getMitoHouseholds()) {
-            for (int purp = 0; purp < td.getPurposes().length; purp++) {
-                tripProd[td.getZoneIndex(thh.getHomeZone())][purp] += thh.getNumberOfTrips(purp);
-            }
+        float[][] tripProd = new float[mitoData.getZones().length][mitoData.getPurposes().length];
+        for (MitoTrip trip: MitoTrip.getTripArray()) {
+            tripProd[mitoData.getZoneIndex(trip.getTripOrigin())][trip.getTripPurpose()] ++;
         }
 
         pwProd.println();
         pwAttr.println();
-        for (int zone: td.getZones()) {
+        for (int zone: mitoData.getZones()) {
             pwProd.print(zone);
             pwAttr.print(zone);
-            for (int purp = 0; purp < td.getPurposes().length; purp++) {
-                pwProd.print("," + tripProd[td.getZoneIndex(zone)][purp]);
-                pwAttr.print("," + tripAttraction[td.getZoneIndex(zone)][purp]);
+            for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
+                pwProd.print("," + tripProd[mitoData.getZoneIndex(zone)][purp]);
+                pwAttr.print("," + tripAttraction[mitoData.getZoneIndex(zone)][purp]);
             }
 
             pwProd.println();
