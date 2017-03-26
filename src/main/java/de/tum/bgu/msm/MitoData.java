@@ -50,23 +50,12 @@ public class MitoData {
     private TableDataSet htsHH;
     private TableDataSet htsTR;
     private String[] purposes;
-    private Random rand;
 
 
     MitoData(ResourceBundle rb) {
         this.rb = rb;
-        initializeRandomNumber();
     }
 
-
-    private void initializeRandomNumber() {
-        // initialize random number generator
-        int seed = ResourceUtil.getIntegerProperty(rb, "random.seed");
-        if (seed == -1)
-            rand = new Random();
-        else
-            rand = new Random(seed);
-    }
 
     void setScenarioName (String scenarioName) {
         this.scenarioName = scenarioName;
@@ -88,9 +77,6 @@ public class MitoData {
         return fileName;
     }
 
-    public Random getRand () {
-        return rand;
-    }
 
 
     public void readZones () {

@@ -224,7 +224,7 @@ public class TripGeneration {
         // select number of trips
         double[] probabilities = new double[tripFrequencies.length];
         for (int i = 0; i < tripFrequencies.length; i++) probabilities[i] = (double) tripFrequencies[i];
-        return MitoUtil.select(td.getRand(), probabilities);
+        return MitoUtil.select(MitoUtil.getRand(), probabilities);
     }
 
 
@@ -243,7 +243,7 @@ public class TripGeneration {
             for (int purp = 0; purp < td.getPurposes().length; purp++) {
                 int eliminatedTrips = 0;
                 for (int trip = 1; trip <= thh.getNumberOfTrips(purp); trip++) {
-                    if (td.getRand().nextFloat() < damper) eliminatedTrips++;
+                    if (MitoUtil.getRand().nextFloat() < damper) eliminatedTrips++;
                 }
                 if (eliminatedTrips > 0) {
                     thh.setNumberOfTrips(purp, (thh.getNumberOfTrips(purp) - eliminatedTrips));
@@ -313,7 +313,7 @@ public class TripGeneration {
                 int allTrips = thh.getNumberOfTrips(purp);
                 int nonMot = 0;
                 for (int trip = 1; trip <= allTrips; trip++)
-                    if (td.getRand().nextFloat() < nonMotShare[purp][inc - 1][td.getZoneIndex(thh.getHomeZone())]) {
+                    if (MitoUtil.getRand().nextFloat() < nonMotShare[purp][inc - 1][td.getZoneIndex(thh.getHomeZone())]) {
                         nonMot++;
                         nonMotCounter[purp][td.getZoneIndex(thh.getHomeZone())]++;
                     }

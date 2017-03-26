@@ -23,8 +23,28 @@ import java.util.ResourceBundle;
 public class MitoUtil {
 
     private static Logger logger = Logger.getLogger(MitoUtil.class);
-
+    private static Random rand;
     private static String baseDirectory = "";
+
+
+    public static void initializeRandomNumber(ResourceBundle rb) {
+        // initialize random number generator
+        int seed = ResourceUtil.getIntegerProperty(rb, "random.seed");
+        if (seed == -1)
+            rand = new Random();
+        else
+            rand = new Random(seed);
+    }
+
+
+    public static void initializeRandomNumber(Random randSetting) {
+        rand = randSetting;
+    }
+
+    public static Random getRand () {
+        return rand;
+    }
+
 
     public static String getBaseDirectory() {
         return baseDirectory;

@@ -3,6 +3,7 @@ package de.tum.bgu.msm;
 import com.pb.common.matrix.Matrix;
 import org.apache.log4j.Logger;
 
+import java.util.Random;
 import java.util.ResourceBundle;
 
 /**
@@ -59,6 +60,9 @@ public class MitoModel {
         MitoUtil.setBaseDirectory(baseDirectory);
     }
 
+    public void setRandomNumberGenerator (Random random) {
+        MitoUtil.initializeRandomNumber(random);
+    }
 
     public void setScenarioName (String scenarioName) {
         td.setScenarioName(scenarioName);
@@ -67,6 +71,7 @@ public class MitoModel {
     public void readData() {
         // Read data if MITO is used as a stand-alone program and data are not fed from other program
         logger.info("  Reading input data for MITO");
+        MitoUtil.initializeRandomNumber(rb);
         td.readHouseholdTravelSurvey();
         td.readZones();
         td.readSkims();
