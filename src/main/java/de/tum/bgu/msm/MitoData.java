@@ -276,7 +276,7 @@ public class MitoData {
         int[] offEmpl = employment.getColumnAsInt("OFF00");
         int[] othEmpl = employment.getColumnAsInt("OTH00");
         int[] totEmpl = new int[indEmpl.length];
-        for (int i = 0; i < indEmpl.length; i++) totEmpl[i] = indEmpl[i] + retEmpl[i] + offEmpl[i] * othEmpl[i];
+        for (int i = 0; i < indEmpl.length; i++) totEmpl[i] = indEmpl[i] + retEmpl[i] + offEmpl[i] + othEmpl[i];
         setRetailEmplByZone(retEmpl);
         setOfficeEmplByZone(offEmpl);
         setOtherEmplByZone(othEmpl);

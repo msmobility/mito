@@ -284,19 +284,19 @@ public class TripGeneration {
                                 attribute = mitoData.getHouseholdsByZone(zone);
                                 break;
                             case "TOT":
-                                mitoData.getTotalEmplByZone(zone);
+                                attribute = mitoData.getTotalEmplByZone(zone);
                                 break;
                             case "RE":
-                                mitoData.getRetailEmplByZone(zone);
+                                attribute = mitoData.getRetailEmplByZone(zone);
                                 break;
                             case "OFF":
-                                mitoData.getOfficeEmplByZone(zone);
+                                attribute = mitoData.getOfficeEmplByZone(zone);
                                 break;
                             case "OTH":
-                                mitoData.getOtherEmplByZone(zone);
+                                attribute = mitoData.getOtherEmplByZone(zone);
                                 break;
                             case "ENR":
-                                mitoData.getSchoolEnrollmentByZone(zone);
+                                attribute = mitoData.getSchoolEnrollmentByZone(zone);
                                 break;
                         }
                         tripAttr[mitoData.getZoneIndex(zone)][purp] += attribute * attractionRates.get(token);
@@ -333,6 +333,10 @@ public class TripGeneration {
             float attrSum = 0;
             for (int zone: mitoData.getZones()) {
                 attrSum += tripAttr[mitoData.getZoneIndex(zone)][purp];
+            }
+            if (attrSum == 0) {
+                logger.warn("No trips for purpose " + mitoData.getPurposes()[purp] + " were generated.");
+                continue;
             }
             // adjust attractions (or productions for NHBW and NHBO)
             for (int zone: mitoData.getZones()) {
