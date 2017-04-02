@@ -31,7 +31,6 @@ public class TripGeneration {
     private ResourceBundle rb;
     private MitoData mitoData;
     private TripDataManager tripDataManager;
-    private TableDataSet regionDefinition;
     private int counterDroppedTripsAtBorder;
 
     public TripGeneration(ResourceBundle rb, MitoData td, TripDataManager tripDataManager) {
@@ -63,8 +62,6 @@ public class TripGeneration {
 
     private void microgenerateTrips () {
 
-        regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
-        regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
         counterDroppedTripsAtBorder = 0;
 
         // Multi-threading code
@@ -98,10 +95,9 @@ public class TripGeneration {
             int purposeNum = mitoData.getPurposeIndex(strPurp);
             // Generate trips for each household
             for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
-                int region = (int) regionDefinition.getIndexedValueAt(hh.getHomeZone(), "Region");
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
                 int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
-                        incCategory, hh.getAutos(), region);
+                        incCategory, hh.getAutos(), mitoData.getRegionOfZone(hh.getHomeZone()));
                 String token = hhType + "_" + strPurp;
                 Integer[] tripFrequencies = tripsByHhTypeAndPurpose.get(token);
                 if (tripFrequencies == null) {

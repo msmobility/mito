@@ -37,6 +37,7 @@ public class MitoData {
     private static String scenarioName;
     private int[] zones;
     private int[] zoneIndex;
+    private TableDataSet regionDefinition;
     private float[] sizeOfZonesInAcre;
     private MitoHousehold[] mitoHouseholds;
     private int[] householdsByZone;
@@ -97,6 +98,9 @@ public class MitoData {
             reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
             reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
         }
+        regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
+        regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
+
     }
 
 
@@ -112,6 +116,8 @@ public class MitoData {
     public int getZoneIndex(int zone) {
         return zoneIndex[zone];
     }
+
+    public int getRegionOfZone (int zone) {return (int) regionDefinition.getIndexedValueAt(zone, "Region");}
 
     public boolean shallWeRemoveTripsAtBorder() {
         return removeTripsAtBorder;
