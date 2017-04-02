@@ -50,6 +50,7 @@ public class MitoData {
     private TableDataSet htsHH;
     private TableDataSet htsTR;
     private String[] purposes;
+    private HashMap<String, Integer> purposeNum;
     private boolean removeTripsAtBorder;
     private TableDataSet reductionNearBorder;
 
@@ -256,6 +257,8 @@ public class MitoData {
         // read all required input data
 
         purposes = ResourceUtil.getArray(rb, "trip.purposes");
+        purposeNum = new HashMap<>();
+        for (int i = 0; i < purposes.length; i++) purposeNum.put(purposes[i], i);
         // read enrollment data
         TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
         enrollmentData.buildIndex(enrollmentData.getColumnPosition("SMZ_N"));
@@ -337,6 +340,7 @@ public class MitoData {
         return purposes;
     }
 
+    public int getPurposeIndex (String purp) {return purposeNum.get(purp);}
 
     public int[] defineHouseholdTypeOfEachSurveyRecords(String autoDef, TableDataSet hhTypeDef) {
         // Count number of household records per predefined typ

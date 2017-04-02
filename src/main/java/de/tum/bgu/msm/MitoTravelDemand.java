@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.TripDataManager;
+import de.tum.bgu.msm.modules.TripGeneration;
 import org.apache.log4j.Logger;
 
 import java.util.ResourceBundle;

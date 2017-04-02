@@ -1,7 +1,11 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.modules;
 
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.util.ResourceUtil;
+import com.pb.sawdust.calculator.Function1;
+import com.pb.sawdust.util.array.ArrayUtil;
+import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
+import com.pb.sawdust.util.concurrent.IteratorAction;
 import de.tum.bgu.msm.*;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
@@ -10,7 +14,9 @@ import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ResourceBundle;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Runs trip generation for the Transport in Microsimulation Orchestrator (TIMO)
@@ -25,6 +31,8 @@ public class TripGeneration {
     private ResourceBundle rb;
     private MitoData mitoData;
     private TripDataManager tripDataManager;
+    private TableDataSet regionDefinition;
+    private int counterDroppedTripsAtBorder;
 
     public TripGeneration(ResourceBundle rb, MitoData td, TripDataManager tripDataManager) {
         this.rb = rb;
@@ -55,18 +63,39 @@ public class TripGeneration {
 
     private void microgenerateTrips () {
 
-        TableDataSet regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
+        regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
         regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
-        int counterDroppedTripsAtBorder = 0;
+        counterDroppedTripsAtBorder = 0;
+
+        // Multi-threading code
+        Function1<String,Void> tripGenByPurposeMethod = new Function1<String,Void>() {
+            public Void apply(String purp) {
+                microgenerateTripsByPurpose(purp);
+                return null;
+            }
+        };
 
         // Generate trips for each purpose
-        int tripCounter = 0;
-        for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
-            String strPurp = mitoData.getPurposes()[purp];
-            logger.info("  Generating trips with purpose " + strPurp);
+        Iterator<String> tripPurposeIterator = ArrayUtil.getIterator(mitoData.getPurposes());
+        IteratorAction<String> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
+        ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
+        pool.execute(itTask);
+        itTask.waitForCompletion();
+
+        int rawTrips = MitoTrip.getTripCount() + counterDroppedTripsAtBorder;
+        logger.info("  Generated " + MitoUtil.customFormat("###,###", rawTrips) + " raw trips.");
+        if (counterDroppedTripsAtBorder > 0)
+            logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder) + " trips were dropped at boundary of study area.");
+    }
+
+
+    private void microgenerateTripsByPurpose (String strPurp) {
+
+            logger.info("  Generating trips with purpose " + strPurp + " (multi-threaded)");
             TableDataSet hhTypeDef = createHHTypeDefinition(strPurp);
             int[] hhTypeArray = mitoData.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = mitoData.collectTripFrequencyDistribution(hhTypeArray);
+            int purposeNum = mitoData.getPurposeIndex(strPurp);
             // Generate trips for each household
             for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
                 int region = (int) regionDefinition.getIndexedValueAt(hh.getHomeZone(), "Region");
@@ -86,15 +115,12 @@ public class TripGeneration {
                     boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
                     if (dropThisTrip) counterDroppedTripsAtBorder++;
                     if (dropThisTrip) continue;
-                    MitoTrip trip = new MitoTrip(TripDataManager.getNextTripId(), hh.getHhId(), purp, tripOrigin);
-                    hh.addTrip(trip);
+                    MitoTrip trip = new MitoTrip(TripDataManager.getNextTripId(), hh.getHhId(), purposeNum, tripOrigin);
+                    synchronized (MitoHousehold.class) {
+                        hh.addTrip(trip);
+                    }
                 }
-                tripCounter += numTrips;
             }
-        }
-        logger.info("  Generated " + MitoUtil.customFormat("###,###", tripCounter) + " raw trips.");
-        if (counterDroppedTripsAtBorder > 0)
-            logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder) + " trips were dropped at boundary of study area.");
     }
 
 
@@ -310,7 +336,8 @@ public class TripGeneration {
             }
             // adjust attractions (or productions for NHBW and NHBO)
             for (int zone: mitoData.getZones()) {
-                tripAttr[mitoData.getZoneIndex(zone)][purp] = tripAttr[mitoData.getZoneIndex(zone)][purp] * tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
+                tripAttr[mitoData.getZoneIndex(zone)][purp] = tripAttr[mitoData.getZoneIndex(zone)][purp] *
+                        tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
 
                 // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
                 // travel survey. The distribution, however, is better represented by attraction rates. Therefore,
@@ -395,7 +422,8 @@ public class TripGeneration {
         }
         pwProd.close();
         pwAttr.close();
-        logger.info("  Wrote out a total of " + MitoUtil.customFormat("###,###.#", MitoUtil.getSum(tripProd)) + " trips.");
+        logger.info("  Wrote out " + MitoUtil.customFormat("###,###", (int) MitoUtil.getSum(tripProd))
+                + " aggregate trips balanced against attractions.");
     }
 }
 
