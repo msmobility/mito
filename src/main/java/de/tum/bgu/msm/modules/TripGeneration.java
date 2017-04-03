@@ -111,8 +111,8 @@ public class TripGeneration {
                     boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
                     if (dropThisTrip) counterDroppedTripsAtBorder++;
                     if (dropThisTrip) continue;
-                    MitoTrip trip = new MitoTrip(TripDataManager.getNextTripId(), hh.getHhId(), purposeNum, tripOrigin);
                     synchronized (MitoHousehold.class) {
+                        MitoTrip trip = new MitoTrip(TripDataManager.getNextTripId(), hh.getHhId(), purposeNum, tripOrigin);
                         hh.addTrip(trip);
                     }
                 }
@@ -326,6 +326,7 @@ public class TripGeneration {
         logger.info("  Balancing trip production and attractions");
 
         for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
+            int tripsByPurp = tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp);
             float attrSum = 0;
             for (int zone: mitoData.getZones()) {
                 attrSum += tripAttr[mitoData.getZoneIndex(zone)][purp];
@@ -337,7 +338,7 @@ public class TripGeneration {
             // adjust attractions (or productions for NHBW and NHBO)
             for (int zone: mitoData.getZones()) {
                 tripAttr[mitoData.getZoneIndex(zone)][purp] = tripAttr[mitoData.getZoneIndex(zone)][purp] *
-                        tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp) / attrSum;
+                         tripsByPurp / attrSum;
 
                 // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
                 // travel survey. The distribution, however, is better represented by attraction rates. Therefore,

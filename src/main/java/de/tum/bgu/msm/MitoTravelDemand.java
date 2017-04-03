@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.TripDataManager;
+import de.tum.bgu.msm.modules.TravelTimeBudget;
 import de.tum.bgu.msm.modules.TripGeneration;
 import org.apache.log4j.Logger;
 
@@ -33,7 +34,9 @@ public class MitoTravelDemand {
         // microscopic trip generation
         TripGeneration tg = new TripGeneration(rb, mitoData, tripDataManager);
         tg.generateTrips();
-        // estimate travel time budgets
+        // calculate travel time budgets
+        TravelTimeBudget ttb = new TravelTimeBudget(rb, mitoData, tripDataManager);
+        ttb.calculateTravelTimeBudget();
 
     }
 }

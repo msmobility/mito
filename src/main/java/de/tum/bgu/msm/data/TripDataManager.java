@@ -39,7 +39,16 @@ public class TripDataManager {
 
         int prodSum = 0;
         for (MitoTrip trip: MitoTrip.getTripArray()) {
-            if (trip.getTripPurpose() == purpose) prodSum++;
+            try {
+                if (trip.getTripPurpose() == purpose) prodSum++;
+            } catch (Exception e) {
+                System.out.println("Purpose "+purpose);
+                System.out.println("Trips   "+MitoTrip.getTripCount());
+                System.out.println(trip.getTripId());
+                System.out.println(trip.getTripOrigin());
+                System.out.println(trip.getTripPurpose());
+                System.out.println(e);
+            }
         }
         return prodSum;
     }
