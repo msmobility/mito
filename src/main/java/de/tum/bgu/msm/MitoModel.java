@@ -3,6 +3,7 @@ package de.tum.bgu.msm;
 import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.TripDataManager;
+import de.tum.bgu.msm.modules.TravelTimeBudget;
 import org.apache.log4j.Logger;
 
 import java.util.Random;
@@ -32,6 +33,7 @@ public class MitoModel {
     private static Logger logger = Logger.getLogger(MitoModel.class);
     private MitoData mitoData;
     private TripDataManager tripDataManager;
+    private TravelTimeBudget ttbModel;
     private ResourceBundle rb;
 
     public MitoModel(ResourceBundle rb) {
@@ -58,6 +60,10 @@ public class MitoModel {
         // todo: the household travel survey should not be read every year the model runs, but only in the first year.
         // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
         mitoData.readHouseholdTravelSurvey();
+    }
+
+    public void feedUEC (TravelTimeBudget ttb) {
+
     }
 
     public void setBaseDirectory (String baseDirectory) {
