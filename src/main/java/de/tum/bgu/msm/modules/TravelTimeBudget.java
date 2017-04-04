@@ -96,7 +96,7 @@ public class TravelTimeBudget {
         // calculate total travel time budget for MitoHousehold hh
 
         // set DMU attributes
-        totalTravelTimeBudgetDMU.setHouseholdSize(hh.getHhSize());
+/*        totalTravelTimeBudgetDMU.setHouseholdSize(hh.getHhSize());
         totalTravelTimeBudgetDMU.setFemales(hh.getFemales());
         totalTravelTimeBudgetDMU.setChildren(hh.getChildren());
         totalTravelTimeBudgetDMU.setYoungAdults(hh.getYoungAdults());
@@ -113,7 +113,7 @@ public class TravelTimeBudget {
 
         totalTravelTimeBudgetDMU.setTrips(tripCounter, mitoData);
 //        double util[] = totalTtbUtility.solve(totalTravelTimeBudgetDMU.getDmuIndexValues(), totalTravelTimeBudgetDMU, totalTtbAvail);
-        if (logCalculation) {
+*/        if (logCalculation) {
             // log UEC values for each person type
             logger.info("Household " + hh.getHhId() + " with " + hh.getHhSize() + " persons living in area type " +
                     mitoData.getRegionOfZone(hh.getHomeZone()));
