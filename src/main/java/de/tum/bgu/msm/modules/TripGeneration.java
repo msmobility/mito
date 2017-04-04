@@ -105,7 +105,13 @@ public class TripGeneration {
         for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
             System.out.println(1);
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
-            System.out.println(2);
+            System.out.println("a "+selectAutoMode(strPurp)+" ");
+            System.out.println("b "+hhTypeDef.getName());
+            System.out.println("c "+hh.getHhSize());
+            System.out.println("d "+hh.getNumberOfWorkers());
+            System.out.println("e "+incCategory);
+            System.out.println("f "+hh.getAutos());
+            System.out.println("g "+hh.getHomeZone());
                 int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
                         incCategory, hh.getAutos(), mitoData.getRegionOfZone(hh.getHomeZone()));
             System.out.println(3);
