@@ -106,7 +106,7 @@ public class TripGeneration {
             System.out.println(1);
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
             System.out.println("a "+selectAutoMode(strPurp)+" ");
-            System.out.println("b "+hhTypeDef.getName());
+            System.out.println("b "+hhTypeDef.getRowCount());
             System.out.println("c "+hh.getHhSize());
             System.out.println("d "+hh.getNumberOfWorkers());
             System.out.println("e "+incCategory);
