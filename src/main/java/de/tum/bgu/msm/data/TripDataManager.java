@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import de.tum.bgu.msm.MitoTravelDemand;
 import org.apache.log4j.Logger;
 
 /**
