@@ -103,16 +103,24 @@ public class TripGeneration {
         System.out.println(strPurp+": Jetzt geht's los");
 
         for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
+            System.out.println(1);
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
+            System.out.println(2);
                 int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
                         incCategory, hh.getAutos(), mitoData.getRegionOfZone(hh.getHomeZone()));
+            System.out.println(3);
                 String token = hhType + "_" + strPurp;
+            System.out.println(4);
                 Integer[] tripFrequencies = tripsByHhTypeAndPurpose.get(token);
+            System.out.println(5);
                 if (tripFrequencies == null) {
                     logger.error("Could not find trip frequencies for this hhType/Purpose: " + token);
                 }
+            System.out.println(6);
                 if (MitoUtil.getSum(tripFrequencies) == 0) continue;
+            System.out.println(7);
                 int numTrips = selectNumberOfTrips(tripFrequencies);
+            System.out.println(8);
                 for (int i = 0; i < numTrips; i++) {
                     // todo: for non-home based trips, do not set origin as home
                     int tripOrigin = hh.getHomeZone();
