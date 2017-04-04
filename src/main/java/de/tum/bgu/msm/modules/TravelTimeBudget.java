@@ -52,12 +52,12 @@ public class TravelTimeBudget {
         String uecFileName     = rb.getString(PROPERTIES_TRAVEL_TIME_BUDGET_UEC_FILE);
         int totalTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_Total_Travel_Time_Budget_UEC_UTILITY);
         int dataSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
-        totalTtbUtility = new UtilityExpressionCalculator(new File(uecFileName),
+/*        totalTtbUtility = new UtilityExpressionCalculator(new File(uecFileName),
                 totalTtbSheetNumber,
                 dataSheetNumber,
                 ResourceUtil.changeResourceBundleIntoHashMap(rb),
                 TravelTimeBudgetDMU.class);
-        totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
+*/        totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
 
         // everything is available
         numAltsTravelBudget = totalTtbUtility.getNumberOfAlternatives();
