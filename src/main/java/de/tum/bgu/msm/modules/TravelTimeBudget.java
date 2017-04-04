@@ -112,13 +112,14 @@ public class TravelTimeBudget {
         for(MitoTrip trip: hh.getTrips()) tripCounter[trip.getTripPurpose()]++;
 
         totalTravelTimeBudgetDMU.setTrips(tripCounter, mitoData);
-        double util[] = totalTtbUtility.solve(totalTravelTimeBudgetDMU.getDmuIndexValues(), totalTravelTimeBudgetDMU, totalTtbAvail);
+//        double util[] = totalTtbUtility.solve(totalTravelTimeBudgetDMU.getDmuIndexValues(), totalTravelTimeBudgetDMU, totalTtbAvail);
         if (logCalculation) {
             // log UEC values for each person type
             logger.info("Household " + hh.getHhId() + " with " + hh.getHhSize() + " persons living in area type " +
                     mitoData.getRegionOfZone(hh.getHomeZone()));
             totalTtbUtility.logAnswersArray(logger,"Total Travel Time Budget");
         }
-        return util[0];
+//        return util[0];
+        return 0;
     }
 }
