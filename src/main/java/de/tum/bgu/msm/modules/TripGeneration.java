@@ -73,6 +73,8 @@ public class TripGeneration {
         };
 
         // Generate trips for each purpose
+        for (String p: mitoData.getPurposes()) System.out.println("Purp "+p);
+
         Iterator<String> tripPurposeIterator = ArrayUtil.getIterator(mitoData.getPurposes());
         IteratorAction<String> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
         ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();

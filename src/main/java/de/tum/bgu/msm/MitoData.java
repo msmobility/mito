@@ -279,9 +279,6 @@ public class MitoData {
         // read all required input data
 
         purposes = ResourceUtil.getArray(rb, "trip.purposes");
-
-        for (String p: purposes) System.out.println(p);
-
         purposeNum = new HashMap<>();
         for (int i = 0; i < purposes.length; i++) purposeNum.put(purposes[i], i);
         // read enrollment data
