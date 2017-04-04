@@ -61,11 +61,11 @@ public class MitoData {
     }
 
 
-    void setScenarioName (String scenarioName) {
-        this.scenarioName = scenarioName;
+    void setScenarioName (String scenName) {
+        scenarioName = scenName;
     }
 
-    public static String getScenarioName() {
+    private static String getScenarioName() {
         return scenarioName;
     }
 
@@ -98,7 +98,13 @@ public class MitoData {
             reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
             reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
         }
-        regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
+        defineRegions(rb.getString("household.travel.survey.reg"));
+    }
+
+
+    private void defineRegions(String fileName) {
+        // define regions of all model zones as defined by household travel survey zone type
+        regionDefinition = MitoUtil.readCSVfile(fileName);
         regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
     }
 
@@ -287,6 +293,8 @@ public class MitoData {
         schoolEnrollmentByZone = new int[getZones().length];
         for (int zone: getZones())
             schoolEnrollmentByZone[getZoneIndex(zone)] = (int) enrollmentData.getIndexedValueAt(zone, "ENR");
+        // define region type of every zone
+        defineRegions(rb.getString("household.travel.survey.reg"));
     }
 
 
