@@ -91,6 +91,9 @@ public class TripGeneration {
     private void microgenerateTripsByPurpose (String strPurp) {
 
             logger.info("  Generating trips with purpose " + strPurp + " (multi-threaded)");
+
+        System.out.println(strPurp+": "+mitoData.getMitoHouseholds().length);
+
             TableDataSet hhTypeDef = createHHTypeDefinition(strPurp);
             int[] hhTypeArray = mitoData.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = mitoData.collectTripFrequencyDistribution(hhTypeArray);
