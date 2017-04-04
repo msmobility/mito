@@ -99,7 +99,10 @@ public class TripGeneration {
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = mitoData.collectTripFrequencyDistribution(hhTypeArray);
             int purposeNum = mitoData.getPurposeIndex(strPurp);
             // Generate trips for each household
-            for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
+
+        System.out.println(strPurp+": Jetzt geht's los");
+
+        for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
                 int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
                         incCategory, hh.getAutos(), mitoData.getRegionOfZone(hh.getHomeZone()));
@@ -122,6 +125,10 @@ public class TripGeneration {
                     }
                 }
             }
+
+        System.out.println(strPurp+": Fertig!");
+
+
     }
 
 
