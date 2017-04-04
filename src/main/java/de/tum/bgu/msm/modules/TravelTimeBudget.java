@@ -60,7 +60,7 @@ public class TravelTimeBudget {
 */        totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
 
         // everything is available
-        numAltsTravelBudget = totalTtbUtility.getNumberOfAlternatives();
+//        numAltsTravelBudget = totalTtbUtility.getNumberOfAlternatives();
 
         totalTtbAvail = new int[numAltsTravelBudget + 1];
         for (int i = 1; i < totalTtbAvail.length; i++) {
