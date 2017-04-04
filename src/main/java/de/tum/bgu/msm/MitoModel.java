@@ -62,10 +62,6 @@ public class MitoModel {
         mitoData.readHouseholdTravelSurvey();
     }
 
-    public void feedUEC (TravelTimeBudget ttb) {
-
-    }
-
     public void setBaseDirectory (String baseDirectory) {
         MitoUtil.setBaseDirectory(baseDirectory);
     }
