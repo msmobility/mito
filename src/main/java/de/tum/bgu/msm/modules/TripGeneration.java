@@ -73,8 +73,6 @@ public class TripGeneration {
         };
 
         // Generate trips for each purpose
-        for (String p: mitoData.getPurposes()) System.out.println("Purp "+p);
-
         Iterator<String> tripPurposeIterator = ArrayUtil.getIterator(mitoData.getPurposes());
         IteratorAction<String> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
         ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
@@ -91,42 +89,22 @@ public class TripGeneration {
     private void microgenerateTripsByPurpose (String strPurp) {
 
             logger.info("  Generating trips with purpose " + strPurp + " (multi-threaded)");
-
-        System.out.println(strPurp+": "+mitoData.getMitoHouseholds().length);
-
             TableDataSet hhTypeDef = createHHTypeDefinition(strPurp);
             int[] hhTypeArray = mitoData.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = mitoData.collectTripFrequencyDistribution(hhTypeArray);
             int purposeNum = mitoData.getPurposeIndex(strPurp);
             // Generate trips for each household
-
-        System.out.println(strPurp+": Jetzt geht's los");
-
         for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
-            System.out.println(1);
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
-            System.out.println("a "+selectAutoMode(strPurp)+" ");
-            System.out.println("b "+hhTypeDef.getRowCount());
-            System.out.println("c "+hh.getHhSize());
-            System.out.println("d "+hh.getNumberOfWorkers());
-            System.out.println("e "+incCategory);
-            System.out.println("f "+hh.getAutos());
-            System.out.println("g "+hh.getHomeZone());
                 int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
                         incCategory, hh.getAutos(), mitoData.getRegionOfZone(hh.getHomeZone()));
-            System.out.println(3);
                 String token = hhType + "_" + strPurp;
-            System.out.println(4);
                 Integer[] tripFrequencies = tripsByHhTypeAndPurpose.get(token);
-            System.out.println(5);
                 if (tripFrequencies == null) {
                     logger.error("Could not find trip frequencies for this hhType/Purpose: " + token);
                 }
-            System.out.println(6);
                 if (MitoUtil.getSum(tripFrequencies) == 0) continue;
-            System.out.println(7);
                 int numTrips = selectNumberOfTrips(tripFrequencies);
-            System.out.println(8);
                 for (int i = 0; i < numTrips; i++) {
                     // todo: for non-home based trips, do not set origin as home
                     int tripOrigin = hh.getHomeZone();
@@ -139,10 +117,6 @@ public class TripGeneration {
                     }
                 }
             }
-
-        System.out.println(strPurp+": Fertig!");
-
-
     }
 
 

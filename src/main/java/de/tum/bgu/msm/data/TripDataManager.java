@@ -38,6 +38,7 @@ public class TripDataManager {
 
         int prodSum = 0;
         for (MitoTrip trip: MitoTrip.getTripArray()) {
+            // todo: Remove this try-catch statement once we are sure this error does not occur anymore
             try {
                 if (trip.getTripPurpose() == purpose) prodSum++;
             } catch (Exception e) {
