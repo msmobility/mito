@@ -57,7 +57,7 @@ public class TravelTimeBudget {
         totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
 
         // everything is available
-//        numAltsTravelBudget = totalTtbUtility.getNumberOfAlternatives();
+        numAltsTravelBudget = totalTtbUtility.getNumberOfAlternatives();
 
         totalTtbAvail = new int[numAltsTravelBudget + 1];
         for (int i = 1; i < totalTtbAvail.length; i++) {
@@ -93,7 +93,7 @@ public class TravelTimeBudget {
         // calculate total travel time budget for MitoHousehold hh
 
         // set DMU attributes
-/*        totalTravelTimeBudgetDMU.setHouseholdSize(hh.getHhSize());
+        totalTravelTimeBudgetDMU.setHouseholdSize(hh.getHhSize());
         totalTravelTimeBudgetDMU.setFemales(hh.getFemales());
         totalTravelTimeBudgetDMU.setChildren(hh.getChildren());
         totalTravelTimeBudgetDMU.setYoungAdults(hh.getYoungAdults());
@@ -109,14 +109,13 @@ public class TravelTimeBudget {
         for(MitoTrip trip: hh.getTrips()) tripCounter[trip.getTripPurpose()]++;
 
         totalTravelTimeBudgetDMU.setTrips(tripCounter, mitoData);
-//        double util[] = totalTtbUtility.solve(totalTravelTimeBudgetDMU.getDmuIndexValues(), totalTravelTimeBudgetDMU, totalTtbAvail);
-*/        if (logCalculation) {
+        double util[] = totalTtbUtility.solve(totalTravelTimeBudgetDMU.getDmuIndexValues(), totalTravelTimeBudgetDMU, totalTtbAvail);
+        if (logCalculation) {
             // log UEC values for each person type
             logger.info("Household " + hh.getHhId() + " with " + hh.getHhSize() + " persons living in area type " +
                     mitoData.getRegionOfZone(hh.getHomeZone()));
             totalTtbUtility.logAnswersArray(logger,"Total Travel Time Budget");
         }
-//        return util[0];
-        return 0;
+        return util[0];
     }
 }
