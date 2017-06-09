@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds households objects for the Microsimulation Transport Orchestrator (MITO)
+ * Holds household objects for the Microsimulation Transport Orchestrator (MITO)
  * @author Rolf Moeckel
  * Created on Sep 21, 2016 in Munich, Germany
  *
@@ -19,6 +20,7 @@ public class MitoHousehold implements Serializable {
 
     private int hhId;
     private int hhSize;
+    private MitoPerson[] persons;
     private int females;
     private int children;
     private int youngAdults;
@@ -30,6 +32,7 @@ public class MitoHousehold implements Serializable {
     private int autos;
     private int homeZone;
     private ArrayList<MitoTrip> trips;
+    private double[] travelTimeBudgetByPurpose;
     private static final Map<Integer,MitoHousehold> householdMap = new HashMap<>();
 
 
@@ -38,6 +41,7 @@ public class MitoHousehold implements Serializable {
         // create new MitoHousehold
         this.hhId = id;
         this.hhSize = hhSize;
+        persons = new MitoPerson[hhSize];
         this.females = females;
         this.children = children;
         this.youngAdults = youngAdults;
@@ -50,6 +54,23 @@ public class MitoHousehold implements Serializable {
         this.homeZone = homeZone;
         this.trips = new ArrayList<>();
         householdMap.put(id, this);
+    }
+
+
+    public void addPersonForInitialSetup(MitoPerson per){
+        // This method adds a person to the household without increasing the HH size. Only used for initial setup
+        for (int i = 0; i < hhSize; i++) {
+            if (persons[i] == null) {
+                persons[i] = per;
+                return;
+            }
+        }
+        logger.fatal("Found more persons for household " + hhId + " than household size (" + hhSize + ") allows.");
+    }
+
+
+    public MitoPerson[] getPersons(){
+        return persons;
     }
 
 
@@ -150,5 +171,13 @@ public class MitoHousehold implements Serializable {
         MitoTrip[] tripArray = new MitoTrip[trips.size()];
         for (int i = 0; i < trips.size(); i++) tripArray[i] = trips.get(i);
         return tripArray;
+    }
+
+    public void setTravelTimeBudgetByPurpose(double[] travelTimeBudgetByPurpose) {
+        this.travelTimeBudgetByPurpose = travelTimeBudgetByPurpose;
+    }
+
+    public double getTravelTimeBudgetForPurpose(int purposeIndex) {
+        return travelTimeBudgetByPurpose[purposeIndex];
     }
 }

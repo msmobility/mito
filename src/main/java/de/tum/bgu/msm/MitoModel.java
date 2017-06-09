@@ -2,6 +2,7 @@ package de.tum.bgu.msm;
 
 import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.TripDataManager;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
 import org.apache.log4j.Logger;
@@ -44,14 +45,15 @@ public class MitoModel {
 
 
     public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] mitoHouseholds,
-                         int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone,
-                         float[] sizeOfZonesInAcre) {
+                         MitoPerson[] mitoPersons, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone,
+                         int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
         // Feed data from other program. Need to write new methods to read these data from files if MitoModel is used as
         // stand-alone program.
         mitoData.setZones(zones);                           // zone are stored consecutively starting at position 0
         mitoData.setAutoTravelTimes(autoTravelTimes);
         mitoData.setTransitTravelTimes(transitTravelTimes);
         mitoData.setHouseholds(mitoHouseholds);
+        mitoData.setPersons(mitoPersons);
         mitoData.setRetailEmplByZone(retailEmplByZone);       // All employment and acre values are stored in the position of
         mitoData.setOfficeEmplByZone(officeEmplByZone);       // the zone ID. Position 0 will be empty, data for zone 1 is
         mitoData.setOtherEmplByZone(otherEmplByZone);         // stored in position 1, for zone 5 in position 5, etc.
@@ -83,6 +85,7 @@ public class MitoModel {
         mitoData.readSkims();
         mitoData.readHouseholdData();
         mitoData.readPersonData();
+        mitoData.readJobData();
         mitoData.readEmploymentData();
     }
 

@@ -4,6 +4,7 @@ import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
 import omx.OmxFile;
 import omx.OmxMatrix;
 import org.apache.log4j.Logger;
@@ -29,6 +30,7 @@ public class MitoData {
     private static final String PROPERTIES_TRANSIT_PEAK_SKIM        = "transit.peak.time";
     private static final String PROPERTIES_HH_FILE_ASCII            = "household.file.ascii";
     private static final String PROPERTIES_PP_FILE_ASCII            = "person.file.ascii";
+    private static final String PROPERTIES_JJ_FILE_ASCII            = "job.file.ascii";
     private static final String PROPERTIES_EMPLOYMENT_FILE          = "employment.forecast";
     private static final String PROPERTIES_SCHOOL_ENROLLMENT_FILE   = "school.enrollment.data";
 
@@ -40,6 +42,7 @@ public class MitoData {
     private TableDataSet regionDefinition;
     private float[] sizeOfZonesInAcre;
     private MitoHousehold[] mitoHouseholds;
+    private MitoPerson[] mitoPersons;
     private int[] householdsByZone;
     private int[] retailEmplByZone;
     private int[] officeEmplByZone;
@@ -177,6 +180,10 @@ public class MitoData {
         for (MitoHousehold thh: mitoHouseholds) householdsByZone[getZoneIndex(thh.getHomeZone())]++;
     }
 
+    public void setPersons(MitoPerson[] mitoPersons) {
+        this.mitoPersons = mitoPersons;
+    }
+
     public MitoHousehold[] getMitoHouseholds() {
         return mitoHouseholds;
     }
@@ -237,10 +244,12 @@ public class MitoData {
 
             // read header
             String[] header = recString.split(",");
+            int posId = MitoUtil.findPositionInArray("id",header);
             int posHhId = MitoUtil.findPositionInArray("hhid",header);
             int posAge = MitoUtil.findPositionInArray("age", header);
             int posSex = MitoUtil.findPositionInArray("gender", header);
             int posOccupation = MitoUtil.findPositionInArray("occupation",header);
+            int posWorkplace = MitoUtil.findPositionInArray("workplace",header);
             int posLicence = MitoUtil.findPositionInArray("driversLicense", header);
             int posIncome = MitoUtil.findPositionInArray("income",header);
 
@@ -248,6 +257,7 @@ public class MitoData {
             while ((recString = in.readLine()) != null) {
                 recCount++;
                 String[] lineElements = recString.split(",");
+                int id = Integer.parseInt(lineElements[posId]);
                 int hhid = Integer.parseInt(lineElements[posHhId]);
                 MitoHousehold hh = MitoHousehold.getHouseholdFromId(hhid);
                 int age = Integer.parseInt(lineElements[posAge]);
@@ -263,20 +273,63 @@ public class MitoData {
                 if (Integer.parseInt(lineElements[posSex]) == 2) {
                     hh.setFemales(hh.getFemales() + 1);
                 }
-                if (Integer.parseInt(lineElements[posOccupation]) == 1) {
+                int occupation = Integer.parseInt(lineElements[posOccupation]);
+                if (occupation == 1) {
                     hh.setNumberOfWorkers(hh.getNumberOfWorkers() + 1);
                 }
+                int workplace = Integer.parseInt(lineElements[posWorkplace]);
                 if (Integer.parseInt(lineElements[posLicence]) == 1) {
                     hh.setLicenseHolders(hh.getLicenseHolders() + 1);
                 }
                 int income = Integer.parseInt(lineElements[posIncome]);
                 hh.setIncome(hh.getIncome() + income);
+                MitoPerson pp = new MitoPerson(id, hh, occupation, workplace);
+                hh.addPersonForInitialSetup(pp);
             }
         } catch (IOException e) {
-            logger.fatal("IO Exception caught reading synpop household file: " + fileName);
+            logger.fatal("IO Exception caught reading synpop person file: " + fileName);
             logger.fatal("recCount = " + recCount + ", recString = <" + recString + ">");
         }
         logger.info("  Finished reading " + recCount + " persons.");
+    }
+
+
+    public void readJobData() {
+        logger.info("  Reading job micro data from ascii file");
+
+        String fileName = ResourceUtil.getProperty(rb, PROPERTIES_JJ_FILE_ASCII);
+
+        String recString = "";
+        int recCount = 0;
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(fileName));
+            recString = in.readLine();
+
+            // read header
+            String[] header = recString.split(",");
+            int posId = MitoUtil.findPositionInArray("id", header);
+            int posZone = MitoUtil.findPositionInArray("zone",header);
+            int posWorker = MitoUtil.findPositionInArray("personId",header);
+
+            // read line
+            while ((recString = in.readLine()) != null) {
+                recCount++;
+                String[] lineElements = recString.split(",");
+                int id      = Integer.parseInt(lineElements[posId]);
+                int zone    = Integer.parseInt(lineElements[posZone]);
+                int worker  = Integer.parseInt(lineElements[posWorker]);
+                MitoPerson pp = MitoPerson.getMitoPersonFromId(worker);
+                if (pp.getWorkplace() != id) {
+                    logger.error("Person " + worker + " has workplace " + pp.getWorkplace() + " in person file but workplace "
+                    + id + " in job file.");
+                }
+                pp.setWorkzone(zone);
+            }
+        } catch (IOException e) {
+            logger.fatal("IO Exception caught reading synpop job file: " + fileName);
+            logger.fatal("recCount = " + recCount + ", recString = <" + recString + ">");
+        }
+        logger.info("  Finished reading " + recCount + " jobs.");
     }
 
 
