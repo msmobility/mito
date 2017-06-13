@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules;
 
 import com.pb.common.calculator.UtilityExpressionCalculator;
 import com.pb.common.util.ResourceUtil;
+import de.tum.bgu.msm.MitoAccessibility;
 import de.tum.bgu.msm.MitoData;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -117,6 +118,8 @@ public class TravelTimeBudget {
 
     private void calculateBudgetsForEachHousehold() {
         // loop over every household and calculate travel time budget by purpose
+        logger.info("  Calculating travel time budgets for " + MitoHousehold.getHouseholdArray().length + " households for " +
+        mitoData.getPurposes().length + " trip purposes.");
         for (MitoHousehold hh: MitoHousehold.getHouseholdArray()) {
             // calculate total travel time budget
             double[] travelTimeBudgetByPurp = new double[mitoData.getPurposes().length];
@@ -129,7 +132,8 @@ public class TravelTimeBudget {
             // work and school trips are given by work place and school place locations, no budget to be calculated
             // todo: sum up work and school trips of all household members to calculate those travel budgets
             for (MitoPerson pp: hh.getPersons()) {
-//                if (pp.getOccupation() == 1) travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBW")] +=
+                if (pp.getOccupation() == 1) travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBW")] +=
+                        mitoData.getAutoTravelTimes(hh.getHomeZone(), pp.getWorkzone());
             }
             double discretionaryTTB = totalTravelTimeBudget - travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBW")] -
                     travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBE")];

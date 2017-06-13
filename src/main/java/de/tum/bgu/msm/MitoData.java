@@ -283,7 +283,8 @@ public class MitoData {
                 }
                 int income = Integer.parseInt(lineElements[posIncome]);
                 hh.setIncome(hh.getIncome() + income);
-                MitoPerson pp = new MitoPerson(id, hh, occupation, workplace);
+                MitoPerson pp = new MitoPerson(id, hh, occupation, 0);
+                pp.setWorkplace(workplace);
                 hh.addPersonForInitialSetup(pp);
             }
         } catch (IOException e) {

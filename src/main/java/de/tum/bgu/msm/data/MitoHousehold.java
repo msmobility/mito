@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import de.tum.bgu.msm.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -16,7 +15,7 @@ import java.util.Map;
  */
 
 public class MitoHousehold implements Serializable {
-    static Logger logger = Logger.getLogger(MitoHousehold.class);
+    private static Logger logger = Logger.getLogger(MitoHousehold.class);
 
     private int hhId;
     private int hhSize;
