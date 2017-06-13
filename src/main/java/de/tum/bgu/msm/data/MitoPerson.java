@@ -24,9 +24,9 @@ public class MitoPerson implements Serializable {
     private int workzone;
 
 
-    public MitoPerson(int id, MitoHousehold hh, int occupation, int workzone) {
+    public MitoPerson(int id, int hhId, int occupation, int workzone) {
         this.id = id;
-        this.hh = hh;
+        this.hh = MitoHousehold.getHouseholdFromId(hhId);
         this.occupation = occupation;
         this.workzone = workzone;
         personMap.put(id,this);
