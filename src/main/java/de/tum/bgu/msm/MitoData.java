@@ -342,6 +342,7 @@ public class MitoData {
         purposeNum = new HashMap<>();
         for (int i = 0; i < purposes.length; i++) purposeNum.put(purposes[i], i);
         // read enrollment data
+        for (String o: rb.keySet()) System.out.println("Key: "+o);
         TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
         enrollmentData.buildIndex(enrollmentData.getColumnPosition("SMZ_N"));
         schoolEnrollmentByZone = new int[getZones().length];
