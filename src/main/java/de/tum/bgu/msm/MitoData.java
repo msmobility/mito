@@ -342,12 +342,11 @@ public class MitoData {
         purposeNum = new HashMap<>();
         for (int i = 0; i < purposes.length; i++) purposeNum.put(purposes[i], i);
         // read enrollment data
-        for (String o: rb.keySet()) System.out.println("Key: "+o+": "+rb.getString(o));
         TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
-        enrollmentData.buildIndex(enrollmentData.getColumnPosition("SMZ_N"));
+        enrollmentData.buildIndex(enrollmentData.getColumnPosition("Zone"));
         schoolEnrollmentByZone = new int[getZones().length];
         for (int zone: getZones())
-            schoolEnrollmentByZone[getZoneIndex(zone)] = (int) enrollmentData.getIndexedValueAt(zone, "ENR");
+            schoolEnrollmentByZone[getZoneIndex(zone)] = (int) enrollmentData.getIndexedValueAt(zone, "Enrolment");
         // define region type of every zone
         defineRegions(rb.getString("household.travel.survey.reg"));
     }
