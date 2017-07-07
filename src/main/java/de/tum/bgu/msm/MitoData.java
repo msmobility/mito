@@ -263,19 +263,21 @@ public class MitoData {
                 int age = Integer.parseInt(lineElements[posAge]);
                 if (age < 18) {
                     hh.setChildren(hh.getChildren() + 1);
-                } else if (age >= 18 && age <= 25) {   // todo: Ana, is this the right definition of young adult?
+                } else if (age >= 18 && age <= 25) {   // todo: Ana, is this the right definition of young adult? [14 Jun 2017, Ana: yes]
                     hh.setYoungAdults(hh.getYoungAdults() + 1);
                 } else if (age >= 65) {
                     hh.setRetirees(hh.getRetirees() + 1);
                 }
-                boolean student =  true;  // todo: How do we know who is a student? How are students defined?
-                if (student) hh.setStudents(hh.getStudents() + 1);
+                //boolean student =  true;  // todo: How do we know who is a student? How are students defined? [14 Jun 2017, Ana: students have occupation = 3]
+                //if (student) hh.setStudents(hh.getStudents() + 1);
                 if (Integer.parseInt(lineElements[posSex]) == 2) {
                     hh.setFemales(hh.getFemales() + 1);
                 }
                 int occupation = Integer.parseInt(lineElements[posOccupation]);
                 if (occupation == 1) {
                     hh.setNumberOfWorkers(hh.getNumberOfWorkers() + 1);
+                } else if (occupation == 3){
+                    hh.setStudents(hh.getStudents() + 1);
                 }
                 int workplace = Integer.parseInt(lineElements[posWorkplace]);
                 if (Integer.parseInt(lineElements[posLicence]) == 1) {
@@ -283,7 +285,7 @@ public class MitoData {
                 }
                 int income = Integer.parseInt(lineElements[posIncome]);
                 hh.setIncome(hh.getIncome() + income);
-                MitoPerson pp = new MitoPerson(id, hh, occupation, workplace);
+                MitoPerson pp = new MitoPerson(id, hh, occupation, workplace); // todo: Rolf, workplace is the ID. For students, schoolTAZ represents the zone of the school
                 hh.addPersonForInitialSetup(pp);
             }
         } catch (IOException e) {
