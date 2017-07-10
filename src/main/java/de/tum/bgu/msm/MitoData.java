@@ -5,6 +5,7 @@ import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.data.Zone;
 import omx.OmxFile;
 import omx.OmxMatrix;
 import org.apache.log4j.Logger;
@@ -13,8 +14,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Holds data for the Transport in Microsimulation Orchestrator (TIMO)
@@ -33,30 +33,28 @@ public class MitoData {
     private static final String PROPERTIES_JJ_FILE_ASCII            = "job.file.ascii";
     private static final String PROPERTIES_EMPLOYMENT_FILE          = "employment.forecast";
     private static final String PROPERTIES_SCHOOL_ENROLLMENT_FILE   = "school.enrollment.data";
+    private static final String PROPERTIES_DISTANCE_RASTER_CELLS    = "distanceODmatrix";
 
     private static Logger logger = Logger.getLogger(MitoData.class);
     private ResourceBundle rb;
     private static String scenarioName;
-    private int[] zones;
-    private int[] zoneIndex;
-    private TableDataSet regionDefinition;
-    private float[] sizeOfZonesInAcre;
-    private MitoHousehold[] mitoHouseholds;
-    private MitoPerson[] mitoPersons;
-    private int[] householdsByZone;
-    private int[] retailEmplByZone;
-    private int[] officeEmplByZone;
-    private int[] otherEmplByZone;
-    private int[] totalEmplByZone;
-    private int[] schoolEnrollmentByZone;
-    private Matrix autoTravelTimes;
-    private Matrix transitTravelTimes;
+
     private TableDataSet htsHH;
     private TableDataSet htsTR;
+
+    private Matrix autoTravelTimes;
+    private Matrix transitTravelTimes;
+
     private String[] purposes;
-    private HashMap<String, Integer> purposeNum;
+    private HashMap<String, Integer> purposeIndices;
     private boolean removeTripsAtBorder;
     private TableDataSet reductionNearBorder;
+    private Matrix distanceMatrix;
+
+    private Map<Integer, Zone> zones;
+    private Map<Integer, MitoHousehold> households;
+    private Map<Integer, MitoPerson> persons;
+
 
 
     MitoData(ResourceBundle rb) {
@@ -84,57 +82,21 @@ public class MitoData {
         return fileName;
     }
 
-
-
-    public void readZones () {
-        // read in zones from file
-        String fileName = ResourceUtil.getProperty(rb, PROPERTIES_ZONAL_DATA_FILE);
-        TableDataSet zonalData = MitoUtil.readCSVfile(fileName);
-        //zonalData.buildIndex(zonalData.getColumnPosition("ZoneId"));
-
-        zones = zonalData.getColumnAsInt("ZoneId");
-        zoneIndex = MitoUtil.createIndexArray(zones);
-        setSizeOfZonesInAcre(zonalData.getColumnAsFloat("ACRES"));
-
-        removeTripsAtBorder = ResourceUtil.getBooleanProperty(rb, "reduce.trips.at.outer.border", false);
-        if (removeTripsAtBorder) {
-            reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
-            reductionNearBorder.buildIndex(reductionNearBorder.getColumnPosition("Zone"));
-        }
-        defineRegions(rb.getString("household.travel.survey.reg"));
-    }
-
-
-    private void defineRegions(String fileName) {
-        // define regions of all model zones as defined by household travel survey zone type
-        regionDefinition = MitoUtil.readCSVfile(fileName);
-        regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
-    }
-
-
-    public void setZones(int[] zones) {
-        this.zones = zones;
-        zoneIndex = MitoUtil.createIndexArray(zones);
-    }
-
-    public int[] getZones() {
+    public Map<Integer,Zone> getZones() {
         return zones;
     }
 
-    public int getZoneIndex(int zone) {
-        return zoneIndex[zone];
+    public String[] getPurposes() {
+        return this.purposes;
     }
 
-    public int getRegionOfZone (int zone) {return (int) regionDefinition.getIndexedValueAt(zone, "Region");}
+    public int getPurposeIndex (String purp) {
+        return purposeIndices.get(purp);
+    }
 
     public boolean shallWeRemoveTripsAtBorder() {
         return removeTripsAtBorder;
     }
-
-    public float getReductionAtBorderOfStudyArea (int zone) {
-        return reductionNearBorder.getIndexedValueAt(zone, "damper");
-    }
-
 
     public void setAutoTravelTimes (Matrix autoTravelTimes) {
         this.autoTravelTimes = autoTravelTimes;
@@ -150,6 +112,62 @@ public class MitoData {
 
     public float getTransitTravelTimes(int origin, int destination) {
         return transitTravelTimes.getValueAt(origin, destination);
+    }
+
+    public float getDistances(int from, int to) {
+        return this.distanceMatrix.getValueAt(from, to);
+    }
+
+    public void setDistances(Matrix matrix) {
+        this.distanceMatrix = matrix;
+    }
+
+    public void setHouseholds(List<MitoHousehold> mitoHouseholds) {
+
+        households.clear();
+        for(MitoHousehold household: mitoHouseholds) {
+            households.put(household.getHhId(), household);
+            zones.get(household.getHomeZone()).addHousehold();
+        }
+    }
+
+    public void setPersons(Map<Integer, MitoPerson> mitoPersons) {
+        this.persons = mitoPersons;
+    }
+
+    public Map<Integer, MitoHousehold> getMitoHouseholds() {
+        return households;
+    }
+
+    public int getNumberOfHouseholdsByZone (int zone) {
+        return zones.get(zone).getNumberOfHouseholds();
+    }
+
+
+    void readZones() {
+
+        zones = new HashMap<>();
+        // read in zones from file
+        String fileName = ResourceUtil.getProperty(rb, PROPERTIES_ZONAL_DATA_FILE);
+        TableDataSet zonalData = MitoUtil.readCSVfile(fileName);
+        for(int i = 0; i < zonalData.getRowCount(); i++) {
+            Zone zone = new Zone(zonalData.getColumnAsInt("ZoneId")[i], zonalData.getValueAt(i, "ACRES"));
+            zones.put(zone.getZoneId(), zone);
+        }
+        removeTripsAtBorder = ResourceUtil.getBooleanProperty(rb, "reduce.trips.at.outer.border", false);
+        if (removeTripsAtBorder) {
+            reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
+            for(int i = 0; i < reductionNearBorder.getRowCount(); i++) {
+                float id = reductionNearBorder.getValueAt(i,"Zone");
+                float damper = reductionNearBorder.getValueAt(i, "damper");
+                if(zones.containsKey(id)) {
+                    zones.get(id).setReductionAtBorderDamper(damper);
+                } else {
+                    logger.warn("Damper of " + damper + " refers to non-existing zone " + id + ". Ignoring it.");
+                }
+            }
+        }
+        defineRegions();
     }
 
     public void readSkims() {
@@ -171,30 +189,30 @@ public class MitoData {
         transitTravelTimes = MitoUtil.convertOmxToMatrix(timeOmxSkimTransit);
     }
 
+    public void readDistance() {
 
-    public void setHouseholds(MitoHousehold[] mitoHouseholds) {
-        // store households in memory as MitoHousehold objects
-        this.mitoHouseholds = mitoHouseholds;
-        // fill householdsByZone array
-        householdsByZone = new int[getZones().length];
-        for (MitoHousehold thh: mitoHouseholds) householdsByZone[getZoneIndex(thh.getHomeZone())]++;
+        //Read the skim matrix
+        logger.info("   Starting to read OMX matrix");
+        String omxFileName = ResourceUtil.getProperty(rb, PROPERTIES_DISTANCE_RASTER_CELLS);
+        OmxFile travelTimeOmx = new OmxFile(omxFileName);
+        travelTimeOmx.openReadOnly();
+        distanceMatrix = MitoUtil.convertOmxToMatrix(travelTimeOmx.getMatrix("mat1"));
+        for (int i = 1; i <= distanceMatrix.getRowCount(); i++) {
+            for (int j = 1; j <= distanceMatrix.getColumnCount(); j++) {
+                if (i == j) {
+                    distanceMatrix.setValueAt(i, j, 50 / 1000);
+                } else {
+                    distanceMatrix.setValueAt(i, j, distanceMatrix.getValueAt(i, j) / 1000);
+                }
+            }
+        }
+        logger.info("   Read OMX matrix");
     }
-
-    public void setPersons(MitoPerson[] mitoPersons) {
-        this.mitoPersons = mitoPersons;
-    }
-
-    public MitoHousehold[] getMitoHouseholds() {
-        return mitoHouseholds;
-    }
-
-    public int getHouseholdsByZone (int zone) {
-        return householdsByZone[getZoneIndex(zone)];
-    }
-
 
     public void readHouseholdData() {
         logger.info("  Reading household micro data from ascii file");
+
+        List<MitoHousehold> households = new ArrayList<>();
 
         String fileName = ResourceUtil.getProperty(rb, PROPERTIES_HH_FILE_ASCII);
 
@@ -220,16 +238,16 @@ public class MitoData {
                 int taz        = Integer.parseInt(lineElements[posTaz]);
                 int hhSize     = Integer.parseInt(lineElements[posSize]);
                 int autos      = Integer.parseInt(lineElements[posAutos]);
-                new MitoHousehold(id, hhSize, 0, 0, 0, 0,0, 0, 0, 0, autos, taz);
+                MitoHousehold household = new MitoHousehold(id, hhSize, 0, 0, 0, 0,0, 0, 0, 0, autos, taz);
+                households.add(household);
             }
         } catch (IOException e) {
             logger.fatal("IO Exception caught reading synpop household file: " + fileName);
             logger.fatal("recCount = " + recCount + ", recString = <" + recString + ">");
         }
-        setHouseholds(MitoHousehold.getHouseholdArray());
         logger.info("  Finished reading " + recCount + " households.");
+        setHouseholds(households);
     }
-
 
     public void readPersonData() {
         logger.info("  Reading person micro data from ascii file");
@@ -259,7 +277,7 @@ public class MitoData {
                 String[] lineElements = recString.split(",");
                 int id = Integer.parseInt(lineElements[posId]);
                 int hhid = Integer.parseInt(lineElements[posHhId]);
-                MitoHousehold hh = MitoHousehold.getHouseholdFromId(hhid);
+                MitoHousehold hh = households.get(hhid);
                 int age = Integer.parseInt(lineElements[posAge]);
                 if (age < 18) {
                     hh.setChildren(hh.getChildren() + 1);
@@ -283,8 +301,8 @@ public class MitoData {
                 }
                 int income = Integer.parseInt(lineElements[posIncome]);
                 hh.setIncome(hh.getIncome() + income);
-                MitoPerson pp = new MitoPerson(id, hh.getHhId(), occupation, 0);
-                pp.setWorkplace(workplace);
+                MitoPerson pp = new MitoPerson(id, hh, occupation, workplace);
+                persons.put(pp.getId(), pp);
                 hh.addPersonForInitialSetup(pp);
             }
         } catch (IOException e) {
@@ -319,10 +337,10 @@ public class MitoData {
                 int id      = Integer.parseInt(lineElements[posId]);
                 int zone    = Integer.parseInt(lineElements[posZone]);
                 int worker  = Integer.parseInt(lineElements[posWorker]);
-                MitoPerson pp = MitoPerson.getMitoPersonFromId(worker);
+                MitoPerson pp = persons.get(worker);
                 if (pp.getWorkplace() != id) {
                     logger.error("Person " + worker + " has workplace " + pp.getWorkplace() + " in person file but workplace "
-                    + id + " in job file.");
+                            + id + " in job file.");
                 }
                 pp.setWorkzone(zone);
             }
@@ -333,24 +351,27 @@ public class MitoData {
         logger.info("  Finished reading " + recCount + " jobs.");
     }
 
-
-
     public void readInputData() {
         // read all required input data
 
         purposes = ResourceUtil.getArray(rb, "trip.purposes");
-        purposeNum = new HashMap<>();
-        for (int i = 0; i < purposes.length; i++) purposeNum.put(purposes[i], i);
+        purposeIndices = new HashMap<>();
+        for (int i = 0; i < purposes.length; i++) {
+            purposeIndices.put(purposes[i], i);
+        }
         // read enrollment data
         TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
-        enrollmentData.buildIndex(enrollmentData.getColumnPosition("Zone"));
-        schoolEnrollmentByZone = new int[getZones().length];
-        for (int zone: getZones())
-            schoolEnrollmentByZone[getZoneIndex(zone)] = (int) enrollmentData.getIndexedValueAt(zone, "Enrolment");
-        // define region type of every zone
-        defineRegions(rb.getString("household.travel.survey.reg"));
-    }
 
+
+        for(int i = 0; i < enrollmentData.getRowCount(); i++) {
+            int zoneId = enrollmentData.getColumnAsInt(1)[i];
+            int enrollment = enrollmentData.getColumnAsInt(2)[i];
+            zones.get(zoneId).setSchoolEnrollment(enrollment);
+        }
+
+        // define region type of every zone
+        defineRegions();
+    }
 
     public void readEmploymentData () {
         // SMZ,State,RET00,OFF00,IND00,OTH00,RET07,OFF07,IND07,OTH07,RET10,OFF10,IND10,OTH10,RET30,OFF30,IND30,OTH30,RET40,OFF40,IND40,OTH40
@@ -359,56 +380,21 @@ public class MitoData {
         int[] retEmpl = employment.getColumnAsInt("RET00");
         int[] offEmpl = employment.getColumnAsInt("OFF00");
         int[] othEmpl = employment.getColumnAsInt("OTH00");
-        int[] totEmpl = new int[indEmpl.length];
-        for (int i = 0; i < indEmpl.length; i++) totEmpl[i] = indEmpl[i] + retEmpl[i] + offEmpl[i] + othEmpl[i];
-        setRetailEmplByZone(retEmpl);
-        setOfficeEmplByZone(offEmpl);
-        setOtherEmplByZone(othEmpl);
-        setTotalEmplByZone(totEmpl);
-    }
-
-    public void setRetailEmplByZone(int[] retailEmplByZone) {
-        this.retailEmplByZone = retailEmplByZone;
-    }
-
-    public int getRetailEmplByZone (int zone) {
-        return retailEmplByZone[getZoneIndex(zone)];
-    }
-
-    public void setOfficeEmplByZone(int[] officeEmplByZone) {
-        this.officeEmplByZone = officeEmplByZone;
-    }
-
-    public int getOfficeEmplByZone(int zone) {
-        return officeEmplByZone[getZoneIndex(zone)];
-    }
-
-    public void setOtherEmplByZone(int[] otherEmplByZone) {
-        this.otherEmplByZone = otherEmplByZone;
-    }
-
-    public int getOtherEmplByZone (int zone) {
-        return otherEmplByZone[getZoneIndex(zone)];
-    }
-
-    public void setTotalEmplByZone(int[] totalEmplByZone) {
-        this.totalEmplByZone = totalEmplByZone;
-    }
-
-    public int getTotalEmplByZone (int zone) {
-        return totalEmplByZone[getZoneIndex(zone)];
-    }
-
-    public int getSchoolEnrollmentByZone (int zone) {
-        return schoolEnrollmentByZone[getZoneIndex(zone)];
-    }
-
-    public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre) {
-        this.sizeOfZonesInAcre = sizeOfZonesInAcre;
-    }
-
-    public float getSizeOfZoneInAcre (int zone) {
-        return sizeOfZonesInAcre[getZoneIndex(zone)];
+        int[] totEmpl = new int[employment.getRowCount()];
+        for (int i = 0; i < employment.getRowCount(); i++) {
+            totEmpl[i] = indEmpl[i] + retEmpl[i] + offEmpl[i] + othEmpl[i];
+            int zoneId = employment.getColumnAsInt("SMZ")[i];
+            if(zones.containsKey(zoneId)) {
+                Zone zone = zones.get(zoneId);
+                zone.setIndEmpl(indEmpl[i]);
+                zone.setRetailEmpl(retEmpl[i]);
+                zone.setOfficeEmpl(offEmpl[i]);
+                zone.setOtherEmpl(othEmpl[i]);
+                zone.setTotalEmpl(totEmpl[i]);
+            } else {
+                logger.warn("Zone " + zoneId +" of employment table not found. Ignoring it.");
+            }
+        }
     }
 
     public void readHouseholdTravelSurvey() {
@@ -419,12 +405,18 @@ public class MitoData {
         htsTR = MitoUtil.readCSVfile(MitoUtil.getBaseDirectory() + "/" + rb.getString("household.travel.survey.trips"));
     }
 
-
-    public String[] getPurposes () {
-        return purposes;
+    private void defineRegions() {
+        TableDataSet regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
+        for(int i = 0; i < regionDefinition.getRowCount(); i++) {
+            float id = regionDefinition.getValueAt(i,"Zone");
+            int region = reductionNearBorder.getColumnAsInt("Region")[i];
+            if(zones.containsKey(id)) {
+                zones.get(id).setRegion(region);
+            } else {
+                logger.warn("Region " + region + " referring to non-existing zone " + id + ". Ignoring it.");
+            }
+        }
     }
-
-    public int getPurposeIndex (String purp) {return purposeNum.get(purp);}
 
     public int[] defineHouseholdTypeOfEachSurveyRecords(String autoDef, TableDataSet hhTypeDef) {
         // Count number of household records per predefined typ
@@ -463,9 +455,14 @@ public class MitoData {
         if (autoDef.equalsIgnoreCase("autos")) {
             hhAut = Math.min(hhVeh, 3);
         } else {
-            if (hhVeh < hhWrk) hhAut = 0;        // fewer autos than workers
-            else if (hhVeh == hhWrk) hhAut = 1;  // equal number of autos and workers
-            else hhAut = 2;                      // more autos than workers
+            if (hhVeh < hhWrk) {
+                hhAut = 0;        // fewer autos than workers
+            }
+            else if (hhVeh == hhWrk) {
+                hhAut = 1;  // equal number of autos and workers
+            } else {
+                hhAut = 2;                      // more autos than workers
+            }
         }
         for (int hhType = 1; hhType <= hhTypeDef.getRowCount(); hhType++) {
             if (hhSze >= hhTypeDef.getIndexedValueAt(hhType, "size_l") &&          // Household size

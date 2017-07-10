@@ -15,7 +15,6 @@ import java.util.Map;
 
 public class MitoPerson implements Serializable {
     static Logger logger = Logger.getLogger(MitoPerson.class);
-    private static final Map<Integer,MitoPerson> personMap = new HashMap<>();
 
     private int id;
     private MitoHousehold hh;
@@ -24,22 +23,13 @@ public class MitoPerson implements Serializable {
     private int workzone;
 
 
-    public MitoPerson(int id, int hhId, int occupation, int workzone) {
+    public MitoPerson(int id, MitoHousehold hh, int occupation, int workplace) {
         this.id = id;
-        this.hh = MitoHousehold.getHouseholdFromId(hhId);
+        this.hh = hh;
         this.occupation = occupation;
-        this.workzone = workzone;
-        personMap.put(id,this);
-    }
-
-
-    public static MitoPerson getMitoPersonFromId(int id) {
-        return personMap.get(id);
-    }
-
-    public void setWorkplace(int workplace) {
         this.workplace = workplace;
     }
+
 
     public int getWorkplace() {
         return workplace;
@@ -58,5 +48,9 @@ public class MitoPerson implements Serializable {
 
     public int getWorkzone() {
         return workzone;
+    }
+
+    public int getId() {
+        return this.id;
     }
 }

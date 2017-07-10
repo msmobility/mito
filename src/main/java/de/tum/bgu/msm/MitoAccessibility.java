@@ -1,9 +1,13 @@
 package de.tum.bgu.msm;
 
 import com.pb.common.util.ResourceUtil;
+import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * Calculates and stores accessibilities
@@ -37,11 +41,11 @@ public class MitoAccessibility {
         float alpha = (float) ResourceUtil.getDoubleProperty(rb, "accessibility.alpha");
         float beta = (float) ResourceUtil.getDoubleProperty(rb, "accessibility.beta");
 
-        int[] zones = td.getZones();
-        autoAccessibilityHouseholds = new float[zones.length];
-        autoAccessibilityRetail = new float[zones.length];
-        autoAccessibilityOther = new float[zones.length];
-        transitAccessibilityOther = new float[zones.length];
+        Collection<Zone> zones = td.getZones().values();
+        autoAccessibilityHouseholds = new float[zones.size()];
+        autoAccessibilityRetail = new float[zones.size()];
+        autoAccessibilityOther = new float[zones.size()];
+        transitAccessibilityOther = new float[zones.size()];
         for (int i = 0; i < zones.length; i++) {
             autoAccessibilityHouseholds[i] = 0;
             autoAccessibilityRetail[i] = 0;

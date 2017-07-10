@@ -83,6 +83,7 @@ public class MitoModel {
         mitoData.readHouseholdTravelSurvey();
         mitoData.readZones();
         mitoData.readSkims();
+        mitoData.readDistance();
         mitoData.readHouseholdData();
         mitoData.readPersonData();
         mitoData.readJobData();

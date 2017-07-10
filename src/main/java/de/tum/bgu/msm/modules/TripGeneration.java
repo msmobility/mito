@@ -10,9 +10,11 @@ import de.tum.bgu.msm.*;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.TripDataManager;
+import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ResourceBundle;
@@ -94,10 +96,10 @@ public class TripGeneration {
             HashMap<String, Integer[]> tripsByHhTypeAndPurpose = mitoData.collectTripFrequencyDistribution(hhTypeArray);
             int purposeNum = mitoData.getPurposeIndex(strPurp);
             // Generate trips for each household
-        for (MitoHousehold hh: mitoData.getMitoHouseholds()) {
+        for (MitoHousehold hh: mitoData.getMitoHouseholds().values()) {
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
                 int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
-                        incCategory, hh.getAutos(), mitoData.getRegionOfZone(hh.getHomeZone()));
+                        incCategory, hh.getAutos(), mitoData.getZones().get(hh.getHomeZone()).getRegion());
                 String token = hhType + "_" + strPurp;
                 Integer[] tripFrequencies = tripsByHhTypeAndPurpose.get(token);
                 if (tripFrequencies == null) {
@@ -254,7 +256,7 @@ public class TripGeneration {
 
         if (!mitoData.shallWeRemoveTripsAtBorder()) return false;
 
-        float damper = mitoData.getReductionAtBorderOfStudyArea(tripOrigin);
+        float damper = mitoData.getZones().get(tripOrigin).getReductionAtBorderDamper();
         return MitoUtil.getRand().nextFloat() < damper;
     }
 
@@ -267,9 +269,9 @@ public class TripGeneration {
         HashMap<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
-        int[] zones = mitoData.getZones();
-        float[][] tripAttr = new float[mitoData.getZones().length][mitoData.getPurposes().length];  // by zones, purposes and income
-        for (int zone: zones) {
+        Collection<Zone> zones = mitoData.getZones().values();
+        float[][] tripAttr = new float[mitoData.getZones().size()][mitoData.getPurposes().length];  // by zones, purposes and income
+        for (Zone zone: zones) {
             for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
                 for (String variable: independentVariables) {
                     String token = mitoData.getPurposes()[purp] + "_" + variable;
@@ -277,22 +279,22 @@ public class TripGeneration {
                         float attribute = 0;
                         switch (variable) {
                             case "HH":
-                                attribute = mitoData.getHouseholdsByZone(zone);
+                                attribute = zone.getNumberOfHouseholds();
                                 break;
                             case "TOT":
-                                attribute = mitoData.getTotalEmplByZone(zone);
+                                attribute = zone.getTotalEmpl();
                                 break;
                             case "RE":
-                                attribute = mitoData.getRetailEmplByZone(zone);
+                                attribute = zone.getRetailEmpl();
                                 break;
                             case "OFF":
-                                attribute = mitoData.getOfficeEmplByZone(zone);
+                                attribute = zone.getOfficeEmpl();
                                 break;
                             case "OTH":
-                                attribute = mitoData.getOtherEmplByZone(zone);
+                                attribute = zone.getOtherEmpl();
                                 break;
                             case "ENR":
-                                attribute = mitoData.getSchoolEnrollmentByZone(zone);
+                                attribute = zone.getSchoolEnrollment();
                                 break;
                         }
                         tripAttr[mitoData.getZoneIndex(zone)][purp] += attribute * attractionRates.get(token);

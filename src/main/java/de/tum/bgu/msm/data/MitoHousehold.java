@@ -32,7 +32,6 @@ public class MitoHousehold implements Serializable {
     private int homeZone;
     private ArrayList<MitoTrip> trips;
     private double[] travelTimeBudgetByPurpose;
-    private static final Map<Integer,MitoHousehold> householdMap = new HashMap<>();
 
 
     public MitoHousehold(int id, int hhSize, int females, int children, int youngAdults, int retirees,
@@ -52,7 +51,6 @@ public class MitoHousehold implements Serializable {
         this.autos = autos;
         this.homeZone = homeZone;
         this.trips = new ArrayList<>();
-        householdMap.put(id, this);
     }
 
 
@@ -71,16 +69,6 @@ public class MitoHousehold implements Serializable {
     public MitoPerson[] getPersons(){
         return persons;
     }
-
-
-    public static MitoHousehold getHouseholdFromId (int id) {
-        return householdMap.get(id);
-    }
-
-    public static MitoHousehold[] getHouseholdArray() {
-        return householdMap.values().toArray(new MitoHousehold[householdMap.size()]);
-    }
-
 
     public int getHhId() {
         return hhId;
