@@ -1,11 +1,14 @@
 package de.tum.bgu.msm.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Nico on 7/7/2017.
  */
 public class Zone {
 
-    private int zoneId;
+    private final int zoneId;
     private float size;
     private float reductionAtBorderDamper = 0;
     private int region = -1;
@@ -17,6 +20,13 @@ public class Zone {
     private int officeEmpl = 0;
     private int otherEmpl = 0;
     private int totalEmpl = 0;
+
+    private float autoAccessibilityHouseholds = Float.NaN;
+    private float autoAccessibilityRetail = Float.NaN;
+    private float autoAccessibilityOther = Float.NaN;
+    private float transitAccessibilityOther = Float.NaN;
+
+    private Map<String, Float> attractionByPurpose = new HashMap<>();
 
 
     public Zone(int zoneId){
@@ -111,5 +121,37 @@ public class Zone {
 
     public int getOtherEmpl() {
         return otherEmpl;
+    }
+
+    public float getAutoAccessibilityHouseholds() {
+        return autoAccessibilityHouseholds;
+    }
+
+    public void setAutoAccessibilityHouseholds(float autoAccessibilityHouseholds) {
+        this.autoAccessibilityHouseholds = autoAccessibilityHouseholds;
+    }
+
+    public float getAutoAccessibilityRetail() {
+        return autoAccessibilityRetail;
+    }
+
+    public void setAutoAccessibilityRetail(float autoAcessibilityRetail) {
+        this.autoAccessibilityRetail = autoAcessibilityRetail;
+    }
+
+    public float getAutoAccessibilityOther() {
+        return autoAccessibilityOther;
+    }
+
+    public void setAutoAccessibilityOther(float autoAcessibilityOther) {
+        this.autoAccessibilityOther = autoAcessibilityOther;
+    }
+
+    public float getTransitAccessibilityOther() {
+        return transitAccessibilityOther;
+    }
+
+    public void setTransitAccessibilityOther(float transitAcessibilityOther) {
+        this.transitAccessibilityOther = transitAcessibilityOther;
     }
 }

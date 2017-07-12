@@ -14,10 +14,7 @@ import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -46,9 +43,9 @@ public class TripGeneration {
 
         logger.info("  Started microscopic trip generation model.");
         microgenerateTrips();
-        float[][] rawTripAttr = calculateTripAttractions();
-        float[][] balancedAttr = balanceTripGeneration(rawTripAttr);
-        writeTripSummary(balancedAttr);
+        Map<Integer, Map<String, Float>> tripAttr = calculateTripAttractions();
+        balanceTripGeneration(tripAttr);
+        writeTripSummary(tripAttr);
         logger.info("  Completed microscopic trip generation model.");
     }
 
@@ -261,18 +258,20 @@ public class TripGeneration {
     }
 
 
-    private float[][] calculateTripAttractions () {
+    private Map<Integer, Map<String, Float>> calculateTripAttractions () {
         // calculate zonal trip attractions
 
         logger.info("  Calculating trip attractions");
         TableDataSet attrRates = MitoUtil.readCSVfile(rb.getString("trip.attraction.rates"));
-        HashMap<String, Float> attractionRates = getAttractionRates(attrRates);
+        Map<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
         Collection<Zone> zones = mitoData.getZones().values();
-        float[][] tripAttr = new float[mitoData.getZones().size()][mitoData.getPurposes().length];  // by zones, purposes and income
+        Map<Integer, Map<String, Float>> tripAttrByZoneAndPurp = new HashMap<>();
         for (Zone zone: zones) {
+            Map<String, Float> tripAttrByPurp = new HashMap<>();
             for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
+                float tripAttr = 0;
                 for (String variable: independentVariables) {
                     String token = mitoData.getPurposes()[purp] + "_" + variable;
                     if (attractionRates.containsKey(token)) {
@@ -297,12 +296,14 @@ public class TripGeneration {
                                 attribute = zone.getSchoolEnrollment();
                                 break;
                         }
-                        tripAttr[mitoData.getZoneIndex(zone)][purp] += attribute * attractionRates.get(token);
+                        tripAttr += attribute * attractionRates.get(token);
                     }
                 }
+                tripAttrByPurp.put(mitoData.getPurposes()[purp], tripAttr);
             }
+            tripAttrByZoneAndPurp.put(zone.getZoneId(), tripAttrByPurp);
         }
-        return tripAttr;
+        return tripAttrByZoneAndPurp;
     }
 
 
@@ -322,7 +323,7 @@ public class TripGeneration {
     }
 
 
-    private float[][] balanceTripGeneration (float[][] tripAttr) {
+    private Map<Integer, Map<String, Float>> balanceTripGeneration (Map<Integer, Map<String, Float>> tripAttr) {
         // Balance trip production and trip attraction
 
         logger.info("  Balancing trip production and attractions");
@@ -330,17 +331,17 @@ public class TripGeneration {
         for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
             int tripsByPurp = tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp);
             float attrSum = 0;
-            for (int zone: mitoData.getZones()) {
-                attrSum += tripAttr[mitoData.getZoneIndex(zone)][purp];
+            for (Zone zone: mitoData.getZones().values()) {
+                attrSum += tripAttr.get(zone.getZoneId()).get(purp);
             }
             if (attrSum == 0) {
                 logger.warn("No trips for purpose " + mitoData.getPurposes()[purp] + " were generated.");
                 continue;
             }
             // adjust attractions (or productions for NHBW and NHBO)
-            for (int zone: mitoData.getZones()) {
-                tripAttr[mitoData.getZoneIndex(zone)][purp] = tripAttr[mitoData.getZoneIndex(zone)][purp] *
-                         tripsByPurp / attrSum;
+            for (Zone zone: mitoData.getZones().values()) {
+                final float attrSumFinal = attrSum;
+                tripAttr.get(zone.getZoneId()).replaceAll((k,v) -> v * tripsByPurp / attrSumFinal);
 
                 // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
                 // travel survey. The distribution, however, is better represented by attraction rates. Therefore,
@@ -390,7 +391,7 @@ public class TripGeneration {
 //    }
 
 
-    private void writeTripSummary(float[][] tripAttraction) {
+    private void writeTripSummary(Map<Integer, Map<String, Float>> tripAttractionByZoneAndPurp) {
         // write number of trips by purpose and zone to output file
 
         String fileNameProd = MitoData.generateOutputFileName(rb.getString("trip.production.output"));
@@ -404,28 +405,40 @@ public class TripGeneration {
             pwAttr.print("," + tripPurpose + "A");
         }
 
-        float[][] tripProd = new float[mitoData.getZones().length][mitoData.getPurposes().length];
-        for (MitoTrip trip: MitoTrip.getTripArray()) {
-            tripProd[mitoData.getZoneIndex(trip.getTripOrigin())][trip.getTripPurpose()] ++;
+        Map<Integer, Map<String, Integer>> tripProdByZoneAndPurp = new HashMap<>();
+
+        for(Integer zoneId: mitoData.getZones().keySet()) {
+            Map<String, Integer> initialValues = new HashMap<>();
+            for(String purp: mitoData.getPurposes()) {
+                initialValues.put(purp, 0);
+            }
+            tripProdByZoneAndPurp.put(zoneId, initialValues);
         }
 
+        for (MitoTrip trip: MitoTrip.getTripArray()) {
+            String purp = mitoData.getPurposes()[trip.getTripPurpose()];
+            int number = tripProdByZoneAndPurp.get(trip.getTripOrigin()).get(purp);
+            tripProdByZoneAndPurp.get(trip.getTripOrigin()).replace(purp, (number + 1));
+        }
+
+        int totalTrips = 0;
         pwProd.println();
         pwAttr.println();
-        for (int zone: mitoData.getZones()) {
-            pwProd.print(zone);
-            pwAttr.print(zone);
-            for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
-                pwProd.print("," + tripProd[mitoData.getZoneIndex(zone)][purp]);
-                pwAttr.print("," + tripAttraction[mitoData.getZoneIndex(zone)][purp]);
+        for (int zoneId: mitoData.getZones().keySet()) {
+            pwProd.print(zoneId);
+            pwAttr.print(zoneId);
+            for (String purp: mitoData.getPurposes()) {
+                int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(purp);
+                totalTrips += tripProdTmp;
+                pwProd.print("," + tripProdTmp);
+                pwAttr.print("," + tripAttractionByZoneAndPurp.get(zoneId).get(purp));
             }
-
             pwProd.println();
             pwAttr.println();
-
         }
         pwProd.close();
         pwAttr.close();
-        logger.info("  Wrote out " + MitoUtil.customFormat("###,###", (int) MitoUtil.getSum(tripProd))
+        logger.info("  Wrote out " + MitoUtil.customFormat("###,###", totalTrips)
                 + " aggregate trips balanced against attractions.");
     }
 }

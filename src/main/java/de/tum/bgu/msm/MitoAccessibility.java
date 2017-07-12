@@ -5,9 +5,9 @@ import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 /**
  * Calculates and stores accessibilities
@@ -22,11 +22,6 @@ public class MitoAccessibility {
     static Logger logger = Logger.getLogger(MitoAccessibility.class);
     private MitoData td;
     private ResourceBundle rb;
-    private float[] autoAccessibilityHouseholds;
-    private float[] autoAccessibilityRetail;
-    private float[] autoAccessibilityOther;
-    private float[] transitAccessibilityOther;
-
 
     public MitoAccessibility(ResourceBundle rb, MitoData td) {
         this.td = td;
@@ -42,57 +37,54 @@ public class MitoAccessibility {
         float beta = (float) ResourceUtil.getDoubleProperty(rb, "accessibility.beta");
 
         Collection<Zone> zones = td.getZones().values();
-        autoAccessibilityHouseholds = new float[zones.size()];
-        autoAccessibilityRetail = new float[zones.size()];
-        autoAccessibilityOther = new float[zones.size()];
-        transitAccessibilityOther = new float[zones.size()];
-        for (int i = 0; i < zones.length; i++) {
-            autoAccessibilityHouseholds[i] = 0;
-            autoAccessibilityRetail[i] = 0;
-            autoAccessibilityOther[i] = 0;
-            transitAccessibilityOther[i] = 0;
-            for (int zone : zones) {
+        Map<Integer, Float> autoAccessibilityHouseholdsByZone = new HashMap<>();
+        Map<Integer, Float>  autoAccessibilityRetailByZone = new HashMap<>();
+        Map<Integer, Float>  autoAccessibilityOtherByZone  = new HashMap<>();
+        Map<Integer, Float>  transitAccessibilityOtherByZone  = new HashMap<>();
+
+        for (Zone zone: zones) {
+            float autoAccessibilityHouseholds = 0;
+            float autoAccessibilityRetail = 0;
+            float autoAccessibilityOther = 0;
+            float transitAccessibilityOther = 0;
+            for (Zone toZone : zones) {
                 double autoImpedance;
-                if (td.getAutoTravelTimes(zones[i], zone) == 0) {      // should never happen for auto
+                float autoTravelTime = td.getAutoTravelTimes(zone.getZoneId(), toZone.getZoneId());
+                if (autoTravelTime == 0) {      // should never happen for auto
                     autoImpedance = 0;
                 } else {
-                    autoImpedance = Math.exp(beta * td.getAutoTravelTimes(zones[i], zone));
+                    autoImpedance = Math.exp(beta * autoTravelTime);
                 }
                 double transitImpedance;
-                if (td.getTransitTravelTimes(zones[i], zone) == 0) {   // zone is not connected by walk-to-transit
+                float transitTravelTime = td.getTransitTravelTimes(zone.getZoneId(), toZone.getZoneId());
+                if (transitTravelTime == 0) {   // zone is not connected by walk-to-transit
                     transitImpedance = 0;
                 } else {
-                    transitImpedance = Math.exp(beta * td.getTransitTravelTimes(zones[i], zone));
+                    transitImpedance = Math.exp(beta * transitTravelTime);
                 }
 
-                autoAccessibilityHouseholds[i] += Math.pow(td.getHouseholdsByZone(zone), alpha) * autoImpedance;
-                autoAccessibilityRetail[i] += Math.pow(td.getRetailEmplByZone(zone), alpha) * autoImpedance;
-                autoAccessibilityOther[i] += Math.pow(td.getOtherEmplByZone(zone), alpha) * autoImpedance;
-                transitAccessibilityOther[i] += Math.pow(td.getOtherEmplByZone(zone), alpha) * transitImpedance;
+                autoAccessibilityHouseholds += Math.pow(zone.getNumberOfHouseholds(), alpha) * autoImpedance;
+                autoAccessibilityRetail += Math.pow(zone.getRetailEmpl(), alpha) * autoImpedance;
+                autoAccessibilityOther += Math.pow(zone.getOtherEmpl(), alpha) * autoImpedance;
+                transitAccessibilityOther += Math.pow(zone.getOtherEmpl(), alpha) * transitImpedance;
             }
+            autoAccessibilityHouseholdsByZone.put(zone.getZoneId(), autoAccessibilityHouseholds);
+            autoAccessibilityRetailByZone.put(zone.getZoneId(), autoAccessibilityRetail);
+            autoAccessibilityOtherByZone.put(zone.getZoneId(), autoAccessibilityOther);
+            transitAccessibilityOtherByZone.put(zone.getZoneId(), transitAccessibilityOther);
         }
-        autoAccessibilityHouseholds = MitoUtil.scaleArray(autoAccessibilityHouseholds, 100);
-        autoAccessibilityRetail = MitoUtil.scaleArray(autoAccessibilityRetail, 100);
-        autoAccessibilityOther = MitoUtil.scaleArray(autoAccessibilityOther, 100);
-        transitAccessibilityOther = MitoUtil.scaleArray(transitAccessibilityOther, 100);
-    }
 
+        MitoUtil.scaleMap(autoAccessibilityHouseholdsByZone, 100);
+        MitoUtil.scaleMap(autoAccessibilityRetailByZone, 100);
+        MitoUtil.scaleMap(autoAccessibilityOtherByZone, 100);
+        MitoUtil.scaleMap(transitAccessibilityOtherByZone, 100);
 
-
-    public float getAutoAccessibilityHouseholds(int zone) {
-        return autoAccessibilityHouseholds[td.getZoneIndex(zone)];
-    }
-
-    public float getAutoAccessibilityRetail(int zone) {
-        return autoAccessibilityRetail[td.getZoneIndex(zone)];
-    }
-
-    public float getAutoAccessibilityOther(int zone) {
-        return autoAccessibilityOther[td.getZoneIndex(zone)];
-    }
-
-    public float getTransitAccessibilityOther(int zone) {
-        return transitAccessibilityOther[td.getZoneIndex(zone)];
+        for(Zone zone: td.getZones().values()) {
+            zone.setAutoAccessibilityHouseholds(autoAccessibilityHouseholdsByZone.get(zone.getZoneId()));
+            zone.setAutoAccessibilityRetail(autoAccessibilityRetailByZone.get(zone.getZoneId()));
+            zone.setAutoAccessibilityOther(autoAccessibilityOtherByZone.get(zone.getZoneId()));
+            zone.setTransitAccessibilityOther(transitAccessibilityOtherByZone.get(zone.getZoneId()));
+        }
     }
 
 }

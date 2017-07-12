@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -201,6 +202,17 @@ public class MitoUtil {
         for (float val: array) highestVal = Math.max(val, highestVal);
         for (int i = 0; i < array.length; i++) array[i] = (float) ((array[i] * maxVal * 1.) / (highestVal * 1.));
         return array;
+    }
+
+    public static void scaleMap (Map<?, Float> map, float maxVal) {
+        // scale float array so that largest value equals maxVal
+
+        float highestValueTmp = Float.MIN_VALUE;
+        for(Float value: map.values()) {
+            highestValueTmp = Math.max(value, highestValueTmp);
+        }
+        final float highestValue = highestValueTmp;
+        map.replaceAll((k, v) -> (float) ((v * maxVal * 1.) / (highestValue * 1.)));
     }
 
 

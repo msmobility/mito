@@ -45,18 +45,18 @@ public class DestinationChoice {
 
 
 
-        for(MitoTrip trip: MitoTrip.getTripArray()) {
-            if(trip.getTripPurpose() == mitoData.getPurposeIndex("shop")) {
-                for(Integer i: mitoData.getZones()) {
-
-                    float distance = mitoData.getDistances(trip.getTripOrigin(), i);
-                    float shopEmpls = mitoData.getRetailEmplByZone(i);
-                    double utility = ALPHA_SHOP * shopEmpls+ BETA_SHOP * distance + GAMMA_SHOP;
-
-
-                }
-            }
-        }
+//        for(MitoTrip trip: MitoTrip.getTripArray()) {
+//            if(trip.getTripPurpose() == mitoData.getPurposeIndex("shop")) {
+//                for(Integer i: mitoData.getZones()) {
+//
+//                    float distance = mitoData.getDistances(trip.getTripOrigin(), i);
+//                    float shopEmpls = mitoData.getRetailEmplByZone(i);
+//                    double utility = ALPHA_SHOP * shopEmpls+ BETA_SHOP * distance + GAMMA_SHOP;
+//
+//
+//                }
+//            }
+//        }
 
 
 

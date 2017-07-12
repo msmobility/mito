@@ -49,16 +49,11 @@ public class MitoModel {
                          int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
         // Feed data from other program. Need to write new methods to read these data from files if MitoModel is used as
         // stand-alone program.
-        mitoData.setZones(zones);                           // zone are stored consecutively starting at position 0
+        mitoData.setZonesFromFeed(zones, retailEmplByZone, officeEmplByZone, otherEmplByZone, totalEmplByZone, sizeOfZonesInAcre);
         mitoData.setAutoTravelTimes(autoTravelTimes);
         mitoData.setTransitTravelTimes(transitTravelTimes);
-        mitoData.setHouseholds(mitoHouseholds);
-        mitoData.setPersons(mitoPersons);
-        mitoData.setRetailEmplByZone(retailEmplByZone);       // All employment and acre values are stored in the position of
-        mitoData.setOfficeEmplByZone(officeEmplByZone);       // the zone ID. Position 0 will be empty, data for zone 1 is
-        mitoData.setOtherEmplByZone(otherEmplByZone);         // stored in position 1, for zone 5 in position 5, etc.
-        mitoData.setTotalEmplByZone(totalEmplByZone);         //
-        mitoData.setSizeOfZonesInAcre(sizeOfZonesInAcre);     //
+        mitoData.setHouseholdsFromFeed(mitoHouseholds);
+        mitoData.setPersonsFromFeed(mitoPersons);
         // todo: the household travel survey should not be read every year the model runs, but only in the first year.
         // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
         mitoData.readHouseholdTravelSurvey();

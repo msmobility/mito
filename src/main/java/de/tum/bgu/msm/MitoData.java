@@ -122,15 +122,6 @@ public class MitoData {
         this.distanceMatrix = matrix;
     }
 
-    public void setHouseholds(List<MitoHousehold> mitoHouseholds) {
-
-        households.clear();
-        for(MitoHousehold household: mitoHouseholds) {
-            households.put(household.getHhId(), household);
-            zones.get(household.getHomeZone()).addHousehold();
-        }
-    }
-
     public void setPersons(Map<Integer, MitoPerson> mitoPersons) {
         this.persons = mitoPersons;
     }
@@ -210,9 +201,8 @@ public class MitoData {
     }
 
     public void readHouseholdData() {
+        households = new HashMap<>();
         logger.info("  Reading household micro data from ascii file");
-
-        List<MitoHousehold> households = new ArrayList<>();
 
         String fileName = ResourceUtil.getProperty(rb, PROPERTIES_HH_FILE_ASCII);
 
@@ -239,19 +229,19 @@ public class MitoData {
                 int hhSize     = Integer.parseInt(lineElements[posSize]);
                 int autos      = Integer.parseInt(lineElements[posAutos]);
                 MitoHousehold household = new MitoHousehold(id, hhSize, 0, 0, 0, 0,0, 0, 0, 0, autos, taz);
-                households.add(household);
+                households.put(household.getHhId(), household);
+                zones.get(household.getHomeZone()).addHousehold();
             }
         } catch (IOException e) {
             logger.fatal("IO Exception caught reading synpop household file: " + fileName);
             logger.fatal("recCount = " + recCount + ", recString = <" + recString + ">");
         }
         logger.info("  Finished reading " + recCount + " households.");
-        setHouseholds(households);
     }
 
     public void readPersonData() {
         logger.info("  Reading person micro data from ascii file");
-
+        persons = new HashMap<>();
         String fileName = ResourceUtil.getProperty(rb, PROPERTIES_PP_FILE_ASCII);
 
         String recString = "";
@@ -537,5 +527,32 @@ public class MitoData {
             }
         }
         return tripsByHhTypeAndPurpose;
+    }
+
+    void setZonesFromFeed(int[] zoneIds, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
+        this.zones = new HashMap<>();
+        for(int i = 0; i < zoneIds.length; i++) {
+            Zone zone = new Zone(zoneIds[i], sizeOfZonesInAcre[i]);
+            zone.setRetailEmpl(retailEmplByZone[i]);
+            zone.setOfficeEmpl(officeEmplByZone[i]);
+            zone.setOtherEmpl(otherEmplByZone[i]);
+            zone.setTotalEmpl(totalEmplByZone[i]);
+            this.zones.put(zone.getZoneId(), zone);
+        }
+    }
+
+    void setHouseholdsFromFeed(MitoHousehold[] householdsArray) {
+        households = new HashMap<>();
+        for(MitoHousehold household: householdsArray) {
+            households.put(household.getHhId(), household);
+            zones.get(household.getHomeZone()).addHousehold();
+        }
+    }
+
+    void setPersonsFromFeed(MitoPerson[] personsArray) {
+        persons = new HashMap<>();
+        for(MitoPerson person: personsArray) {
+            persons.put(person.getId(), person);
+        }
     }
 }
