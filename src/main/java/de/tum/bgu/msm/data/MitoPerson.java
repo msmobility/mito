@@ -3,6 +3,7 @@ package de.tum.bgu.msm.data;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,19 @@ public class MitoPerson implements Serializable {
         personMap.put(id,this);
     }
 
+    public int getId() {
+        return id;
+    }
+
+
+    public MitoHousehold getHh() {
+        return hh;
+    }
+
+
+    public void setHh(MitoHousehold hh) {
+        this.hh = hh;
+    }
 
     public static MitoPerson getMitoPersonFromId(int id) {
         return personMap.get(id);
@@ -58,5 +72,10 @@ public class MitoPerson implements Serializable {
 
     public int getWorkzone() {
         return workzone;
+    }
+
+
+    public static MitoPerson[] getMitoPersons(){
+        return personMap.values().toArray(new MitoPerson[personMap.size()]);
     }
 }
