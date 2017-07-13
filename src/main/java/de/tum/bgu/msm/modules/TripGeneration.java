@@ -331,8 +331,14 @@ public class TripGeneration {
         for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
             int tripsByPurp = tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp);
             float attrSum = 0;
+            String purpose = mitoData.getPurposes()[purp];
             for (Zone zone: mitoData.getZones().values()) {
-                attrSum += tripAttr.get(zone.getZoneId()).get(purp);
+                try {
+                    attrSum += tripAttr.get(zone.getZoneId()).get(purpose);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+//                    System.exit(-1);
+                }
             }
             if (attrSum == 0) {
                 logger.warn("No trips for purpose " + mitoData.getPurposes()[purp] + " were generated.");

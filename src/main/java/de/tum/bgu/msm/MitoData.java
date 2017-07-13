@@ -33,7 +33,7 @@ public class MitoData {
     private static final String PROPERTIES_JJ_FILE_ASCII            = "job.file.ascii";
     private static final String PROPERTIES_EMPLOYMENT_FILE          = "employment.forecast";
     private static final String PROPERTIES_SCHOOL_ENROLLMENT_FILE   = "school.enrollment.data";
-    private static final String PROPERTIES_DISTANCE_RASTER_CELLS    = "distanceODmatrix";
+    private static final String PROPERTIES_DISTANCE_SKIM            = "distanceODmatrix";
 
     private static Logger logger = Logger.getLogger(MitoData.class);
     private ResourceBundle rb;
@@ -141,15 +141,15 @@ public class MitoData {
         // read in zones from file
         String fileName = ResourceUtil.getProperty(rb, PROPERTIES_ZONAL_DATA_FILE);
         TableDataSet zonalData = MitoUtil.readCSVfile(fileName);
-        for(int i = 0; i < zonalData.getRowCount(); i++) {
-            Zone zone = new Zone(zonalData.getColumnAsInt("ZoneId")[i], zonalData.getValueAt(i, "ACRES"));
+        for(int i = 1; i <= zonalData.getRowCount(); i++) {
+            Zone zone = new Zone(zonalData.getColumnAsInt("ZoneId")[i-1], zonalData.getValueAt(i, "ACRES"));
             zones.put(zone.getZoneId(), zone);
         }
         removeTripsAtBorder = ResourceUtil.getBooleanProperty(rb, "reduce.trips.at.outer.border", false);
         if (removeTripsAtBorder) {
             reductionNearBorder = MitoUtil.readCSVfile(rb.getString("reduction.near.outer.border"));
-            for(int i = 0; i < reductionNearBorder.getRowCount(); i++) {
-                float id = reductionNearBorder.getValueAt(i,"Zone");
+            for(int i = 1; i <= reductionNearBorder.getRowCount(); i++) {
+                int id = (int) reductionNearBorder.getValueAt(i,"Zone");
                 float damper = reductionNearBorder.getValueAt(i, "damper");
                 if(zones.containsKey(id)) {
                     zones.get(id).setReductionAtBorderDamper(damper);
@@ -184,10 +184,10 @@ public class MitoData {
 
         //Read the skim matrix
         logger.info("   Starting to read OMX matrix");
-        String omxFileName = ResourceUtil.getProperty(rb, PROPERTIES_DISTANCE_RASTER_CELLS);
+        String omxFileName = ResourceUtil.getProperty(rb, PROPERTIES_DISTANCE_SKIM);
         OmxFile travelTimeOmx = new OmxFile(omxFileName);
         travelTimeOmx.openReadOnly();
-        distanceMatrix = MitoUtil.convertOmxToMatrix(travelTimeOmx.getMatrix("mat1"));
+        distanceMatrix = MitoUtil.convertOmxToMatrix(travelTimeOmx.getMatrix("HOVTime"));
         for (int i = 1; i <= distanceMatrix.getRowCount(); i++) {
             for (int j = 1; j <= distanceMatrix.getColumnCount(); j++) {
                 if (i == j) {
@@ -230,7 +230,11 @@ public class MitoData {
                 int autos      = Integer.parseInt(lineElements[posAutos]);
                 MitoHousehold household = new MitoHousehold(id, hhSize, 0, 0, 0, 0,0, 0, 0, 0, autos, taz);
                 households.put(household.getHhId(), household);
-                zones.get(household.getHomeZone()).addHousehold();
+                try {
+                    zones.get(household.getHomeZone()).addHousehold();
+                } catch (Exception e) {
+                    System.out.println(e.getStackTrace());
+                }
             }
         } catch (IOException e) {
             logger.fatal("IO Exception caught reading synpop household file: " + fileName);
@@ -353,10 +357,14 @@ public class MitoData {
         TableDataSet enrollmentData = MitoUtil.readCSVfile(rb.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE));
 
 
-        for(int i = 0; i < enrollmentData.getRowCount(); i++) {
-            int zoneId = enrollmentData.getColumnAsInt(1)[i];
-            int enrollment = enrollmentData.getColumnAsInt(2)[i];
-            zones.get(zoneId).setSchoolEnrollment(enrollment);
+        for(int i = 1; i <= enrollmentData.getRowCount(); i++) {
+            int zoneId = enrollmentData.getColumnAsInt("Zone")[i-1];
+            int enrollment = enrollmentData.getColumnAsInt("Enrolment")[i-1];
+            try {
+                zones.get(zoneId).setSchoolEnrollment(enrollment);
+            } catch (Exception e) {
+                logger.warn("School enrollment of " + enrollment + " refers to non existing zone " + zoneId );
+            }
         }
 
         // define region type of every zone
@@ -397,9 +405,11 @@ public class MitoData {
 
     private void defineRegions() {
         TableDataSet regionDefinition = MitoUtil.readCSVfile(rb.getString("household.travel.survey.reg"));
-        for(int i = 0; i < regionDefinition.getRowCount(); i++) {
-            float id = regionDefinition.getValueAt(i,"Zone");
-            int region = reductionNearBorder.getColumnAsInt("Region")[i];
+//        regionDefinition.buildIndex(regionDefinition.getColumnPosition("Zone"));
+        for(int i = 1; i < regionDefinition.getRowCount(); i++) {
+            int id = (int) regionDefinition.getValueAt(i,"Zone");
+            int[] regions = regionDefinition.getColumnAsInt("Region");
+            int region = regions[i-1];
             if(zones.containsKey(id)) {
                 zones.get(id).setRegion(region);
             } else {
