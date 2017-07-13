@@ -9,6 +9,7 @@ import com.pb.sawdust.util.concurrent.IteratorAction;
 import de.tum.bgu.msm.*;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.SummarizeData;
 import de.tum.bgu.msm.data.TripDataManager;
 import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
@@ -46,6 +47,7 @@ public class TripGeneration {
         Map<Integer, Map<String, Float>> tripAttr = calculateTripAttractions();
         balanceTripGeneration(tripAttr);
         writeTripSummary(tripAttr);
+        SummarizeData.writeOutSyntheticPopulationWithTrips(rb);
         logger.info("  Completed microscopic trip generation model.");
     }
 

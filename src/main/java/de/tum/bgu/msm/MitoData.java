@@ -275,19 +275,19 @@ public class MitoData {
                 int age = Integer.parseInt(lineElements[posAge]);
                 if (age < 18) {
                     hh.setChildren(hh.getChildren() + 1);
-                } else if (age >= 18 && age <= 25) {   // todo: Ana, is this the right definition of young adult?
+                } else if (age >= 18 && age <= 25) {
                     hh.setYoungAdults(hh.getYoungAdults() + 1);
                 } else if (age >= 65) {
                     hh.setRetirees(hh.getRetirees() + 1);
                 }
-                boolean student =  true;  // todo: How do we know who is a student? How are students defined?
-                if (student) hh.setStudents(hh.getStudents() + 1);
                 if (Integer.parseInt(lineElements[posSex]) == 2) {
                     hh.setFemales(hh.getFemales() + 1);
                 }
                 int occupation = Integer.parseInt(lineElements[posOccupation]);
                 if (occupation == 1) {
                     hh.setNumberOfWorkers(hh.getNumberOfWorkers() + 1);
+                } else if (occupation == 3){ //students have occupation equal to 3
+                    hh.setStudents(hh.getStudents() + 1);
                 }
                 int workplace = Integer.parseInt(lineElements[posWorkplace]);
                 if (Integer.parseInt(lineElements[posLicence]) == 1) {
@@ -331,12 +331,14 @@ public class MitoData {
                 int id      = Integer.parseInt(lineElements[posId]);
                 int zone    = Integer.parseInt(lineElements[posZone]);
                 int worker  = Integer.parseInt(lineElements[posWorker]);
-                MitoPerson pp = persons.get(worker);
-                if (pp.getWorkplace() != id) {
-                    logger.error("Person " + worker + " has workplace " + pp.getWorkplace() + " in person file but workplace "
-                            + id + " in job file.");
+                if (worker > 0) {
+                    MitoPerson pp = persons.get(worker);
+                    if (pp.getWorkplace() != id) {
+                        logger.error("Person " + worker + " has workplace " + pp.getWorkplace() + " in person file but workplace "
+                                + id + " in job file.");
+                    }
+                    pp.setWorkzone(zone);
                 }
-                pp.setWorkzone(zone);
             }
         } catch (IOException e) {
             logger.fatal("IO Exception caught reading synpop job file: " + fileName);
