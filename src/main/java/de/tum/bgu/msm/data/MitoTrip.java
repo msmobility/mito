@@ -20,8 +20,6 @@ public class MitoTrip implements Serializable {
     private int householdId;
     private int tripPurpose;
     private int tripOrigin;
-    private static final Map<Integer,MitoTrip> tripMap = new HashMap<>();
-
 
     public MitoTrip(int tripId, int householdId, int tripPurpose, int origin) {
         // create new MitoTrip
@@ -29,24 +27,7 @@ public class MitoTrip implements Serializable {
         this.householdId = householdId;
         this.tripPurpose = tripPurpose;
         this.tripOrigin = origin;
-        tripMap.put(tripId, this);
     }
-
-
-    public static MitoTrip getTripFromId (int id) {
-        return tripMap.get(id);
-    }
-
-
-    public static MitoTrip[] getTripArray() {
-        return tripMap.values().toArray(new MitoTrip[tripMap.size()]);
-    }
-
-
-    public static int getTripCount() {
-        return tripMap.size();
-    }
-
 
     public int getTripId() {
         return tripId;

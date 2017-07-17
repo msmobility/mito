@@ -1,15 +1,8 @@
 package de.tum.bgu.msm.modules;
 
 import com.pb.common.matrix.Matrix;
-import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.MitoData;
-import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.TripDataManager;
-import omx.OmxFile;
+import de.tum.bgu.msm.data.DataSet;
 import org.apache.log4j.Logger;
-
-import java.util.ResourceBundle;
 
 /**
  * Runs destination choice for each trip for the Microsimulation Transport Orchestrator (MITO)
@@ -17,12 +10,9 @@ import java.util.ResourceBundle;
  * Created on June 8, 2017 in Munich, Germany
  *
  */
-public class DestinationChoice {
+public class DestinationChoice extends Module{
 
     private static Logger logger = Logger.getLogger(DestinationChoice.class);
-    private ResourceBundle rb;
-    private MitoData mitoData;
-    private TripDataManager tripDataManager;
 
     private Matrix distanceMatrix;
 
@@ -32,14 +22,17 @@ public class DestinationChoice {
 
 
 
-    public DestinationChoice(ResourceBundle rb, MitoData td, TripDataManager tripDataManager) {
-        this.rb = rb;
-        this.mitoData = td;
-        this.tripDataManager = tripDataManager;
+    public DestinationChoice(DataSet dataSet) {
+        super(dataSet);
+    }
+
+    @Override
+    public void run() {
+        selectTripDestinations();
     }
 
 
-    public void selectTripDestinations () {
+    private void selectTripDestinations () {
         // Run destination choice model
         logger.info("  Started Destination Choice");
 

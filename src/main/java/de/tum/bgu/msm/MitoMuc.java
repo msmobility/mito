@@ -30,7 +30,7 @@ public class MitoMuc {
         // main run method
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
         MitoModel model = new MitoModel(rb);
-        model.readData();
+        model.initializeStandAlone();
         model.runModel();
     }
 

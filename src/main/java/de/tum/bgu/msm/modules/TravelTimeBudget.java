@@ -3,10 +3,10 @@ package de.tum.bgu.msm.modules;
 import com.pb.common.calculator.UtilityExpressionCalculator;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.MitoData;
+import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.TripDataManager;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
  *
  */
 
-public class TravelTimeBudget {
+public class TravelTimeBudget extends Module {
 
     protected static final String PROPERTIES_TRAVEL_TIME_BUDGET_UEC_FILE          = "travel.time.budget.UEC.File";
     protected static final String PROPERTIES_TRAVEL_TIME_BUDGET_UEC_DATA_SHEET    = "ttb.UEC.DataSheetNumber";
@@ -35,9 +35,9 @@ public class TravelTimeBudget {
     protected static final String PROPERTIES_LOG_UTILITY_CALCULATION_NHBO_TTB     = "log.util.nhbo.ttb";
 
     private static Logger logger = Logger.getLogger(TravelTimeBudget.class);
-    private ResourceBundle rb;
-    private MitoData mitoData;
-    private TripDataManager tripDataManager;
+
+    private final ResourceBundle resources;
+
     private boolean logCalculationTotalTtb;
     private boolean logCalculationHbsTtb;
     private boolean logCalculationHboTtb;
@@ -57,11 +57,15 @@ public class TravelTimeBudget {
     private int[] totalTtbAvail;
 
 
-    public TravelTimeBudget (ResourceBundle rb, MitoData td, TripDataManager tripDataManager) {
-        this.rb = rb;
-        this.mitoData = td;
-        this.tripDataManager = tripDataManager;
+    public TravelTimeBudget(DataSet dataSet, ResourceBundle resources) {
+        super(dataSet);
+        this.resources = resources;
         setupTravelTimeBudgetModel();
+    }
+
+    @Override
+    public void run() {
+        calculateTravelTimeBudget();
     }
 
 
@@ -69,32 +73,32 @@ public class TravelTimeBudget {
         // set up utility expression calculator for calculation of the travel time budget
 
         logger.info("  Creating Utility Expression Calculator for microscopic travel time budget calculation.");
-        logCalculationTotalTtb = ResourceUtil.getBooleanProperty(rb, PROPERTIES_LOG_UTILITY_CALCULATION_TOTAL_TTB);
-        logCalculationHbsTtb   = ResourceUtil.getBooleanProperty(rb, PROPERTIES_LOG_UTILITY_CALCULATION_HBS_TTB);
-        logCalculationHboTtb   = ResourceUtil.getBooleanProperty(rb, PROPERTIES_LOG_UTILITY_CALCULATION_HBO_TTB);
-        logCalculationNhbwTtb  = ResourceUtil.getBooleanProperty(rb, PROPERTIES_LOG_UTILITY_CALCULATION_NHBW_TTB);
-        logCalculationNhboTtb  = ResourceUtil.getBooleanProperty(rb, PROPERTIES_LOG_UTILITY_CALCULATION_NHBO_TTB);
-        String uecFileName     = rb.getString(PROPERTIES_TRAVEL_TIME_BUDGET_UEC_FILE);
-        int dataSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
-        int totalTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_Total_Travel_Time_Budget_UEC_UTILITY);
+        logCalculationTotalTtb = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_TOTAL_TTB);
+        logCalculationHbsTtb   = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_HBS_TTB);
+        logCalculationHboTtb   = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_HBO_TTB);
+        logCalculationNhbwTtb  = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_NHBW_TTB);
+        logCalculationNhboTtb  = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_NHBO_TTB);
+        String uecFileName     = resources.getString(PROPERTIES_TRAVEL_TIME_BUDGET_UEC_FILE);
+        int dataSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
+        int totalTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_Total_Travel_Time_Budget_UEC_UTILITY);
         totalTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), totalTtbSheetNumber,
-                dataSheetNumber, rb, TravelTimeBudgetDMU.class);
+                dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
-        int hbsTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_HBS_Travel_Time_Budget_UEC_UTILITY);
+        int hbsTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_HBS_Travel_Time_Budget_UEC_UTILITY);
         hbsTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), hbsTtbSheetNumber,
-                dataSheetNumber, rb, TravelTimeBudgetDMU.class);
+                dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         hbsTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int hboTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_HBO_Travel_Time_Budget_UEC_UTILITY);
+        int hboTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_HBO_Travel_Time_Budget_UEC_UTILITY);
         hboTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), hboTtbSheetNumber,
-                dataSheetNumber, rb, TravelTimeBudgetDMU.class);
+                dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         hboTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int nhbwTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_NHBW_Travel_Time_Budget_UEC_UTILITY);
+        int nhbwTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_NHBW_Travel_Time_Budget_UEC_UTILITY);
         nhbwTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), nhbwTtbSheetNumber,
-                dataSheetNumber, rb, TravelTimeBudgetDMU.class);
+                dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         nhbwTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int nhboTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_NHBO_Travel_Time_Budget_UEC_UTILITY);
+        int nhboTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_NHBO_Travel_Time_Budget_UEC_UTILITY);
         nhboTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), nhboTtbSheetNumber,
-                dataSheetNumber, rb, TravelTimeBudgetDMU.class);
+                dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         nhboTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
 
         // everything is available
@@ -107,7 +111,7 @@ public class TravelTimeBudget {
     }
 
 
-    public void calculateTravelTimeBudget () {
+    private void calculateTravelTimeBudget () {
         // main method to calculate the travel time budget for every household
         logger.info("  Started microscopic travel time budget calculation.");
         calculateBudgetsForEachHousehold();
@@ -117,29 +121,39 @@ public class TravelTimeBudget {
 
     private void calculateBudgetsForEachHousehold() {
         // loop over every household and calculate travel time budget by purpose
-        for (MitoHousehold hh: mitoData.getMitoHouseholds().values()) {
+        for (MitoHousehold household: dataSet.getHouseholds().values()) {
+
             // calculate total travel time budget
-            double[] travelTimeBudgetByPurp = new double[mitoData.getPurposes().length];
-            double totalTravelTimeBudget = calculateTTB ("Total", hh, totalTravelTimeBudgetDMU, totalTtbUtility, logCalculationTotalTtb);
+//            double[] travelTimeBudgetByPurp = new double[mitoData.getPurposes().length];
+            double totalTravelTimeBudget = calculateTTB ("Total", household, totalTravelTimeBudgetDMU, totalTtbUtility, logCalculationTotalTtb);
+
             // calculate travel time budget for each discretionary trip purpose
-            travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBS")]  = calculateTTB ("HBS", hh, hbsTravelTimeBudgetDMU, hbsTtbUtility, logCalculationHbsTtb);
-            travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBO")]  = calculateTTB ("HBO", hh, hboTravelTimeBudgetDMU, hboTtbUtility, logCalculationHboTtb);
-            travelTimeBudgetByPurp[mitoData.getPurposeIndex("NHBW")] = calculateTTB ("NBHW", hh, nhbwTravelTimeBudgetDMU, nhbwTtbUtility, logCalculationNhbwTtb);
-            travelTimeBudgetByPurp[mitoData.getPurposeIndex("NHBO")] = calculateTTB ("NHBO", hh, nhboTravelTimeBudgetDMU, nhboTtbUtility, logCalculationNhboTtb);
+            household.setTravelTimeBudgetByPurpose("HBS", calculateTTB ("HBS", household, hbsTravelTimeBudgetDMU, hbsTtbUtility, logCalculationHbsTtb));
+            household.setTravelTimeBudgetByPurpose("HBO", calculateTTB ("HBO", household, hboTravelTimeBudgetDMU, hboTtbUtility, logCalculationHboTtb));
+            household.setTravelTimeBudgetByPurpose("NHBW", calculateTTB ("NBHW", household, nhbwTravelTimeBudgetDMU, nhbwTtbUtility, logCalculationNhbwTtb));
+            household.setTravelTimeBudgetByPurpose("NHBO", calculateTTB ("NHBO", household, nhboTravelTimeBudgetDMU, nhboTtbUtility, logCalculationNhboTtb));
+
             // work and school trips are given by work place and school place locations, no budget to be calculated
             // todo: sum up work and school trips of all household members to calculate those travel budgets
-            for (MitoPerson pp: hh.getPersons()) {
-//                if (pp.getOccupation() == 1) travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBW")] +=
+            for (MitoPerson person: household.getPersons()) {
+                if (person.getOccupation() == 1) {
+                    household.setTravelTimeBudgetByPurpose("HBW", dataSet.getAutoTravelTimeFromTo(household.getHomeZone(), person.getWorkzone()));
+                }
             }
-            double discretionaryTTB = totalTravelTimeBudget - travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBW")] -
-                    travelTimeBudgetByPurp[mitoData.getPurposeIndex("HBE")];
+
+            double discretionaryTTB = totalTravelTimeBudget - household.getTravelTimeBudgetForPurpose("HBW") -
+                    household.getTravelTimeBudgetForPurpose("HBE");
+
             discretionaryTTB = Math.max(discretionaryTTB, 0);
+
             String[] discretionaryPurposes = {"HBS", "HBO", "NHBW", "NHBO"};
             double calcDiscretionaryTTB = 0;
-            for (String purp: discretionaryPurposes) calcDiscretionaryTTB += travelTimeBudgetByPurp[mitoData.getPurposeIndex(purp)];
-            for (String purp: discretionaryPurposes) travelTimeBudgetByPurp[mitoData.getPurposeIndex(purp)] =
-                    travelTimeBudgetByPurp[mitoData.getPurposeIndex(purp)] * discretionaryTTB / calcDiscretionaryTTB;
-            hh.setTravelTimeBudgetByPurpose(travelTimeBudgetByPurp);
+            for (String purp: discretionaryPurposes) {
+                calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purp);
+            }
+            for (String purp: discretionaryPurposes) {
+                household.setTravelTimeBudgetByPurpose(purp, household.getTravelTimeBudgetForPurpose(purp) * discretionaryTTB / calcDiscretionaryTTB);
+            }
         }
     }
 
@@ -159,17 +173,17 @@ public class TravelTimeBudget {
         ttbDMU.setCars(hh.getAutos());
         ttbDMU.setLicenseHolders(hh.getLicenseHolders());
         ttbDMU.setIncome(hh.getIncome());
-        ttbDMU.setAreaType(mitoData.getZones().get(hh.getHomeZone()).getRegion());  // todo: Ana, how is area type defined?
+        ttbDMU.setAreaType(dataSet.getZones().get(hh.getHomeZone()).getRegion());  // todo: Ana, how is area type defined?
 
-        int[] tripCounter = new int[mitoData.getPurposes().length];
+        int[] tripCounter = new int[dataSet.getPurposes().length];
         for(MitoTrip trip: hh.getTrips()) tripCounter[trip.getTripPurpose()]++;
 
-        ttbDMU.setTrips(tripCounter, mitoData);
+        ttbDMU.setTrips(tripCounter, dataSet);
         double util[] = ttbUtility.solve(ttbDMU.getDmuIndexValues(), ttbDMU, totalTtbAvail);
         if (logCalculationTtb) {
             // log UEC values for each person type
             logger.info("Household " + hh.getHhId() + " with " + hh.getHhSize() + " persons living in area type " +
-                    mitoData.getZones().get(hh.getHomeZone()));
+                    dataSet.getZones().get(hh.getHomeZone()));
             ttbUtility.logAnswersArray(logger,purpose + " Travel Time Budget");
         }
         return util[0];

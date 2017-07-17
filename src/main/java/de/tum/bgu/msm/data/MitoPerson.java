@@ -27,7 +27,7 @@ public class MitoPerson implements Serializable {
         this.id = id;
         this.hh = hh;
         this.occupation = occupation;
-        this.workzone = workzone;
+        this.workplace = workplace;
     }
 
     public MitoHousehold getHh() {

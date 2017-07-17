@@ -4,6 +4,7 @@ import com.pb.common.datafile.TableDataFileReader;
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
+import de.tum.bgu.msm.data.DataSet;
 import omx.OmxMatrix;
 import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
@@ -66,36 +67,12 @@ public class MitoUtil {
         return ResourceUtil.getPropertyBundle(propFile);
     }
 
-    public static TableDataSet readCSVfile (String fileName) {
-        // read csv file and return as TableDataSet
-        File dataFile = new File(fileName);
-        TableDataSet dataTable;
-        boolean exists = dataFile.exists();
-        if (!exists) {
-            final String msg = "File not found: " + fileName;
-            logger.error(msg);
-//            System.exit(1);
-            throw new RuntimeException(msg) ;
-            // from the perspective of the junit testing infrastructure, a "System.exit(...)" is not a test failure ... and thus not detected.  kai, aug'16
-        }
-        try {
-            TableDataFileReader reader = TableDataFileReader.createReader(dataFile);
-            dataTable = reader.readFile(dataFile);
-            reader.close();
-        } catch (Exception e) {
-            logger.error("Error reading file " + dataFile);
-            throw new RuntimeException(e);
-        }
-        return dataTable;
-    }
-
     public static int getHighestVal(int[] array) {
         // return highest number in int array
         int high = Integer.MIN_VALUE;
         for (int num: array) high = Math.max(high, num);
         return high;
     }
-
 
     public static int findPositionInArray (String element, String[] arr){
         // return index position of element in array arr
@@ -205,7 +182,7 @@ public class MitoUtil {
     }
 
     public static void scaleMap (Map<?, Float> map, float maxVal) {
-        // scale float array so that largest value equals maxVal
+        // scale float value map so that largest value equals maxVal
 
         float highestValueTmp = Float.MIN_VALUE;
         for(Float value: map.values()) {
@@ -260,6 +237,18 @@ public class MitoUtil {
             System.exit(1);
             return null;
         }
+    }
+
+    public static String generateOutputFileName (String fileName) {
+        if (DataSet.getScenarioName() != null) {
+            File dir = new File("scenOutput/" + DataSet.getScenarioName() + "/tripGeneration");
+            if(!dir.exists()){
+                boolean directoryCreated = dir.mkdir();
+                if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
+            }
+            fileName = "scenOutput/" + DataSet.getScenarioName() + "/tripGeneration/" + fileName;
+        }
+        return fileName;
     }
 
 }

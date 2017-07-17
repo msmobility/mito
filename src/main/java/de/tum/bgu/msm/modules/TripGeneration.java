@@ -7,11 +7,10 @@ import com.pb.sawdust.util.array.ArrayUtil;
 import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
 import com.pb.sawdust.util.concurrent.IteratorAction;
 import de.tum.bgu.msm.*;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.SummarizeData;
-import de.tum.bgu.msm.data.TripDataManager;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
+
+
+import de.tum.bgu.msm.io.CSVReader;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -25,21 +24,24 @@ import java.util.concurrent.ForkJoinPool;
  *
  */
 
-public class TripGeneration {
+public class TripGeneration extends Module{
 
     private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
-    private ResourceBundle rb;
-    private MitoData mitoData;
-    private TripDataManager tripDataManager;
+    private final ResourceBundle resources;
+
     private int counterDroppedTripsAtBorder;
 
-    public TripGeneration(ResourceBundle rb, MitoData td, TripDataManager tripDataManager) {
-        this.rb = rb;
-        this.mitoData = td;
-        this.tripDataManager = tripDataManager;
+    public TripGeneration(DataSet dataSet, ResourceBundle resources) {
+        super(dataSet);
+        this.resources = resources;
     }
 
-    public void generateTrips () {
+    @Override
+    public void run() {
+        generateTrips();
+    }
+
+    private void generateTrips () {
         // Run trip generation model
 
         logger.info("  Started microscopic trip generation model.");
@@ -47,7 +49,7 @@ public class TripGeneration {
         Map<Integer, Map<String, Float>> tripAttr = calculateTripAttractions();
         balanceTripGeneration(tripAttr);
         writeTripSummary(tripAttr);
-        SummarizeData.writeOutSyntheticPopulationWithTrips(rb);
+        SummarizeData.writeOutSyntheticPopulationWithTrips(resources, dataSet);
         logger.info("  Completed microscopic trip generation model.");
     }
 
@@ -74,13 +76,13 @@ public class TripGeneration {
         };
 
         // Generate trips for each purpose
-        Iterator<String> tripPurposeIterator = ArrayUtil.getIterator(mitoData.getPurposes());
+        Iterator<String> tripPurposeIterator = ArrayUtil.getIterator(dataSet.getPurposes());
         IteratorAction<String> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
         ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
         pool.execute(itTask);
         itTask.waitForCompletion();
 
-        int rawTrips = MitoTrip.getTripCount() + counterDroppedTripsAtBorder;
+        int rawTrips = dataSet.getTripDataManager().getTotalNumberOfTrips() + counterDroppedTripsAtBorder;
         logger.info("  Generated " + MitoUtil.customFormat("###,###", rawTrips) + " raw trips.");
         if (counterDroppedTripsAtBorder > 0)
             logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder) + " trips were dropped at boundary of study area.");
@@ -91,14 +93,14 @@ public class TripGeneration {
 
             logger.info("  Generating trips with purpose " + strPurp + " (multi-threaded)");
             TableDataSet hhTypeDef = createHHTypeDefinition(strPurp);
-            int[] hhTypeArray = mitoData.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
-            HashMap<String, Integer[]> tripsByHhTypeAndPurpose = mitoData.collectTripFrequencyDistribution(hhTypeArray);
-            int purposeNum = mitoData.getPurposeIndex(strPurp);
+            int[] hhTypeArray = defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(strPurp), hhTypeDef);
+            HashMap<String, Integer[]> tripsByHhTypeAndPurpose = collectTripFrequencyDistribution(hhTypeArray);
+            int purposeNum = dataSet.getPurposeIndex(strPurp);
             // Generate trips for each household
-        for (MitoHousehold hh: mitoData.getMitoHouseholds().values()) {
+        for (MitoHousehold hh: dataSet.getHouseholds().values()) {
                 int incCategory = translateIncomeIntoCategory (hh.getIncome());
-                int hhType = mitoData.getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
-                        incCategory, hh.getAutos(), mitoData.getZones().get(hh.getHomeZone()).getRegion());
+                int hhType = getHhType(selectAutoMode(strPurp), hhTypeDef, hh.getHhSize(), hh.getNumberOfWorkers(),
+                        incCategory, hh.getAutos(), dataSet.getZones().get(hh.getHomeZone()).getRegion());
                 String token = hhType + "_" + strPurp;
                 Integer[] tripFrequencies = tripsByHhTypeAndPurpose.get(token);
                 if (tripFrequencies == null) {
@@ -114,6 +116,7 @@ public class TripGeneration {
                     if (dropThisTrip) continue;
                     synchronized (MitoHousehold.class) {
                         MitoTrip trip = new MitoTrip(TripDataManager.getNextTripId(), hh.getHhId(), purposeNum, tripOrigin);
+                        dataSet.getTripDataManager().addTrip(trip);
                         hh.addTrip(trip);
                     }
                 }
@@ -123,7 +126,7 @@ public class TripGeneration {
 
     private TableDataSet createHHTypeDefinition (String purpose) {
         // create household type definition file
-        String[] hhDefToken = ResourceUtil.getArray(rb, ("hh.type." + purpose));
+        String[] hhDefToken = ResourceUtil.getArray(resources, ("hh.type." + purpose));
         //        int categoryID = Integer.parseInt(hhDefToken[0]);
         int numCategories = Integer.parseInt(hhDefToken[1]);
         String sizeToken = hhDefToken[2];
@@ -138,7 +141,7 @@ public class TripGeneration {
         String[] regionPortions = regionToken.split("\\.");
         TableDataSet hhTypeDef = createHouseholdTypeTableDataSet(numCategories, sizePortions, workerPortions,
                 incomePortions, autoPortions, regionPortions);
-        int[] hhCounter = mitoData.defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(purpose), hhTypeDef);
+        int[] hhCounter = defineHouseholdTypeOfEachSurveyRecords(selectAutoMode(purpose), hhTypeDef);
         HashMap<Integer, Integer> numHhByType = new HashMap<>();
         for (int hhType: hhCounter) {
             if (numHhByType.containsKey(hhType)) {
@@ -253,9 +256,9 @@ public class TripGeneration {
         // as trips near border of study area that travel to destinations outside of study area are not represented,
         // trip generation near border of study area can be reduced artificially with this method
 
-        if (!mitoData.shallWeRemoveTripsAtBorder()) return false;
+        if (!dataSet.isRemoveTripsAtBorder()) return false;
 
-        float damper = mitoData.getZones().get(tripOrigin).getReductionAtBorderDamper();
+        float damper = dataSet.getZones().get(tripOrigin).getReductionAtBorderDamper();
         return MitoUtil.getRand().nextFloat() < damper;
     }
 
@@ -264,18 +267,18 @@ public class TripGeneration {
         // calculate zonal trip attractions
 
         logger.info("  Calculating trip attractions");
-        TableDataSet attrRates = MitoUtil.readCSVfile(rb.getString("trip.attraction.rates"));
+        TableDataSet attrRates = CSVReader.readAsTableDataSet(resources.getString("trip.attraction.rates"));
         Map<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
-        Collection<Zone> zones = mitoData.getZones().values();
+        Collection<Zone> zones = dataSet.getZones().values();
         Map<Integer, Map<String, Float>> tripAttrByZoneAndPurp = new HashMap<>();
         for (Zone zone: zones) {
             Map<String, Float> tripAttrByPurp = new HashMap<>();
-            for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
+            for (int purp = 0; purp < dataSet.getPurposes().length; purp++) {
                 float tripAttr = 0;
                 for (String variable: independentVariables) {
-                    String token = mitoData.getPurposes()[purp] + "_" + variable;
+                    String token = dataSet.getPurposes()[purp] + "_" + variable;
                     if (attractionRates.containsKey(token)) {
                         float attribute = 0;
                         switch (variable) {
@@ -301,7 +304,7 @@ public class TripGeneration {
                         tripAttr += attribute * attractionRates.get(token);
                     }
                 }
-                tripAttrByPurp.put(mitoData.getPurposes()[purp], tripAttr);
+                tripAttrByPurp.put(dataSet.getPurposes()[purp], tripAttr);
             }
             tripAttrByZoneAndPurp.put(zone.getZoneId(), tripAttrByPurp);
         }
@@ -315,7 +318,7 @@ public class TripGeneration {
         HashMap<String, Float> attractionRates = new HashMap<>();
         for (int row = 1; row <= attrRates.getRowCount(); row++) {
             String generator = attrRates.getStringValueAt(row, "IndependentVariable");
-            for (String purp: mitoData.getPurposes()) {
+            for (String purp: dataSet.getPurposes()) {
                 float rate = attrRates.getValueAt(row, purp);
                 String token = purp + "_" + generator;
                 attractionRates.put(token, rate);
@@ -330,11 +333,11 @@ public class TripGeneration {
 
         logger.info("  Balancing trip production and attractions");
 
-        for (int purp = 0; purp < mitoData.getPurposes().length; purp++) {
-            int tripsByPurp = tripDataManager.getTotalNumberOfTripsGeneratedByPurpose(purp);
+        for (int purp = 0; purp < dataSet.getPurposes().length; purp++) {
+            int tripsByPurp = dataSet.getTripDataManager().getTotalNumberOfTripsGeneratedByPurpose(purp);
             float attrSum = 0;
-            String purpose = mitoData.getPurposes()[purp];
-            for (Zone zone: mitoData.getZones().values()) {
+            String purpose = dataSet.getPurposes()[purp];
+            for (Zone zone: dataSet.getZones().values()) {
                 try {
                     attrSum += tripAttr.get(zone.getZoneId()).get(purpose);
                 } catch (Exception e) {
@@ -343,11 +346,11 @@ public class TripGeneration {
                 }
             }
             if (attrSum == 0) {
-                logger.warn("No trips for purpose " + mitoData.getPurposes()[purp] + " were generated.");
+                logger.warn("No trips for purpose " + dataSet.getPurposes()[purp] + " were generated.");
                 continue;
             }
             // adjust attractions (or productions for NHBW and NHBO)
-            for (Zone zone: mitoData.getZones().values()) {
+            for (Zone zone: dataSet.getZones().values()) {
                 final float attrSumFinal = attrSum;
                 tripAttr.get(zone.getZoneId()).replaceAll((k,v) -> v * tripsByPurp / attrSumFinal);
 
@@ -402,29 +405,29 @@ public class TripGeneration {
     private void writeTripSummary(Map<Integer, Map<String, Float>> tripAttractionByZoneAndPurp) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = MitoData.generateOutputFileName(rb.getString("trip.production.output"));
+        String fileNameProd = MitoUtil.generateOutputFileName(resources.getString("trip.production.output"));
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = MitoData.generateOutputFileName(rb.getString("trip.attraction.output"));
+        String fileNameAttr = MitoUtil.generateOutputFileName(resources.getString("trip.attraction.output"));
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("Zone");
         pwAttr.print("Zone");
-        for (String tripPurpose: mitoData.getPurposes()) {
+        for (String tripPurpose: dataSet.getPurposes()) {
             pwProd.print("," + tripPurpose + "P");
             pwAttr.print("," + tripPurpose + "A");
         }
 
         Map<Integer, Map<String, Integer>> tripProdByZoneAndPurp = new HashMap<>();
 
-        for(Integer zoneId: mitoData.getZones().keySet()) {
+        for(Integer zoneId: dataSet.getZones().keySet()) {
             Map<String, Integer> initialValues = new HashMap<>();
-            for(String purp: mitoData.getPurposes()) {
+            for(String purp: dataSet.getPurposes()) {
                 initialValues.put(purp, 0);
             }
             tripProdByZoneAndPurp.put(zoneId, initialValues);
         }
 
-        for (MitoTrip trip: MitoTrip.getTripArray()) {
-            String purp = mitoData.getPurposes()[trip.getTripPurpose()];
+        for (MitoTrip trip: dataSet.getTripDataManager().getTrips().values()) {
+            String purp = dataSet.getPurposes()[trip.getTripPurpose()];
             int number = tripProdByZoneAndPurp.get(trip.getTripOrigin()).get(purp);
             tripProdByZoneAndPurp.get(trip.getTripOrigin()).replace(purp, (number + 1));
         }
@@ -432,10 +435,10 @@ public class TripGeneration {
         int totalTrips = 0;
         pwProd.println();
         pwAttr.println();
-        for (int zoneId: mitoData.getZones().keySet()) {
+        for (int zoneId: dataSet.getZones().keySet()) {
             pwProd.print(zoneId);
             pwAttr.print(zoneId);
-            for (String purp: mitoData.getPurposes()) {
+            for (String purp: dataSet.getPurposes()) {
                 int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(purp);
                 totalTrips += tripProdTmp;
                 pwProd.print("," + tripProdTmp);
@@ -448,6 +451,129 @@ public class TripGeneration {
         pwAttr.close();
         logger.info("  Wrote out " + MitoUtil.customFormat("###,###", totalTrips)
                 + " aggregate trips balanced against attractions.");
+    }
+
+    public int[] defineHouseholdTypeOfEachSurveyRecords(String autoDef, TableDataSet hhTypeDef) {
+        // Count number of household records per predefined typ
+
+        int[] hhTypeCounter = new int[MitoUtil.getHighestVal(hhTypeDef.getColumnAsInt("hhType")) + 1];
+
+        TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
+        int[] hhTypeArray = new int[travelSurveyHouseholdTable.getRowCount() + 1];
+
+        for (int row = 1; row <= travelSurveyHouseholdTable.getRowCount(); row++) {
+            int hhSze = (int) travelSurveyHouseholdTable.getValueAt(row, "hhsiz");
+            hhSze = Math.min(hhSze, 7);    // hhsiz 8 has only 19 records, aggregate with hhsiz 7
+            int hhWrk = (int) travelSurveyHouseholdTable.getValueAt(row, "hhwrk");
+            hhWrk = Math.min(hhWrk, 4);    // hhwrk 6 has 1 and hhwrk 5 has 7 records, aggregate with hhwrk 4
+            int hhInc = (int) travelSurveyHouseholdTable.getValueAt(row, "incom");
+            int hhVeh = (int) travelSurveyHouseholdTable.getValueAt(row, "hhveh");
+            hhVeh = Math.min (hhVeh, 3);   // Auto-ownership model will generate groups 0, 1, 2, 3+ only.
+            int region = (int) travelSurveyHouseholdTable.getValueAt(row, "urbanSuburbanRural");
+
+            int hhTypeId = getHhType(autoDef, hhTypeDef, hhSze, hhWrk, hhInc, hhVeh, region);
+            hhTypeArray[row] = hhTypeId;
+            hhTypeCounter[hhTypeId]++;
+        }
+        // analyze if every household type has a sufficient number of records
+        for (int hht = 1; hht < hhTypeCounter.length; hht++) {
+            if (hhTypeCounter[hht] < 30) hhTypeArray[0] = -1;  // marker that this hhTypeDef is not worth analyzing
+        }
+        return hhTypeArray;
+    }
+
+    public HashMap<String, Integer[]> collectTripFrequencyDistribution (int[] hhTypeArray) {
+        // Summarize frequency of number of trips for each household type by each trip purpose
+        //
+        // Storage Structure
+        //   HashMap<String, Integer> tripsByHhTypeAndPurpose: Token is hhType_TripPurpose
+        //   |
+        //   contains -> Integer[] tripFrequencyList: Frequency of 0, 1, 2, 3, ... trips
+
+        HashMap<String, Integer[]> tripsByHhTypeAndPurpose = new HashMap<>();  // contains trips by hhtype and purpose
+
+        for (int hhType = 1; hhType < hhTypeArray.length; hhType++) {
+            for (String purp: dataSet.getPurposes()) {
+                String token = String.valueOf(hhType) + "_" + purp;
+                // fill Storage structure from bottom       0                  10                  20                  30
+                Integer[] tripFrequencyList = new Integer[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};  // space for up to 30 trips
+                tripsByHhTypeAndPurpose.put(token, tripFrequencyList);
+            }
+        }
+
+        // Read through household file of HTS
+        int pos = 1;
+        TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
+        for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
+            int sampleId = (int) travelSurveyHouseholdTable.getValueAt(hhRow, "sampn");
+            int hhType = hhTypeArray[hhRow];
+            int[] tripsOfThisHouseholdByPurposes = new int[dataSet.getPurposes().length];
+            // Ready through trip file of HTS
+            TableDataSet travelSurveyTripsDable = dataSet.getTravelsurveyTripsTable();
+            for (int trRow = pos; trRow <= travelSurveyTripsDable.getRowCount(); trRow++) {
+                if ((int) travelSurveyTripsDable.getValueAt(trRow, "sampn") == sampleId) {
+
+                    // add this trip to this household
+                    pos++;
+                    String htsTripPurpose = travelSurveyTripsDable.getStringValueAt(trRow, "mainPurpose");
+                    tripsOfThisHouseholdByPurposes[MitoUtil.findPositionInArray(htsTripPurpose, dataSet.getPurposes())]++;
+                } else {
+                    // This trip record does not belong to this household
+                    break;
+                }
+            }
+            for (int p = 0; p < dataSet.getPurposes().length; p++) {
+                String token = String.valueOf(hhType) + "_" + dataSet.getPurposes()[p];
+                Integer[] tripsOfThisHouseholdType = tripsByHhTypeAndPurpose.get(token);
+                int count = tripsOfThisHouseholdByPurposes[p];
+                tripsOfThisHouseholdType[count]++;
+                tripsByHhTypeAndPurpose.put(token, tripsOfThisHouseholdType);
+            }
+        }
+        return tripsByHhTypeAndPurpose;
+    }
+
+    public int getHhType (String autoDef, TableDataSet hhTypeDef, int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {
+        // Define household type
+
+        hhSze = Math.min (hhSze, 7);
+        hhWrk = Math.min (hhWrk, 4);
+        int hhAut;
+        if (autoDef.equalsIgnoreCase("autos")) {
+            hhAut = Math.min(hhVeh, 3);
+        } else {
+            if (hhVeh < hhWrk) {
+                hhAut = 0;        // fewer autos than workers
+            }
+            else if (hhVeh == hhWrk) {
+                hhAut = 1;  // equal number of autos and workers
+            } else {
+                hhAut = 2;                      // more autos than workers
+            }
+        }
+        for (int hhType = 1; hhType <= hhTypeDef.getRowCount(); hhType++) {
+            if (hhSze >= hhTypeDef.getIndexedValueAt(hhType, "size_l") &&          // Household size
+                    hhSze <= hhTypeDef.getIndexedValueAt(hhType, "size_h") &&
+                    hhWrk >= hhTypeDef.getIndexedValueAt(hhType, "workers_l") &&   // Number of workers
+                    hhWrk <= hhTypeDef.getIndexedValueAt(hhType, "workers_h") &&
+                    hhInc >= hhTypeDef.getIndexedValueAt(hhType, "income_l") &&    // Household income
+                    hhInc <= hhTypeDef.getIndexedValueAt(hhType, "income_h") &&
+                    hhAut >= hhTypeDef.getIndexedValueAt(hhType, "autos_l") &&     // Number of vehicles
+                    hhAut <= hhTypeDef.getIndexedValueAt(hhType, "autos_h") &&
+                    hhReg >= hhTypeDef.getIndexedValueAt(hhType, "region_l") &&    // Region (urban, suburban, rural)
+                    hhReg <= hhTypeDef.getIndexedValueAt(hhType, "region_h")) {
+                return (int) hhTypeDef.getIndexedValueAt(hhType, "hhType");
+            }
+        }
+        logger.error ("Could not define household type: " + hhSze + " " + hhWrk + " " + hhInc + " " + hhVeh + " " + hhReg);
+        for (int hhType = 1; hhType <= hhTypeDef.getRowCount(); hhType++) {
+            logger.error(hhType+": "+hhTypeDef.getIndexedValueAt(hhType, "size_l")+"-"+hhTypeDef.getIndexedValueAt(hhType, "size_h")
+                    +","+hhTypeDef.getIndexedValueAt(hhType, "workers_l")+"-"+hhTypeDef.getIndexedValueAt(hhType, "workers_h")
+                    +","+hhTypeDef.getIndexedValueAt(hhType, "income_l")+"-"+hhTypeDef.getIndexedValueAt(hhType, "income_h")
+                    +","+hhTypeDef.getIndexedValueAt(hhType, "autos_l")+"-"+hhTypeDef.getIndexedValueAt(hhType, "autos_h")
+                    +","+hhTypeDef.getIndexedValueAt(hhType, "region_l")+"-"+hhTypeDef.getIndexedValueAt(hhType, "region_h"));
+        }
+        return -1;
     }
 }
 

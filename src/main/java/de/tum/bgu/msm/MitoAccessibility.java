@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import com.pb.common.util.ResourceUtil;
+import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
@@ -20,11 +21,11 @@ public class MitoAccessibility {
 
 
     static Logger logger = Logger.getLogger(MitoAccessibility.class);
-    private MitoData td;
-    private ResourceBundle rb;
+    private final DataSet dataSet;
+    private final ResourceBundle rb;
 
-    public MitoAccessibility(ResourceBundle rb, MitoData td) {
-        this.td = td;
+    public MitoAccessibility(ResourceBundle rb, DataSet dataSet) {
+        this.dataSet = dataSet;
         this.rb = rb;
     }
 
@@ -36,7 +37,7 @@ public class MitoAccessibility {
         float alpha = (float) ResourceUtil.getDoubleProperty(rb, "accessibility.alpha");
         float beta = (float) ResourceUtil.getDoubleProperty(rb, "accessibility.beta");
 
-        Collection<Zone> zones = td.getZones().values();
+        Collection<Zone> zones = dataSet.getZones().values();
         Map<Integer, Float> autoAccessibilityHouseholdsByZone = new HashMap<>();
         Map<Integer, Float>  autoAccessibilityRetailByZone = new HashMap<>();
         Map<Integer, Float>  autoAccessibilityOtherByZone  = new HashMap<>();
@@ -49,14 +50,14 @@ public class MitoAccessibility {
             float transitAccessibilityOther = 0;
             for (Zone toZone : zones) {
                 double autoImpedance;
-                float autoTravelTime = td.getAutoTravelTimes(zone.getZoneId(), toZone.getZoneId());
+                float autoTravelTime = dataSet.getAutoTravelTimeFromTo(zone.getZoneId(), toZone.getZoneId());
                 if (autoTravelTime == 0) {      // should never happen for auto
                     autoImpedance = 0;
                 } else {
                     autoImpedance = Math.exp(beta * autoTravelTime);
                 }
                 double transitImpedance;
-                float transitTravelTime = td.getTransitTravelTimes(zone.getZoneId(), toZone.getZoneId());
+                float transitTravelTime = dataSet.getTransitTravelTimedFromTo(zone.getZoneId(), toZone.getZoneId());
                 if (transitTravelTime == 0) {   // zone is not connected by walk-to-transit
                     transitImpedance = 0;
                 } else {
@@ -79,7 +80,7 @@ public class MitoAccessibility {
         MitoUtil.scaleMap(autoAccessibilityOtherByZone, 100);
         MitoUtil.scaleMap(transitAccessibilityOtherByZone, 100);
 
-        for(Zone zone: td.getZones().values()) {
+        for(Zone zone: dataSet.getZones().values()) {
             zone.setAutoAccessibilityHouseholds(autoAccessibilityHouseholdsByZone.get(zone.getZoneId()));
             zone.setAutoAccessibilityRetail(autoAccessibilityRetailByZone.get(zone.getZoneId()));
             zone.setAutoAccessibilityOther(autoAccessibilityOtherByZone.get(zone.getZoneId()));

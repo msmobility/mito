@@ -1,9 +1,10 @@
 package de.tum.bgu.msm;
 
 import com.pb.common.matrix.Matrix;
+import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.TripDataManager;
+import de.tum.bgu.msm.io.InputManager;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
 import org.apache.log4j.Logger;
 
@@ -32,31 +33,36 @@ import java.util.ResourceBundle;
 public class MitoModel {
 
     private static Logger logger = Logger.getLogger(MitoModel.class);
-    private MitoData mitoData;
-    private TripDataManager tripDataManager;
     private TravelTimeBudget ttbModel;
     private ResourceBundle rb;
+    private final InputManager manager;
+
+    private DataSet dataSet;
 
     public MitoModel(ResourceBundle rb) {
         this.rb = rb;
-        this.mitoData = new MitoData(rb);
-        this.tripDataManager = new TripDataManager();
+        this.dataSet = new DataSet();
+        this.manager = new InputManager(dataSet, rb);
     }
 
+    public void runModel() {
+        long startTime = System.currentTimeMillis();
+        logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-    public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] mitoHouseholds,
-                         MitoPerson[] mitoPersons, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone,
-                         int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
-        // Feed data from other program. Need to write new methods to read these data from files if MitoModel is used as
-        // stand-alone program.
-        mitoData.setZonesFromFeed(zones, retailEmplByZone, officeEmplByZone, otherEmplByZone, totalEmplByZone, sizeOfZonesInAcre);
-        mitoData.setAutoTravelTimes(autoTravelTimes);
-        mitoData.setTransitTravelTimes(transitTravelTimes);
-        mitoData.setHouseholdsFromFeed(mitoHouseholds);
-        mitoData.setPersonsFromFeed(mitoPersons);
-        // todo: the household travel survey should not be read every year the model runs, but only in the first year.
-        // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
-        mitoData.readHouseholdTravelSurvey();
+        // setup
+        manager.readAdditionalData();
+
+        // generate travel demand
+        MitoTravelDemand ttd = new MitoTravelDemand(rb, dataSet);
+        ttd.generateTravelDemand();
+
+        String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTripDataManager().getTotalNumberOfTrips());
+        logger.info("A total of " + trips.trim() + " microscopic trips were generated");
+        logger.info("Completed the Microsimulation Transport Orchestrator (MITO)");
+        float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
+        int hours = (int) (endTime / 60);
+        int min = (int) (endTime - 60 * hours);
+        logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
     public void setBaseDirectory (String baseDirectory) {
@@ -68,47 +74,24 @@ public class MitoModel {
     }
 
     public void setScenarioName (String scenarioName) {
-        mitoData.setScenarioName(scenarioName);
+        dataSet.setScenarioName(scenarioName);
     }
 
-    public void readData() {
+
+    public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] households,
+                         MitoPerson[] persons, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone,
+                         int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
+       manager.readFromFeed(zones, autoTravelTimes, transitTravelTimes, households, persons, retailEmplByZone, officeEmplByZone, otherEmplByZone, totalEmplByZone, sizeOfZonesInAcre );
+    }
+
+    public void initializeStandAlone() {
         // Read data if MITO is used as a stand-alone program and data are not fed from other program
         logger.info("  Reading input data for MITO");
         MitoUtil.initializeRandomNumber(rb);
-        mitoData.readHouseholdTravelSurvey();
-        mitoData.readZones();
-        mitoData.readSkims();
-        mitoData.readDistance();
-        mitoData.readHouseholdData();
-        mitoData.readPersonData();
-        mitoData.readJobData();
-        mitoData.readEmploymentData();
+        manager.readAsStandAlone();
     }
 
-
-    public void runModel() {
-        // initialize MitoModel from other program
-        long startTime = System.currentTimeMillis();
-        logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-
-        // setup
-        mitoData.readInputData();
-
-        // generate travel demand
-        MitoTravelDemand ttd = new MitoTravelDemand(rb, mitoData, tripDataManager);
-        ttd.generateTravelDemand();
-
-        String trips = MitoUtil.customFormat("  " + "###,###", tripDataManager.getTotalNumberOfTrips());
-        logger.info("A total of " + trips.trim() + " microscopic trips were generated");
-        logger.info("Completed the Microsimulation Transport Orchestrator (MITO)");
-        float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
-        int hours = (int) (endTime / 60);
-        int min = (int) (endTime - 60 * hours);
-        logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
-    }
-
-
-    public MitoData getTravelDemand() {
-        return mitoData;
+    public DataSet getTravelDemand() {
+        return dataSet;
     }
 }

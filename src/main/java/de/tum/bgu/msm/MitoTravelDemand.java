@@ -1,5 +1,6 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.TripDataManager;
 import de.tum.bgu.msm.modules.DestinationChoice;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
@@ -18,14 +19,12 @@ import java.util.ResourceBundle;
 public class MitoTravelDemand {
 
     private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
-    private MitoData mitoData;
-    private TripDataManager tripDataManager;
-    private ResourceBundle rb;
+    private final DataSet dataSet;
+    private ResourceBundle resources;
 
-    public MitoTravelDemand(ResourceBundle rb, MitoData td, TripDataManager tripDataManager) {
-        this.rb = rb;
-        this.mitoData = td;
-        this.tripDataManager = tripDataManager;
+    public MitoTravelDemand(ResourceBundle resources, DataSet dataSet) {
+        this.resources = resources;
+        this.dataSet = dataSet;
     }
 
 
@@ -33,13 +32,13 @@ public class MitoTravelDemand {
         // main class to run travel demand
 
         // microscopic trip generation
-        TripGeneration tg = new TripGeneration(rb, mitoData, tripDataManager);
-        tg.generateTrips();
+        TripGeneration tg = new TripGeneration(dataSet, resources);
+        tg.run();
         // calculate travel time budgets
-        TravelTimeBudget ttb = new TravelTimeBudget(rb, mitoData, tripDataManager);
-        ttb.calculateTravelTimeBudget();
+        TravelTimeBudget ttb = new TravelTimeBudget(dataSet, resources);
+        ttb.run();
         // microscopic destination choice
-        DestinationChoice dc = new DestinationChoice(rb, mitoData, tripDataManager);
-        dc.selectTripDestinations();
+        DestinationChoice dc = new DestinationChoice(dataSet);
+        dc.run();
     }
 }

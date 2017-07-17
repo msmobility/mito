@@ -21,10 +21,10 @@ public class Zone {
     private int otherEmpl = 0;
     private int totalEmpl = 0;
 
-    private float autoAccessibilityHouseholds = Float.NaN;
-    private float autoAccessibilityRetail = Float.NaN;
-    private float autoAccessibilityOther = Float.NaN;
-    private float transitAccessibilityOther = Float.NaN;
+    private float autoAccessibilityHouseholds = 0;
+    private float autoAccessibilityRetail = 0;
+    private float autoAccessibilityOther = 0;
+    private float transitAccessibilityOther = 0;
 
     private Map<String, Float> attractionByPurpose = new HashMap<>();
 
@@ -41,7 +41,6 @@ public class Zone {
     public int getZoneId() {
         return this.zoneId;
     }
-
 
     public float getSize() {
         return this.size;
@@ -87,6 +86,7 @@ public class Zone {
         this.schoolEnrollment = schoolEnrollment;
     }
 
+
     public void setIndEmpl(int indEmpl) {
         this.industrialEmpl = indEmpl;
     }
@@ -107,6 +107,7 @@ public class Zone {
         this.totalEmpl = totalEmpl;
     }
 
+
     public int getTotalEmpl() {
         return totalEmpl;
     }
@@ -123,6 +124,7 @@ public class Zone {
         return otherEmpl;
     }
 
+
     public float getAutoAccessibilityHouseholds() {
         return autoAccessibilityHouseholds;
     }
@@ -130,6 +132,7 @@ public class Zone {
     public void setAutoAccessibilityHouseholds(float autoAccessibilityHouseholds) {
         this.autoAccessibilityHouseholds = autoAccessibilityHouseholds;
     }
+
 
     public float getAutoAccessibilityRetail() {
         return autoAccessibilityRetail;
@@ -139,6 +142,7 @@ public class Zone {
         this.autoAccessibilityRetail = autoAcessibilityRetail;
     }
 
+
     public float getAutoAccessibilityOther() {
         return autoAccessibilityOther;
     }
@@ -146,6 +150,7 @@ public class Zone {
     public void setAutoAccessibilityOther(float autoAcessibilityOther) {
         this.autoAccessibilityOther = autoAcessibilityOther;
     }
+
 
     public float getTransitAccessibilityOther() {
         return transitAccessibilityOther;
