@@ -12,12 +12,12 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 /**
- * Implements the Microsimulation Transport Orchestrator (TIMO)
+ * Implements the Microsimulation Transport Orchestrator (MITO)
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  *
- * To run TIMO, the following data need either to be passed in (using methods feedData) from another program or
- * need to be read from files and passed in:
+ * To run MITO, the following data need either to be passed in (using methods feedData) from another program or
+ * need to be read from files and passed in (using method initializeStandAlone):
  * - zones:              public void setZones(int[] zones)
  * - autoTravelTimes:    public void setAutoTravelTimes (Matrix autoTravelTimes)
  * - transitTravelTimes: public void setTransitTravelTimes (Matrix transitTravelTimes)
@@ -27,22 +27,23 @@ import java.util.ResourceBundle;
  * - otherEmplByZone:    public void setOtherEmplByZone(int[] otherEmplByZone)
  * - totalEmplByZone:    public void setTotalEmplByZone(int[] totalEmplByZone)
  * - sizeOfZonesInAcre:  public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre)
- * All other data are read by function MitoData.readInputData().
+ * All other data are read by function  manager.readAdditionalData();
  */
 
 public class MitoModel {
 
     private static Logger logger = Logger.getLogger(MitoModel.class);
     private TravelTimeBudget ttbModel;
-    private ResourceBundle rb;
     private final InputManager manager;
+    private final ResourceBundle resources;
 
     private DataSet dataSet;
 
-    public MitoModel(ResourceBundle rb) {
-        this.rb = rb;
+    public MitoModel(ResourceBundle resources) {
+        this.resources = resources;
+        Properties.load(resources);
         this.dataSet = new DataSet();
-        this.manager = new InputManager(dataSet, rb);
+        this.manager = new InputManager(dataSet);
     }
 
     public void runModel() {
@@ -53,7 +54,7 @@ public class MitoModel {
         manager.readAdditionalData();
 
         // generate travel demand
-        MitoTravelDemand ttd = new MitoTravelDemand(rb, dataSet);
+        MitoTravelDemand ttd = new MitoTravelDemand(dataSet, resources);
         ttd.generateTravelDemand();
 
         String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTripDataManager().getTotalNumberOfTrips());
@@ -87,7 +88,7 @@ public class MitoModel {
     public void initializeStandAlone() {
         // Read data if MITO is used as a stand-alone program and data are not fed from other program
         logger.info("  Reading input data for MITO");
-        MitoUtil.initializeRandomNumber(rb);
+        MitoUtil.initializeRandomNumber();
         manager.readAsStandAlone();
     }
 

@@ -1,33 +1,27 @@
 package de.tum.bgu.msm.io;
 
-import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.MitoUtil;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoPerson;
 import org.apache.log4j.Logger;
 
-import java.util.ResourceBundle;
-
-import static de.tum.bgu.msm.io.InputManager.PROPERTIES_JJ_FILE_ASCII;
-
 /**
  * Created by Nico on 17.07.2017.
  */
-public class JobReader {
+public class JobReader extends AbstractInputReader {
 
     private static Logger logger = Logger.getLogger(JobReader.class);
 
-    private final DataSet dataSet;
-    private final String fileName;
-
-    public JobReader(DataSet dataSet, ResourceBundle resources) {
-        this.dataSet = dataSet;
-        this.fileName = ResourceUtil.getProperty(resources, PROPERTIES_JJ_FILE_ASCII);
+    public JobReader(DataSet dataSet) {
+        super(dataSet);
     }
 
 
+    @Override
     public void read() {
         logger.info("  Reading job micro data from ascii file");
+        String fileName = Properties.getString(Properties.JOBS);
         CSVReader reader = new CSVReader(fileName, ",", new JobCSVAdapter());
         reader.read();
     }

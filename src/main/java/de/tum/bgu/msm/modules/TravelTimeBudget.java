@@ -2,7 +2,7 @@ package de.tum.bgu.msm.modules;
 
 import com.pb.common.calculator.UtilityExpressionCalculator;
 import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.MitoData;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -21,22 +21,11 @@ import java.util.ResourceBundle;
 
 public class TravelTimeBudget extends Module {
 
-    protected static final String PROPERTIES_TRAVEL_TIME_BUDGET_UEC_FILE          = "travel.time.budget.UEC.File";
-    protected static final String PROPERTIES_TRAVEL_TIME_BUDGET_UEC_DATA_SHEET    = "ttb.UEC.DataSheetNumber";
-    protected static final String PROPERTIES_Total_Travel_Time_Budget_UEC_UTILITY = "total.ttb.UEC.Utility";
-    protected static final String PROPERTIES_HBS_Travel_Time_Budget_UEC_UTILITY   = "hbs.ttb.UEC.Utility";
-    protected static final String PROPERTIES_HBO_Travel_Time_Budget_UEC_UTILITY   = "hbo.ttb.UEC.Utility";
-    protected static final String PROPERTIES_NHBW_Travel_Time_Budget_UEC_UTILITY  = "nhbw.ttb.UEC.Utility";
-    protected static final String PROPERTIES_NHBO_Travel_Time_Budget_UEC_UTILITY  = "nhbo.ttb.UEC.Utility";
-    protected static final String PROPERTIES_LOG_UTILITY_CALCULATION_TOTAL_TTB    = "log.util.total.ttb";
-    protected static final String PROPERTIES_LOG_UTILITY_CALCULATION_HBS_TTB      = "log.util.hbs.ttb";
-    protected static final String PROPERTIES_LOG_UTILITY_CALCULATION_HBO_TTB      = "log.util.hbo.ttb";
-    protected static final String PROPERTIES_LOG_UTILITY_CALCULATION_NHBW_TTB     = "log.util.nhbw.ttb";
-    protected static final String PROPERTIES_LOG_UTILITY_CALCULATION_NHBO_TTB     = "log.util.nhbo.ttb";
+
 
     private static Logger logger = Logger.getLogger(TravelTimeBudget.class);
 
-    private final ResourceBundle resources;
+    private ResourceBundle resources;
 
     private boolean logCalculationTotalTtb;
     private boolean logCalculationHbsTtb;
@@ -73,30 +62,30 @@ public class TravelTimeBudget extends Module {
         // set up utility expression calculator for calculation of the travel time budget
 
         logger.info("  Creating Utility Expression Calculator for microscopic travel time budget calculation.");
-        logCalculationTotalTtb = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_TOTAL_TTB);
-        logCalculationHbsTtb   = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_HBS_TTB);
-        logCalculationHboTtb   = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_HBO_TTB);
-        logCalculationNhbwTtb  = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_NHBW_TTB);
-        logCalculationNhboTtb  = ResourceUtil.getBooleanProperty(resources, PROPERTIES_LOG_UTILITY_CALCULATION_NHBO_TTB);
-        String uecFileName     = resources.getString(PROPERTIES_TRAVEL_TIME_BUDGET_UEC_FILE);
-        int dataSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
-        int totalTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_Total_Travel_Time_Budget_UEC_UTILITY);
+        logCalculationTotalTtb = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_TOTAL_TTB);
+        logCalculationHbsTtb   = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBS_TTB);
+        logCalculationHboTtb   = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBO_TTB);
+        logCalculationNhbwTtb  = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBW_TTB);
+        logCalculationNhboTtb  = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBO_TTB);
+        String uecFileName     = Properties.getString(Properties.TRAVEL_TIME_BUDGET_UEC_FILE);
+        int dataSheetNumber = Properties.getInt(Properties.TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
+        int totalTtbSheetNumber = Properties.getInt(Properties.TOTAL_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         totalTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), totalTtbSheetNumber,
                 dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
-        int hbsTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_HBS_Travel_Time_Budget_UEC_UTILITY);
+        int hbsTtbSheetNumber = Properties.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         hbsTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), hbsTtbSheetNumber,
                 dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         hbsTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int hboTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_HBO_Travel_Time_Budget_UEC_UTILITY);
+        int hboTtbSheetNumber = Properties.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         hboTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), hboTtbSheetNumber,
                 dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         hboTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int nhbwTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_NHBW_Travel_Time_Budget_UEC_UTILITY);
+        int nhbwTtbSheetNumber = Properties.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         nhbwTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), nhbwTtbSheetNumber,
                 dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         nhbwTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int nhboTtbSheetNumber = ResourceUtil.getIntegerProperty(resources, PROPERTIES_NHBO_Travel_Time_Budget_UEC_UTILITY);
+        int nhboTtbSheetNumber = Properties.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         nhboTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), nhboTtbSheetNumber,
                 dataSheetNumber, resources, TravelTimeBudgetDMU.class);
         nhboTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
@@ -157,7 +146,6 @@ public class TravelTimeBudget extends Module {
         }
     }
 
-
     private double calculateTTB (String purpose, MitoHousehold hh, TravelTimeBudgetDMU ttbDMU,
                                  UtilityExpressionCalculator ttbUtility, boolean logCalculationTtb) {
         // calculate  travel time budget for MitoHousehold hh
@@ -176,7 +164,9 @@ public class TravelTimeBudget extends Module {
         ttbDMU.setAreaType(dataSet.getZones().get(hh.getHomeZone()).getRegion());  // todo: Ana, how is area type defined?
 
         int[] tripCounter = new int[dataSet.getPurposes().length];
-        for(MitoTrip trip: hh.getTrips()) tripCounter[trip.getTripPurpose()]++;
+        for(MitoTrip trip: hh.getTrips()) {
+            tripCounter[trip.getTripPurpose()]++;
+        }
 
         ttbDMU.setTrips(tripCounter, dataSet);
         double util[] = ttbUtility.solve(ttbDMU.getDmuIndexValues(), ttbDMU, totalTtbAvail);

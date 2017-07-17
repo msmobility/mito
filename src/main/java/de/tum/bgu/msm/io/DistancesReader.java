@@ -1,33 +1,26 @@
 package de.tum.bgu.msm.io;
 
 import com.pb.common.matrix.Matrix;
-import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.MitoUtil;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import omx.OmxFile;
 import org.apache.log4j.Logger;
 
-import java.util.ResourceBundle;
-
-import static de.tum.bgu.msm.io.InputManager.PROPERTIES_DISTANCE_SKIM;
-
 /**
  * Created by Nico on 17.07.2017.
  */
-public class DistancesReader {
-
+public class DistancesReader extends AbstractInputReader {
 
     private static Logger logger = Logger.getLogger(DistancesReader.class);
 
-    private final DataSet dataSet;
-    private final String fileName;
     private Matrix distanceMatrix;
 
-    public DistancesReader(DataSet dataSet, ResourceBundle resources) {
-        this.dataSet = dataSet;
-        this.fileName =  ResourceUtil.getProperty(resources, PROPERTIES_DISTANCE_SKIM);
+    public DistancesReader(DataSet dataSet) {
+        super(dataSet);
     }
 
+    @Override
     public void read() {
             readMatrix();
             scaleValues();
@@ -36,6 +29,7 @@ public class DistancesReader {
 
     private void readMatrix() {
         logger.info("   Starting to read distances OMX matrix");
+        String fileName = Properties.getString(Properties.DISTANCE_SKIM);
         OmxFile travelTimeOmx = new OmxFile(fileName);
         travelTimeOmx.openReadOnly();
         distanceMatrix = MitoUtil.convertOmxToMatrix(travelTimeOmx.getMatrix("HOVTime"));

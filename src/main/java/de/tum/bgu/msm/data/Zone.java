@@ -26,9 +26,6 @@ public class Zone {
     private float autoAccessibilityOther = 0;
     private float transitAccessibilityOther = 0;
 
-    private Map<String, Float> attractionByPurpose = new HashMap<>();
-
-
     public Zone(int zoneId){
         this.zoneId = zoneId;
     }

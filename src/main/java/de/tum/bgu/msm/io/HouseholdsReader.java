@@ -1,36 +1,32 @@
 package de.tum.bgu.msm.io;
 
-import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.MitoUtil;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
-
-import static de.tum.bgu.msm.io.InputManager.PROPERTIES_HH_FILE_ASCII;
 
 /**
  * Created by Nico on 17.07.2017.
  */
-public class HouseholdsReader {
+public class HouseholdsReader extends AbstractInputReader {
 
     private static Logger logger = Logger.getLogger(HouseholdsReader.class);
 
-    private final String fileName;
-    private final DataSet dataSet;
     private final Map<Integer, MitoHousehold> households = new HashMap<>();
     private final HouseholdsCSVAdapter adapter = new HouseholdsCSVAdapter();
 
-    public HouseholdsReader(DataSet dataSet, ResourceBundle resources) {
-        this.dataSet = dataSet;
-        this.fileName = ResourceUtil.getProperty(resources, PROPERTIES_HH_FILE_ASCII);
+    public HouseholdsReader(DataSet dataSet) {
+        super(dataSet);
     }
 
+    @Override
     public void read() {
         logger.info("  Reading household micro data from ascii file");
+        String fileName = Properties.getString(Properties.HOUSEHOLDS);
         CSVReader reader = new CSVReader(fileName, ",", adapter);
         reader.read();
         dataSet.setHouseholds(households);

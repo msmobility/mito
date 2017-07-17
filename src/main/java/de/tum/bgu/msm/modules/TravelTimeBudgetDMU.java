@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules;
 
 import com.pb.common.calculator.IndexValues;
-import de.tum.bgu.msm.MitoData;
 import de.tum.bgu.msm.data.DataSet;
 import org.apache.log4j.Logger;
 

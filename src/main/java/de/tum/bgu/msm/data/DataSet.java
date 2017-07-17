@@ -2,7 +2,6 @@ package de.tum.bgu.msm.data;
 
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.MitoData;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Map;
  */
 public class DataSet {
 
-    private static Logger logger = Logger.getLogger(MitoData.class);
+    private static Logger logger = Logger.getLogger(DataSet.class);
     private static String scenarioName;
 
     private TableDataSet travelSurveyHouseholdTable;
@@ -21,11 +20,10 @@ public class DataSet {
 
     private Matrix autoTravelTimes;
     private Matrix transitTravelTimes;
+    private Matrix distanceMatrix;
 
     private String[] purposes;
     private HashMap<String, Integer> purposeIndices;
-    private boolean removeTripsAtBorder;
-    private Matrix distanceMatrix;
 
     private Map<Integer, Zone> zones;
     private Map<Integer, MitoHousehold> households;
@@ -99,22 +97,6 @@ public class DataSet {
 
     public int getPurposeIndex(String purpose) {
         return purposeIndices.get(purpose);
-    }
-
-    public void setPurposeIndices(HashMap<String, Integer> purposeIndices) {
-        this.purposeIndices = purposeIndices;
-    }
-
-    public boolean isRemoveTripsAtBorder() {
-        return removeTripsAtBorder;
-    }
-
-    public void setRemoveTripsAtBorder(boolean removeTripsAtBorder) {
-        this.removeTripsAtBorder = removeTripsAtBorder;
-    }
-
-    public Matrix getDistanceMatrix() {
-        return distanceMatrix;
     }
 
     public void setDistanceMatrix(Matrix distanceMatrix) {

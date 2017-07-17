@@ -2,8 +2,8 @@ package de.tum.bgu.msm.data;
 
 
 
-import de.tum.bgu.msm.MitoData;
 import de.tum.bgu.msm.MitoUtil;
+import de.tum.bgu.msm.Properties;
 
 import java.io.PrintWriter;
 import java.util.ResourceBundle;
@@ -17,17 +17,13 @@ import java.util.ResourceBundle;
 
 public class SummarizeData {
     static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SummarizeData.class);
-    protected static final String PROPERTIES_FILENAME_HH_MICRODATA        = "household.file.ascii";
-    protected static final String PROPERTIES_FILENAME_PP_MICRODATA        = "person.file.ascii";
-    protected static final String PROPERTIES_BASE_DIRECTORY               = "base.directory";
 
 
-
-    public static void writeOutSyntheticPopulationWithTrips(ResourceBundle rb, DataSet dataSet){
+    public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet){
         //write out files with synthetic population and the number of trips
 
         logger.info("  Writing household file");
-        String filehh = rb.getString(PROPERTIES_BASE_DIRECTORY) + "/" + rb.getString(PROPERTIES_FILENAME_HH_MICRODATA) + "_t.csv";
+        String filehh = Properties.getString(Properties.BASE_DIRECTORY) + "/" + Properties.getString(Properties.HOUSEHOLDS) + "_t.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
         pwh.println("id,zone,hhSize,autos,trips,workTrips");
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
@@ -46,7 +42,7 @@ public class SummarizeData {
         pwh.close();
 
         logger.info("  Writing person file");
-        String filepp = rb.getString(PROPERTIES_BASE_DIRECTORY) + "/" + rb.getString(PROPERTIES_FILENAME_PP_MICRODATA) + "_t.csv";
+        String filepp = Properties.getString(Properties.BASE_DIRECTORY) + "/" + Properties.getString(Properties.PERSONS) + "_t.csv";
         PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp, false);
         pwp.println("id,hhID,hhSize,hhTrips,avTrips");
         for (MitoPerson pp : dataSet.getPersons().values()) {

@@ -90,7 +90,7 @@ public class TripDataManager {
     }
 
     public Map<Integer,MitoTrip> getTrips() {
-        return Collections.unmodifiableMap(trips);
+        return trips;
     }
 
     public void addTrip(MitoTrip trip) {

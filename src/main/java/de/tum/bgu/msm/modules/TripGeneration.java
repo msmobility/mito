@@ -1,12 +1,12 @@
 package de.tum.bgu.msm.modules;
 
 import com.pb.common.datafile.TableDataSet;
-import com.pb.common.util.ResourceUtil;
 import com.pb.sawdust.calculator.Function1;
 import com.pb.sawdust.util.array.ArrayUtil;
 import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
 import com.pb.sawdust.util.concurrent.IteratorAction;
 import de.tum.bgu.msm.*;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.*;
 
 
@@ -27,13 +27,11 @@ import java.util.concurrent.ForkJoinPool;
 public class TripGeneration extends Module{
 
     private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
-    private final ResourceBundle resources;
 
     private int counterDroppedTripsAtBorder;
 
-    public TripGeneration(DataSet dataSet, ResourceBundle resources) {
+    public TripGeneration(DataSet dataSet) {
         super(dataSet);
-        this.resources = resources;
     }
 
     @Override
@@ -49,7 +47,7 @@ public class TripGeneration extends Module{
         Map<Integer, Map<String, Float>> tripAttr = calculateTripAttractions();
         balanceTripGeneration(tripAttr);
         writeTripSummary(tripAttr);
-        SummarizeData.writeOutSyntheticPopulationWithTrips(resources, dataSet);
+        SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
         logger.info("  Completed microscopic trip generation model.");
     }
 
@@ -126,7 +124,7 @@ public class TripGeneration extends Module{
 
     private TableDataSet createHHTypeDefinition (String purpose) {
         // create household type definition file
-        String[] hhDefToken = ResourceUtil.getArray(resources, ("hh.type." + purpose));
+        String[] hhDefToken = Properties.getArray("hh.type." + purpose);
         //        int categoryID = Integer.parseInt(hhDefToken[0]);
         int numCategories = Integer.parseInt(hhDefToken[1]);
         String sizeToken = hhDefToken[2];
@@ -256,7 +254,9 @@ public class TripGeneration extends Module{
         // as trips near border of study area that travel to destinations outside of study area are not represented,
         // trip generation near border of study area can be reduced artificially with this method
 
-        if (!dataSet.isRemoveTripsAtBorder()) return false;
+        if (!Properties.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
+            return false;
+        }
 
         float damper = dataSet.getZones().get(tripOrigin).getReductionAtBorderDamper();
         return MitoUtil.getRand().nextFloat() < damper;
@@ -267,7 +267,7 @@ public class TripGeneration extends Module{
         // calculate zonal trip attractions
 
         logger.info("  Calculating trip attractions");
-        TableDataSet attrRates = CSVReader.readAsTableDataSet(resources.getString("trip.attraction.rates"));
+        TableDataSet attrRates = CSVReader.readAsTableDataSet(Properties.getString(Properties.TRIP_ATTRACTION_RATES));
         Map<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
@@ -405,9 +405,9 @@ public class TripGeneration extends Module{
     private void writeTripSummary(Map<Integer, Map<String, Float>> tripAttractionByZoneAndPurp) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = MitoUtil.generateOutputFileName(resources.getString("trip.production.output"));
+        String fileNameProd = MitoUtil.generateOutputFileName(Properties.getString(Properties.TRIP_PRODUCTION_OUTPUT));
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = MitoUtil.generateOutputFileName(resources.getString("trip.attraction.output"));
+        String fileNameAttr = MitoUtil.generateOutputFileName(Properties.getString(Properties.TRIP_ATTRACTION_OUTPUT));
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("Zone");
         pwAttr.print("Zone");

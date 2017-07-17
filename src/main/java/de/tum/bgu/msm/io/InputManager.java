@@ -1,13 +1,14 @@
 package de.tum.bgu.msm.io;
 
 import com.pb.common.matrix.Matrix;
-import com.pb.common.util.ResourceUtil;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -19,40 +20,28 @@ public class InputManager {
 
     private static Logger logger = Logger.getLogger(InputManager.class);
 
-    public static final String PROPERTIES_ZONAL_DATA_FILE = "zonal.data.file";
-    public static final String PROPERTIES_AUTO_PEAK_SKIM = "auto.peak.sov.skim";
-    public static final String PROPERTIES_TRANSIT_PEAK_SKIM = "transit.peak.time";
-    public static final String PROPERTIES_HH_FILE_ASCII = "household.file.ascii";
-    public static final String PROPERTIES_PP_FILE_ASCII = "person.file.ascii";
-    public static final String PROPERTIES_JJ_FILE_ASCII = "job.file.ascii";
-    public static final String PROPERTIES_EMPLOYMENT_FILE = "employment.forecast";
-    public static final String PROPERTIES_SCHOOL_ENROLLMENT_FILE = "school.enrollment.data";
-    public static final String PROPERTIES_DISTANCE_SKIM = "distanceODmatrix";
-
     private final DataSet dataSet;
-    private final ResourceBundle resources;
 
-    public InputManager(DataSet dataSet, ResourceBundle resources) {
+    public InputManager(DataSet dataSet) {
         this.dataSet = dataSet;
-        this.resources = resources;
     }
 
     public void readAsStandAlone() {
-        new TravelSurveyReader(dataSet, resources).read();
-        new ZonesReader(dataSet, resources).read();
-        new RegionsReader(dataSet, resources).read();
-        new SkimsReader(dataSet, resources).read();
-        new DistancesReader(dataSet, resources).read();
-        new HouseholdsReader(dataSet, resources).read();
-        new PersonsReader(dataSet, resources).read();
-        new JobReader(dataSet, resources).read();
-        new EmploymentReader(dataSet, resources).read();
+        new TravelSurveyReader(dataSet).read();
+        new ZonesReader(dataSet).read();
+        new RegionsReader(dataSet).read();
+        new SkimsReader(dataSet).read();
+        new DistancesReader(dataSet).read();
+        new HouseholdsReader(dataSet).read();
+        new PersonsReader(dataSet).read();
+        new JobReader(dataSet).read();
+        new EmploymentReader(dataSet).read();
     }
 
     public void readAdditionalData() {
-        dataSet.setPurposes(ResourceUtil.getArray(resources, "trip.purposes"));
-        new SchoolEnrollmentReader(dataSet, resources).read();
-        new RegionsReader(dataSet, resources).read();
+        dataSet.setPurposes(Properties.getArray(Properties.PURPOSES));
+        new SchoolEnrollmentReader(dataSet).read();
+        new RegionsReader(dataSet).read();
     }
 
     public void readFromFeed(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] households, MitoPerson[] persons, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
@@ -65,7 +54,7 @@ public class InputManager {
         setPersonsFromFeed(persons);
         // todo: the household travel survey should not be read every year the model runs, but only in the first year.
         // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
-        new TravelSurveyReader(dataSet, resources).read();
+        new TravelSurveyReader(dataSet).read();
     }
 
     private void setZonesFromFeed(int[] zoneIds, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {

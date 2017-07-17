@@ -1,32 +1,29 @@
 package de.tum.bgu.msm.io;
 
 import com.pb.common.datafile.TableDataSet;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
-import java.util.ResourceBundle;
-
-import static de.tum.bgu.msm.io.InputManager.PROPERTIES_EMPLOYMENT_FILE;
 
 /**
  * Created by Nico on 17.07.2017.
  */
-public class EmploymentReader {
+public class EmploymentReader extends AbstractInputReader {
 
     private static Logger logger = Logger.getLogger(EmploymentReader.class);
 
-    private final DataSet dataSet;
-    private final String fileName;
 
-    public EmploymentReader(DataSet dataSet, ResourceBundle resources) {
-        this.dataSet = dataSet;
-        this.fileName = resources.getString(PROPERTIES_EMPLOYMENT_FILE);
+    public EmploymentReader(DataSet dataSet) {
+        super(dataSet);
     }
 
+    @Override
     public void read() {
         // SMZ,State,RET00,OFF00,IND00,OTH00,RET07,OFF07,IND07,OTH07,RET10,OFF10,IND10,OTH10,RET30,OFF30,IND30,OTH30,RET40,OFF40,IND40,OTH40
+        String fileName = Properties.getString(Properties.EMPLOYMENT);
         TableDataSet employment = CSVReader.readAsTableDataSet(fileName);
         int[] indEmpl = employment.getColumnAsInt("IND00");
         int[] retEmpl = employment.getColumnAsInt("RET00");

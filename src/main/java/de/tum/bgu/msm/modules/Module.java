@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.modules;
 
-import de.tum.bgu.msm.MitoData;
 import de.tum.bgu.msm.data.DataSet;
-
-import java.util.ResourceBundle;
 
 /**
  * Created by Nico on 14.07.2017.

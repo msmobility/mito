@@ -29,9 +29,9 @@ public class MitoUtil {
     private static String baseDirectory = "";
 
 
-    public static void initializeRandomNumber(ResourceBundle rb) {
+    public static void initializeRandomNumber() {
         // initialize random number generator
-        int seed = ResourceUtil.getIntegerProperty(rb, "random.seed");
+        int seed = Properties.getInt(Properties.RANDOM_SEED);
         if (seed == -1)
             rand = new Random();
         else

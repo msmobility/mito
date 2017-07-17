@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.io;
 
-import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.MitoUtil;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -9,29 +9,25 @@ import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
-
-import static de.tum.bgu.msm.io.InputManager.PROPERTIES_PP_FILE_ASCII;
 
 /**
  * Created by Nico on 17.07.2017.
  */
-public class PersonsReader {
+public class PersonsReader extends AbstractInputReader {
 
     private static Logger logger = Logger.getLogger(PersonsReader.class);
 
-    private final DataSet dataSet;
-    private final String fileName;
     private final Map<Integer, MitoPerson> persons = new HashMap<>();
     private final CSVAdapter adapter = new PersonCSVAdapter();
 
-    public PersonsReader(DataSet dataSet, ResourceBundle resources) {
-        this.dataSet = dataSet;
-        this.fileName = ResourceUtil.getProperty(resources, PROPERTIES_PP_FILE_ASCII);
+    public PersonsReader(DataSet dataSet) {
+        super(dataSet);
     }
 
+    @Override
     public void read() {
         logger.info("  Reading person micro data from ascii file");
+        String fileName = Properties.getString(Properties.PERSONS);
         CSVReader reader = new CSVReader(fileName, ",", adapter);
         reader.read();
         dataSet.setPersons(persons);

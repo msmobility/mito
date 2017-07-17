@@ -1,30 +1,25 @@
 package de.tum.bgu.msm.io;
 
 import com.pb.common.datafile.TableDataSet;
+import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import org.apache.log4j.Logger;
-
-import java.util.ResourceBundle;
-
-import static de.tum.bgu.msm.io.InputManager.PROPERTIES_SCHOOL_ENROLLMENT_FILE;
 
 /**
  * Created by Nico on 17.07.2017.
  */
-public class SchoolEnrollmentReader {
+public class SchoolEnrollmentReader extends AbstractInputReader {
 
     private static Logger logger = Logger.getLogger(SchoolEnrollmentReader.class);
 
-    private final DataSet dataSet;
-    private final String fileName;
-
-    public SchoolEnrollmentReader(DataSet dataSet, ResourceBundle resources) {
-        this.dataSet = dataSet;
-        this.fileName = resources.getString(PROPERTIES_SCHOOL_ENROLLMENT_FILE);
+    public SchoolEnrollmentReader(DataSet dataSet) {
+        super(dataSet);
     }
 
+    @Override
     public void read() {
         // read enrollment data
+        String fileName = Properties.getString(Properties.SCHOOL_ENROLLMENT);
         TableDataSet enrollmentData = CSVReader.readAsTableDataSet(fileName);
         for (int i = 1; i <= enrollmentData.getRowCount(); i++) {
             int zoneId = enrollmentData.getColumnAsInt("Zone")[i - 1];

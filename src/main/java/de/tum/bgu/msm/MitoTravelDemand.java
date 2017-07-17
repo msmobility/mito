@@ -20,19 +20,18 @@ public class MitoTravelDemand {
 
     private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
     private final DataSet dataSet;
-    private ResourceBundle resources;
+    private final ResourceBundle resources;
 
-    public MitoTravelDemand(ResourceBundle resources, DataSet dataSet) {
-        this.resources = resources;
+    public MitoTravelDemand(DataSet dataSet, ResourceBundle resources) {
         this.dataSet = dataSet;
+        this.resources = resources;
     }
-
 
     public void generateTravelDemand () {
         // main class to run travel demand
 
         // microscopic trip generation
-        TripGeneration tg = new TripGeneration(dataSet, resources);
+        TripGeneration tg = new TripGeneration(dataSet);
         tg.run();
         // calculate travel time budgets
         TravelTimeBudget ttb = new TravelTimeBudget(dataSet, resources);
