@@ -40,4 +40,8 @@ public class MitoTrip implements Serializable {
     public int getTripPurpose() {
         return tripPurpose;
     }
+
+    public int getHouseholdId() {
+        return this.householdId;
+    }
 }
