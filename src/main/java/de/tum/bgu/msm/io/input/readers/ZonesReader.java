@@ -37,7 +37,7 @@ public class ZonesReader extends CSVReader {
             Zone zone = new Zone(zonalData.getColumnAsInt("ZoneId")[i - 1], zonalData.getValueAt(i, "ACRES"));
             zones.put(zone.getZoneId(), zone);
         }
-        dataSet.setZones(zones);
+        dataSet.getZones().putAll(zones);
     }
 
     private void readReductionDampers() {

@@ -1,13 +1,10 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.TripDataManager;
 import de.tum.bgu.msm.modules.DestinationChoice;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
 import de.tum.bgu.msm.modules.TripGeneration;
 import org.apache.log4j.Logger;
-
-import java.util.ResourceBundle;
 
 /**
  * Generates travel demand for the Transport in Microsimulation Orchestrator (TIMO)

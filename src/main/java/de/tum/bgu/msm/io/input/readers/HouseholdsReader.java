@@ -35,7 +35,7 @@ public class HouseholdsReader extends CSVReader {
         logger.info("  Reading household micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.HOUSEHOLDS);
         super.readLineByLine(fileName, ",");
-        dataSet.setHouseholds(households);
+        dataSet.getHouseholds().putAll(households);
     }
 
     @Override

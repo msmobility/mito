@@ -4,6 +4,7 @@ import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,14 +28,12 @@ public class DataSet {
     private String[] purposes;
     private HashMap<String, Integer> purposeIndices;
 
-    private Map<Integer, Zone> zones;
-    private Map<Integer, MitoHousehold> households;
-    private Map<Integer, MitoPerson> persons;
-
-    private final TripDataManager tripDataManager;
+    private Map<Integer, Zone> zones= new HashMap<>();
+    private Map<Integer, MitoHousehold> households = new HashMap<>();
+    private Map<Integer, MitoPerson> persons = new HashMap<>();
+    private Map<Integer, MitoTrip> trips = new HashMap<>();
 
     public DataSet() {
-        this.tripDataManager = new TripDataManager();
     }
 
     public static Logger getLogger() {
@@ -117,27 +116,16 @@ public class DataSet {
         return zones;
     }
 
-    public void setZones(Map<Integer, Zone> zones) {
-        this.zones = zones;
-    }
-
     public Map<Integer, MitoHousehold> getHouseholds() {
         return households;
-    }
-
-    public void setHouseholds(Map<Integer, MitoHousehold> households) {
-        this.households = households;
     }
 
     public Map<Integer, MitoPerson> getPersons() {
         return persons;
     }
 
-    public void setPersons(Map<Integer, MitoPerson> persons) {
-        this.persons = persons;
+    public Map<Integer, MitoTrip> getTrips() {
+        return trips;
     }
 
-    public TripDataManager getTripDataManager() {
-        return tripDataManager;
-    }
 }

@@ -59,7 +59,7 @@ public class MitoModel {
         MitoTravelDemand ttd = new MitoTravelDemand(dataSet);
         ttd.generateTravelDemand();
 
-        String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTripDataManager().getTotalNumberOfTrips());
+        String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTrips().size());
         logger.info("A total of " + trips.trim() + " microscopic trips were generated");
         logger.info("Completed the Microsimulation Transport Orchestrator (MITO)");
         float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);

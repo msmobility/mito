@@ -1,8 +1,6 @@
 package de.tum.bgu.msm.resources;
 
 
-import com.pb.common.util.ResourceUtil;
-
 /**
  * Created by Nico on 17.07.2017.
  */

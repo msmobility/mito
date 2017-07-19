@@ -39,7 +39,7 @@ public class PersonsReader extends CSVReader {
         logger.info("  Reading person micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.PERSONS);
         super.readLineByLine(fileName, ",");
-        dataSet.setPersons(persons);
+        dataSet.getPersons().putAll(persons);
     }
 
     @Override

@@ -68,7 +68,7 @@ public class InputManager {
             zone.setTotalEmpl(totalEmplByZone[i]);
             zones.put(zone.getZoneId(), zone);
         }
-        dataSet.setZones(zones);
+        dataSet.getZones().putAll(zones);
     }
 
     private void setHouseholdsFromFeed(MitoHousehold[] householdsArray) {
@@ -82,7 +82,7 @@ public class InputManager {
                         + household.getHomeZone() + ". Household will not be considered in any zone.");
             }
         }
-        dataSet.setHouseholds(households);
+        dataSet.getHouseholds().putAll(households);
     }
 
     private void setPersonsFromFeed(MitoPerson[] personsArray) {
@@ -90,6 +90,6 @@ public class InputManager {
         for (MitoPerson person : personsArray) {
             persons.put(person.getId(), person);
         }
-        dataSet.setPersons(persons);
+        dataSet.getPersons().putAll(persons);
     }
 }
