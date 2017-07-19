@@ -10,7 +10,8 @@ import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.*;
 
 
-import de.tum.bgu.msm.io.CSVReader;
+import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.output.SummarizeData;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -267,7 +268,7 @@ public class TripGeneration extends Module{
         // calculate zonal trip attractions
 
         logger.info("  Calculating trip attractions");
-        TableDataSet attrRates = CSVReader.readAsTableDataSet(Properties.getString(Properties.TRIP_ATTRACTION_RATES));
+        TableDataSet attrRates = dataSet.getTripAttractionRates();
         Map<String, Float> attractionRates = getAttractionRates(attrRates);
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
@@ -509,7 +510,7 @@ public class TripGeneration extends Module{
             int hhType = hhTypeArray[hhRow];
             int[] tripsOfThisHouseholdByPurposes = new int[dataSet.getPurposes().length];
             // Ready through trip file of HTS
-            TableDataSet travelSurveyTripsDable = dataSet.getTravelsurveyTripsTable();
+            TableDataSet travelSurveyTripsDable = dataSet.getTravelSurveyTripsTable();
             for (int trRow = pos; trRow <= travelSurveyTripsDable.getRowCount(); trRow++) {
                 if ((int) travelSurveyTripsDable.getValueAt(trRow, "sampn") == sampleId) {
 

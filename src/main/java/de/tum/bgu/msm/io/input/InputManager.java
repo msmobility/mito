@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.io;
+package de.tum.bgu.msm.io.input;
 
 import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.Properties;
@@ -6,12 +6,11 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.io.input.readers.*;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 /**
  * Created by Nico on 14.07.2017.
@@ -36,6 +35,7 @@ public class InputManager {
         new PersonsReader(dataSet).read();
         new JobReader(dataSet).read();
         new EmploymentReader(dataSet).read();
+        new TripAttractionRatesReader(dataSet).read();
     }
 
     public void readAdditionalData() {

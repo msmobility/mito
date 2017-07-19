@@ -1,14 +1,15 @@
-package de.tum.bgu.msm.io;
+package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.io.input.CSVReader;
 import org.apache.log4j.Logger;
 
 /**
  * Created by Nico on 17.07.2017.
  */
-public class RegionsReader extends AbstractInputReader {
+public class RegionsReader extends CSVReader {
 
     private static Logger logger = Logger.getLogger(RegionsReader.class);
 
@@ -18,7 +19,7 @@ public class RegionsReader extends AbstractInputReader {
 
     @Override
     public void read() {
-        TableDataSet regionDefinition = CSVReader.readAsTableDataSet(Properties.getString(Properties.REGIONS));
+        TableDataSet regionDefinition = super.readAsTableDataSet(Properties.getString(Properties.REGIONS));
         for (int i = 1; i < regionDefinition.getRowCount(); i++) {
             int id = (int) regionDefinition.getValueAt(i, "Zone");
             int[] regions = regionDefinition.getColumnAsInt("Region");
@@ -29,5 +30,15 @@ public class RegionsReader extends AbstractInputReader {
                 logger.warn("Region " + region + " referring to non-existing zone " + id + ". Ignoring it.");
             }
         }
+    }
+
+    @Override
+    protected void processHeader(String[] header) {
+
+    }
+
+    @Override
+    protected void processRecord(String[] record) {
+
     }
 }

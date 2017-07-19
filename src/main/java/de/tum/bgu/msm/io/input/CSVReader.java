@@ -1,7 +1,8 @@
-package de.tum.bgu.msm.io;
+package de.tum.bgu.msm.io.input;
 
 import com.pb.common.datafile.TableDataFileReader;
 import com.pb.common.datafile.TableDataSet;
+import de.tum.bgu.msm.data.DataSet;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -12,51 +13,48 @@ import java.io.IOException;
 /**
  * Created by Nico on 17.07.2017.
  */
-public class CSVReader {
+public abstract class CSVReader extends AbstractInputReader{
 
     private static Logger logger = Logger.getLogger(CSVReader.class);
 
-    private final String fileName;
-    private final String delimiter;
-
     private BufferedReader reader;
-
-    private CSVAdapter adapter;
 
     private int numberOfRecords = 0;
 
-    public CSVReader(String fileName, String delimiter, CSVAdapter adapter) {
-        this.fileName = fileName;
-        this.delimiter = delimiter;
-        this.adapter = adapter;
-        initialize();
+    public CSVReader(DataSet dataSet) {
+        super(dataSet);
     }
 
-    private void initialize() {
+    protected abstract void processHeader(String[] header);
+
+    protected abstract void processRecord(String[] record);
+
+    public void readLineByLine(String fileName, String delimiter) {
+        initializeReader(fileName, delimiter);
+        try {
+            String record;
+            while ((record = reader.readLine()) != null) {
+                numberOfRecords++;
+                processRecord(record.split(delimiter));
+            }
+        } catch (IOException e) {
+            logger.error("Error parsing record number " + numberOfRecords + ": " + e.getMessage());
+            System.exit(-1);
+        }
+        logger.info("Read " + numberOfRecords + " records.");
+    }
+
+    private void initializeReader(String fileName, String delimiter) {
         try {
             reader = new BufferedReader(new FileReader(fileName));
-            adapter.processHeader(reader.readLine().split(delimiter));
+            processHeader(reader.readLine().split(delimiter));
         } catch (IOException e) {
             logger.error("Error initializing csv reader: " + e.getMessage());
             System.exit(-1);
         }
     }
 
-    public void read() {
-        try {
-            String record;
-            while ((record = reader.readLine()) != null) {
-                numberOfRecords++;
-                adapter.processRecord(record.split(delimiter));
-            }
-        } catch (IOException e) {
-            logger.error("Error parsing record number "+ numberOfRecords +": " + e.getMessage());
-            System.exit(-1);
-        }
-        logger.info("Read " + numberOfRecords + " records.");
-    }
-
-    public static TableDataSet readAsTableDataSet(String fileName) {
+    public TableDataSet readAsTableDataSet(String fileName) {
         // read csv file and return as TableDataSet
         File dataFile = new File(fileName);
         TableDataSet dataTable;
@@ -65,7 +63,7 @@ public class CSVReader {
             final String msg = "File not found: " + fileName;
             logger.error(msg);
 //            System.exit(1);
-            throw new RuntimeException(msg) ;
+            throw new RuntimeException(msg);
             // from the perspective of the junit testing infrastructure, a "System.exit(...)" is not a test failure ... and thus not detected.  kai, aug'16
         }
         try {

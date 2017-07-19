@@ -1,12 +1,14 @@
-package de.tum.bgu.msm.data;
+package de.tum.bgu.msm.io.output;
 
 
 
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
 
 import java.io.PrintWriter;
-import java.util.ResourceBundle;
 
 /**
  * Methods to summarize model results

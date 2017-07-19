@@ -4,7 +4,7 @@ import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.io.InputManager;
+import de.tum.bgu.msm.io.input.InputManager;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;

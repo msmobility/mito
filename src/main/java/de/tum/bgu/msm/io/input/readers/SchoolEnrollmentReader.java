@@ -1,14 +1,15 @@
-package de.tum.bgu.msm.io;
+package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.Properties;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.io.input.CSVReader;
 import org.apache.log4j.Logger;
 
 /**
  * Created by Nico on 17.07.2017.
  */
-public class SchoolEnrollmentReader extends AbstractInputReader {
+public class SchoolEnrollmentReader extends CSVReader {
 
     private static Logger logger = Logger.getLogger(SchoolEnrollmentReader.class);
 
@@ -20,7 +21,7 @@ public class SchoolEnrollmentReader extends AbstractInputReader {
     public void read() {
         // read enrollment data
         String fileName = Properties.getString(Properties.SCHOOL_ENROLLMENT);
-        TableDataSet enrollmentData = CSVReader.readAsTableDataSet(fileName);
+        TableDataSet enrollmentData = super.readAsTableDataSet(fileName);
         for (int i = 1; i <= enrollmentData.getRowCount(); i++) {
             int zoneId = enrollmentData.getColumnAsInt("Zone")[i - 1];
             int enrollment = enrollmentData.getColumnAsInt("Enrolment")[i - 1];
@@ -30,5 +31,15 @@ public class SchoolEnrollmentReader extends AbstractInputReader {
                 logger.warn("School enrollment of " + enrollment + " refers to non existing zone " + zoneId + ". Ignoring it.");
             }
         }
+    }
+
+    @Override
+    protected void processHeader(String[] header) {
+
+    }
+
+    @Override
+    protected void processRecord(String[] record) {
+
     }
 }

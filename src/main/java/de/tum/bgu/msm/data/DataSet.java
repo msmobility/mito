@@ -16,7 +16,9 @@ public class DataSet {
     private static String scenarioName;
 
     private TableDataSet travelSurveyHouseholdTable;
-    private TableDataSet travelsurveyTripsTable;
+    private TableDataSet travelSurveyTripsTable;
+
+    private TableDataSet tripAttractionRates;
 
     private Matrix autoTravelTimes;
     private Matrix transitTravelTimes;
@@ -59,12 +61,20 @@ public class DataSet {
         this.travelSurveyHouseholdTable = travelSurveyHouseholdTable;
     }
 
-    public TableDataSet getTravelsurveyTripsTable() {
-        return travelsurveyTripsTable;
+    public TableDataSet getTravelSurveyTripsTable() {
+        return travelSurveyTripsTable;
     }
 
-    public void setTravelsurveyTripsTable(TableDataSet travelsurveyTripsTable) {
-        this.travelsurveyTripsTable = travelsurveyTripsTable;
+    public void setTravelSurveyTripsTable(TableDataSet travelSurveyTripsTable) {
+        this.travelSurveyTripsTable = travelSurveyTripsTable;
+    }
+
+    public TableDataSet getTripAttractionRates() {
+        return tripAttractionRates;
+    }
+
+    public void setTripAttractionRates(TableDataSet tripAttractionRates) {
+        this.tripAttractionRates = tripAttractionRates;
     }
 
     public float getAutoTravelTimeFromTo(int origin, int destination) {
