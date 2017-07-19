@@ -1,12 +1,13 @@
 package de.tum.bgu.msm.io.input;
 
 import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class InputManager {
     }
 
     public void readAdditionalData() {
-        dataSet.setPurposes(Properties.getArray(Properties.PURPOSES));
+        dataSet.setPurposes(Resources.INSTANCE.getArray(Properties.PURPOSES));
         new SchoolEnrollmentReader(dataSet).read();
         new RegionsReader(dataSet).read();
     }

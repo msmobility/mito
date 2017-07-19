@@ -42,19 +42,18 @@ public class MitoModel {
 
     public MitoModel(ResourceBundle resources) {
         this.resources = resources;
-        Properties.load(resources);
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
+        Resources.INSTANCE.setResources(resources);
     }
 
     public void runModel() {
+
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
         // setup
         manager.readAdditionalData();
-
-        Resources.INSTANCE.setResources(resources);
 
         // generate travel demand
         MitoTravelDemand ttd = new MitoTravelDemand(dataSet);

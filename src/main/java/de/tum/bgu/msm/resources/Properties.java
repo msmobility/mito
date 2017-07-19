@@ -1,16 +1,12 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.resources;
+
 
 import com.pb.common.util.ResourceUtil;
-
-import java.util.ResourceBundle;
 
 /**
  * Created by Nico on 17.07.2017.
  */
 public class Properties {
-
-
-    private static ResourceBundle resources;
 
     public static final String RANDOM_SEED = "random.seed";
 
@@ -52,23 +48,6 @@ public class Properties {
 
     public static final String BASE_DIRECTORY = "base.directory";
 
-    public static void load(ResourceBundle resources) {
-        Properties.resources = resources;
-    }
-
-    public static int getInt(String key) {
-        return ResourceUtil.getIntegerProperty(resources, key);
-    }
-
-    public static String getString(String key) {
-        return ResourceUtil.getProperty(resources, key);
-    }
-
-    public static String[] getArray(String key) {
-        return ResourceUtil.getArray(resources, key);
-    }
-
-    public static boolean getBoolean(String key) {
-        return ResourceUtil.getBooleanProperty(resources, key);
-    }
+    public static final String ACCESSIBILITY_ALPHA = "accessibility.alpha";
+    public static final String ACCESSIBILITY_BETA = "accessibility.beta";
 }

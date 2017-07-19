@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.resources;
 
 import com.pb.common.calculator.UtilityExpressionCalculator;
-import de.tum.bgu.msm.modules.TravelTimeBudgetDMU;
+import com.pb.common.util.ResourceUtil;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -16,7 +16,7 @@ public enum Resources {
     private ResourceBundle resources;
 
 
-    private Resources() {
+    Resources() {
 
     }
 
@@ -25,12 +25,28 @@ public enum Resources {
     }
 
     public UtilityExpressionCalculator getUtilityExpressionCalculator(String fileName, int totalTtbSheetNumber,
-    int dataSheetNumber, Class<?> userClass) {
+                                                                      int dataSheetNumber, Class<?> userClass) {
         return new UtilityExpressionCalculator(new File(fileName), totalTtbSheetNumber,
                 dataSheetNumber, resources, userClass);
     }
 
+    public int getInt(String key) {
+        return ResourceUtil.getIntegerProperty(resources, key);
+    }
 
+    public String getString(String key) {
+        return ResourceUtil.getProperty(resources, key);
+    }
 
+    public String[] getArray(String key) {
+        return ResourceUtil.getArray(resources, key);
+    }
 
+    public boolean getBoolean(String key) {
+        return ResourceUtil.getBooleanProperty(resources, key);
+    }
+
+    public double getDouble(String key) {
+        return ResourceUtil.getDoubleProperty(resources, key);
+    }
 }

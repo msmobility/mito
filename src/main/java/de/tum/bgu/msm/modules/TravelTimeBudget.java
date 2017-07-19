@@ -1,17 +1,13 @@
 package de.tum.bgu.msm.modules;
 
 import com.pb.common.calculator.UtilityExpressionCalculator;
-import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.util.ResourceBundle;
 
 /**
  * Runs calculation of travel time budget for the Microsimulation Transport Orchestrator (MITO)
@@ -60,26 +56,26 @@ public class TravelTimeBudget extends Module {
         // set up utility expression calculator for calculation of the travel time budget
 
         logger.info("  Creating Utility Expression Calculator for microscopic travel time budget calculation.");
-        logCalculationTotalTtb = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_TOTAL_TTB);
-        logCalculationHbsTtb   = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBS_TTB);
-        logCalculationHboTtb   = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBO_TTB);
-        logCalculationNhbwTtb  = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBW_TTB);
-        logCalculationNhboTtb  = Properties.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBO_TTB);
-        String uecFileName     = Properties.getString(Properties.TRAVEL_TIME_BUDGET_UEC_FILE);
-        int dataSheetNumber = Properties.getInt(Properties.TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
-        int totalTtbSheetNumber = Properties.getInt(Properties.TOTAL_TRAVEL_TIME_BUDGET_UEC_UTILITY);
+        logCalculationTotalTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TOTAL_TTB);
+        logCalculationHbsTtb   = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBS_TTB);
+        logCalculationHboTtb   = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBO_TTB);
+        logCalculationNhbwTtb  = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBW_TTB);
+        logCalculationNhboTtb  = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBO_TTB);
+        String uecFileName     = Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_UEC_FILE);
+        int dataSheetNumber = Resources.INSTANCE.getInt(Properties.TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
+        int totalTtbSheetNumber = Resources.INSTANCE.getInt(Properties.TOTAL_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         totalTtbUtility = Resources.INSTANCE.getUtilityExpressionCalculator(uecFileName, totalTtbSheetNumber, dataSheetNumber, TravelTimeBudgetDMU.class);
         totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
-        int hbsTtbSheetNumber = Properties.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
+        int hbsTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         hbsTtbUtility = Resources.INSTANCE.getUtilityExpressionCalculator(uecFileName, hbsTtbSheetNumber, dataSheetNumber, TravelTimeBudgetDMU.class);
         hbsTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int hboTtbSheetNumber = Properties.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
+        int hboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         hboTtbUtility = Resources.INSTANCE.getUtilityExpressionCalculator(uecFileName, hboTtbSheetNumber, dataSheetNumber, TravelTimeBudgetDMU.class);
         hboTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int nhbwTtbSheetNumber = Properties.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
+        int nhbwTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         nhbwTtbUtility = Resources.INSTANCE.getUtilityExpressionCalculator(uecFileName, nhbwTtbSheetNumber, dataSheetNumber, TravelTimeBudgetDMU.class);
         nhbwTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
-        int nhboTtbSheetNumber = Properties.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
+        int nhboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         nhboTtbUtility = Resources.INSTANCE.getUtilityExpressionCalculator(uecFileName, nhboTtbSheetNumber, dataSheetNumber, TravelTimeBudgetDMU.class);
         nhboTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
 

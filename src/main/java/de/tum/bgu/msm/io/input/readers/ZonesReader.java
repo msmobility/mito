@@ -1,10 +1,11 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class ZonesReader extends CSVReader {
 
     private void readZones() {
         // read in zones from file
-        TableDataSet zonalData = super.readAsTableDataSet(Properties.getString(Properties.ZONES));
+        TableDataSet zonalData = super.readAsTableDataSet(Resources.INSTANCE.getString(Properties.ZONES));
         for (int i = 1; i <= zonalData.getRowCount(); i++) {
             Zone zone = new Zone(zonalData.getColumnAsInt("ZoneId")[i - 1], zonalData.getValueAt(i, "ACRES"));
             zones.put(zone.getZoneId(), zone);
@@ -40,8 +41,8 @@ public class ZonesReader extends CSVReader {
     }
 
     private void readReductionDampers() {
-        if (Properties.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
-            TableDataSet reductionNearBorder = super.readAsTableDataSet(Properties.getString(Properties.REDUCTION_NEAR_BORDER_DAMPERS));
+        if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
+            TableDataSet reductionNearBorder = super.readAsTableDataSet(Resources.INSTANCE.getString(Properties.REDUCTION_NEAR_BORDER_DAMPERS));
             for (int i = 1; i <= reductionNearBorder.getRowCount(); i++) {
                 int id = (int) reductionNearBorder.getValueAt(i, "Zone");
                 float damper = reductionNearBorder.getValueAt(i, "damper");

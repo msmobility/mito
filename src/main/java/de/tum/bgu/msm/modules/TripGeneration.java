@@ -6,12 +6,12 @@ import com.pb.sawdust.util.array.ArrayUtil;
 import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
 import com.pb.sawdust.util.concurrent.IteratorAction;
 import de.tum.bgu.msm.*;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.*;
 
 
-import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.io.output.SummarizeData;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -125,7 +125,7 @@ public class TripGeneration extends Module{
 
     private TableDataSet createHHTypeDefinition (String purpose) {
         // create household type definition file
-        String[] hhDefToken = Properties.getArray("hh.type." + purpose);
+        String[] hhDefToken = Resources.INSTANCE.getArray("hh.type." + purpose);
         //        int categoryID = Integer.parseInt(hhDefToken[0]);
         int numCategories = Integer.parseInt(hhDefToken[1]);
         String sizeToken = hhDefToken[2];
@@ -255,7 +255,7 @@ public class TripGeneration extends Module{
         // as trips near border of study area that travel to destinations outside of study area are not represented,
         // trip generation near border of study area can be reduced artificially with this method
 
-        if (!Properties.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
+        if (!Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             return false;
         }
 
@@ -406,9 +406,9 @@ public class TripGeneration extends Module{
     private void writeTripSummary(Map<Integer, Map<String, Float>> tripAttractionByZoneAndPurp) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = MitoUtil.generateOutputFileName(Properties.getString(Properties.TRIP_PRODUCTION_OUTPUT));
+        String fileNameProd = MitoUtil.generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT));
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = MitoUtil.generateOutputFileName(Properties.getString(Properties.TRIP_ATTRACTION_OUTPUT));
+        String fileNameAttr = MitoUtil.generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT));
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("Zone");
         pwAttr.print("Zone");

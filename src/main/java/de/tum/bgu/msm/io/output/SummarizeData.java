@@ -3,10 +3,11 @@ package de.tum.bgu.msm.io.output;
 
 
 import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.resources.Resources;
 
 import java.io.PrintWriter;
 
@@ -25,7 +26,7 @@ public class SummarizeData {
         //write out files with synthetic population and the number of trips
 
         logger.info("  Writing household file");
-        String filehh = Properties.getString(Properties.BASE_DIRECTORY) + "/" + Properties.getString(Properties.HOUSEHOLDS) + "_t.csv";
+        String filehh = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + Resources.INSTANCE.getString(Properties.HOUSEHOLDS) + "_t.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
         pwh.println("id,zone,hhSize,autos,trips,workTrips");
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
@@ -44,7 +45,7 @@ public class SummarizeData {
         pwh.close();
 
         logger.info("  Writing person file");
-        String filepp = Properties.getString(Properties.BASE_DIRECTORY) + "/" + Properties.getString(Properties.PERSONS) + "_t.csv";
+        String filepp = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + Resources.INSTANCE.getString(Properties.PERSONS) + "_t.csv";
         PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp, false);
         pwp.println("id,hhID,hhSize,hhTrips,avTrips");
         for (MitoPerson pp : dataSet.getPersons().values()) {

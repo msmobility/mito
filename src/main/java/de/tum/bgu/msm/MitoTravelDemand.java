@@ -26,15 +26,14 @@ public class MitoTravelDemand {
     }
 
     public void generateTravelDemand () {
-        // main class to run travel demand
 
-        // microscopic trip generation
+        logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet);
         tg.run();
-        // calculate travel time budgets
+        logger.info("Running Module: Travel Time Budget Calculation");
         TravelTimeBudget ttb = new TravelTimeBudget(dataSet);
         ttb.run();
-        // microscopic destination choice
+        logger.info("Running Module: Microscopic Destination Choice");
         DestinationChoice dc = new DestinationChoice(dataSet);
         dc.run();
     }

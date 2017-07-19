@@ -1,10 +1,10 @@
 package de.tum.bgu.msm;
 
-import com.pb.common.datafile.TableDataFileReader;
-import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import omx.OmxMatrix;
 import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
@@ -31,7 +31,7 @@ public class MitoUtil {
 
     public static void initializeRandomNumber() {
         // initialize random number generator
-        int seed = Properties.getInt(Properties.RANDOM_SEED);
+        int seed = Resources.INSTANCE.getInt(Properties.RANDOM_SEED);
         if (seed == -1)
             rand = new Random();
         else

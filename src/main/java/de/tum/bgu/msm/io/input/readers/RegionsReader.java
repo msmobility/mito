@@ -1,9 +1,10 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
@@ -19,7 +20,7 @@ public class RegionsReader extends CSVReader {
 
     @Override
     public void read() {
-        TableDataSet regionDefinition = super.readAsTableDataSet(Properties.getString(Properties.REGIONS));
+        TableDataSet regionDefinition = super.readAsTableDataSet(Resources.INSTANCE.getString(Properties.REGIONS));
         for (int i = 1; i < regionDefinition.getRowCount(); i++) {
             int id = (int) regionDefinition.getValueAt(i, "Zone");
             int[] regions = regionDefinition.getColumnAsInt("Region");

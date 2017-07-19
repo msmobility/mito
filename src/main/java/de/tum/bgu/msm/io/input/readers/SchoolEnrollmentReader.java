@@ -1,9 +1,10 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,7 +21,7 @@ public class SchoolEnrollmentReader extends CSVReader {
     @Override
     public void read() {
         // read enrollment data
-        String fileName = Properties.getString(Properties.SCHOOL_ENROLLMENT);
+        String fileName = Resources.INSTANCE.getString(Properties.SCHOOL_ENROLLMENT);
         TableDataSet enrollmentData = super.readAsTableDataSet(fileName);
         for (int i = 1; i <= enrollmentData.getRowCount(); i++) {
             int zoneId = enrollmentData.getColumnAsInt("Zone")[i - 1];

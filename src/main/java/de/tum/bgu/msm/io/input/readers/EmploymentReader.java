@@ -1,10 +1,11 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -24,7 +25,7 @@ public class EmploymentReader extends CSVReader {
     @Override
     public void read() {
         // SMZ,State,RET00,OFF00,IND00,OTH00,RET07,OFF07,IND07,OTH07,RET10,OFF10,IND10,OTH10,RET30,OFF30,IND30,OTH30,RET40,OFF40,IND40,OTH40
-        String fileName = Properties.getString(Properties.EMPLOYMENT);
+        String fileName = Resources.INSTANCE.getString(Properties.EMPLOYMENT);
         TableDataSet employment = super.readAsTableDataSet(fileName);
         int[] indEmpl = employment.getColumnAsInt("IND00");
         int[] retEmpl = employment.getColumnAsInt("RET00");

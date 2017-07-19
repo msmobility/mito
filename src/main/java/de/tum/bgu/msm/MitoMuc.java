@@ -15,7 +15,6 @@ public class MitoMuc {
 
     private static Logger logger = Logger.getLogger(MitoMuc.class);
 
-
     public static void main(String[] args) {
         // main run method
 
@@ -25,7 +24,6 @@ public class MitoMuc {
         mito.run(rb);
     }
 
-
     private void run (ResourceBundle rb) {
         // main run method
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
@@ -33,5 +31,4 @@ public class MitoMuc {
         model.initializeStandAlone();
         model.runModel();
     }
-
 }

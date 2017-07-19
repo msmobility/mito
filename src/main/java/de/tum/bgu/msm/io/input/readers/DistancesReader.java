@@ -1,9 +1,10 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.OMXReader;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
@@ -21,7 +22,7 @@ public class DistancesReader extends OMXReader {
 
     @Override
     public void read() {
-        String fileName = Properties.getString(Properties.DISTANCE_SKIM);
+        String fileName = Resources.INSTANCE.getString(Properties.DISTANCE_SKIM);
 
         logger.info("   Starting to read distances OMX matrix");
         distanceMatrix = super.readAndConvertToMatrix(fileName, "HOVTime");

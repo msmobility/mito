@@ -1,10 +1,11 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
@@ -26,7 +27,7 @@ public class JobReader extends CSVReader {
     @Override
     public void read() {
         logger.info("  Reading job micro data from ascii file");
-        String fileName = Properties.getString(Properties.JOBS);
+        String fileName = Resources.INSTANCE.getString(Properties.JOBS);
         super.readLineByLine(fileName, ",");
     }
 

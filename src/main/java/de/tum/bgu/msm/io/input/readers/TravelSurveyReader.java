@@ -1,9 +1,10 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.Properties;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
@@ -21,9 +22,9 @@ public class TravelSurveyReader extends CSVReader {
     public void read() {
         // read household travel survey
         logger.info("  Reading household travel survey");
-        String surveyHouseholdsPath = MitoUtil.getBaseDirectory() + "/" + Properties.getString(Properties.TRAVEL_SURVEY_HOUSEHOLDS);
+        String surveyHouseholdsPath = MitoUtil.getBaseDirectory() + "/" + Resources.INSTANCE.getString(Properties.TRAVEL_SURVEY_HOUSEHOLDS);
         dataSet.setTravelSurveyHouseholdTable(super.readAsTableDataSet(surveyHouseholdsPath));
-        String surveyTripsPath =  MitoUtil.getBaseDirectory() + "/" + Properties.getString(Properties.TRAVEL_SURVEY_TRIPS);
+        String surveyTripsPath =  MitoUtil.getBaseDirectory() + "/" + Resources.INSTANCE.getString(Properties.TRAVEL_SURVEY_TRIPS);
         dataSet.setTravelSurveyTripsTable(super.readAsTableDataSet(surveyTripsPath));
     }
 
