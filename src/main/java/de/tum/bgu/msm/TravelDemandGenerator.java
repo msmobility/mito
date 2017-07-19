@@ -13,12 +13,12 @@ import org.apache.log4j.Logger;
  *
  */
 
-public class MitoTravelDemand {
+public class TravelDemandGenerator {
 
-    private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
+    private static Logger logger = Logger.getLogger(TravelDemandGenerator.class);
     private final DataSet dataSet;
 
-    public MitoTravelDemand(DataSet dataSet) {
+    public TravelDemandGenerator(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 

@@ -1,11 +1,8 @@
 package de.tum.bgu.msm;
 
-import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.io.input.InputFeed;
 import de.tum.bgu.msm.io.input.InputManager;
-import de.tum.bgu.msm.modules.TravelTimeBudget;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
@@ -34,31 +31,42 @@ import java.util.ResourceBundle;
 public class MitoModel {
 
     private static Logger logger = Logger.getLogger(MitoModel.class);
-    private TravelTimeBudget ttbModel;
+
     private final InputManager manager;
-    private final ResourceBundle resources;
+
+    private long startTime;
 
     private DataSet dataSet;
 
-    public MitoModel(ResourceBundle resources) {
-        this.resources = resources;
+    private MitoModel(ResourceBundle resources) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
         Resources.INSTANCE.setResources(resources);
     }
 
-    public void runModel() {
+    public static MitoModel setupAsStandAlone(ResourceBundle resources) {
+        MitoModel model = new MitoModel(resources);
+        model.initializeStandAlone();
+        return model;
+    }
 
-        long startTime = System.currentTimeMillis();
+    public static MitoModel setupFromFeed(ResourceBundle resources, InputFeed feed) {
+        MitoModel model = new MitoModel(resources);
+        model.feedData(feed);
+        return model;
+    }
+
+    public void runModel() {
+        startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        // setup
-        manager.readAdditionalData();
-
-        // generate travel demand
-        MitoTravelDemand ttd = new MitoTravelDemand(dataSet);
+        TravelDemandGenerator ttd = new TravelDemandGenerator(dataSet);
         ttd.generateTravelDemand();
 
+        printOutline(startTime);
+    }
+
+    private void printOutline(long startTime) {
         String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTrips().size());
         logger.info("A total of " + trips.trim() + " microscopic trips were generated");
         logger.info("Completed the Microsimulation Transport Orchestrator (MITO)");
@@ -66,6 +74,23 @@ public class MitoModel {
         int hours = (int) (endTime / 60);
         int min = (int) (endTime - 60 * hours);
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
+    }
+
+    public void feedData(InputFeed feed) {
+       manager.readFromFeed(feed);
+        manager.readAdditionalData();
+    }
+
+    public void initializeStandAlone() {
+        // Read data if MITO is used as a stand-alone program and data are not fed from other program
+        logger.info("  Reading input data for MITO");
+        MitoUtil.initializeRandomNumber();
+        manager.readAsStandAlone();
+        manager.readAdditionalData();
+    }
+
+    public DataSet getTravelDemand() {
+        return dataSet;
     }
 
     public void setBaseDirectory (String baseDirectory) {
@@ -78,23 +103,5 @@ public class MitoModel {
 
     public void setScenarioName (String scenarioName) {
         dataSet.setScenarioName(scenarioName);
-    }
-
-
-    public void feedData(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] households,
-                         MitoPerson[] persons, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone,
-                         int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
-       manager.readFromFeed(zones, autoTravelTimes, transitTravelTimes, households, persons, retailEmplByZone, officeEmplByZone, otherEmplByZone, totalEmplByZone, sizeOfZonesInAcre );
-    }
-
-    public void initializeStandAlone() {
-        // Read data if MITO is used as a stand-alone program and data are not fed from other program
-        logger.info("  Reading input data for MITO");
-        MitoUtil.initializeRandomNumber();
-        manager.readAsStandAlone();
-    }
-
-    public DataSet getTravelDemand() {
-        return dataSet;
     }
 }

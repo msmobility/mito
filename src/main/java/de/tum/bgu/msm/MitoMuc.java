@@ -24,10 +24,10 @@ public class MitoMuc {
         mito.run(rb);
     }
 
-    private void run (ResourceBundle rb) {
+    private void run (ResourceBundle resources) {
         // main run method
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = new MitoModel(rb);
+        MitoModel model = MitoModel.setupAsStandAlone(resources);
         model.initializeStandAlone();
         model.runModel();
     }

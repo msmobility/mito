@@ -45,14 +45,14 @@ public class InputManager {
         new RegionsReader(dataSet).read();
     }
 
-    public void readFromFeed(int[] zones, Matrix autoTravelTimes, Matrix transitTravelTimes, MitoHousehold[] households, MitoPerson[] persons, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
+    public void readFromFeed(InputFeed feed) {
         // Feed data from other program. Need to write new methods to read these data from files if MitoModel is used as
         // stand-alone program.
-        setZonesFromFeed(zones, retailEmplByZone, officeEmplByZone, otherEmplByZone, totalEmplByZone, sizeOfZonesInAcre);
-        dataSet.setAutoTravelTimes(autoTravelTimes);
-        dataSet.setTransitTravelTimes(transitTravelTimes);
-        setHouseholdsFromFeed(households);
-        setPersonsFromFeed(persons);
+        setZonesFromFeed(feed.zones, feed.retailEmplByZone, feed.officeEmplByZone, feed.otherEmplByZone, feed.totalEmplByZone, feed.sizeOfZonesInAcre);
+        dataSet.setAutoTravelTimes(feed.autoTravelTimes);
+        dataSet.setTransitTravelTimes(feed.transitTravelTimes);
+        setHouseholdsFromFeed(feed.households);
+        setPersonsFromFeed(feed.persons);
         // todo: the household travel survey should not be read every year the model runs, but only in the first year.
         // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
         new TravelSurveyReader(dataSet).read();

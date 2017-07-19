@@ -5,7 +5,7 @@ import com.pb.sawdust.calculator.Function1;
 import com.pb.sawdust.util.array.ArrayUtil;
 import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
 import com.pb.sawdust.util.concurrent.IteratorAction;
-import de.tum.bgu.msm.MitoTravelDemand;
+import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.output.SummarizeData;
@@ -29,7 +29,7 @@ import java.util.concurrent.ForkJoinPool;
 
 public class TripGeneration extends Module{
 
-    private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
+    private static Logger logger = Logger.getLogger(TravelDemandGenerator.class);
 
     private int counterDroppedTripsAtBorder;
     private Integer currentTripId = 0;
