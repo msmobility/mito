@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
  */
 public class Properties {
 
+
     private static ResourceBundle resources;
 
     public static final String RANDOM_SEED = "random.seed";

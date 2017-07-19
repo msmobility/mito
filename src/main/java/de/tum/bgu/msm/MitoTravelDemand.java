@@ -20,11 +20,9 @@ public class MitoTravelDemand {
 
     private static Logger logger = Logger.getLogger(MitoTravelDemand.class);
     private final DataSet dataSet;
-    private final ResourceBundle resources;
 
-    public MitoTravelDemand(DataSet dataSet, ResourceBundle resources) {
+    public MitoTravelDemand(DataSet dataSet) {
         this.dataSet = dataSet;
-        this.resources = resources;
     }
 
     public void generateTravelDemand () {
@@ -34,7 +32,7 @@ public class MitoTravelDemand {
         TripGeneration tg = new TripGeneration(dataSet);
         tg.run();
         // calculate travel time budgets
-        TravelTimeBudget ttb = new TravelTimeBudget(dataSet, resources);
+        TravelTimeBudget ttb = new TravelTimeBudget(dataSet);
         ttb.run();
         // microscopic destination choice
         DestinationChoice dc = new DestinationChoice(dataSet);

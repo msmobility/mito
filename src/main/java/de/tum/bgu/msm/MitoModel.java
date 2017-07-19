@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.io.InputManager;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.Random;
@@ -53,8 +54,10 @@ public class MitoModel {
         // setup
         manager.readAdditionalData();
 
+        Resources.INSTANCE.setResources(resources);
+
         // generate travel demand
-        MitoTravelDemand ttd = new MitoTravelDemand(dataSet, resources);
+        MitoTravelDemand ttd = new MitoTravelDemand(dataSet);
         ttd.generateTravelDemand();
 
         String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTripDataManager().getTotalNumberOfTrips());
