@@ -15,7 +15,6 @@ public enum Resources {
 
     private ResourceBundle resources;
 
-
     Resources() {
 
     }

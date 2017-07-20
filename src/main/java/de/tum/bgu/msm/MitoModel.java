@@ -56,6 +56,19 @@ public class MitoModel {
         return model;
     }
 
+    public void feedData(InputFeed feed) {
+        manager.readFromFeed(feed);
+        manager.readAdditionalData();
+    }
+
+    public void initializeStandAlone() {
+        // Read data if MITO is used as a stand-alone program and data are not fed from other program
+        logger.info("  Reading input data for MITO");
+        MitoUtil.initializeRandomNumber();
+        manager.readAsStandAlone();
+        manager.readAdditionalData();
+    }
+
     public void runModel() {
         startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
@@ -74,19 +87,6 @@ public class MitoModel {
         int hours = (int) (endTime / 60);
         int min = (int) (endTime - 60 * hours);
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
-    }
-
-    public void feedData(InputFeed feed) {
-       manager.readFromFeed(feed);
-        manager.readAdditionalData();
-    }
-
-    public void initializeStandAlone() {
-        // Read data if MITO is used as a stand-alone program and data are not fed from other program
-        logger.info("  Reading input data for MITO");
-        MitoUtil.initializeRandomNumber();
-        manager.readAsStandAlone();
-        manager.readAdditionalData();
     }
 
     public DataSet getTravelDemand() {
