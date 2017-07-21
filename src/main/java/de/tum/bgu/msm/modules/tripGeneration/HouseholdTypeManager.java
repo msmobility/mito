@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -14,15 +13,15 @@ import java.util.Map;
 /**
  * Created by Nico on 20.07.2017.
  */
-public class HouseholdTypeGenerator {
+public class HouseholdTypeManager {
 
-    private static Logger logger = Logger.getLogger(HouseholdTypeGenerator.class);
+    private static Logger logger = Logger.getLogger(HouseholdTypeManager.class);
 
     private final DataSet dataSet;
 
     private List<HouseholdType> householdTypes = new ArrayList();
 
-    public HouseholdTypeGenerator(DataSet dataSet) {
+    public HouseholdTypeManager(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 
@@ -44,27 +43,6 @@ public class HouseholdTypeGenerator {
         householdTypes = createHouseholdTypes(purpose, sizePortions, workerPortions,
                 incomePortions, autoPortions, regionPortions);
 
-
-
-//        HouseholdType[] hhCounter = defineHouseholdTypeOfEachSurveyRecordForPurpose(purpose, selectAutoMode(purpose));
-//        HashMap<Integer, Integer> numHhByType = new HashMap<>();
-//        for (int hhType : hhCounter) {
-//            if (numHhByType.containsKey(hhType)) {
-//                int oldNum = numHhByType.get(hhType);
-//                numHhByType.put(hhType, (oldNum + 1));
-//            } else {
-//                numHhByType.put(hhType, 1);
-//            }
-//        }
-//        hhTypeDef.appendColumn(new float[hhTypeDef.getRowCount()], "counter");
-//        hhTypeDef.buildIndex(hhTypeDef.getColumnPosition("hhType"));
-//        for (int type : numHhByType.keySet()) {
-//            if (type == 0) {
-//                continue;
-//            }
-//            hhTypeDef.setIndexedValueAt(type, "counter", numHhByType.get(type));
-//        }
-////        mstmUtilities.writeTable(hhTypeDef, "temp_" + purpose + ".csv");
     }
 
     private List<HouseholdType> createHouseholdTypes(String purpose, String[] sizePortions, String[] workerPortions,
@@ -166,52 +144,5 @@ public class HouseholdTypeGenerator {
         String autoMode = "autos";
         if (purpose.equalsIgnoreCase("HBW") || purpose.equalsIgnoreCase("NHBW")) autoMode = "autoSufficiency";
         return autoMode;
-    }
-
-    public HashMap<String, Integer[]> collectTripFrequencyDistributionForPurpose(Map<Integer, HouseholdType> householdTypeBySampleId, String purpose) {
-        // Summarize frequency of number of trips for each household type by each trip purpose
-        //
-        // Storage Structure
-        //   HashMap<String, Integer> tripsByHhTypeAndPurpose: Token is hhType_TripPurpose
-        //   |
-        //   contains -> Integer[] tripFrequencyList: Frequency of 0, 1, 2, 3, ... trips
-
-        HashMap<String, Integer[]> tripsByHhTypeAndPurpose = new HashMap<>();  // contains trips by hhtype and purpose
-
-        for (HouseholdType type : householdTypeBySampleId.values()) {
-            String token = type.getId() + "_" + purpose;
-            // fill Storage structure from bottom       0                  10                  20                  30
-            Integer[] tripFrequencyList = new Integer[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  // space for up to 30 trips
-            tripsByHhTypeAndPurpose.put(token, tripFrequencyList);
-        }
-
-        // Read through household file of HTS
-
-        TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
-        for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
-            int sampleId = (int) travelSurveyHouseholdTable.getValueAt(hhRow, "sampn");
-            HouseholdType type = householdTypeBySampleId.get(sampleId);
-            int tripsOfThisHouseholdForGivenPurpose = 0;
-            // Ready through trip file of HTS
-            TableDataSet travelSurveyTripsDable = dataSet.getTravelSurveyTripsTable();
-            for (int trRow = 1; trRow <= travelSurveyTripsDable.getRowCount(); trRow++) {
-                if ((int) travelSurveyTripsDable.getValueAt(trRow, "sampn") == sampleId) {
-                    String htsTripPurpose = travelSurveyTripsDable.getStringValueAt(trRow, "mainPurpose");
-                    if (htsTripPurpose.equals(purpose)) {
-                        // add this trip to this household
-                        tripsOfThisHouseholdForGivenPurpose++;
-                    }
-                } else {
-                    // This trip record does not belong to this household or purpose
-//                    break;
-                }
-            }
-            String token = type.getId() + "_" + purpose;
-            Integer[] tripsOfThisHouseholdType = tripsByHhTypeAndPurpose.get(token);
-            tripsOfThisHouseholdType[tripsOfThisHouseholdForGivenPurpose]++;
-            tripsByHhTypeAndPurpose.put(token, tripsOfThisHouseholdType);
-
-        }
-        return tripsByHhTypeAndPurpose;
     }
 }
