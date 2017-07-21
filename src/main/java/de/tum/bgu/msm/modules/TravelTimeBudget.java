@@ -79,19 +79,10 @@ public class TravelTimeBudget {
         int dataSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_TRAVEL_TIME_BUDGET_UEC_DATA_SHEET);
         int totalTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_Total_Travel_Time_Budget_UEC_UTILITY);
 
-        System.out.println(uecFileName);
-        System.out.println(totalTtbSheetNumber);
-        System.out.println(dataSheetNumber);
-        for (String t: rb.keySet()) System.out.println(t);
-        System.out.println(TravelTimeBudgetDMU.class.getName());
-
         totalTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), totalTtbSheetNumber,
                 dataSheetNumber, rb, TravelTimeBudgetDMU.class);
 
-        System.out.println("Done with setup");
         totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
-
-        System.exit(1);
 
         int hbsTtbSheetNumber = ResourceUtil.getIntegerProperty(rb, PROPERTIES_HBS_Travel_Time_Budget_UEC_UTILITY);
         hbsTtbUtility = new UtilityExpressionCalculator(new File(uecFileName), hbsTtbSheetNumber,

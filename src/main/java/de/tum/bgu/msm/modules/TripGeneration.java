@@ -246,7 +246,7 @@ public class TripGeneration {
         // select number of trips
         double[] probabilities = new double[tripFrequencies.length];
         for (int i = 0; i < tripFrequencies.length; i++) probabilities[i] = (double) tripFrequencies[i];
-        return MitoUtil.select(MitoUtil.getRand(), probabilities);
+        return MitoUtil.select(probabilities);
     }
 
 
@@ -257,7 +257,7 @@ public class TripGeneration {
         if (!mitoData.shallWeRemoveTripsAtBorder()) return false;
 
         float damper = mitoData.getReductionAtBorderOfStudyArea(tripOrigin);
-        return MitoUtil.getRand().nextFloat() < damper;
+        return MitoUtil.getRandomFloat() < damper;
     }
 
 

@@ -41,8 +41,8 @@ public class MitoUtil {
         rand = randSetting;
     }
 
-    public static Random getRand () {
-        return rand;
+    public static float getRandomFloat () {
+        return rand.nextFloat();
     }
 
 
@@ -169,7 +169,7 @@ public class MitoUtil {
     }
 
 
-    public static int select (Random rand, double[] probabilities) {
+    public static int select (double[] probabilities) {
         // select item based on probabilities (for zero-based double array)
         double selPos = getSum(probabilities) * rand.nextDouble();
         double sum = 0;
