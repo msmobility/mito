@@ -38,22 +38,10 @@ public class MitoModel {
 
     private DataSet dataSet;
 
-    private MitoModel(ResourceBundle resources) {
+    public MitoModel(ResourceBundle resources) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
         Resources.INSTANCE.setResources(resources);
-    }
-
-    public static MitoModel setupAsStandAlone(ResourceBundle resources) {
-        MitoModel model = new MitoModel(resources);
-        model.initializeStandAlone();
-        return model;
-    }
-
-    public static MitoModel setupFromFeed(ResourceBundle resources, InputFeed feed) {
-        MitoModel model = new MitoModel(resources);
-        model.feedData(feed);
-        return model;
     }
 
     public void feedData(InputFeed feed) {

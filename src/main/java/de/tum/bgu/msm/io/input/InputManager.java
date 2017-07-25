@@ -36,13 +36,13 @@ public class InputManager {
         new PersonsReader(dataSet).read();
         new JobReader(dataSet).read();
         new EmploymentReader(dataSet).read();
-        new TripAttractionRatesReader(dataSet).read();
     }
 
     public void readAdditionalData() {
         dataSet.setPurposes(Resources.INSTANCE.getArray(Properties.PURPOSES));
         new SchoolEnrollmentReader(dataSet).read();
         new RegionsReader(dataSet).read();
+        new TripAttractionRatesReader(dataSet).read();
     }
 
     public void readFromFeed(InputFeed feed) {
