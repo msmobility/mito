@@ -133,8 +133,6 @@ public class ByPurposeGenerator implements Function1<String, Void> {
             tripsByHhTypeAndPurpose.put(token, tripFrequencyList);
         }
 
-        // Read through household file of HTS
-
         TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
         for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
             int sampleId = (int) travelSurveyHouseholdTable.getValueAt(hhRow, "sampn");
@@ -149,11 +147,8 @@ public class ByPurposeGenerator implements Function1<String, Void> {
                         // add this trip to this household
                         tripsOfThisHouseholdForGivenPurpose++;
                     }
-                } else {
-                    // This trip record does not belong to this household or purpose
-//                    break;
                 }
-            }
+        }
             String token = type.getId() + "_" + purpose;
             Integer[] tripsOfThisHouseholdType = tripsByHhTypeAndPurpose.get(token);
             tripsOfThisHouseholdType[tripsOfThisHouseholdForGivenPurpose]++;
