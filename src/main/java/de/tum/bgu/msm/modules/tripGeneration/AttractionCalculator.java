@@ -23,11 +23,6 @@ public class AttractionCalculator {
     }
 
     public Map<Integer, Map<String, Float>> run() {
-        return calculateTripAttractions();
-    }
-
-    private Map<Integer, Map<String, Float>> calculateTripAttractions () {
-        // calculate zonal trip attractions
 
         logger.info("  Calculating trip attractions");
         TableDataSet attrRates = dataSet.getTripAttractionRates();
