@@ -28,7 +28,7 @@ public class HouseholdTypeManager {
         this.purpose = purpose;
     }
 
-    public void createHouseHoldTypeDefinitions() {
+    public List<HouseholdType> createHouseHoldTypeDefinitions() {
         String[] householdDefinitionToken = Resources.INSTANCE.getArray("hh.type." + purpose);
         String sizeToken = householdDefinitionToken[2];
         String[] sizePortions = sizeToken.split("\\.");
@@ -41,14 +41,13 @@ public class HouseholdTypeManager {
         String regionToken = householdDefinitionToken[6];
         String[] regionPortions = regionToken.split("\\.");
 
-        householdTypes = createHouseholdTypes(sizePortions, workerPortions,
+        createHouseholdTypes(sizePortions, workerPortions,
                 incomePortions, autoPortions, regionPortions);
-
+        return householdTypes;
     }
 
-    private List<HouseholdType> createHouseholdTypes(String[] sizePortions, String[] workerPortions,
+    private void createHouseholdTypes(String[] sizePortions, String[] workerPortions,
                                                      String[] incomePortions, String[] autoPortions, String[] regionPortions) {
-        List<HouseholdType> houseHoldTypes = new ArrayList<>();
         int id = 0;
         for (String sizeToken : sizePortions) {
             String[] sizeParts = sizeToken.split("-");
@@ -71,7 +70,7 @@ public class HouseholdTypeManager {
                             final int region_l = Integer.parseInt(regionParts[0]);
                             final int region_h = Integer.parseInt(regionParts[1]);
 
-                            houseHoldTypes.add(new HouseholdType(id, size_l, size_h, workers_l, workers_h,
+                            householdTypes.add(new HouseholdType(id, size_l, size_h, workers_l, workers_h,
                                     income_l, income_h, autos_l, autos_h, region_l,
                                     region_h));
                             id++;
@@ -80,14 +79,12 @@ public class HouseholdTypeManager {
                 }
             }
         }
-        return houseHoldTypes;
     }
 
-    Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord() {
+    public Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord(TableDataSet travelSurveyHouseholdTable) {
         // Count number of household records per predefined type
 
         Map<Integer, HouseholdType> householdTypeBySample = new HashMap<>();
-        TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
 
         for (int row = 1; row <= travelSurveyHouseholdTable.getRowCount(); row++) {
             int hhSze = (int) travelSurveyHouseholdTable.getValueAt(row, "hhsiz");
@@ -108,10 +105,16 @@ public class HouseholdTypeManager {
         return householdTypeBySample;
     }
 
-    HouseholdType determineHouseholdType(MitoHousehold hh) {
+    public HouseholdType determineHouseholdType(MitoHousehold hh) {
         int incCategory = translateIncomeIntoCategory(hh.getIncome());
+        int region = -1;
+        if(dataSet.getZones().containsKey(hh.getHomeZone())) {
+            region = dataSet.getZones().get(hh.getHomeZone()).getRegion();
+        } else {
+            logger.info("Home Zone " + hh.getHomeZone() + " for Household  " + hh.getHhId() +" does not exist");
+        }
         return determineHouseholdType(hh.getHhSize(), hh.getNumberOfWorkers(),
-                incCategory, hh.getAutos(), dataSet.getZones().get(hh.getHomeZone()).getRegion());
+                incCategory, hh.getAutos(), region);
     }
 
     HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {

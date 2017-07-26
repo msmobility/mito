@@ -52,7 +52,8 @@ public class ByPurposeGenerator {
 
     private void defineTripFrequenciesForHouseHoldTypes() {
         householdTypeManager.createHouseHoldTypeDefinitions();
-        Map<Integer, HouseholdType> householdTypeBySampleId = householdTypeManager.assignHouseholdTypeOfEachSurveyRecord();
+        TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
+        Map<Integer, HouseholdType> householdTypeBySampleId = householdTypeManager.assignHouseholdTypeOfEachSurveyRecord(travelSurveyHouseholdTable);
         collectTripFrequencyDistribution(householdTypeBySampleId);
     }
 

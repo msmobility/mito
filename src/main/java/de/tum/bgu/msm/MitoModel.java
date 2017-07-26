@@ -11,21 +11,22 @@ import java.util.ResourceBundle;
 
 /**
  * Implements the Microsimulation Transport Orchestrator (MITO)
- * @author Rolf Moeckel
- * Created on Sep 18, 2016 in Munich, Germany
  *
- * To run MITO, the following data need either to be passed in (using methods feedData) from another program or
- * need to be read from files and passed in (using method initializeStandAlone):
- * - zones:              public void setZones(int[] zones)
- * - autoTravelTimes:    public void setAutoTravelTimes (Matrix autoTravelTimes)
- * - transitTravelTimes: public void setTransitTravelTimes (Matrix transitTravelTimes)
- * - timoHouseholds:     public void setHouseholds(MitoHousehold[] timoHouseholds)
- * - retailEmplByZone:   public void setRetailEmplByZone(int[] retailEmplByZone)
- * - officeEmplByZone:   public void setOfficeEmplByZone(int[] officeEmplByZone)
- * - otherEmplByZone:    public void setOtherEmplByZone(int[] otherEmplByZone)
- * - totalEmplByZone:    public void setTotalEmplByZone(int[] totalEmplByZone)
- * - sizeOfZonesInAcre:  public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre)
- * All other data are read by function  manager.readAdditionalData();
+ * @author Rolf Moeckel
+ *         Created on Sep 18, 2016 in Munich, Germany
+ *         <p>
+ *         To run MITO, the following data need either to be passed in (using methods feedData) from another program or
+ *         need to be read from files and passed in (using method initializeStandAlone):
+ *         - zones:              public void setZones(int[] zones)
+ *         - autoTravelTimes:    public void setAutoTravelTimes (Matrix autoTravelTimes)
+ *         - transitTravelTimes: public void setTransitTravelTimes (Matrix transitTravelTimes)
+ *         - timoHouseholds:     public void setHouseholds(MitoHousehold[] timoHouseholds)
+ *         - retailEmplByZone:   public void setRetailEmplByZone(int[] retailEmplByZone)
+ *         - officeEmplByZone:   public void setOfficeEmplByZone(int[] officeEmplByZone)
+ *         - otherEmplByZone:    public void setOtherEmplByZone(int[] otherEmplByZone)
+ *         - totalEmplByZone:    public void setTotalEmplByZone(int[] totalEmplByZone)
+ *         - sizeOfZonesInAcre:  public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre)
+ *         All other data are read by function  manager.readAdditionalData();
  */
 
 public class MitoModel {
@@ -35,6 +36,7 @@ public class MitoModel {
     private final InputManager manager;
 
     private long startTime;
+    private boolean initialized = false;
 
     private DataSet dataSet;
 
@@ -45,16 +47,26 @@ public class MitoModel {
     }
 
     public void feedData(InputFeed feed) {
-        manager.readFromFeed(feed);
-        manager.readAdditionalData();
+        if (!initialized) {
+            manager.readFromFeed(feed);
+            manager.readAdditionalData();
+            initialized = true;
+        } else {
+            throw new RuntimeException("MitoModel was already initialized. Can only do this once either by feed or as standalone");
+        }
     }
 
     public void initializeStandAlone() {
-        // Read data if MITO is used as a stand-alone program and data are not fed from other program
-        logger.info("  Reading input data for MITO");
-        MitoUtil.initializeRandomNumber();
-        manager.readAsStandAlone();
-        manager.readAdditionalData();
+        if (!initialized) {
+            // Read data if MITO is used as a stand-alone program and data are not fed from other program
+            logger.info("  Reading input data for MITO");
+            MitoUtil.initializeRandomNumber();
+            manager.readAsStandAlone();
+            manager.readAdditionalData();
+            initialized = true;
+        } else {
+            throw new RuntimeException("MitoModel was already initialized. Can only do this once!");
+        }
     }
 
     public void runModel() {
@@ -81,15 +93,15 @@ public class MitoModel {
         return dataSet;
     }
 
-    public void setBaseDirectory (String baseDirectory) {
+    public void setBaseDirectory(String baseDirectory) {
         MitoUtil.setBaseDirectory(baseDirectory);
     }
 
-    public void setRandomNumberGenerator (Random random) {
+    public void setRandomNumberGenerator(Random random) {
         MitoUtil.initializeRandomNumber(random);
     }
 
-    public void setScenarioName (String scenarioName) {
+    public void setScenarioName(String scenarioName) {
         dataSet.setScenarioName(scenarioName);
     }
 }

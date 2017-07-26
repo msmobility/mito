@@ -1,20 +1,14 @@
 package de.tum.bgu.msm.modules;
 
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator;
 import de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator;
 import de.tum.bgu.msm.modules.tripGeneration.TripBalancer;
-import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
-import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -64,5 +58,3 @@ public class TripGeneration extends Module{
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
     }
 }
-
-
