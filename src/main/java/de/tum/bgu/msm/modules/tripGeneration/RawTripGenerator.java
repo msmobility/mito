@@ -6,9 +6,11 @@ import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
 import com.pb.sawdust.util.concurrent.IteratorAction;
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoTrip;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,7 +36,17 @@ public class RawTripGenerator {
     }
 
     private void generateByPurposeMultiThreaded() {
-        Function1<String,Void> tripGenByPurposeMethod = new ByPurposeGenerator(dataSet);
+
+        Function1<String,Void> tripGenByPurposeMethod = purpose -> {
+            ByPurposeGenerator byPurposeGenerator = new ByPurposeGenerator(dataSet, purpose);
+            List<MitoTrip> trips = byPurposeGenerator.generateTrips();
+            for (MitoTrip trip: trips) {
+                dataSet.getTrips().put(trip.getTripId(), trip);
+                dataSet.getHouseholds().get(trip.getHouseholdId()).addTrip(trip);
+            }
+            return null;
+        };
+
         Iterator<String> tripPurposeIterator = ArrayUtil.getIterator(dataSet.getPurposes());
         IteratorAction<String> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
         ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();

@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
@@ -18,14 +19,16 @@ public class HouseholdTypeManager {
     private static Logger logger = Logger.getLogger(HouseholdTypeManager.class);
 
     private final DataSet dataSet;
+    private final String purpose;
 
     private List<HouseholdType> householdTypes = new ArrayList();
 
-    public HouseholdTypeManager(DataSet dataSet) {
+    public HouseholdTypeManager(DataSet dataSet, String purpose) {
         this.dataSet = dataSet;
+        this.purpose = purpose;
     }
 
-    public void createHouseHoldTypeDefinitionsForPurpose(String purpose) {
+    public void createHouseHoldTypeDefinitions() {
         String[] householdDefinitionToken = Resources.INSTANCE.getArray("hh.type." + purpose);
         String sizeToken = householdDefinitionToken[2];
         String[] sizePortions = sizeToken.split("\\.");
@@ -80,7 +83,7 @@ public class HouseholdTypeManager {
         return houseHoldTypes;
     }
 
-    Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecordForPurpose(String purpose) {
+    Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord() {
         // Count number of household records per predefined type
 
         Map<Integer, HouseholdType> householdTypeBySample = new HashMap<>();
@@ -96,7 +99,7 @@ public class HouseholdTypeManager {
             hhVeh = Math.min(hhVeh, 3);   // Auto-ownership model will generate groups 0, 1, 2, 3+ only.
             int region = (int) travelSurveyHouseholdTable.getValueAt(row, "urbanSuburbanRural");
             int sampleId = (int) travelSurveyHouseholdTable.getValueAt(row, "sampn");
-            HouseholdType type = determineHouseholdType(purpose, hhSze, hhWrk, hhInc, hhVeh, region);
+            HouseholdType type = determineHouseholdType(hhSze, hhWrk, hhInc, hhVeh, region);
             householdTypeBySample.put(sampleId, type);
 
         }
@@ -105,13 +108,19 @@ public class HouseholdTypeManager {
         return householdTypeBySample;
     }
 
-    HouseholdType determineHouseholdType(String purpose, int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {
+    HouseholdType determineHouseholdType(MitoHousehold hh) {
+        int incCategory = translateIncomeIntoCategory(hh.getIncome());
+        return determineHouseholdType(hh.getHhSize(), hh.getNumberOfWorkers(),
+                incCategory, hh.getAutos(), dataSet.getZones().get(hh.getHomeZone()).getRegion());
+    }
+
+    HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {
 
         hhSze = Math.min(hhSze, 7);
         hhWrk = Math.min(hhWrk, 4);
 
         int hhAut;
-        String autoDef = selectAutoMode(purpose);
+        String autoDef = selectAutoMode();
 
         if (autoDef.equalsIgnoreCase("autos")) {
             hhAut = Math.min(hhVeh, 3);
@@ -134,7 +143,7 @@ public class HouseholdTypeManager {
         return null;
     }
 
-    private String selectAutoMode(String purpose) {
+    private String selectAutoMode() {
         // return autos or autoSufficiency depending on mode chosen
         String autoMode = "autos";
         if (purpose.equalsIgnoreCase("HBW") || purpose.equalsIgnoreCase("NHBW")) autoMode = "autoSufficiency";
@@ -147,5 +156,24 @@ public class HouseholdTypeManager {
                 entry.setValue(null);  // marker that this hhTypeDef is not worth analyzing
             }
         }
+    }
+
+    private int translateIncomeIntoCategory(int hhIncome) {
+        // translate income in absolute dollars into household travel survey income categories
+
+        if (hhIncome < 10000) return 1;
+        else if (hhIncome >= 10000 && hhIncome < 15000) return 2;
+        else if (hhIncome >= 15000 && hhIncome < 30000) return 3;
+        else if (hhIncome >= 30000 && hhIncome < 40000) return 4;
+        else if (hhIncome >= 40000 && hhIncome < 50000) return 5;
+        else if (hhIncome >= 50000 && hhIncome < 60000) return 6;
+        else if (hhIncome >= 60000 && hhIncome < 75000) return 7;
+        else if (hhIncome >= 75000 && hhIncome < 100000) return 8;
+        else if (hhIncome >= 100000 && hhIncome < 125000) return 9;
+        else if (hhIncome >= 125000 && hhIncome < 150000) return 10;
+        else if (hhIncome >= 150000 && hhIncome < 200000) return 11;
+        else if (hhIncome >= 200000) return 12;
+        logger.error("Unknown HTS income: " + hhIncome);
+        return -1;
     }
 }
