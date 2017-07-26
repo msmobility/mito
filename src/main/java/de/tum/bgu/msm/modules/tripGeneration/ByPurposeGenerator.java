@@ -36,18 +36,18 @@ public class ByPurposeGenerator implements Function1<String, Void> {
     }
 
 
-    private void microgenerateTripsByPurpose (String strPurp) {
+    private void microgenerateTripsByPurpose(String strPurp) {
 
         logger.info("  Generating trips with purpose " + strPurp + " (multi-threaded)");
-        HouseholdTypeManager generator = new HouseholdTypeManager(dataSet);
-        generator.createHouseHoldTypeDefinitionsForPurpose(strPurp);
-        Map<Integer, HouseholdType> householdTypeBySampleId = generator.assignHouseholdTypeOfEachSurveyRecordForPurpose(strPurp);
+        HouseholdTypeManager householdTypeManager = new HouseholdTypeManager(dataSet);
+        householdTypeManager.createHouseHoldTypeDefinitionsForPurpose(strPurp);
+        Map<Integer, HouseholdType> householdTypeBySampleId = householdTypeManager.assignHouseholdTypeOfEachSurveyRecordForPurpose(strPurp);
         HashMap<String, Integer[]> tripsByHhTypeAndPurpose = collectTripFrequencyDistributionForPurpose(householdTypeBySampleId, strPurp);
         int purposeNum = dataSet.getPurposeIndex(strPurp);
         // Generate trips for each household
-        for (MitoHousehold hh: dataSet.getHouseholds().values()) {
-            int incCategory = translateIncomeIntoCategory (hh.getIncome());
-            HouseholdType hhType = generator.getHhType(strPurp,  hh.getHhSize(), hh.getNumberOfWorkers(),
+        for (MitoHousehold hh : dataSet.getHouseholds().values()) {
+            int incCategory = translateIncomeIntoCategory(hh.getIncome());
+            HouseholdType hhType = householdTypeManager.determineHouseholdType(strPurp, hh.getHhSize(), hh.getNumberOfWorkers(),
                     incCategory, hh.getAutos(), dataSet.getZones().get(hh.getHomeZone()).getRegion());
             String token = hhType.getId() + "_" + strPurp;
             Integer[] tripFrequencies = tripsByHhTypeAndPurpose.get(token);
@@ -65,17 +65,17 @@ public class ByPurposeGenerator implements Function1<String, Void> {
                 if (dropThisTrip) {
                     counterDroppedTripsAtBorder.incrementAndGet();
                 }
-                if (dropThisTrip) continue;
-                synchronized (currentTripId) {
-                    MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), hh.getHhId(), purposeNum, tripOrigin);
-                    dataSet.getTrips().put(trip.getTripId(), trip);
-                    hh.addTrip(trip);
+                if (dropThisTrip) {
+                    continue;
                 }
+                MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), hh.getHhId(), purposeNum, tripOrigin);
+                dataSet.getTrips().put(trip.getTripId(), trip);
+                hh.addTrip(trip);
             }
         }
     }
 
-    private int translateIncomeIntoCategory (int hhIncome) {
+    private int translateIncomeIntoCategory(int hhIncome) {
         // translate income in absolute dollars into household travel survey income categories
 
         if (hhIncome < 10000) return 1;
@@ -94,7 +94,7 @@ public class ByPurposeGenerator implements Function1<String, Void> {
         return -1;
     }
 
-    private int selectNumberOfTrips (Integer[] tripFrequencies) {
+    private int selectNumberOfTrips(Integer[] tripFrequencies) {
         // select number of trips
         double[] probabilities = new double[tripFrequencies.length];
         for (int i = 0; i < tripFrequencies.length; i++) {
@@ -148,7 +148,7 @@ public class ByPurposeGenerator implements Function1<String, Void> {
                         tripsOfThisHouseholdForGivenPurpose++;
                     }
                 }
-        }
+            }
             String token = type.getId() + "_" + purpose;
             Integer[] tripsOfThisHouseholdType = tripsByHhTypeAndPurpose.get(token);
             tripsOfThisHouseholdType[tripsOfThisHouseholdForGivenPurpose]++;

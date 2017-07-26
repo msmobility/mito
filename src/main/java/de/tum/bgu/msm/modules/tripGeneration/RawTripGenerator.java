@@ -29,26 +29,24 @@ public class RawTripGenerator {
     }
 
     public void run () {
+        generateByPurposeMultiThreaded();
+        logTripGeneration();
+    }
 
-        // Multi-threading code
+    private void generateByPurposeMultiThreaded() {
         Function1<String,Void> tripGenByPurposeMethod = new ByPurposeGenerator(dataSet);
-        // Generate trips for each purpose
         Iterator<String> tripPurposeIterator = ArrayUtil.getIterator(dataSet.getPurposes());
         IteratorAction<String> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
         ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
         pool.execute(itTask);
         itTask.waitForCompletion();
-
-        logTripGeneration();
     }
 
     private void logTripGeneration() {
         int rawTrips = dataSet.getTrips().size() + counterDroppedTripsAtBorder.get();
         logger.info("  Generated " + MitoUtil.customFormat("###,###", rawTrips) + " raw trips.");
-        if (counterDroppedTripsAtBorder.get() > 0)
+        if (counterDroppedTripsAtBorder.get() > 0) {
             logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder.get()) + " trips were dropped at boundary of study area.");
+        }
     }
-
-
-
 }
