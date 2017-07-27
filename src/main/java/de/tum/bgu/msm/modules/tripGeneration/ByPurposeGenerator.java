@@ -139,7 +139,7 @@ class ByPurposeGenerator {
         for (int i = 0; i < tripFrequencies.length; i++) {
             probabilities[i] = (double) tripFrequencies[i];
         }
-        return MitoUtil.select(MitoUtil.getRand(), probabilities);
+        return MitoUtil.select(probabilities);
     }
 
     private void createTrip(MitoHousehold hh) {
@@ -159,6 +159,6 @@ class ByPurposeGenerator {
             return false;
         }
         float damper = dataSet.getZones().get(tripOrigin).getReductionAtBorderDamper();
-        return MitoUtil.getRand().nextFloat() < damper;
+        return MitoUtil.getRandomFloat() < damper;
     }
 }
