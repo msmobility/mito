@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
  *         All other data are read by function  manager.readAdditionalData();
  */
 
-class MitoModel {
+public class MitoModel {
 
     private static final Logger logger = Logger.getLogger(MitoModel.class);
 
