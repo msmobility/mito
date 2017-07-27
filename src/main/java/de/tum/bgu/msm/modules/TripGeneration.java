@@ -35,6 +35,7 @@ public class TripGeneration extends Module{
         calculateAttractions();
         balanceTrips();
         writeResults();
+
         logger.info("  Completed microscopic trip generation model.");
     }
 
@@ -57,4 +58,5 @@ public class TripGeneration extends Module{
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, tripAttr);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
     }
+
 }

@@ -55,6 +55,7 @@ public class TravelTimeBudget extends Module {
         // set up utility expression calculator for calculation of the travel time budget
 
         logger.info("  Creating Utility Expression Calculator for microscopic travel time budget calculation.");
+
         logCalculationTotalTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TOTAL_TTB);
         logCalculationHbsTtb   = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBS_TTB);
         logCalculationHboTtb   = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBO_TTB);
@@ -67,6 +68,7 @@ public class TravelTimeBudget extends Module {
         totalTravelTimeBudgetDMU = new TravelTimeBudgetDMU();
         int hbsTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         hbsTtbUtility = Resources.INSTANCE.getUtilityExpressionCalculator(uecFileName, hbsTtbSheetNumber, dataSheetNumber, TravelTimeBudgetDMU.class);
+
         hbsTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
         int hboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         hboTtbUtility = Resources.INSTANCE.getUtilityExpressionCalculator(uecFileName, hboTtbSheetNumber, dataSheetNumber, TravelTimeBudgetDMU.class);
