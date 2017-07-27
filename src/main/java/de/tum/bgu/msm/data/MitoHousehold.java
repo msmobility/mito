@@ -16,9 +16,8 @@ import java.util.Map;
  */
 
 public class MitoHousehold implements Serializable {
-    private static Logger logger = Logger.getLogger(MitoHousehold.class);
 
-    private int hhId;
+    private final int hhId;
     private int hhSize;
     private int females;
     private int children;

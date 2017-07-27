@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class DistancesReader extends OMXReader {
 
-    private static Logger logger = Logger.getLogger(DistancesReader.class);
+    private static final Logger logger = Logger.getLogger(DistancesReader.class);
 
     private Matrix distanceMatrix;
 

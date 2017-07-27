@@ -15,13 +15,13 @@ import java.io.IOException;
  */
 public abstract class CSVReader extends AbstractInputReader{
 
-    private static Logger logger = Logger.getLogger(CSVReader.class);
+    private static final Logger logger = Logger.getLogger(CSVReader.class);
 
     private BufferedReader reader;
 
     private int numberOfRecords = 0;
 
-    public CSVReader(DataSet dataSet) {
+    protected CSVReader(DataSet dataSet) {
         super(dataSet);
     }
 

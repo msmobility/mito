@@ -7,6 +7,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,14 +17,14 @@ import java.util.Map;
  */
 public class TripGenerationWriter {
 
-    private static Logger logger = Logger.getLogger(TripGenerationWriter.class);
+    private static final Logger logger = Logger.getLogger(TripGenerationWriter.class);
 
     public static void writeTripsByPurposeAndZone(DataSet dataSet, Map<Integer, Map<String, Float>> tripAttractionByZoneAndPurp) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = MitoUtil.generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT));
+        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet);
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = MitoUtil.generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT));
+        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet);
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("Zone");
         pwAttr.print("Zone");
@@ -67,5 +68,17 @@ public class TripGenerationWriter {
         pwAttr.close();
         logger.info("  Wrote out " + MitoUtil.customFormat("###,###", totalTrips)
                 + " aggregate trips balanced against attractions.");
+    }
+
+    private static String generateOutputFileName (String fileName, DataSet dataSet) {
+        if (dataSet.getScenarioName() != null) {
+            File dir = new File("scenOutput/" + dataSet.getScenarioName() + "/tripGeneration");
+            if(!dir.exists()){
+                boolean directoryCreated = dir.mkdir();
+                if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
+            }
+            fileName = "scenOutput/" + dataSet.getScenarioName() + "/tripGeneration/" + fileName;
+        }
+        return fileName;
     }
 }

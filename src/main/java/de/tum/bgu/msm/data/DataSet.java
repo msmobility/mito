@@ -4,7 +4,6 @@ import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +13,8 @@ import java.util.Map;
 public class DataSet {
 
     private static Logger logger = Logger.getLogger(DataSet.class);
-    private static String scenarioName;
+
+    private String scenarioName;
 
     private TableDataSet travelSurveyHouseholdTable;
     private TableDataSet travelSurveyTripsTable;
@@ -28,29 +28,10 @@ public class DataSet {
     private String[] purposes;
     private HashMap<String, Integer> purposeIndices;
 
-    private Map<Integer, Zone> zones= new HashMap<>();
-    private Map<Integer, MitoHousehold> households = new HashMap<>();
-    private Map<Integer, MitoPerson> persons = new HashMap<>();
-    private Map<Integer, MitoTrip> trips = new HashMap<>();
-
-    public DataSet() {
-    }
-
-    public static Logger getLogger() {
-        return logger;
-    }
-
-    public static void setLogger(Logger logger) {
-        DataSet.logger = logger;
-    }
-
-    public static String getScenarioName() {
-        return scenarioName;
-    }
-
-    public static void setScenarioName(String scenarioName) {
-        DataSet.scenarioName = scenarioName;
-    }
+    private final Map<Integer, Zone> zones= new HashMap<>();
+    private final Map<Integer, MitoHousehold> households = new HashMap<>();
+    private final Map<Integer, MitoPerson> persons = new HashMap<>();
+    private final Map<Integer, MitoTrip> trips = new HashMap<>();
 
     public TableDataSet getTravelSurveyHouseholdTable() {
         return travelSurveyHouseholdTable;
@@ -112,6 +93,10 @@ public class DataSet {
         this.distanceMatrix = distanceMatrix;
     }
 
+    public float getDistanceFromFromTo(int from, int to) {
+        return this.distanceMatrix.getValueAt(from, to);
+    }
+
     public Map<Integer, Zone> getZones() {
         return zones;
     }
@@ -126,6 +111,14 @@ public class DataSet {
 
     public Map<Integer, MitoTrip> getTrips() {
         return trips;
+    }
+
+    public String getScenarioName() {
+        return this.scenarioName;
+    }
+
+    public void setScenarioName(String scenarioName) {
+        this.scenarioName = scenarioName;
     }
 
 }

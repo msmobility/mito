@@ -1,8 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by Nico on 7/7/2017.
  */
@@ -107,6 +104,10 @@ public class Zone {
 
     public int getTotalEmpl() {
         return totalEmpl;
+    }
+
+    public int getIndustrialEmplEmpl() {
+        return industrialEmpl;
     }
 
     public int getRetailEmpl() {

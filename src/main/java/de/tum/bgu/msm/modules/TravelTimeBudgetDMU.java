@@ -16,7 +16,7 @@ public class TravelTimeBudgetDMU {
     protected transient Logger logger = Logger.getLogger(TravelTimeBudgetDMU.class);
 
     // uec variables
-    private IndexValues dmuIndex;
+    private final IndexValues dmuIndex;
     private int householdSize;
     private int females;
     private int children;

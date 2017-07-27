@@ -16,12 +16,12 @@ import java.util.Map;
  */
 public class HouseholdTypeManager {
 
-    private static Logger logger = Logger.getLogger(HouseholdTypeManager.class);
+    private static final Logger logger = Logger.getLogger(HouseholdTypeManager.class);
 
     private final DataSet dataSet;
     private final String purpose;
 
-    private List<HouseholdType> householdTypes = new ArrayList();
+    private final List<HouseholdType> householdTypes = new ArrayList<>();
 
     public HouseholdTypeManager(DataSet dataSet, String purpose) {
         this.dataSet = dataSet;
@@ -47,7 +47,7 @@ public class HouseholdTypeManager {
     }
 
     private void createHouseholdTypes(String[] sizePortions, String[] workerPortions,
-                                                     String[] incomePortions, String[] autoPortions, String[] regionPortions) {
+                                      String[] incomePortions, String[] autoPortions, String[] regionPortions) {
         int id = 0;
         for (String sizeToken : sizePortions) {
             String[] sizeParts = sizeToken.split("-");
@@ -108,16 +108,16 @@ public class HouseholdTypeManager {
     public HouseholdType determineHouseholdType(MitoHousehold hh) {
         int incCategory = translateIncomeIntoCategory(hh.getIncome());
         int region = -1;
-        if(dataSet.getZones().containsKey(hh.getHomeZone())) {
+        if (dataSet.getZones().containsKey(hh.getHomeZone())) {
             region = dataSet.getZones().get(hh.getHomeZone()).getRegion();
         } else {
-            logger.info("Home Zone " + hh.getHomeZone() + " for Household  " + hh.getHhId() +" does not exist");
+            logger.info("Home Zone " + hh.getHomeZone() + " for Household  " + hh.getHhId() + " does not exist");
         }
         return determineHouseholdType(hh.getHhSize(), hh.getNumberOfWorkers(),
                 incCategory, hh.getAutos(), region);
     }
 
-    HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {
+    private HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {
 
         hhSze = Math.min(hhSze, 7);
         hhWrk = Math.min(hhWrk, 4);
@@ -165,18 +165,16 @@ public class HouseholdTypeManager {
         // translate income in absolute dollars into household travel survey income categories
 
         if (hhIncome < 10000) return 1;
-        else if (hhIncome >= 10000 && hhIncome < 15000) return 2;
-        else if (hhIncome >= 15000 && hhIncome < 30000) return 3;
-        else if (hhIncome >= 30000 && hhIncome < 40000) return 4;
-        else if (hhIncome >= 40000 && hhIncome < 50000) return 5;
-        else if (hhIncome >= 50000 && hhIncome < 60000) return 6;
-        else if (hhIncome >= 60000 && hhIncome < 75000) return 7;
-        else if (hhIncome >= 75000 && hhIncome < 100000) return 8;
-        else if (hhIncome >= 100000 && hhIncome < 125000) return 9;
-        else if (hhIncome >= 125000 && hhIncome < 150000) return 10;
-        else if (hhIncome >= 150000 && hhIncome < 200000) return 11;
-        else if (hhIncome >= 200000) return 12;
-        logger.error("Unknown HTS income: " + hhIncome);
-        return -1;
+        else if (hhIncome < 15000) return 2;
+        else if (hhIncome < 30000) return 3;
+        else if (hhIncome < 40000) return 4;
+        else if (hhIncome < 50000) return 5;
+        else if (hhIncome < 60000) return 6;
+        else if (hhIncome < 75000) return 7;
+        else if (hhIncome < 100000) return 8;
+        else if (hhIncome < 125000) return 9;
+        else if (hhIncome < 150000) return 10;
+        else if (hhIncome < 200000) return 11;
+        else return 12;
     }
 }

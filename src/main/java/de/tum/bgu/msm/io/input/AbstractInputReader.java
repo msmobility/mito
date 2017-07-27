@@ -9,7 +9,7 @@ abstract class AbstractInputReader {
 
     protected final DataSet dataSet;
 
-    public AbstractInputReader(DataSet dataSet) {
+    AbstractInputReader(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 

@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class ZonesReader extends CSVReader {
 
-    private static Logger logger = Logger.getLogger(ZonesReader.class);
+    private static final Logger logger = Logger.getLogger(ZonesReader.class);
 
     private final Map<Integer, Zone> zones = new HashMap<>();
 

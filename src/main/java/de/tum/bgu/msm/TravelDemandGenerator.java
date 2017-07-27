@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 public class TravelDemandGenerator {
 
-    private static Logger logger = Logger.getLogger(TravelDemandGenerator.class);
+    private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
     private final DataSet dataSet;
 
     public TravelDemandGenerator(DataSet dataSet) {

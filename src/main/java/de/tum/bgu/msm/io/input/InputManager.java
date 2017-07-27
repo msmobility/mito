@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.io.input;
 
-import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
@@ -18,7 +17,7 @@ import java.util.Map;
  */
 public class InputManager {
 
-    private static Logger logger = Logger.getLogger(InputManager.class);
+    private static final Logger logger = Logger.getLogger(InputManager.class);
 
     private final DataSet dataSet;
 

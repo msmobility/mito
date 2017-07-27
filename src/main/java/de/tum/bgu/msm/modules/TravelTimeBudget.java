@@ -20,7 +20,7 @@ public class TravelTimeBudget extends Module {
 
 
 
-    private static Logger logger = Logger.getLogger(TravelTimeBudget.class);
+    private static final Logger logger = Logger.getLogger(TravelTimeBudget.class);
 
     private boolean logCalculationTotalTtb;
     private boolean logCalculationHbsTtb;
@@ -37,7 +37,6 @@ public class TravelTimeBudget extends Module {
     private UtilityExpressionCalculator hboTtbUtility;
     private UtilityExpressionCalculator nhbwTtbUtility;
     private UtilityExpressionCalculator nhboTtbUtility;
-    private int numAltsTravelBudget;
     private int[] totalTtbAvail;
 
 
@@ -80,7 +79,7 @@ public class TravelTimeBudget extends Module {
         nhboTravelTimeBudgetDMU   = new TravelTimeBudgetDMU();
 
         // everything is available
-        numAltsTravelBudget = totalTtbUtility.getNumberOfAlternatives();
+        int numAltsTravelBudget = totalTtbUtility.getNumberOfAlternatives();
 
         totalTtbAvail = new int[numAltsTravelBudget + 1];
         for (int i = 1; i < totalTtbAvail.length; i++) {

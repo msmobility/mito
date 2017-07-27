@@ -11,9 +11,9 @@ import java.util.ResourceBundle;
  *
  */
 
-public class MitoMuc {
+class MitoMuc {
 
-    private static Logger logger = Logger.getLogger(MitoMuc.class);
+    private static final Logger logger = Logger.getLogger(MitoMuc.class);
 
     public static void main(String[] args) {
         // main run method

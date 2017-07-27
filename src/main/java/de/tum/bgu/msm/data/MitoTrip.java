@@ -1,10 +1,6 @@
 package de.tum.bgu.msm.data;
 
-import org.apache.log4j.Logger;
-
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Holds trip objects for the Microsimulation Transport Orchestrator (MITO)
@@ -14,10 +10,9 @@ import java.util.Map;
  */
 
 public class MitoTrip implements Serializable {
-    static Logger logger = Logger.getLogger(MitoTrip.class);
 
-    private int tripId;
-    private int householdId;
+    private final int tripId;
+    private final int householdId;
     private int tripPurpose;
     private int tripOrigin;
 

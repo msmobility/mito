@@ -28,7 +28,7 @@ public class TripBalancer {
         balanceTripGeneration();
     }
 
-    private Map<Integer, Map<String, Float>> balanceTripGeneration() {
+    private void balanceTripGeneration() {
 
         logger.info("  Balancing trip production and attractions");
 
@@ -58,10 +58,9 @@ public class TripBalancer {
 //                    tripProd[zone][purp][mstmInc] = tripAttr[zone][purp][mstmInc];
             }
         }
-        return tripAttr;
     }
 
-    public int getTotalNumberOfTripsGeneratedByPurpose(int purpose, Collection<MitoTrip> trips) {
+    private int getTotalNumberOfTripsGeneratedByPurpose(int purpose, Collection<MitoTrip> trips) {
         int prodSum = 0;
         for (MitoTrip trip : trips) {
             if (trip.getTripPurpose() == purpose) {

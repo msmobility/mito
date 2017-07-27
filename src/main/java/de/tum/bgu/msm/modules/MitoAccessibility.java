@@ -20,9 +20,9 @@ import java.util.Map;
 
 public class MitoAccessibility extends Module {
 
-    static Logger logger = Logger.getLogger(MitoAccessibility.class);
+    private static final Logger logger = Logger.getLogger(MitoAccessibility.class);
 
-    public MitoAccessibility(DataSet dataSet) {
+    private MitoAccessibility(DataSet dataSet) {
         super(dataSet);
     }
 

@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RawTripGenerator {
 
-    private static Logger logger = Logger.getLogger(RawTripGenerator.class);
+    private static final Logger logger = Logger.getLogger(RawTripGenerator.class);
 
-    static AtomicInteger counterDroppedTripsAtBorder = new AtomicInteger();
-    static AtomicInteger currentTripId = new AtomicInteger();
+    static final AtomicInteger counterDroppedTripsAtBorder = new AtomicInteger();
+    static final AtomicInteger currentTripId = new AtomicInteger();
 
     private final DataSet dataSet;
 

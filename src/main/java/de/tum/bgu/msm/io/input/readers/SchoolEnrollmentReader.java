@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class SchoolEnrollmentReader extends CSVReader {
 
-    private static Logger logger = Logger.getLogger(SchoolEnrollmentReader.class);
+    private static final Logger logger = Logger.getLogger(SchoolEnrollmentReader.class);
 
     public SchoolEnrollmentReader(DataSet dataSet) {
         super(dataSet);

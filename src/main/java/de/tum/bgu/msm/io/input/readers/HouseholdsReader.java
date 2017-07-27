@@ -22,7 +22,7 @@ public class HouseholdsReader extends CSVReader {
     private int posSize = -1;
     private int posAutos = -1;
 
-    private static Logger logger = Logger.getLogger(HouseholdsReader.class);
+    private static final Logger logger = Logger.getLogger(HouseholdsReader.class);
 
     private final Map<Integer, MitoHousehold> households = new HashMap<>();
 

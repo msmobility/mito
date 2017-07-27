@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class SkimsReader extends OMXReader {
 
-    private static Logger logger = Logger.getLogger(SkimsReader.class);
+    private static final Logger logger = Logger.getLogger(SkimsReader.class);
 
     public SkimsReader(DataSet dataSet) {
         super(dataSet);

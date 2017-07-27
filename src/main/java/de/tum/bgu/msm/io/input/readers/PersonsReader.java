@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class PersonsReader extends CSVReader {
 
-    private static Logger logger = Logger.getLogger(PersonsReader.class);
+    private static final Logger logger = Logger.getLogger(PersonsReader.class);
 
     private int posId = -1;
     private int posHhId = -1;
@@ -58,7 +58,7 @@ public class PersonsReader extends CSVReader {
     public void processRecord(String[] record) {
         int id = Integer.parseInt(record[posId]);
         int hhid = Integer.parseInt(record[posHhId]);
-        MitoHousehold hh = null;
+        MitoHousehold hh;
         if(dataSet.getHouseholds().containsKey(hhid)) {
             hh = dataSet.getHouseholds().get(hhid);
         } else {
@@ -68,7 +68,7 @@ public class PersonsReader extends CSVReader {
         int age = Integer.parseInt(record[posAge]);
         if (age < 18) {
             hh.setChildren(hh.getChildren() + 1);
-        } else if (age >= 18 && age <= 25) {
+        } else if (age <= 25) {
             hh.setYoungAdults(hh.getYoungAdults() + 1);
         } else if (age >= 65) {
             hh.setRetirees(hh.getRetirees() + 1);

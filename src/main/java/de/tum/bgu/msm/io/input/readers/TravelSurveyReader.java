@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class TravelSurveyReader extends CSVReader {
 
-    private static Logger logger = Logger.getLogger(TravelSurveyReader.class);
+    private static final Logger logger = Logger.getLogger(TravelSurveyReader.class);
 
     public TravelSurveyReader(DataSet dataSet) {
         super(dataSet);

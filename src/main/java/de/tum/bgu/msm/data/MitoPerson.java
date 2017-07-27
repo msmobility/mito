@@ -1,11 +1,6 @@
 package de.tum.bgu.msm.data;
 
-import org.apache.log4j.Logger;
-
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -15,9 +10,8 @@ import java.util.Map;
  */
 
 public class MitoPerson implements Serializable {
-    static Logger logger = Logger.getLogger(MitoPerson.class);
 
-    private int id;
+    private final int id;
     private MitoHousehold hh;
     private int occupation;
     private int workplace;

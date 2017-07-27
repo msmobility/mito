@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  */
 public class JobReader extends CSVReader {
 
-    private static Logger logger = Logger.getLogger(JobReader.class);
+    private static final Logger logger = Logger.getLogger(JobReader.class);
 
     private int posId = -1;
     private int posZone = -1;

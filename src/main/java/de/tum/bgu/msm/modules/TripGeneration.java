@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class TripGeneration extends Module{
 
-    private static Logger logger = Logger.getLogger(TravelDemandGenerator.class);
+    private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
 
     private Map<Integer, Map<String, Float>> tripAttr;
 

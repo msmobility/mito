@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class RegionsReader extends CSVReader {
 
-    private static Logger logger = Logger.getLogger(RegionsReader.class);
+    private static final Logger logger = Logger.getLogger(RegionsReader.class);
 
     public RegionsReader(DataSet dataSet) {
         super(dataSet);

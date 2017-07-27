@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 
 public class MitoUtil {
 
-    private static Logger logger = Logger.getLogger(MitoUtil.class);
+    private static final Logger logger = Logger.getLogger(MitoUtil.class);
     private static Random rand;
     private static String baseDirectory = "";
 
@@ -67,7 +67,7 @@ public class MitoUtil {
         return ResourceUtil.getPropertyBundle(propFile);
     }
 
-    public static int getHighestVal(int[] array) {
+    private static int getHighestVal(int[] array) {
         // return highest number in int array
         int high = Integer.MIN_VALUE;
         for (int num: array) high = Math.max(high, num);
@@ -116,7 +116,7 @@ public class MitoUtil {
     }
 
 
-    public static double getSum (double[] array) {
+    private static double getSum(double[] array) {
         // return sum of all elements in array
         double sum = 0;
         for (double val: array) sum += val;
@@ -238,17 +238,4 @@ public class MitoUtil {
             return null;
         }
     }
-
-    public static String generateOutputFileName (String fileName) {
-        if (DataSet.getScenarioName() != null) {
-            File dir = new File("scenOutput/" + DataSet.getScenarioName() + "/tripGeneration");
-            if(!dir.exists()){
-                boolean directoryCreated = dir.mkdir();
-                if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
-            }
-            fileName = "scenOutput/" + DataSet.getScenarioName() + "/tripGeneration/" + fileName;
-        }
-        return fileName;
-    }
-
 }

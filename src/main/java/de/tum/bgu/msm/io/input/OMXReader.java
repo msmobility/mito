@@ -10,7 +10,7 @@ import omx.OmxFile;
  */
 public abstract class OMXReader extends AbstractInputReader{
 
-    public OMXReader(DataSet dataSet) {
+    protected OMXReader(DataSet dataSet) {
         super(dataSet);
     }
 

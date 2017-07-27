@@ -29,16 +29,14 @@ import java.util.ResourceBundle;
  *         All other data are read by function  manager.readAdditionalData();
  */
 
-public class MitoModel {
+class MitoModel {
 
-    private static Logger logger = Logger.getLogger(MitoModel.class);
+    private static final Logger logger = Logger.getLogger(MitoModel.class);
 
-    private final InputManager manager;
-
-    private long startTime;
     private boolean initialized = false;
 
-    private DataSet dataSet;
+    private final InputManager manager;
+    private final DataSet dataSet;
 
     public MitoModel(ResourceBundle resources) {
         this.dataSet = new DataSet();
@@ -70,7 +68,7 @@ public class MitoModel {
     }
 
     public void runModel() {
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
         TravelDemandGenerator ttd = new TravelDemandGenerator(dataSet);
@@ -99,9 +97,5 @@ public class MitoModel {
 
     public void setRandomNumberGenerator(Random random) {
         MitoUtil.initializeRandomNumber(random);
-    }
-
-    public void setScenarioName(String scenarioName) {
-        dataSet.setScenarioName(scenarioName);
     }
 }

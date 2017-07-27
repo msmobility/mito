@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class EmploymentReader extends CSVReader {
 
-    private static Logger logger = Logger.getLogger(EmploymentReader.class);
+    private static final Logger logger = Logger.getLogger(EmploymentReader.class);
 
 
     public EmploymentReader(DataSet dataSet) {

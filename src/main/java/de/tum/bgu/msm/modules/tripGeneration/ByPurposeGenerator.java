@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
-import com.pb.sawdust.calculator.Function1;
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
@@ -21,9 +20,9 @@ import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.currentTrip
 /**
  * Created by Nico on 21/07/2017.
  */
-public class ByPurposeGenerator {
+class ByPurposeGenerator {
 
-    private static Logger logger = Logger.getLogger(ByPurposeGenerator.class);
+    private static final Logger logger = Logger.getLogger(ByPurposeGenerator.class);
 
     private final DataSet dataSet;
     private final String purpose;
@@ -35,7 +34,7 @@ public class ByPurposeGenerator {
     private final TableDataSet travelSurveyTripsTable;
 
     private final List<MitoTrip> trips = new ArrayList<>();
-    private HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
+    private final HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
 
     public ByPurposeGenerator(DataSet dataSet, String purpose) {
         this.dataSet = dataSet;
