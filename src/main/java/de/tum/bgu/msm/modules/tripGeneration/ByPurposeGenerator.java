@@ -31,6 +31,9 @@ public class ByPurposeGenerator {
 
     private final HouseholdTypeManager householdTypeManager;
 
+    private final TableDataSet travelSurveyHouseholdTable;
+    private final TableDataSet travelSurveyTripsTable;
+
     private final List<MitoTrip> trips = new ArrayList<>();
     private HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
 
@@ -39,6 +42,8 @@ public class ByPurposeGenerator {
         this.purpose = purpose;
         this.purposeIndex = dataSet.getPurposeIndex(purpose);
         householdTypeManager = new HouseholdTypeManager(dataSet, purpose);
+        travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
+        travelSurveyTripsTable = dataSet.getTravelSurveyTripsTable();
     }
 
     public List<MitoTrip> generateTrips() {
@@ -86,11 +91,26 @@ public class ByPurposeGenerator {
     }
 
     private void fillFrequencyArrays(Map<Integer, HouseholdType> householdTypeBySampleId) {
-        TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
+
+
+        int pos = 1;
         for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
 
             int sampleId = (int) travelSurveyHouseholdTable.getValueAt(hhRow, "sampn");
-            int tripsOfThisHouseholdForGivenPurpose = getNumberOfTripsForSample(sampleId);
+            int tripsOfThisHouseholdForGivenPurpose = 0;
+            // Ready through trip file of HTS
+            for (int trRow = pos; trRow <= travelSurveyTripsTable.getRowCount(); trRow++) {
+                if ((int) travelSurveyTripsTable.getValueAt(trRow, "sampn") == sampleId) {
+                    pos++;
+                    String htsTripPurpose = travelSurveyTripsTable.getStringValueAt(trRow, "mainPurpose");
+                    if (htsTripPurpose.equals(purpose)) {
+                        // add this trip to this household
+                        tripsOfThisHouseholdForGivenPurpose++;
+                    }
+                } else {
+                    break;
+                }
+            }
 
             HouseholdType type = householdTypeBySampleId.get(sampleId);
             addTripFrequencyForHouseholdType(tripsOfThisHouseholdForGivenPurpose, type);
@@ -104,21 +124,6 @@ public class ByPurposeGenerator {
         tripsByHhType.put(token, tripsOfThisHouseholdType);
     }
 
-    private int getNumberOfTripsForSample(int sampleId) {
-        int tripsOfThisHouseholdForGivenPurpose = 0;
-        // Ready through trip file of HTS
-        TableDataSet travelSurveyTripsDable = dataSet.getTravelSurveyTripsTable();
-        for (int trRow = 1; trRow <= travelSurveyTripsDable.getRowCount(); trRow++) {
-            if ((int) travelSurveyTripsDable.getValueAt(trRow, "sampn") == sampleId) {
-                String htsTripPurpose = travelSurveyTripsDable.getStringValueAt(trRow, "mainPurpose");
-                if (htsTripPurpose.equals(purpose)) {
-                    // add this trip to this household
-                    tripsOfThisHouseholdForGivenPurpose++;
-                }
-            }
-        }
-        return tripsOfThisHouseholdForGivenPurpose;
-    }
 
     private void initializeFrequencyArrays(Map<Integer, HouseholdType> householdTypeBySampleId) {
         for (HouseholdType type : householdTypeBySampleId.values()) {
