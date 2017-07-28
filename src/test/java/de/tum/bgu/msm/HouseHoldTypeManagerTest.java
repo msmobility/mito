@@ -37,9 +37,11 @@ public class HouseHoldTypeManagerTest {
 
         MitoHousehold household = new MitoHousehold(1, 3, 2, 1, 0, 0 , 2, 0, 2, 4, 1, 1);
         Assert.assertNull(manager.determineHouseholdType(household));
+
         Zone zone = new Zone(1, 10);
         zone.setRegion(1);
         dataSet.getZones().put(1, zone);
+
         HouseholdType determinedType = manager.determineHouseholdType(household);
         Assert.assertNotNull(determinedType);
         Assert.assertEquals(1, determinedType.getNumberOfRecords());

@@ -12,10 +12,6 @@ import java.util.Map;
  */
 public class DataSet {
 
-    private static Logger logger = Logger.getLogger(DataSet.class);
-
-    private String scenarioName;
-
     private TableDataSet travelSurveyHouseholdTable;
     private TableDataSet travelSurveyTripsTable;
 
@@ -112,13 +108,4 @@ public class DataSet {
     public Map<Integer, MitoTrip> getTrips() {
         return trips;
     }
-
-    public String getScenarioName() {
-        return this.scenarioName;
-    }
-
-    public void setScenarioName(String scenarioName) {
-        this.scenarioName = scenarioName;
-    }
-
 }

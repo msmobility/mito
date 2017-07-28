@@ -35,6 +35,8 @@ public class MitoModel {
 
     private boolean initialized = false;
 
+    private static String scenarioName;
+
     private final InputManager manager;
     private final DataSet dataSet;
 
@@ -42,6 +44,7 @@ public class MitoModel {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
         Resources.INSTANCE.setResources(resources);
+        MitoUtil.initializeRandomNumber();
     }
 
     public void feedData(InputFeed feed) {
@@ -58,12 +61,11 @@ public class MitoModel {
         if (!initialized) {
             // Read data if MITO is used as a stand-alone program and data are not fed from other program
             logger.info("  Reading input data for MITO");
-            MitoUtil.initializeRandomNumber();
             manager.readAsStandAlone();
             manager.readAdditionalData();
             initialized = true;
         } else {
-            throw new RuntimeException("MitoModel was already initialized. Can only do this once!");
+            throw new RuntimeException("MitoModel was already initialized. Can only do this once either by feed or as standalone");
         }
     }
 
@@ -87,12 +89,24 @@ public class MitoModel {
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
+    public boolean isInitialized() {
+        return this.initialized;
+    }
+
     public DataSet getTravelDemand() {
         return dataSet;
     }
 
     public void setBaseDirectory(String baseDirectory) {
         MitoUtil.setBaseDirectory(baseDirectory);
+    }
+
+    public static String getScenarioName() {
+        return scenarioName;
+    }
+
+    public static void setScenarioName(String scenarioName) {
+        scenarioName = scenarioName;
     }
 
     public void setRandomNumberGenerator(Random random) {

@@ -52,13 +52,14 @@ public class SummarizeData {
         for (MitoPerson pp : dataSet.getPersons().values()) {
             pwp.print(pp.getId());
             pwp.print(",");
-            pwp.print(pp.getHh().getHhId());
+            int hhId = pp.getHhId();
+            pwp.print(hhId);
             pwp.print(",");
-            pwp.print(pp.getHh().getHhSize());
+            pwp.print(dataSet.getHouseholds().get(hhId).getHhSize());
             pwp.print(",");
-            pwp.print(pp.getHh().getTrips().size());
+            pwp.print(dataSet.getHouseholds().get(hhId).getTrips().size());
             pwp.print(",");
-            pwp.println(pp.getHh().getTrips().size() / pp.getHh().getHhSize());
+            pwp.println(dataSet.getHouseholds().get(hhId).getTrips().size() / dataSet.getHouseholds().get(hhId).getHhSize());
         }
         pwp.close();
     }

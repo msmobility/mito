@@ -1,0 +1,2 @@
+sampn,tpb_mod,bmc_mod,msa,home_fips2,htsRegion,home_tract,bmc_mod,home_bmc_taz,homeSmz,housing_type,o_housing_type,tenure,o_tenure,hhsiz,rc_hhsiz,hhstu,hhlic,hhwrk,hhdis,hhveh,rc_hhveh,bikes,incom,mstmIncome,imhousing,imtenure,impedis,imbikes,imincom,stratum,home_cluster_id, home_center_id,stype2,surv_date,day,moved,adj_fact,ffactor,expfw,expfnw,urbanSuburbanRural
+1,1,2,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,21,01/01/1900,1,1,1,1,1,1,1

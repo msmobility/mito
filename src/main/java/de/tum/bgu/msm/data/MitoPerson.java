@@ -12,24 +12,24 @@ import java.io.Serializable;
 public class MitoPerson implements Serializable {
 
     private final int id;
-    private MitoHousehold hh;
+    private int hhId;
     private int occupation;
     private int workplace;
     private int workzone;
 
-    public MitoPerson(int id, MitoHousehold hh, int occupation, int workplace) {
+    public MitoPerson(int id, int hhId, int occupation, int workplace) {
         this.id = id;
-        this.hh = hh;
+        this.hhId = hhId;
         this.occupation = occupation;
         this.workplace = workplace;
     }
 
-    public MitoHousehold getHh() {
-        return hh;
+    public int getHhId() {
+        return hhId;
     }
 
-    public void setHh(MitoHousehold hh) {
-        this.hh = hh;
+    public void setHhId(int id) {
+        this.hhId = hhId;
     }
 
     public void setWorkplace(int workplace) {
