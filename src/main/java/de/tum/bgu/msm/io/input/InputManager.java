@@ -26,7 +26,6 @@ public class InputManager {
     }
 
     public void readAsStandAlone() {
-        new TravelSurveyReader(dataSet).read();
         new ZonesReader(dataSet).read();
         new RegionsReader(dataSet).read();
         new SkimsReader(dataSet).read();
@@ -42,6 +41,7 @@ public class InputManager {
         new SchoolEnrollmentReader(dataSet).read();
         new RegionsReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
+        new TravelSurveyReader(dataSet).read();
     }
 
     public void readFromFeed(InputFeed feed) {
@@ -54,7 +54,6 @@ public class InputManager {
         setPersonsFromFeed(feed.persons);
         // todo: the household travel survey should not be read every year the model runs, but only in the first year.
         // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
-        new TravelSurveyReader(dataSet).read();
     }
 
     private void setZonesFromFeed(int[] zoneIds, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {

@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.io.output;
 
+import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
@@ -71,13 +72,13 @@ public class TripGenerationWriter {
     }
 
     private static String generateOutputFileName (String fileName, DataSet dataSet) {
-        if (dataSet.getScenarioName() != null) {
-            File dir = new File("scenOutput/" + dataSet.getScenarioName() + "/tripGeneration");
+        if (MitoModel.getScenarioName() != null) {
+            File dir = new File("scenOutput/" + MitoModel.getScenarioName() + "/tripGeneration");
             if(!dir.exists()){
                 boolean directoryCreated = dir.mkdir();
                 if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
             }
-            fileName = "scenOutput/" + dataSet.getScenarioName() + "/tripGeneration/" + fileName;
+            fileName = "scenOutput/" + MitoModel.getScenarioName() + "/tripGeneration/" + fileName;
         }
         return fileName;
     }

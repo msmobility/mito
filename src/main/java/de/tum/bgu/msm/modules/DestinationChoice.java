@@ -2,6 +2,8 @@ package de.tum.bgu.msm.modules;
 
 import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
 /**
@@ -18,7 +20,7 @@ public class DestinationChoice extends Module{
 
     private final double ALPHA_SHOP = 1;
     private final double BETA_SHOP = 1;
-    private final double GAMMA_SHOP = 1;
+//    private final double GAMMA_SHOP = 1;
 
 
 
@@ -36,21 +38,18 @@ public class DestinationChoice extends Module{
         // Run destination choice model
         logger.info("  Started Destination Choice");
 
+        for(MitoTrip trip: dataSet.getTrips().values()) {
+            if(trip.getTripPurpose() == dataSet.getPurposeIndex("HBS")) {
+                double[] probabilities = new double[dataSet.getZones().size()-1];
+                for(Zone zone: dataSet.getZones().values()) {
 
-
-//        for(MitoTrip trip: MitoTrip.getTripArray()) {
-//            if(trip.getTripPurpose() == mitoData.getPurposeIndex("shop")) {
-//                for(Integer i: mitoData.getZones()) {
-//
-//                    float distance = mitoData.getDistances(trip.getTripOrigin(), i);
-//                    float shopEmpls = mitoData.getRetailEmplByZone(i);
-//                    double utility = ALPHA_SHOP * shopEmpls+ BETA_SHOP * distance + GAMMA_SHOP;
-//
-//
-//                }
-//            }
-//        }
-
+                    float distance = dataSet.getDistanceFromFromTo(trip.getTripOrigin(), zone.getZoneId());
+                    float shopEmpls = zone.getRetailEmpl();
+                    double utility = ALPHA_SHOP * shopEmpls+ BETA_SHOP * distance;
+                    logger.info(utility);
+                }
+            }
+        }
 
 
         //todo: write destination choice model
