@@ -11,10 +11,9 @@ import java.util.ResourceBundle;
  *
  */
 
-public class MitoMuc {
+class MitoMuc {
 
-    private static Logger logger = Logger.getLogger(MitoMuc.class);
-
+    private static final Logger logger = Logger.getLogger(MitoMuc.class);
 
     public static void main(String[] args) {
         // main run method
@@ -25,13 +24,11 @@ public class MitoMuc {
         mito.run(rb);
     }
 
-
-    private void run (ResourceBundle rb) {
+    private void run (ResourceBundle resources) {
         // main run method
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = new MitoModel(rb);
-        model.readData();
+        MitoModel model = new MitoModel(resources);
+        model.initializeStandAlone();
         model.runModel();
     }
-
 }

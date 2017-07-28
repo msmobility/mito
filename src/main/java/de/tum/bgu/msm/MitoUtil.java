@@ -1,15 +1,17 @@
 package de.tum.bgu.msm;
 
-import com.pb.common.datafile.TableDataFileReader;
-import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
+import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import omx.OmxMatrix;
 import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -22,14 +24,14 @@ import java.util.ResourceBundle;
 
 public class MitoUtil {
 
-    private static Logger logger = Logger.getLogger(MitoUtil.class);
+    private static final Logger logger = Logger.getLogger(MitoUtil.class);
     private static Random rand;
     private static String baseDirectory = "";
 
 
-    public static void initializeRandomNumber(ResourceBundle rb) {
+    public static void initializeRandomNumber() {
         // initialize random number generator
-        int seed = ResourceUtil.getIntegerProperty(rb, "random.seed");
+        int seed = Resources.INSTANCE.getInt(Properties.RANDOM_SEED);
         if (seed == -1)
             rand = new Random();
         else
@@ -65,36 +67,12 @@ public class MitoUtil {
         return ResourceUtil.getPropertyBundle(propFile);
     }
 
-    public static TableDataSet readCSVfile (String fileName) {
-        // read csv file and return as TableDataSet
-        File dataFile = new File(fileName);
-        TableDataSet dataTable;
-        boolean exists = dataFile.exists();
-        if (!exists) {
-            final String msg = "File not found: " + fileName;
-            logger.error(msg);
-//            System.exit(1);
-            throw new RuntimeException(msg) ;
-            // from the perspective of the junit testing infrastructure, a "System.exit(...)" is not a test failure ... and thus not detected.  kai, aug'16
-        }
-        try {
-            TableDataFileReader reader = TableDataFileReader.createReader(dataFile);
-            dataTable = reader.readFile(dataFile);
-            reader.close();
-        } catch (Exception e) {
-            logger.error("Error reading file " + dataFile);
-            throw new RuntimeException(e);
-        }
-        return dataTable;
-    }
-
-    public static int getHighestVal(int[] array) {
+    private static int getHighestVal(int[] array) {
         // return highest number in int array
         int high = Integer.MIN_VALUE;
         for (int num: array) high = Math.max(high, num);
         return high;
     }
-
 
     public static int findPositionInArray (String element, String[] arr){
         // return index position of element in array arr
@@ -138,7 +116,7 @@ public class MitoUtil {
     }
 
 
-    public static double getSum (double[] array) {
+    private static double getSum(double[] array) {
         // return sum of all elements in array
         double sum = 0;
         for (double val: array) sum += val;
@@ -203,6 +181,17 @@ public class MitoUtil {
         return array;
     }
 
+    public static void scaleMap (Map<?, Float> map, float maxVal) {
+        // scale float value map so that largest value equals maxVal
+
+        float highestValueTmp = Float.MIN_VALUE;
+        for(Float value: map.values()) {
+            highestValueTmp = Math.max(value, highestValueTmp);
+        }
+        final float highestValue = highestValueTmp;
+        map.replaceAll((k, v) -> (float) ((v * maxVal * 1.) / (highestValue * 1.)));
+    }
+
 
     public static PrintWriter openFileForSequentialWriting(String fileName, boolean appendFile) {
         // open file and return PrintWriter object
@@ -228,16 +217,20 @@ public class MitoUtil {
         if (type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             float[][] fArray = (float[][]) omxMatrix.getData();
             Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
-            for (int i = 0; i < dimensions[0]; i++)
-                for (int j = 0; j < dimensions[1]; j++)
+            for (int i = 0; i < dimensions[0]; i++) {
+                for (int j = 0; j < dimensions[1]; j++) {
                     mat.setValueAt(i + 1, j + 1, fArray[i][j]);
+                }
+            }
             return mat;
         } else if (type.equals(OmxHdf5Datatype.OmxJavaType.DOUBLE)) {
             double[][] dArray = (double[][]) omxMatrix.getData();
             Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
-            for (int i = 0; i < dimensions[0]; i++)
-                for (int j = 0; j < dimensions[1]; j++)
+            for (int i = 0; i < dimensions[0]; i++) {
+                for (int j = 0; j < dimensions[1]; j++) {
                     mat.setValueAt(i + 1, j + 1, (float) dArray[i][j]);
+                }
+            }
             return mat;
         } else {
             logger.info("OMX Matrix type " + type.toString() + " not yet implemented. Program exits.");
@@ -245,5 +238,4 @@ public class MitoUtil {
             return null;
         }
     }
-
 }

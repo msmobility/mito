@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules;
 
 import com.pb.common.calculator.IndexValues;
-import de.tum.bgu.msm.MitoData;
+import de.tum.bgu.msm.data.DataSet;
 import org.apache.log4j.Logger;
 
 /**
@@ -16,7 +16,7 @@ public class TravelTimeBudgetDMU {
     protected transient Logger logger = Logger.getLogger(TravelTimeBudgetDMU.class);
 
     // uec variables
-    private IndexValues dmuIndex;
+    private final IndexValues dmuIndex;
     private int householdSize;
     private int females;
     private int children;
@@ -89,13 +89,13 @@ public class TravelTimeBudgetDMU {
         this.areaType = areaType;
     }
 
-    public void setTrips(int[] tripCounter, MitoData mitodata) {
-        this.hbwTrips = tripCounter[mitodata.getPurposeIndex("HBW")];
-        this.hbsTrips = tripCounter[mitodata.getPurposeIndex("HBS")];
-        this.hboTrips = tripCounter[mitodata.getPurposeIndex("HBO")];
-        this.hbeTrips = tripCounter[mitodata.getPurposeIndex("HBE")];
-        this.nhbwTrips = tripCounter[mitodata.getPurposeIndex("NHBW")];
-        this.nhboTrips = tripCounter[mitodata.getPurposeIndex("NHBO")];
+    public void setTrips(int[] tripCounter, DataSet dataSet) {
+        this.hbwTrips = tripCounter[dataSet.getPurposeIndex("HBW")];
+        this.hbsTrips = tripCounter[dataSet.getPurposeIndex("HBS")];
+        this.hboTrips = tripCounter[dataSet.getPurposeIndex("HBO")];
+        this.hbeTrips = tripCounter[dataSet.getPurposeIndex("HBE")];
+        this.nhbwTrips = tripCounter[dataSet.getPurposeIndex("NHBW")];
+        this.nhboTrips = tripCounter[dataSet.getPurposeIndex("NHBO")];
     }
 
     public void setHbsTrips(int hbsTrips) {

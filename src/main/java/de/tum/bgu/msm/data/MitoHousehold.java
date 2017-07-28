@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,11 +16,9 @@ import java.util.Map;
  */
 
 public class MitoHousehold implements Serializable {
-    private static Logger logger = Logger.getLogger(MitoHousehold.class);
 
-    private int hhId;
+    private final int hhId;
     private int hhSize;
-    private MitoPerson[] persons;
     private int females;
     private int children;
     private int youngAdults;
@@ -30,9 +29,10 @@ public class MitoHousehold implements Serializable {
     private int income;
     private int autos;
     private int homeZone;
-    private ArrayList<MitoTrip> trips;
-    private double[] travelTimeBudgetByPurpose;
-    private static final Map<Integer,MitoHousehold> householdMap = new HashMap<>();
+
+    private final List<MitoTrip> trips;
+    private final List<MitoPerson> persons;
+    private final Map<String, Double> travelTimeBudgetByPurpose;
 
 
     public MitoHousehold(int id, int hhSize, int females, int children, int youngAdults, int retirees,
@@ -40,7 +40,6 @@ public class MitoHousehold implements Serializable {
         // create new MitoHousehold
         this.hhId = id;
         this.hhSize = hhSize;
-        persons = new MitoPerson[hhSize];
         this.females = females;
         this.children = children;
         this.youngAdults = youngAdults;
@@ -52,35 +51,13 @@ public class MitoHousehold implements Serializable {
         this.autos = autos;
         this.homeZone = homeZone;
         this.trips = new ArrayList<>();
-        householdMap.put(id, this);
+        this.persons = new ArrayList<>();
+        this.travelTimeBudgetByPurpose = new HashMap<>();
     }
 
-
-    public void addPersonForInitialSetup(MitoPerson per){
-        // This method adds a person to the household without increasing the HH size. Only used for initial setup
-        for (int i = 0; i < hhSize; i++) {
-            if (persons[i] == null) {
-                persons[i] = per;
-                return;
-            }
-        }
-        logger.fatal("Found more persons for household " + hhId + " than household size (" + hhSize + ") allows.");
-    }
-
-
-    public MitoPerson[] getPersons(){
+    public List<MitoPerson> getPersons(){
         return persons;
     }
-
-
-    public static MitoHousehold getHouseholdFromId (int id) {
-        return householdMap.get(id);
-    }
-
-    public static MitoHousehold[] getHouseholdArray() {
-        return householdMap.values().toArray(new MitoHousehold[householdMap.size()]);
-    }
-
 
     public int getHhId() {
         return hhId;
@@ -166,17 +143,15 @@ public class MitoHousehold implements Serializable {
         trips.add(trip);
     }
 
-    public MitoTrip[] getTrips () {
-        MitoTrip[] tripArray = new MitoTrip[trips.size()];
-        for (int i = 0; i < trips.size(); i++) tripArray[i] = trips.get(i);
-        return tripArray;
+    public List<MitoTrip> getTrips () {
+        return trips;
     }
 
-    public void setTravelTimeBudgetByPurpose(double[] travelTimeBudgetByPurpose) {
-        this.travelTimeBudgetByPurpose = travelTimeBudgetByPurpose;
+    public void setTravelTimeBudgetByPurpose(String purpose, double budget) {
+        this.travelTimeBudgetByPurpose.put(purpose, budget);
     }
 
-    public double getTravelTimeBudgetForPurpose(int purposeIndex) {
-        return travelTimeBudgetByPurpose[purposeIndex];
+    public double getTravelTimeBudgetForPurpose(String purpose) {
+        return travelTimeBudgetByPurpose.get(purpose) == null ? 0. : travelTimeBudgetByPurpose.get(purpose) ;
     }
 }
