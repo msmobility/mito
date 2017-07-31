@@ -156,7 +156,9 @@ public class HouseholdTypeManager {
     private void cancelOutInsufficientRecords(Map<Integer, HouseholdType> householdTypeBySample) {
         for (Map.Entry<Integer, HouseholdType> entry : householdTypeBySample.entrySet()) {
             if (entry.getValue().getNumberOfRecords() < 30) {
-                entry.setValue(null);  // marker that this hhTypeDef is not worth analyzing
+                householdTypeBySample.remove(entry.getKey());// marker that this hhTypeDef is not worth analyzing
+                logger.info("HouseholdType " +  entry.getValue().getId() + "_" + purpose + " does not meet min requirement of 30 records. " +
+                        "Will not consider this type when creating trips.");
             }
         }
     }

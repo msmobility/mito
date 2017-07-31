@@ -63,10 +63,15 @@ class ByPurposeGenerator {
 
     private void generateTripsForHousehold(MitoHousehold hh) {
         HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
+        if (hhType == null) {
+            logger.error("Could not create trips for Household " + hh.getHhId() + " with Purpose " + purpose + ": No Household Type applicable");
+            return;
+        }
         String token = hhType.getId() + "_" + purpose;
         Integer[] tripFrequencies = tripsByHhType.get(token);
         if (tripFrequencies == null) {
             logger.error("Could not find trip frequencies for this hhType/Purpose: " + token);
+            return;
         }
         if (MitoUtil.getSum(tripFrequencies) == 0) {
             logger.info("No trips for this hhType/Purpose: " + token);
@@ -112,6 +117,11 @@ class ByPurposeGenerator {
             }
 
             HouseholdType type = householdTypeBySampleId.get(sampleId);
+            if(type == null) {
+                logger.info("Trips for travel survey record " + sampleId + " and purpose " + purpose + " " +
+                        "ignored, as no household type is applicable.");
+                continue;
+            }
             addTripFrequencyForHouseholdType(tripsOfThisHouseholdForGivenPurpose, type);
         }
     }
