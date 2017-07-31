@@ -72,10 +72,10 @@ public class MitoAccessibility extends Module {
             transitAccessibilityOtherByZone.put(zone.getZoneId(), transitAccessibilityOther);
         }
 
-        MitoUtil.scaleMap(autoAccessibilityHouseholdsByZone, 100);
-        MitoUtil.scaleMap(autoAccessibilityRetailByZone, 100);
-        MitoUtil.scaleMap(autoAccessibilityOtherByZone, 100);
-        MitoUtil.scaleMap(transitAccessibilityOtherByZone, 100);
+        MitoUtil.scaleMapTo(autoAccessibilityHouseholdsByZone, 100);
+        MitoUtil.scaleMapTo(autoAccessibilityRetailByZone, 100);
+        MitoUtil.scaleMapTo(autoAccessibilityOtherByZone, 100);
+        MitoUtil.scaleMapTo(transitAccessibilityOtherByZone, 100);
 
         for (Zone zone : dataSet.getZones().values()) {
             zone.setAutoAccessibilityHouseholds(autoAccessibilityHouseholdsByZone.get(zone.getZoneId()));

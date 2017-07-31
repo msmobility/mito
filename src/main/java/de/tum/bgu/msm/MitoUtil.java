@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -135,6 +136,14 @@ public class MitoUtil {
         return sm;
     }
 
+    private static double getSum(Collection<Double> values) {
+        double sm = 0;
+        for (Double value: values) {
+            sm += value;
+        }
+        return sm;
+    }
+
 
     static public String customFormat(String pattern, double value ) {
         // function copied from: http://docs.oracle.com/javase/tutorial/java/data/numberformat.html
@@ -160,6 +169,22 @@ public class MitoUtil {
         return probabilities.length - 1;
     }
 
+    public static <T>T select (Map<T, Double> mappedProbabilities) {
+        // select item based on probabilities (for mapped double probabilities)
+        double selectedWeight = rand.nextDouble() * getSum(mappedProbabilities.values());
+        double select = 0;
+        for (Map.Entry<T, Double> entry : mappedProbabilities.entrySet()) {
+            select += entry.getValue();
+            if (select > selectedWeight) {
+                return entry.getKey();
+            }
+        }
+        logger.info("Error selecting zone from weighted probabilities");
+        return null;
+    }
+
+
+
 
     public static int[] createIndexArray (int[] array) {
         // create indexArray for array
@@ -181,7 +206,7 @@ public class MitoUtil {
         return array;
     }
 
-    public static void scaleMap (Map<?, Float> map, float maxVal) {
+    public static void scaleMapTo(Map<?, Float> map, float maxVal) {
         // scale float value map so that largest value equals maxVal
 
         float highestValueTmp = Float.MIN_VALUE;
@@ -190,6 +215,28 @@ public class MitoUtil {
         }
         final float highestValue = highestValueTmp;
         map.replaceAll((k, v) -> (float) ((v * maxVal * 1.) / (highestValue * 1.)));
+    }
+
+    public static void scaleMapTo(Map<?, Double> map, double maxVal) {
+        // scale double value map so that largest value equals maxVal
+
+        double highestValueTmp = Double.MIN_VALUE;
+        for(Double value: map.values()) {
+            highestValueTmp = Math.max(value, highestValueTmp);
+        }
+        final double highestValue = highestValueTmp;
+        map.replaceAll((k, v) -> (double) ((v * maxVal * 1.) / (highestValue * 1.)));
+    }
+
+    public static void scaleMapBy(Map<?, Float> map, float by) {
+        // scale float value map so that each values is multiplied by the given value
+        map.replaceAll((k, v) -> (float) ((v * by)));
+    }
+
+    public static void scaleMapBy(Map<?, Double> map, double by) {
+        // scale double value map so that each values is multiplied by the given value
+
+        map.replaceAll((k, v) -> (double) ((v * by)));
     }
 
 

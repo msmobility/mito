@@ -89,7 +89,7 @@ public class DataSet {
         this.distanceMatrix = distanceMatrix;
     }
 
-    public float getDistanceFromFromTo(int from, int to) {
+    public float getDistanceFromTo(int from, int to) {
         return this.distanceMatrix.getValueAt(from, to);
     }
 
