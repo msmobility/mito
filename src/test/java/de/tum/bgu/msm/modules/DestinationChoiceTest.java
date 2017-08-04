@@ -23,7 +23,7 @@ public class DestinationChoiceTest {
     public void initializeAndRun() {
         MitoUtil.initializeRandomNumber(new Random(42));
         dataSet = new DataSet();
-        String[] purposes = {"HBW", "HBE","HBS", "HBO"};
+        String[] purposes = {"HBW", "HBE","HBS", "HBO", "NHBW", "NHBO"};
         dataSet.setPurposes(purposes);
         Zone zone1 = new Zone(1);
         zone1.setRetailEmpl(100);
@@ -54,5 +54,4 @@ public class DestinationChoiceTest {
             assertThat(trip.getTripDestination(), not(0));
         }
     }
-
 }

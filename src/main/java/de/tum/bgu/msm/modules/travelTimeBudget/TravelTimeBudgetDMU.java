@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.modules;
+package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import com.pb.common.calculator2.IndexValues;
 import de.tum.bgu.msm.data.DataSet;
@@ -209,7 +209,7 @@ public class TravelTimeBudgetDMU implements com.pb.common.calculator2.VariableTa
 
     @Override
     public double getValueForIndex(int variableIndex) {
-        return 0;
+        return getValueForIndex(0, 0);
     }
 
     @Override
