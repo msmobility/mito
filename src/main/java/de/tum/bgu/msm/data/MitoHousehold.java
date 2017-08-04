@@ -30,7 +30,7 @@ public class MitoHousehold implements Serializable {
     private int autos;
     private int homeZone;
 
-    private final List<MitoTrip> trips;
+    private final Map<Integer, List<MitoTrip>> tripsByPurpose;
     private final List<MitoPerson> persons;
     private final Map<String, Double> travelTimeBudgetByPurpose;
 
@@ -50,7 +50,7 @@ public class MitoHousehold implements Serializable {
         this.income = income;
         this.autos = autos;
         this.homeZone = homeZone;
-        this.trips = new ArrayList<>();
+        this.tripsByPurpose = new HashMap<>();
         this.persons = new ArrayList<>();
         this.travelTimeBudgetByPurpose = new HashMap<>();
     }
@@ -140,11 +140,17 @@ public class MitoHousehold implements Serializable {
     }
 
     public void addTrip(MitoTrip trip) {
-        trips.add(trip);
+        if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
+            tripsByPurpose.get(trip.getTripPurpose()).add(trip);
+        } else {
+            List<MitoTrip> trips = new ArrayList<>();
+            trips.add(trip);
+            tripsByPurpose.put(trip.getTripPurpose(), trips);
+        }
     }
 
-    public List<MitoTrip> getTrips () {
-        return trips;
+    public Map<Integer, List<MitoTrip>> getTripsByPurpose() {
+        return tripsByPurpose;
     }
 
     public void setTravelTimeBudgetByPurpose(String purpose, double budget) {

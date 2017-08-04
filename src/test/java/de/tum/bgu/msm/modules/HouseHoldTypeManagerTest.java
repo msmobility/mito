@@ -1,5 +1,6 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.modules;
 
+import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Zone;

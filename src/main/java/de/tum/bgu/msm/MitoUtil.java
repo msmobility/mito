@@ -179,7 +179,21 @@ public class MitoUtil {
                 return entry.getKey();
             }
         }
-        logger.info("Error selecting zone from weighted probabilities");
+        logger.info("Error selecting item from weighted probabilities");
+        return null;
+    }
+
+    public static <T>T select (Map<T, Double> mappedProbabilities, double sum) {
+        // select item based on probabilities (for mapped double probabilities)
+        double selectedWeight = rand.nextDouble() * sum;
+        double select = 0;
+        for (Map.Entry<T, Double> entry : mappedProbabilities.entrySet()) {
+            select += entry.getValue();
+            if (select > selectedWeight) {
+                return entry.getKey();
+            }
+        }
+        logger.info("Error selecting item from weighted probabilities");
         return null;
     }
 

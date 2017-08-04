@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.resources;
 
-import com.pb.common.calculator.UtilityExpressionCalculator;
+import com.pb.common.calculator2.UtilityExpressionCalculator;
+import com.pb.common.calculator2.VariableTable;
 import com.pb.common.util.ResourceUtil;
 
 import java.io.File;
@@ -23,29 +24,37 @@ public enum Resources {
         this.resources = resources;
     }
 
-    public UtilityExpressionCalculator getUtilityExpressionCalculator(String fileName, int totalTtbSheetNumber,
-                                                                      int dataSheetNumber, Class<?> userClass) {
+    public UtilityExpressionCalculator getUtilityExpressionCalculator2(String fileName, int totalTtbSheetNumber,
+                                                                        int dataSheetNumber, VariableTable dmuObject) {
         return new UtilityExpressionCalculator(new File(fileName), totalTtbSheetNumber,
-                dataSheetNumber, resources, userClass);
+                dataSheetNumber, ResourceUtil.changeResourceBundleIntoHashMap(resources), dmuObject);
+
     }
 
-    public int getInt(String key) {
+    public com.pb.common.calculator.UtilityExpressionCalculator getUtilityExpressionCalculator1(String fileName, int totalTtbSheetNumber,
+                                                                                                                            int dataSheetNumber, Class<?> userClass) {
+        return new com.pb.common.calculator.UtilityExpressionCalculator(new File(fileName), totalTtbSheetNumber,
+                dataSheetNumber, ResourceUtil.changeResourceBundleIntoHashMap(resources), userClass);
+
+    }
+
+    public synchronized int getInt(String key) {
         return ResourceUtil.getIntegerProperty(resources, key);
     }
 
-    public String getString(String key) {
+    public synchronized String getString(String key) {
         return ResourceUtil.getProperty(resources, key);
     }
 
-    public String[] getArray(String key) {
+    public synchronized String[] getArray(String key) {
         return ResourceUtil.getArray(resources, key);
     }
 
-    public boolean getBoolean(String key) {
+    public synchronized  boolean getBoolean(String key) {
         return ResourceUtil.getBooleanProperty(resources, key);
     }
 
-    public double getDouble(String key) {
+    public synchronized double getDouble(String key) {
         return ResourceUtil.getDoubleProperty(resources, key);
     }
 }

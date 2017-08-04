@@ -20,9 +20,9 @@ import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.currentTrip
 /**
  * Created by Nico on 21/07/2017.
  */
-class ByPurposeGenerator {
+class TripsByPurposeGenerator {
 
-    private static final Logger logger = Logger.getLogger(ByPurposeGenerator.class);
+    private static final Logger logger = Logger.getLogger(TripsByPurposeGenerator.class);
 
     private final DataSet dataSet;
     private final String purpose;
@@ -36,7 +36,7 @@ class ByPurposeGenerator {
     private final List<MitoTrip> trips = new ArrayList<>();
     private final HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
 
-    public ByPurposeGenerator(DataSet dataSet, String purpose) {
+    public TripsByPurposeGenerator(DataSet dataSet, String purpose) {
         this.dataSet = dataSet;
         this.purpose = purpose;
         this.purposeIndex = dataSet.getPurposeIndex(purpose);

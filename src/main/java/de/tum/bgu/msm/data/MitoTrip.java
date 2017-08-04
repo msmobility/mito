@@ -18,6 +18,8 @@ public class MitoTrip implements Serializable {
     private final int tripOrigin;
     private int tripDestination;
 
+    private MitoPerson person;
+
     public MitoTrip(int tripId, int householdId, int tripPurpose, int origin) {
         this.tripId = tripId;
         this.householdId = householdId;
@@ -47,5 +49,13 @@ public class MitoTrip implements Serializable {
 
     public void setTripDestination(int destination) {
         this.tripDestination = destination;
+    }
+
+    public MitoPerson getPerson() {
+        return person;
+    }
+
+    public void setPerson(MitoPerson person) {
+        this.person = person;
     }
 }

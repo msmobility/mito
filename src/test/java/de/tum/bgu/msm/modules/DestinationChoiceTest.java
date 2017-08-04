@@ -1,11 +1,12 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.modules;
 
 import com.pb.common.matrix.IdentityMatrix;
+import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.modules.DestinationChoice;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ public class DestinationChoiceTest {
     public void initializeAndRun() {
         MitoUtil.initializeRandomNumber(new Random(42));
         dataSet = new DataSet();
-        String[] purposes = {"HBS"};
+        String[] purposes = {"HBW", "HBE","HBS", "HBO"};
         dataSet.setPurposes(purposes);
         Zone zone1 = new Zone(1);
         zone1.setRetailEmpl(100);
@@ -31,13 +32,16 @@ public class DestinationChoiceTest {
         zone2.setRetailEmpl(100);
         dataSet.getZones().put(zone2.getZoneId(), zone2);
 
-        MitoTrip trip1 = new MitoTrip(1, 0 , 0, 1);
-        MitoTrip trip2 = new MitoTrip(2, 0 , 0, 2);
-        dataSet.getTrips().put(trip1.getTripId(), trip1);
-        dataSet.getTrips().put(trip2.getTripId(), trip2);
+        MitoTrip trip1 = new MitoTrip(1, 0 , 2, 1);
+        MitoTrip trip2 = new MitoTrip(2, 0 , 2, 2);
 
+        MitoHousehold household = new MitoHousehold(1,1, 1,0,0,0,1,0,1,500,1,1);
+        household.addTrip(trip1);
+        household.addTrip(trip2);
+        dataSet.getHouseholds().put(household.getHhId(), household);
+
+        dataSet.setAutoTravelTimes(new IdentityMatrix(2));
         dataSet.setDistanceMatrix(new IdentityMatrix(2));
-
         DestinationChoice destinationChoice = new DestinationChoice(dataSet);
         destinationChoice.run();
 

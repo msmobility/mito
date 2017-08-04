@@ -1,8 +1,13 @@
 package de.tum.bgu.msm.modules;
 
-import com.pb.common.calculator.IndexValues;
+import com.pb.common.calculator2.IndexValues;
 import de.tum.bgu.msm.data.DataSet;
 import org.apache.log4j.Logger;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Calculates travel time budget
@@ -11,7 +16,7 @@ import org.apache.log4j.Logger;
  **/
 
 
-public class TravelTimeBudgetDMU {
+public class TravelTimeBudgetDMU implements com.pb.common.calculator2.VariableTable {
 
     protected transient Logger logger = Logger.getLogger(TravelTimeBudgetDMU.class);
 
@@ -35,10 +40,13 @@ public class TravelTimeBudgetDMU {
     private int nhbwTrips;
     private int nhboTrips;
 
+    private Map<Integer, String> fieldByIndex;
+
 
 
     public TravelTimeBudgetDMU() {
         dmuIndex = new IndexValues();
+        fieldByIndex = new HashMap<>();
     }
 
     public IndexValues getDmuIndexValues() {
@@ -188,4 +196,49 @@ public class TravelTimeBudgetDMU {
         return nhboTrips;
     }
 
+    @Override
+    public int getIndexValue(String variableName) {
+        fieldByIndex.put(fieldByIndex.size(), variableName);
+        return fieldByIndex.size()-1;
+    }
+
+    @Override
+    public int getAssignmentIndexValue(String variableName) {
+        return 0;
+    }
+
+    @Override
+    public double getValueForIndex(int variableIndex) {
+        return 0;
+    }
+
+    @Override
+    public double getValueForIndex(int variableIndex, int arrayIndex) {
+        String field = fieldByIndex.get(variableIndex);
+        try {
+            Method method = this.getClass().getMethod(field);
+            return Double.parseDouble(String.valueOf(method.invoke(this, null)));
+        } catch (NoSuchMethodException e) {
+            logger.error("Could not find defined field in DMU class");
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            logger.error("Error in method loading");
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            logger.error("Error in method loading");
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    @Override
+    public void setValue(String variableName, double variableValue) {
+
+    }
+
+    @Override
+    public void setValue(int variableIndex, double variableValue) {
+
+    }
 }

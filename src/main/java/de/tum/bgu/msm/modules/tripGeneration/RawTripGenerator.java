@@ -38,7 +38,7 @@ public class RawTripGenerator {
     private void generateByPurposeMultiThreaded() {
 
         Function1<String,Void> tripGenByPurposeMethod = purpose -> {
-            ByPurposeGenerator byPurposeGenerator = new ByPurposeGenerator(dataSet, purpose);
+            TripsByPurposeGenerator byPurposeGenerator = new TripsByPurposeGenerator(dataSet, purpose);
             List<MitoTrip> trips = byPurposeGenerator.generateTrips();
             for (MitoTrip trip: trips) {
                 dataSet.getTrips().put(trip.getTripId(), trip);

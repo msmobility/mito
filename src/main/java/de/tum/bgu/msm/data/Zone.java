@@ -106,7 +106,7 @@ public class Zone {
         return totalEmpl;
     }
 
-    public int getIndustrialEmplEmpl() {
+    public int getIndustrialEmpl() {
         return industrialEmpl;
     }
 
