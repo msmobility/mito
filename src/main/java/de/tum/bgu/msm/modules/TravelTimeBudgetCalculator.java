@@ -48,7 +48,6 @@ public class TravelTimeBudgetCalculator {
     }
 
 
-
     private void setupDMU(MitoHousehold hh, TravelTimeBudgetDMU ttbDMU) {
         // set DMU attributes
         ttbDMU.setHouseholdSize(hh.getHhSize());
@@ -63,5 +62,4 @@ public class TravelTimeBudgetCalculator {
         ttbDMU.setIncome(hh.getIncome());
         ttbDMU.setAreaType(dataSet.getZones().get(hh.getHomeZone()).getRegion());  // todo: Ana, how is area type defined?
     }
-
 }
