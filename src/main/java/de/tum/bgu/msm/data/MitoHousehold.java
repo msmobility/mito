@@ -37,7 +37,6 @@ public class MitoHousehold implements Serializable {
 
     public MitoHousehold(int id, int hhSize, int females, int children, int youngAdults, int retirees,
                          int numberOfWorkers, int students, int licenseHolders, int income, int autos, int homeZone) {
-        // create new MitoHousehold
         this.hhId = id;
         this.hhSize = hhSize;
         this.females = females;

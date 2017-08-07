@@ -1,10 +1,7 @@
 package de.tum.bgu.msm.io.input;
 
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -29,7 +26,6 @@ public class InputManager {
         new ZonesReader(dataSet).read();
         new RegionsReader(dataSet).read();
         new SkimsReader(dataSet).read();
-        new DistancesReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
         new PersonsReader(dataSet).read();
         new JobReader(dataSet).read();
@@ -48,8 +44,8 @@ public class InputManager {
         // Feed data from other program. Need to write new methods to read these data from files if MitoModel is used as
         // stand-alone program.
         setZonesFromFeed(feed.zones, feed.retailEmplByZone, feed.officeEmplByZone, feed.otherEmplByZone, feed.totalEmplByZone, feed.sizeOfZonesInAcre);
-        dataSet.setAutoTravelTimes(feed.autoTravelTimes);
-        dataSet.setTransitTravelTimes(feed.transitTravelTimes);
+        dataSet.setAutoTravelTimes(new MatrixTravelTimes(feed.autoTravelTimes));
+        dataSet.setTransitTravelTimes(new MatrixTravelTimes(feed.transitTravelTimes));
         setHouseholdsFromFeed(feed.households);
         setPersonsFromFeed(feed.persons);
         // todo: the household travel survey should not be read every year the model runs, but only in the first year.

@@ -40,12 +40,9 @@ public class DestinationChoiceTest {
         household.addTrip(trip2);
         dataSet.getHouseholds().put(household.getHhId(), household);
 
-        dataSet.setAutoTravelTimes(new IdentityMatrix(2));
-        dataSet.setDistanceMatrix(new IdentityMatrix(2));
+        dataSet.setAutoTravelTimes(((origin, destination) -> 1));
         DestinationChoice destinationChoice = new DestinationChoice(dataSet);
         destinationChoice.run();
-
-
     }
 
     @Test

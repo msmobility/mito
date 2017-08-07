@@ -84,7 +84,7 @@ public class TravelTimeBudget extends Module {
             // todo: sum up work and school trips of all household members to calculate those travel budgets
             for (MitoPerson person : household.getPersons()) {
                 if (person.getOccupation() == 1) {
-                    household.setTravelTimeBudgetByPurpose("HBW", dataSet.getAutoTravelTimeFromTo(household.getHomeZone(), person.getWorkzone()));
+                    household.setTravelTimeBudgetByPurpose("HBW", dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone()));
                 }
             }
             adjustDiscretionaryPurposeBudget(household, totalTravelTimeBudget);

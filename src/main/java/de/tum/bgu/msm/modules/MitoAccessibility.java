@@ -47,14 +47,14 @@ public class MitoAccessibility extends Module {
             float transitAccessibilityOther = 0;
             for (Zone toZone : zones) {
                 double autoImpedance;
-                float autoTravelTime = dataSet.getAutoTravelTimeFromTo(zone.getZoneId(), toZone.getZoneId());
+                double autoTravelTime = dataSet.getAutoTravelTimes().getTravelTimeFromTo(zone.getZoneId(), toZone.getZoneId());
                 if (autoTravelTime == 0) {      // should never happen for auto
                     autoImpedance = 0;
                 } else {
                     autoImpedance = Math.exp(beta * autoTravelTime);
                 }
                 double transitImpedance;
-                float transitTravelTime = dataSet.getTransitTravelTimedFromTo(zone.getZoneId(), toZone.getZoneId());
+                double transitTravelTime = dataSet.getTransitTravelTimes().getTravelTimeFromTo(zone.getZoneId(), toZone.getZoneId());
                 if (transitTravelTime == 0) {   // zone is not connected by walk-to-transit
                     transitImpedance = 0;
                 } else {

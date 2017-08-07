@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.matrix.Matrix;
+import de.tum.bgu.msm.data.MatrixTravelTimes;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.OMXReader;
@@ -27,11 +28,11 @@ public class SkimsReader extends OMXReader {
 
     private void readHighwaySkims() {
         Matrix timeSkimAutos = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "HOVTime");
-        dataSet.setAutoTravelTimes(timeSkimAutos);
+        dataSet.setAutoTravelTimes(new MatrixTravelTimes(timeSkimAutos));
     }
 
     private void readTransitSkims() {
         Matrix timeSkimTransit = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRANSIT_PEAK_SKIM), "CheapJrnyTime");
-        dataSet.setTransitTravelTimes(timeSkimTransit);
+        dataSet.setTransitTravelTimes(new MatrixTravelTimes(timeSkimTransit));
     }
 }

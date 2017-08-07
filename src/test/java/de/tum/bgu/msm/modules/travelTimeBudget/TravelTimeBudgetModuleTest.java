@@ -2,10 +2,7 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import com.pb.common.matrix.IdentityMatrix;
 import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
@@ -26,7 +23,7 @@ public class TravelTimeBudgetModuleTest {
         Resources.INSTANCE.setResources(bundle);
 
         dataSet = new DataSet();
-        dataSet.setAutoTravelTimes(new IdentityMatrix(2));
+        dataSet.setAutoTravelTimes((origin, destination) -> 1);
         addZone();
         addPurposes();
         addHouseholds();

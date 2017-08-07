@@ -46,7 +46,6 @@ public class DestinationChoice extends Module {
     }
 
     private void selectDestinationsForHouseholdTrips(MitoHousehold household) {
-        assignPersonsToTrips(household);
         if (household.getTripsByPurpose().containsKey(dataSet.getPurposeIndex("HBW"))) {
             processHBW(household);
         }
@@ -61,11 +60,6 @@ public class DestinationChoice extends Module {
         }
     }
 
-    //TODO: implement
-    private void assignPersonsToTrips(MitoHousehold household) {
-
-
-    }
 
     private void processHBW(MitoHousehold household) {
         for (MitoTrip trip : household.getTripsByPurpose().get(dataSet.getPurposeIndex("HBW"))) {
@@ -135,7 +129,7 @@ public class DestinationChoice extends Module {
     }
 
     private boolean exceedsTravelTimeBudget(int tripOrigin, int tripDestination, double budget) {
-        if (dataSet.getAutoTravelTimeFromTo(tripOrigin, tripDestination) > budget) {
+        if (dataSet.getAutoTravelTimes().getTravelTimeFromTo(tripOrigin, tripDestination) > budget) {
             return true;
         } else {
             return false;
@@ -144,15 +138,15 @@ public class DestinationChoice extends Module {
 
     private double calculateUtility(int tripOrigin, Zone zone, String purpose) {
 
-        double distance = dataSet.getDistanceFromTo(tripOrigin, zone.getZoneId());
+        double travelTime = dataSet.getAutoTravelTimes().getTravelTimeFromTo(tripOrigin, zone.getZoneId());
 
         if (purpose.equals("HBS")) {
-            double travelImpedance = Math.exp(BETA_SHOP * distance);
+            double travelImpedance = Math.exp(BETA_SHOP * travelTime);
             double shopEmpls = zone.getRetailEmpl();
             double size = Math.log(shopEmpls);
             return ALPHA_SHOP + GAMMA_SHOP * travelImpedance + DELTA_SHOP * size;
         } else if (purpose.equals("HBO")) {
-            double travelImpedance = Math.exp(BETA_OTHER * distance);
+            double travelImpedance = Math.exp(BETA_OTHER * travelTime);
             double otherEmpl = zone.getOtherEmpl();
             double numberOfHouseholds = zone.getNumberOfHouseholds();
             double size = Math.log(otherEmpl) + Math.log(numberOfHouseholds);

@@ -17,9 +17,8 @@ public class DataSet {
 
     private TableDataSet tripAttractionRates;
 
-    private Matrix autoTravelTimes;
-    private Matrix transitTravelTimes;
-    private Matrix distanceMatrix;
+    private TravelTimes autoTravelTimes;
+    private TravelTimes transitTravelTimes;
 
     private String[] purposes;
     private HashMap<String, Integer> purposeIndices;
@@ -53,20 +52,20 @@ public class DataSet {
         this.tripAttractionRates = tripAttractionRates;
     }
 
-    public float getAutoTravelTimeFromTo(int origin, int destination) {
-        return autoTravelTimes.getValueAt(origin, destination);
+    public TravelTimes getAutoTravelTimes() {
+        return this.autoTravelTimes;
     }
 
-    public void setAutoTravelTimes(Matrix autoTravelTimes) {
-        this.autoTravelTimes = autoTravelTimes;
+    public void setAutoTravelTimes(TravelTimes travelTimes) {
+        this.autoTravelTimes = travelTimes;
     }
 
-    public float getTransitTravelTimedFromTo(int origin, int destination) {
-        return transitTravelTimes.getValueAt(origin, destination);
+    public TravelTimes getTransitTravelTimes() {
+        return this.transitTravelTimes;
     }
 
-    public void setTransitTravelTimes(Matrix transitTravelTimes) {
-        this.transitTravelTimes = transitTravelTimes;
+    public void setTransitTravelTimes(TravelTimes travelTimes) {
+        this.transitTravelTimes = travelTimes;
     }
 
     public String[] getPurposes() {
@@ -83,14 +82,6 @@ public class DataSet {
 
     public int getPurposeIndex(String purpose) {
         return purposeIndices.get(purpose);
-    }
-
-    public void setDistanceMatrix(Matrix distanceMatrix) {
-        this.distanceMatrix = distanceMatrix;
-    }
-
-    public float getDistanceFromTo(int from, int to) {
-        return this.distanceMatrix.getValueAt(from, to);
     }
 
     public Map<Integer, Zone> getZones() {
