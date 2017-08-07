@@ -58,4 +58,9 @@ public class MitoTrip implements Serializable {
     public void setPerson(MitoPerson person) {
         this.person = person;
     }
+
+    @Override
+    public String toString() {
+        return "Trip id: " + this.tripId + " with purpose " + this.tripPurpose;
+    }
 }

@@ -171,16 +171,7 @@ public class MitoUtil {
 
     public static <T>T select (Map<T, Double> mappedProbabilities) {
         // select item based on probabilities (for mapped double probabilities)
-        double selectedWeight = rand.nextDouble() * getSum(mappedProbabilities.values());
-        double select = 0;
-        for (Map.Entry<T, Double> entry : mappedProbabilities.entrySet()) {
-            select += entry.getValue();
-            if (select > selectedWeight) {
-                return entry.getKey();
-            }
-        }
-        logger.info("Error selecting item from weighted probabilities");
-        return null;
+        return select(mappedProbabilities, getSum(mappedProbabilities.values()));
     }
 
     public static <T>T select (Map<T, Double> mappedProbabilities, double sum) {

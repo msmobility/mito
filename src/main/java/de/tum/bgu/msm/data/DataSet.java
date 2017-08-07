@@ -2,6 +2,7 @@ package de.tum.bgu.msm.data;
 
 import com.pb.common.datafile.TableDataSet;
 import com.pb.common.matrix.Matrix;
+import de.tum.bgu.msm.modules.TripDistribution;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class DataSet {
     private final Map<Integer, MitoHousehold> households = new HashMap<>();
     private final Map<Integer, MitoPerson> persons = new HashMap<>();
     private final Map<Integer, MitoTrip> trips = new HashMap<>();
+    private TripDistribution tripDistribution;
 
     public TableDataSet getTravelSurveyHouseholdTable() {
         return travelSurveyHouseholdTable;
@@ -98,5 +100,13 @@ public class DataSet {
 
     public Map<Integer, MitoTrip> getTrips() {
         return trips;
+    }
+
+    public TripDistribution getTripDistribution() {
+        return tripDistribution;
+    }
+
+    public void setTripDistribution(TripDistribution distribution) {
+        this.tripDistribution = distribution;
     }
 }
