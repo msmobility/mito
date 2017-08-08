@@ -1,8 +1,6 @@
 package de.tum.bgu.msm.data;
 
 import com.pb.common.datafile.TableDataSet;
-import com.pb.common.matrix.Matrix;
-import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;

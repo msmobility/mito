@@ -73,7 +73,8 @@ public class PersonsReader extends CSVReader {
         } else if (age >= 65) {
             hh.setRetirees(hh.getRetirees() + 1);
         }
-        if (Integer.parseInt(record[posSex]) == 2) {
+        int gender = Integer.parseInt(record[posSex]);
+        if (gender == 2) {
             hh.setFemales(hh.getFemales() + 1);
         }
         int occupation = Integer.parseInt(record[posOccupation]);
@@ -83,12 +84,15 @@ public class PersonsReader extends CSVReader {
             hh.setStudents(hh.getStudents() + 1);
         }
         int workplace = Integer.parseInt(record[posWorkplace]);
+
+        boolean driversLicense = false;
         if (Integer.parseInt(record[posLicence]) == 1) {
+            driversLicense = true;
             hh.setLicenseHolders(hh.getLicenseHolders() + 1);
         }
         int income = Integer.parseInt(record[posIncome]);
         hh.setIncome(hh.getIncome() + income);
-        MitoPerson pp = new MitoPerson(id, hhid, occupation, workplace);
+        MitoPerson pp = new MitoPerson(id, hhid, occupation, workplace, age, gender, driversLicense);
         persons.put(pp.getId(), pp);
         hh.getPersons().add(pp);
     }

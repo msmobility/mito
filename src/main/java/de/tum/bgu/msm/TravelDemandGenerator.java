@@ -2,7 +2,7 @@ package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.modules.DestinationChoice;
-import de.tum.bgu.msm.modules.Person2TripAssignment;
+import de.tum.bgu.msm.modules.PersonTripAssignment;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
 import de.tum.bgu.msm.modules.TripGeneration;
 import org.apache.log4j.Logger;
@@ -29,8 +29,8 @@ public class TravelDemandGenerator {
         TripGeneration tg = new TripGeneration(dataSet);
         tg.run();
         logger.info("Running Module: Person to Trip Assignment");
-        Person2TripAssignment person2TripAssignment = new Person2TripAssignment(dataSet);
-        person2TripAssignment.run();
+        PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
+        personTripAssignment.run();
         logger.info("Running Module: Travel Time Budget Calculation");
         TravelTimeBudget ttb = new TravelTimeBudget(dataSet);
         ttb.run();
