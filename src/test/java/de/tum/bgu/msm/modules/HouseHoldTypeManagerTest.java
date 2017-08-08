@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.modules.tripGeneration.HouseholdType;
 import de.tum.bgu.msm.modules.tripGeneration.HouseholdTypeManager;
+import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,9 +30,9 @@ public class HouseHoldTypeManagerTest {
     public final void test() {
 
         DataSet dataSet = new DataSet();
-        HouseholdTypeManager manager = new HouseholdTypeManager(dataSet, "testPurpose");
+        HouseholdTypeManager manager = new HouseholdTypeManager(dataSet, Purpose.HBW);
         List<HouseholdType> types = manager.createHouseHoldTypeDefinitions();
-        Assert.assertEquals(30, types.size());
+        Assert.assertEquals(24, types.size());
         for(HouseholdType type: types) {
             Assert.assertEquals(0, type.getNumberOfRecords());
         }

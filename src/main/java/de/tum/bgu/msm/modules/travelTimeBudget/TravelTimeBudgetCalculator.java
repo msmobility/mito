@@ -4,8 +4,12 @@ import com.pb.common.calculator2.UtilityExpressionCalculator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TravelTimeBudgetCalculator {
 
@@ -14,11 +18,11 @@ public class TravelTimeBudgetCalculator {
     private final DataSet dataSet;
     private final UtilityExpressionCalculator calculator;
     private final boolean log;
-    private final String purpose;
+    private final Purpose purpose;
 
     private final TravelTimeBudgetDMU ttbDMU;
 
-    public TravelTimeBudgetCalculator(boolean log, String purpose, DataSet dataSet, int totalTtbSheetNumber) {
+    public TravelTimeBudgetCalculator(boolean log, Purpose purpose, DataSet dataSet, int totalTtbSheetNumber) {
         this.log = log;
         this.purpose = purpose;
         this.dataSet = dataSet;
@@ -50,12 +54,12 @@ public class TravelTimeBudgetCalculator {
         ttbDMU.setLicenseHolders(hh.getLicenseHolders());
         ttbDMU.setIncome(hh.getIncome());
         ttbDMU.setAreaType(dataSet.getZones().get(hh.getHomeZone()).getRegion());  // todo: Ana, how is area type defined?
-        int[] tripCounter = new int[dataSet.getPurposes().length];
-        for (int i = 0; i < dataSet.getPurposes().length; i++) {
-            if (hh.getTripsByPurpose().containsKey(i)) {
-                tripCounter[i] = hh.getTripsByPurpose().get(i).size();
+        Map<Purpose, Integer> tripCounter = new HashMap();
+        for (Purpose purpose: Purpose.values()) {
+            if (hh.getTripsByPurpose().containsKey(purpose)) {
+                tripCounter.put(purpose, hh.getTripsByPurpose().get(purpose).size());
             } else {
-                tripCounter[i] = 0;
+                tripCounter.put(purpose,0);
             }
         }
         ttbDMU.setTrips(tripCounter, dataSet);

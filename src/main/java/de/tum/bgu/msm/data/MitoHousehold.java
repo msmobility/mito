@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
@@ -30,9 +31,10 @@ public class MitoHousehold implements Serializable {
     private int autos;
     private int homeZone;
 
-    private final Map<Integer, List<MitoTrip>> tripsByPurpose;
+    private final Map<Purpose, List<MitoTrip>> tripsByPurpose;
+    private final Map<Purpose, Double> travelTimeBudgetByPurpose;
+
     private final List<MitoPerson> persons;
-    private final Map<String, Double> travelTimeBudgetByPurpose;
 
 
     public MitoHousehold(int id, int hhSize, int females, int children, int youngAdults, int retirees,
@@ -148,15 +150,15 @@ public class MitoHousehold implements Serializable {
         }
     }
 
-    public Map<Integer, List<MitoTrip>> getTripsByPurpose() {
+    public Map<Purpose, List<MitoTrip>> getTripsByPurpose() {
         return tripsByPurpose;
     }
 
-    public void setTravelTimeBudgetByPurpose(String purpose, double budget) {
+    public void setTravelTimeBudgetByPurpose(Purpose purpose, double budget) {
         this.travelTimeBudgetByPurpose.put(purpose, budget);
     }
 
-    public double getTravelTimeBudgetForPurpose(String purpose) {
+    public double getTravelTimeBudgetForPurpose(Purpose purpose) {
         return travelTimeBudgetByPurpose.get(purpose) == null ? 0. : travelTimeBudgetByPurpose.get(purpose) ;
     }
 }

@@ -2,9 +2,11 @@ package de.tum.bgu.msm.modules;
 
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,23 +48,23 @@ public class DestinationChoice extends Module {
     }
 
     private void selectDestinationsForHouseholdTrips(MitoHousehold household) {
-        if (household.getTripsByPurpose().containsKey(dataSet.getPurposeIndex("HBW"))) {
+        if (household.getTripsByPurpose().containsKey(Purpose.HBW)) {
             processHBW(household);
         }
-        if (household.getTripsByPurpose().containsKey(dataSet.getPurposeIndex("HBE"))) {
+        if (household.getTripsByPurpose().containsKey(Purpose.HBE)) {
             processHBE(household);
         }
-        if (household.getTripsByPurpose().containsKey(dataSet.getPurposeIndex("HBS"))) {
+        if (household.getTripsByPurpose().containsKey(Purpose.HBS)) {
             processHBS(household);
         }
-        if (household.getTripsByPurpose().containsKey(dataSet.getPurposeIndex("HBO"))) {
+        if (household.getTripsByPurpose().containsKey(Purpose.HBO)) {
             processHBO(household);
         }
     }
 
 
     private void processHBW(MitoHousehold household) {
-        for (MitoTrip trip : household.getTripsByPurpose().get(dataSet.getPurposeIndex("HBW"))) {
+        for (MitoTrip trip : household.getTripsByPurpose().get(Purpose.HBW)) {
             if (trip.getPerson() == null) {
                 logger.warn("No person specified for HBW trip. Could not define trip destination");
                 continue;
@@ -72,7 +74,7 @@ public class DestinationChoice extends Module {
     }
 
     private void processHBE(MitoHousehold household) {
-        for (MitoTrip trip : household.getTripsByPurpose().get(dataSet.getPurposeIndex("HBE"))) {
+        for (MitoTrip trip : household.getTripsByPurpose().get(Purpose.HBE)) {
             if (trip.getPerson() == null) {
                 logger.warn("No person specified for HBE trip. Could not define trip destination");
                 continue;
@@ -82,25 +84,25 @@ public class DestinationChoice extends Module {
     }
 
     private void processHBS(MitoHousehold household) {
-        int numberOfHBSTrips = household.getTripsByPurpose().get(dataSet.getPurposeIndex("HBS")).size();
-        for (MitoTrip trip : household.getTripsByPurpose().get(dataSet.getPurposeIndex("HBS"))) {
-            double individualBudget = household.getTravelTimeBudgetForPurpose("HBS") / numberOfHBSTrips;
-            Map<Integer, Double> probabilities = getProbabilities(trip, individualBudget, "HBS");
+        List<MitoTrip> trips = household.getTripsByPurpose().get(Purpose.HBS);
+        for (MitoTrip trip : trips) {
+            double individualBudget = household.getTravelTimeBudgetForPurpose(Purpose.HBS) / trips.size();
+            Map<Integer, Double> probabilities = getProbabilities(trip, individualBudget, Purpose.HBS);
             selectDestinationByProbabilities(trip, probabilities);
         }
     }
 
     private void processHBO(MitoHousehold household) {
-        int numberOfHBOTrips = household.getTripsByPurpose().get(dataSet.getPurposeIndex("HBO")).size();
-        for (MitoTrip trip : household.getTripsByPurpose().get(dataSet.getPurposeIndex("HBO"))) {
-            double individualBudget = household.getTravelTimeBudgetForPurpose("HBO") / numberOfHBOTrips;
-            Map<Integer, Double> probabilities = getProbabilities(trip, individualBudget, "HBO");
+        List<MitoTrip> trips = household.getTripsByPurpose().get(Purpose.HBO);
+        for (MitoTrip trip : trips) {
+            double individualBudget = household.getTravelTimeBudgetForPurpose(Purpose.HBO) / trips.size();
+            Map<Integer, Double> probabilities = getProbabilities(trip, individualBudget, Purpose.HBO);
             selectDestinationByProbabilities(trip, probabilities);
         }
     }
 
 
-    private Map<Integer, Double> getProbabilities(MitoTrip trip, double budget, String purpose) {
+    private Map<Integer, Double> getProbabilities(MitoTrip trip, double budget, Purpose purpose) {
 
         Map<Integer, Double> probabilities = new HashMap<>();
         double probabilitySum = 0;
@@ -136,16 +138,16 @@ public class DestinationChoice extends Module {
         }
     }
 
-    private double calculateUtility(int tripOrigin, Zone zone, String purpose) {
+    private double calculateUtility(int tripOrigin, Zone zone, Purpose purpose) {
 
         double travelTime = dataSet.getAutoTravelTimes().getTravelTimeFromTo(tripOrigin, zone.getZoneId());
 
-        if (purpose.equals("HBS")) {
+        if (purpose.equals(Purpose.HBS)) {
             double travelImpedance = Math.exp(BETA_SHOP * travelTime);
             double shopEmpls = zone.getRetailEmpl();
             double size = Math.log(shopEmpls);
             return ALPHA_SHOP + GAMMA_SHOP * travelImpedance + DELTA_SHOP * size;
-        } else if (purpose.equals("HBO")) {
+        } else if (purpose.equals(Purpose.HBO)) {
             double travelImpedance = Math.exp(BETA_OTHER * travelTime);
             double otherEmpl = zone.getOtherEmpl();
             double numberOfHouseholds = zone.getNumberOfHouseholds();

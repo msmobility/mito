@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.resources.Purpose;
+
 import java.io.Serializable;
 
 /**
@@ -13,14 +15,14 @@ public class MitoTrip implements Serializable {
 
     private final int tripId;
     private final int householdId;
-    private final int tripPurpose;
+    private final Purpose tripPurpose;
 
     private final int tripOrigin;
     private int tripDestination;
 
     private MitoPerson person;
 
-    public MitoTrip(int tripId, int householdId, int tripPurpose, int origin) {
+    public MitoTrip(int tripId, int householdId, Purpose tripPurpose, int origin) {
         this.tripId = tripId;
         this.householdId = householdId;
         this.tripPurpose = tripPurpose;
@@ -35,7 +37,7 @@ public class MitoTrip implements Serializable {
         return tripOrigin;
     }
 
-    public int getTripPurpose() {
+    public Purpose getTripPurpose() {
         return tripPurpose;
     }
 

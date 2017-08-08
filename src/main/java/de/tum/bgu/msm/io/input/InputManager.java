@@ -33,7 +33,6 @@ public class InputManager {
     }
 
     public void readAdditionalData() {
-        dataSet.setPurposes(Resources.INSTANCE.getArray(Properties.PURPOSES));
         new SchoolEnrollmentReader(dataSet).read();
         new RegionsReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();

@@ -7,6 +7,7 @@ import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator;
 import de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator;
 import de.tum.bgu.msm.modules.tripGeneration.TripBalancer;
+import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -22,7 +23,7 @@ public class TripGeneration extends Module{
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
 
-    private Map<Integer, Map<String, Float>> tripAttr;
+    private Map<Integer, Map<Purpose, Float>> tripAttr;
 
     public TripGeneration(DataSet dataSet) {
         super(dataSet);
