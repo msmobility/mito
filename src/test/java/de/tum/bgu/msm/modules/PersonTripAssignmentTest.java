@@ -25,18 +25,12 @@ public class PersonTripAssignmentTest {
         String[] purposes = {"HBW", "HBE","HBS", "HBO", "NHBW", "NHBO"};
         dataSet.setPurposes(purposes);
 
-        dataSet.setTripDistribution(new TripDistribution() {
-            @Override
-            public double getWeight(MitoPerson person, String purpose) {
-                return 1;
-            }
-        });
-
         MitoHousehold household = new MitoHousehold(1, 5, 3, 2, 0, 1, 2, 2, 2, 1, 1, 1);
-        household.getPersons().add(new MitoPerson(1, 1, 1, 1));
-        household.getPersons().add(new MitoPerson(2, 1, 1, 1));
-        household.getPersons().add(new MitoPerson(3, 1, 3, 1));
-        household.getPersons().add(new MitoPerson(4, 1, 3, 1));
+        household.getPersons().add(new MitoPerson(1, 1, 1, 1, 35,1, true));
+        household.getPersons().add(new MitoPerson(2, 1, 1, 1,30,2, true));
+        household.getPersons().add(new MitoPerson(3, 1, 3, 1, 10,2, false));
+        household.getPersons().add(new MitoPerson(4, 1, 3, 1, 15,1, false));
+        household.getPersons().add(new MitoPerson(5, 1, -1, 1, 70,2, false));
         dataSet.getHouseholds().put(household.getHhId(), household);
 
         MitoTrip tripHBW = new MitoTrip(1, 1, 0, 1);
@@ -59,19 +53,17 @@ public class PersonTripAssignmentTest {
         dataSet.getTrips().put(5, tripNHBW);
         dataSet.getTrips().put(6, tripNHBO);
 
-        Person2TripAssignment assignment = new Person2TripAssignment(dataSet);
+        PersonTripAssignment assignment = new PersonTripAssignment(dataSet);
         assignment.run();
     }
 
     @Test
     public void testAssignment() {
-
-
         for(MitoTrip trip: dataSet.getTrips().values()) {
             assertNotNull("No Person set for trip " + trip, trip.getPerson());
-            if(dataSet.getPurposes()[trip.getTripPurpose()] == "HBW") {
+            if(dataSet.getPurposes()[trip.getTripPurpose()].equals("HBW")) {
                 assertEquals(1, trip.getPerson().getOccupation());
-            } else if( dataSet.getPurposes()[trip.getTripPurpose()] == "HBE") {
+            } else if( dataSet.getPurposes()[trip.getTripPurpose()].equals("HBE")) {
                 assertEquals(3, trip.getPerson().getOccupation());
             }
         }

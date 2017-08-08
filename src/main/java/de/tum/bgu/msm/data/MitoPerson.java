@@ -12,16 +12,22 @@ import java.io.Serializable;
 public class MitoPerson implements Serializable {
 
     private final int id;
+    private final int gender;
     private int hhId;
     private int occupation;
     private int workplace;
     private int workzone;
+    private int age;
+    private boolean driversLicense;
 
-    public MitoPerson(int id, int hhId, int occupation, int workplace) {
+    public MitoPerson(int id, int hhId, int occupation, int workplace, int age, int gender, boolean driversLicense) {
         this.id = id;
         this.hhId = hhId;
         this.occupation = occupation;
         this.workplace = workplace;
+        this.age = age;
+        this.gender = gender;
+        this.driversLicense = driversLicense;
     }
 
     public int getHhId() {
@@ -44,7 +50,6 @@ public class MitoPerson implements Serializable {
         this.workzone = workzone;
     }
 
-
     public int getOccupation() {
         return occupation;
     }
@@ -55,5 +60,21 @@ public class MitoPerson implements Serializable {
 
     public int getId() {
         return this.id;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public boolean hasDriversLicense() {
+        return driversLicense;
+    }
+
+    public void setDriversLicense(boolean driversLicense) {
+        this.driversLicense = driversLicense;
     }
 }

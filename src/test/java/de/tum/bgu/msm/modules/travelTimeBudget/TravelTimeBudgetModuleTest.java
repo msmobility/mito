@@ -127,22 +127,22 @@ public class TravelTimeBudgetModuleTest {
     }
 
     private void addWorkers() {
-        MitoPerson worker11 = new MitoPerson(1, 3, 1, 1);
+        MitoPerson worker11 = new MitoPerson(1, 3, 1, 1, 20, 1, true);
         worker11.setWorkzone(1);
-        MitoPerson worker12 = new MitoPerson(2, 3, 1, 1);
+        MitoPerson worker12 = new MitoPerson(2, 3, 1, 1, 20, 1, true);
         worker12.setWorkzone(1);
-        MitoPerson worker13 = new MitoPerson(3, 3, 1, 1);
+        MitoPerson worker13 = new MitoPerson(3, 3, 1, 1, 20, 1, false);
         worker13.setWorkzone(1);
 
         dataSet.getHouseholds().get(3).getPersons().add(worker11);
         dataSet.getHouseholds().get(3).getPersons().add(worker12);
         dataSet.getHouseholds().get(3).getPersons().add(worker13);
 
-        MitoPerson worker21 = new MitoPerson(1, 4, 1, 1);
+        MitoPerson worker21 = new MitoPerson(1, 4, 1, 1, 20, 1, true);
         worker21.setWorkzone(1);
-        MitoPerson worker22 = new MitoPerson(2, 4, 1, 1);
+        MitoPerson worker22 = new MitoPerson(2, 4, 1, 1, 20, 1, true);
         worker22.setWorkzone(1);
-        MitoPerson worker23 = new MitoPerson(3, 4, 1, 1);
+        MitoPerson worker23 = new MitoPerson(3, 4, 1, 1, 20, 1, false);
         worker23.setWorkzone(1);
 
         dataSet.getHouseholds().get(4).getPersons().add(worker21);

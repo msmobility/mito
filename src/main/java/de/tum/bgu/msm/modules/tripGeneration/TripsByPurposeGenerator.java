@@ -96,7 +96,6 @@ class TripsByPurposeGenerator {
 
     private void fillFrequencyArrays(Map<Integer, HouseholdType> householdTypeBySampleId) {
 
-
         int pos = 1;
         for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
 

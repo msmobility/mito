@@ -13,7 +13,6 @@ public class Properties {
     public static final String REMOVE_TRIPS_AT_BORDER = "reduce.trips.at.outer.border";
 
     public static final String AUTO_PEAK_SKIM = "auto.peak.sov.skim";
-    public static final String DISTANCE_SKIM = "distanceODmatrix";
     public static final String EMPLOYMENT = "employment.forecast";
     public static final String JOBS = "job.file.ascii";
     public static final String HOUSEHOLDS = "household.file.ascii";
