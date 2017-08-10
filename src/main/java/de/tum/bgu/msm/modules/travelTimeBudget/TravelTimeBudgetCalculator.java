@@ -18,11 +18,11 @@ public class TravelTimeBudgetCalculator {
     private final DataSet dataSet;
     private final UtilityExpressionCalculator calculator;
     private final boolean log;
-    private final Purpose purpose;
+    private final String purpose;
 
     private final TravelTimeBudgetDMU ttbDMU;
 
-    public TravelTimeBudgetCalculator(boolean log, Purpose purpose, DataSet dataSet, int totalTtbSheetNumber) {
+    public TravelTimeBudgetCalculator(boolean log, String purpose, DataSet dataSet, int totalTtbSheetNumber) {
         this.log = log;
         this.purpose = purpose;
         this.dataSet = dataSet;
@@ -53,8 +53,8 @@ public class TravelTimeBudgetCalculator {
         ttbDMU.setCars(hh.getAutos());
         ttbDMU.setLicenseHolders(hh.getLicenseHolders());
         ttbDMU.setIncome(hh.getIncome());
-        ttbDMU.setAreaType(dataSet.getZones().get(hh.getHomeZone()).getRegion());  // todo: Ana, how is area type defined?
-        Map<Purpose, Integer> tripCounter = new HashMap();
+        ttbDMU.setAreaType(dataSet.getZones().get(hh.getHomeZone()).getRegion());
+        Map<Purpose, Integer> tripCounter = new HashMap<>();
         for (Purpose purpose: Purpose.values()) {
             if (hh.getTripsByPurpose().containsKey(purpose)) {
                 tripCounter.put(purpose, hh.getTripsByPurpose().get(purpose).size());

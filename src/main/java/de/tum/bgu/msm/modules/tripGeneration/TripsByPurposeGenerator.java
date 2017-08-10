@@ -18,9 +18,6 @@ import java.util.Map;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.counterDroppedTripsAtBorder;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.currentTripId;
 
-/**
- * Created by Nico on 21/07/2017.
- */
 class TripsByPurposeGenerator {
 
     private static final Logger logger = Logger.getLogger(TripsByPurposeGenerator.class);
@@ -151,7 +148,6 @@ class TripsByPurposeGenerator {
     }
 
     private void createTrip(MitoHousehold hh) {
-        // todo: for non-home based trips, do not set origin as home
         int tripOrigin = hh.getHomeZone();
         boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
         if (dropThisTrip) {

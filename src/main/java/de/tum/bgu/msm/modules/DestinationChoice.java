@@ -108,6 +108,7 @@ public class DestinationChoice extends Module {
         double probabilitySum = 0;
         for (Zone zone : dataSet.getZones().values()) {
             if (exceedsTravelTimeBudget(trip.getTripOrigin(), zone.getZoneId(), budget)) {
+                logger.debug("Travel time to destination " + zone.getZoneId() + " exceeds budget for " + trip);
                 continue;
             }
             double utility = calculateUtility(trip.getTripOrigin(), zone, purpose);
@@ -118,16 +119,21 @@ public class DestinationChoice extends Module {
 
         if (probabilitySum > 0) {
             MitoUtil.scaleMapBy(probabilities, 1 / probabilitySum);
+        } else {
+            logger.debug("No zone qualifies for " + trip + ".");
+            return null;
         }
         return probabilities;
     }
 
     private void selectDestinationByProbabilities(MitoTrip trip, Map<Integer, Double> probabilities) {
-        if (probabilities.isEmpty()) {
+        if (probabilities == null || probabilities.isEmpty()) {
             trip.setTripDestination(trip.getTripOrigin());
+            logger.warn("No destination found for " + trip + ".");
             return;
         }
-        trip.setTripDestination(MitoUtil.select(probabilities, 1));
+        Integer selectedZone = MitoUtil.select(probabilities, 1);
+        trip.setTripDestination(selectedZone);
     }
 
     private boolean exceedsTravelTimeBudget(int tripOrigin, int tripDestination, double budget) {

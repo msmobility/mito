@@ -9,10 +9,6 @@ import org.apache.log4j.Logger;
 import java.util.Collection;
 import java.util.Map;
 
-
-/**
- * Created by Nico on 20.07.2017.
- */
 public class TripBalancer {
 
     private static final Logger logger = Logger.getLogger(TripBalancer.class);
@@ -47,15 +43,6 @@ public class TripBalancer {
             for (Zone zone : dataSet.getZones().values()) {
                 final float attrSumFinal = attrSum;
                 tripAttractionByZoneAndPurpose.get(zone.getZoneId()).replaceAll((k, v) -> v * tripsByPurp / attrSumFinal);
-
-                // for NHBW and NHBO, we have more confidence in total production, as it is based on the household
-                // travel survey. The distribution, however, is better represented by attraction rates. Therefore,
-                // attractions are first scaled to productions (step above) and then productions are replaced with
-                // zonal level attractions (step below).
-                // todo: fix scaling towards attractions. Difficult, because individual households need to give up trips
-                // or add trips to match attractions. Maybe it is alright to rely on productions instead.
-//                if (tripPurposes.values()[purp] == tripPurposes.NHBW || tripPurposes.values()[purp] == tripPurposes.NHBO)
-//                    tripProd[zone][purp][mstmInc] = tripAttractionByZoneAndPurpose[zone][purp][mstmInc];
             }
         }
     }

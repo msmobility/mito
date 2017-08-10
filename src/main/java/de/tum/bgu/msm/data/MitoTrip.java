@@ -63,6 +63,6 @@ public class MitoTrip implements Serializable {
 
     @Override
     public String toString() {
-        return "Trip id: " + this.tripId + " with purpose " + this.tripPurpose;
+        return "Trip [id: " + this.tripId + " purpose: " + this.tripPurpose + "]";
     }
 }

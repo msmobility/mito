@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.MitoUtil;
+import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
@@ -12,9 +13,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Nico on 17.07.2017.
- */
+
 public class PersonsReader extends CSVReader {
 
     private static final Logger logger = Logger.getLogger(PersonsReader.class);
@@ -73,9 +72,11 @@ public class PersonsReader extends CSVReader {
         } else if (age >= 65) {
             hh.setRetirees(hh.getRetirees() + 1);
         }
-        int gender = Integer.parseInt(record[posSex]);
-        if (gender == 2) {
+        int genderCode = Integer.parseInt(record[posSex]);
+        Gender gender = Gender.MALE;
+        if (genderCode == 2) {
             hh.setFemales(hh.getFemales() + 1);
+            gender = Gender.FEMALE;
         }
         int occupation = Integer.parseInt(record[posOccupation]);
         if (occupation == 1) {

@@ -37,7 +37,7 @@ public class TravelTimeBudgetCalculatorTest {
     @Test
     public void testTotalTravelTimeBudget() {
         int totalTtbSheetNumber = Resources.INSTANCE.getInt(Properties.TOTAL_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.Total, dataSet, totalTtbSheetNumber);
+        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, "Total", dataSet, totalTtbSheetNumber);
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
         assertEquals(4.562, calculator.calculateTTB(emptyHousehold, totalAvailable), 0);
@@ -56,7 +56,7 @@ public class TravelTimeBudgetCalculatorTest {
     @Test
     public void testHBSTravelTimeBudget() {
         int hbsTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.HBS, dataSet, hbsTtbSheetNumber);
+        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.HBS.toString(), dataSet, hbsTtbSheetNumber);
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
         assertEquals(40.755, calculator.calculateTTB(emptyHousehold, totalAvailable), 0.001);
@@ -74,7 +74,7 @@ public class TravelTimeBudgetCalculatorTest {
     @Test
     public void testHBOTravelTimeBudget() {
         int hboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.HBO, dataSet, hboTtbSheetNumber);
+        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.HBO.toString(), dataSet, hboTtbSheetNumber);
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
         assertEquals(24.645, calculator.calculateTTB(emptyHousehold, totalAvailable), 0.001);
@@ -92,7 +92,7 @@ public class TravelTimeBudgetCalculatorTest {
     @Test
     public void testNHBWTravelTimeBudget() {
         int nhbwTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.NHBW, dataSet, nhbwTtbSheetNumber);
+        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.NHBW.toString(), dataSet, nhbwTtbSheetNumber);
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
         assertEquals(3.248, calculator.calculateTTB(emptyHousehold, totalAvailable), 0.001);
@@ -110,7 +110,7 @@ public class TravelTimeBudgetCalculatorTest {
     @Test
     public void testNHBOTravelTimeBudget() {
         int nhboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.NHBO, dataSet, nhboTtbSheetNumber);
+        TravelTimeBudgetCalculator calculator = new TravelTimeBudgetCalculator(true, Purpose.NHBO.toString(), dataSet, nhboTtbSheetNumber);
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
         assertEquals(46.863, calculator.calculateTTB(emptyHousehold, totalAvailable), 0.001);

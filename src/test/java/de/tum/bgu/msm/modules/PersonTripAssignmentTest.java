@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Purpose;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,11 +26,11 @@ public class PersonTripAssignmentTest {
         dataSet = new DataSet();
 
         MitoHousehold household = new MitoHousehold(1, 5, 3, 2, 0, 1, 2, 2, 2, 1, 1, 1);
-        household.getPersons().add(new MitoPerson(1, 1, 1, 1, 35,1, true));
-        household.getPersons().add(new MitoPerson(2, 1, 1, 1,30,2, true));
-        household.getPersons().add(new MitoPerson(3, 1, 3, 1, 10,2, false));
-        household.getPersons().add(new MitoPerson(4, 1, 3, 1, 15,1, false));
-        household.getPersons().add(new MitoPerson(5, 1, -1, 1, 70,2, false));
+        household.getPersons().add(new MitoPerson(1, 1, 1, 1, 35, Gender.MALE, true));
+        household.getPersons().add(new MitoPerson(2, 1, 1, 1,30,Gender.FEMALE, true));
+        household.getPersons().add(new MitoPerson(3, 1, 3, 1, 10,Gender.FEMALE, false));
+        household.getPersons().add(new MitoPerson(4, 1, 3, 1, 15,Gender.MALE, false));
+        household.getPersons().add(new MitoPerson(5, 1, -1, 1, 70,Gender.FEMALE, false));
         dataSet.getHouseholds().put(household.getHhId(), household);
 
         MitoTrip tripHBW = new MitoTrip(1, 1, Purpose.HBW, 1);

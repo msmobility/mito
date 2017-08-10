@@ -40,12 +40,13 @@ public class PersonTripAssignment extends Module {
                     }
                     if (probabilitiesByPerson.isEmpty() || weightSum == 0) {
                         logger.error("Household has " + entry.getKey() + " trip but no suitable persons. Deleting the trip.");
-                        dataSet.getTrips().remove(trip.getTripId());
                         toDelete.add(trip);
                         continue;
                     }
                     selectPersonForTrip(trip, probabilitiesByPerson);
                 }
+                //Clean up all deleted trips
+                toDelete.forEach(e -> dataSet.getTrips().remove(e.getTripId()));
                 entry.getValue().removeAll(toDelete);
             }
         }

@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.resources.Gender;
+
 import java.io.Serializable;
 
 /**
@@ -12,7 +14,7 @@ import java.io.Serializable;
 public class MitoPerson implements Serializable {
 
     private final int id;
-    private final int gender;
+    private final Gender gender;
     private int hhId;
     private int occupation;
     private int workplace;
@@ -20,7 +22,7 @@ public class MitoPerson implements Serializable {
     private int age;
     private boolean driversLicense;
 
-    public MitoPerson(int id, int hhId, int occupation, int workplace, int age, int gender, boolean driversLicense) {
+    public MitoPerson(int id, int hhId, int occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
         this.hhId = hhId;
         this.occupation = occupation;
@@ -66,7 +68,7 @@ public class MitoPerson implements Serializable {
         return age;
     }
 
-    public int getGender() {
+    public Gender getGender() {
         return gender;
     }
 

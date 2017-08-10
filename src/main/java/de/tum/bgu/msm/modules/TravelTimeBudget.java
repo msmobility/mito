@@ -50,19 +50,19 @@ public class TravelTimeBudget extends Module {
 
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
         int totalTtbSheetNumber = Resources.INSTANCE.getInt(Properties.TOTAL_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        totalTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationTotalTtb, Purpose.Total, dataSet, totalTtbSheetNumber);
+        totalTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationTotalTtb, "Total", dataSet, totalTtbSheetNumber);
 
         int hbsTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        hbsTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationHbsTtb, Purpose.HBS, dataSet, hbsTtbSheetNumber);
+        hbsTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationHbsTtb, Purpose.HBS.toString(), dataSet, hbsTtbSheetNumber);
 
         int hboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        hboTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationHboTtb, Purpose.HBO, dataSet, hboTtbSheetNumber);
+        hboTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationHboTtb, Purpose.HBO.toString(), dataSet, hboTtbSheetNumber);
 
         int nhbwTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        nhbwTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationNhbwTtb, Purpose.NHBW, dataSet, nhbwTtbSheetNumber);
+        nhbwTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationNhbwTtb, Purpose.NHBW.toString(), dataSet, nhbwTtbSheetNumber);
 
         int nhboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        nhboTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationNhboTtb, Purpose.NHBO, dataSet, nhboTtbSheetNumber);
+        nhboTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationNhboTtb, Purpose.NHBO.toString(), dataSet, nhboTtbSheetNumber);
 
         int numAltsTravelBudget = totalTravelTimeCalc.getNumberOfAlternatives();
         totalTtbAvail = new int[numAltsTravelBudget + 1];
@@ -82,7 +82,6 @@ public class TravelTimeBudget extends Module {
             calculateDiscretionaryPurposeBudgets(household);
 
             // work and school trips are given by work place and school place locations, no budget to be calculated
-            // todo: sum up work and school trips of all household members to calculate those travel budgets
             for (MitoPerson person : household.getPersons()) {
                 if (person.getOccupation() == 1) {
                     household.setTravelTimeBudgetByPurpose(Purpose.HBW, dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone()));
