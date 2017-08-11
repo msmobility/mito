@@ -17,15 +17,15 @@ import java.util.ResourceBundle;
  * <p>
  * To run MITO, the following data need either to be passed in (using methods feedData) from another program or
  * need to be read from files and passed in (using method initializeStandAlone):
- * - zones:              public void setZones(int[] zones)
- * - autoTravelTimes:    public void setAutoTravelTimes (Matrix autoTravelTimes)
- * - transitTravelTimes: public void setTransitTravelTimes (Matrix transitTravelTimes)
- * - timoHouseholds:     public void setHouseholds(MitoHousehold[] timoHouseholds)
- * - retailEmplByZone:   public void setRetailEmplByZone(int[] retailEmplByZone)
- * - officeEmplByZone:   public void setOfficeEmplByZone(int[] officeEmplByZone)
- * - otherEmplByZone:    public void setOtherEmplByZone(int[] otherEmplByZone)
- * - totalEmplByZone:    public void setTotalEmplByZone(int[] totalEmplByZone)
- * - sizeOfZonesInAcre:  public void setSizeOfZonesInAcre(float[] sizeOfZonesInAcre)
+ * - zones
+ * - autoTravelTimes
+ * - transitTravelTimes
+ * - timoHouseholds
+ * - retailEmplByZone
+ * - officeEmplByZone
+ * - otherEmplByZone
+ * - totalEmplByZone
+ * - sizeOfZonesInAcre
  * All other data are read by function  manager.readAdditionalData();
  */
 
@@ -37,7 +37,9 @@ public class MitoModel {
     private final InputManager manager;
     private final DataSet dataSet;
 
-    public MitoModel(ResourceBundle resources) {
+    private boolean initialised = false;
+
+    private  MitoModel(ResourceBundle resources) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
         Resources.INSTANCE.setResources(resources);
@@ -46,7 +48,10 @@ public class MitoModel {
 
     public void feedData(InputFeed feed) {
         manager.readFromFeed(feed);
-        manager.readAdditionalData();
+        if(!initialised) {
+            manager.readAdditionalData();
+            initialised = true;
+        }
     }
 
     public void initializeStandAlone() {
