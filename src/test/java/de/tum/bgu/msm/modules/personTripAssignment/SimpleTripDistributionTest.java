@@ -25,7 +25,7 @@ public class SimpleTripDistributionTest {
 
         MitoPerson worker = new MitoPerson(1, 1, Occupation.WORKER, 1, 35, Gender.MALE, true);
         MitoPerson student = new MitoPerson(4, 1, Occupation.STUDENT, 1, 15,Gender.MALE, false);
-        MitoPerson retiree = new MitoPerson(5, 1, Occupation.RETIREE, 1, 70,Gender.FEMALE, false);
+        MitoPerson retiree = new MitoPerson(5, 1, Occupation.UNEMPLOYED, 1, 70,Gender.FEMALE, false);
 
         MitoTrip tripHBW = new MitoTrip(1, 1, Purpose.HBW, 1);
         MitoTrip tripHBE = new MitoTrip(2, 1, Purpose.HBE, 1);

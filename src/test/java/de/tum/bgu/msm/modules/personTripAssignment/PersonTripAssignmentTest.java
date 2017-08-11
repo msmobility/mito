@@ -32,7 +32,7 @@ public class PersonTripAssignmentTest {
         household.getPersons().add(new MitoPerson(2, 1, Occupation.WORKER, 1,30,Gender.FEMALE, true));
         household.getPersons().add(new MitoPerson(3, 1, Occupation.STUDENT, 1, 10,Gender.FEMALE, false));
         household.getPersons().add(new MitoPerson(4, 1, Occupation.STUDENT, 1, 15,Gender.MALE, false));
-        household.getPersons().add(new MitoPerson(5, 1, Occupation.RETIREE, 1, 70,Gender.FEMALE, false));
+        household.getPersons().add(new MitoPerson(5, 1, Occupation.UNEMPLOYED, 1, 70,Gender.FEMALE, false));
         dataSet.getHouseholds().put(household.getHhId(), household);
 
         MitoTrip tripHBW = new MitoTrip(1, 1, Purpose.HBW, 1);
