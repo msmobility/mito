@@ -39,7 +39,7 @@ public class MitoModel {
 
     private boolean initialised = false;
 
-    private  MitoModel(ResourceBundle resources) {
+    public MitoModel(ResourceBundle resources) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
         Resources.INSTANCE.setResources(resources);
