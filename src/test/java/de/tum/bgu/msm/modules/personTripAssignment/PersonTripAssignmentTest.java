@@ -1,11 +1,13 @@
-package de.tum.bgu.msm.modules;
+package de.tum.bgu.msm.modules.personTripAssignment;
 
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.modules.PersonTripAssignment;
 import de.tum.bgu.msm.resources.Gender;
+import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +28,11 @@ public class PersonTripAssignmentTest {
         dataSet = new DataSet();
 
         MitoHousehold household = new MitoHousehold(1, 5, 3, 2, 0, 1, 2, 2, 2, 1, 1, 1);
-        household.getPersons().add(new MitoPerson(1, 1, 1, 1, 35, Gender.MALE, true));
-        household.getPersons().add(new MitoPerson(2, 1, 1, 1,30,Gender.FEMALE, true));
-        household.getPersons().add(new MitoPerson(3, 1, 3, 1, 10,Gender.FEMALE, false));
-        household.getPersons().add(new MitoPerson(4, 1, 3, 1, 15,Gender.MALE, false));
-        household.getPersons().add(new MitoPerson(5, 1, -1, 1, 70,Gender.FEMALE, false));
+        household.getPersons().add(new MitoPerson(1, 1, Occupation.WORKER, 1, 35, Gender.MALE, true));
+        household.getPersons().add(new MitoPerson(2, 1, Occupation.WORKER, 1,30,Gender.FEMALE, true));
+        household.getPersons().add(new MitoPerson(3, 1, Occupation.STUDENT, 1, 10,Gender.FEMALE, false));
+        household.getPersons().add(new MitoPerson(4, 1, Occupation.STUDENT, 1, 15,Gender.MALE, false));
+        household.getPersons().add(new MitoPerson(5, 1, Occupation.RETIREE, 1, 70,Gender.FEMALE, false));
         dataSet.getHouseholds().put(household.getHhId(), household);
 
         MitoTrip tripHBW = new MitoTrip(1, 1, Purpose.HBW, 1);
@@ -61,11 +63,11 @@ public class PersonTripAssignmentTest {
     public void testAssignment() {
         for(MitoTrip trip: dataSet.getTrips().values()) {
             assertNotNull("No Person set for trip " + trip, trip.getPerson());
-//            if(dataSet.getPurposes()[trip.getTripPurpose()].equals("HBW")) {
-//                assertEquals(1, trip.getPerson().getOccupation());
-//            } else if( dataSet.getPurposes()[trip.getTripPurpose()].equals("HBE")) {
-//                assertEquals(3, trip.getPerson().getOccupation());
-//            }
+            if(trip.getTripPurpose().equals(Purpose.HBW)) {
+                assertEquals(Occupation.WORKER, trip.getPerson().getOccupation());
+            } else if(trip.getTripPurpose().equals(Purpose.HBE)) {
+                assertEquals(Occupation.STUDENT, trip.getPerson().getOccupation());
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ import de.tum.bgu.msm.data.DataSet;
 public class SimpleTripDistributionFactory implements TripDistributionFactory{
 
     @Override
-    public TripDistribution getTripDistribution(DataSet dataset) {
+    public TripDistribution createTripDistribution() {
         return new SimpleTripDistribution();
     }
 }

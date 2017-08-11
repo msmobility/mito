@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetCalculator;
+import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
@@ -83,7 +84,7 @@ public class TravelTimeBudget extends Module {
 
             // work and school trips are given by work place and school place locations, no budget to be calculated
             for (MitoPerson person : household.getPersons()) {
-                if (person.getOccupation() == 1) {
+                if (person.getOccupation().equals(Occupation.WORKER)) {
                     household.setTravelTimeBudgetByPurpose(Purpose.HBW, dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone()));
                 }
             }

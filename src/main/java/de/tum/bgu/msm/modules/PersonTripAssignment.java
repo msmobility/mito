@@ -21,7 +21,7 @@ public class PersonTripAssignment extends Module {
 
     public PersonTripAssignment(DataSet dataSet) {
         super(dataSet);
-        distribution = Resources.INSTANCE.getTripDistributionFactory().getTripDistribution(dataSet);
+        distribution = Resources.INSTANCE.getTripDistributionFactory().createTripDistribution();
     }
 
     @Override
@@ -29,9 +29,9 @@ public class PersonTripAssignment extends Module {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             for (Entry<Purpose, List<MitoTrip>> entry : household.getTripsByPurpose().entrySet()) {
                 List<MitoPerson> persons = household.getPersons();
-                double weightSum = 0;
                 List<MitoTrip> toDelete = new ArrayList<>();
                 for (MitoTrip trip : entry.getValue()) {
+                    double weightSum = 0;
                     Map<MitoPerson, Double> probabilitiesByPerson = new HashMap<>();
                     for (MitoPerson person : persons) {
                         double weight = distribution.getWeight(household, person, trip);

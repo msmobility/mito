@@ -2,6 +2,7 @@ package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.resources.Gender;
+import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
@@ -64,6 +65,7 @@ public class PersonsReader extends CSVReader {
             logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
             return;
         }
+        Occupation occupation = Occupation.UNEMPLOYED;
         int age = Integer.parseInt(record[posAge]);
         if (age < 18) {
             hh.setChildren(hh.getChildren() + 1);
@@ -71,6 +73,7 @@ public class PersonsReader extends CSVReader {
             hh.setYoungAdults(hh.getYoungAdults() + 1);
         } else if (age >= 65) {
             hh.setRetirees(hh.getRetirees() + 1);
+            occupation = Occupation.RETIREE;
         }
         int genderCode = Integer.parseInt(record[posSex]);
         Gender gender = Gender.MALE;
@@ -78,11 +81,14 @@ public class PersonsReader extends CSVReader {
             hh.setFemales(hh.getFemales() + 1);
             gender = Gender.FEMALE;
         }
-        int occupation = Integer.parseInt(record[posOccupation]);
-        if (occupation == 1) {
+        int occupationCode = Integer.parseInt(record[posOccupation]);
+
+        if (occupationCode == 1) {
             hh.setNumberOfWorkers(hh.getNumberOfWorkers() + 1);
-        } else if (occupation == 3) { //students have occupation equal to 3
+            occupation = Occupation.WORKER;
+        } else if (occupationCode == 3) { //students have occupation equal to 3
             hh.setStudents(hh.getStudents() + 1);
+            occupation = Occupation.STUDENT;
         }
         int workplace = Integer.parseInt(record[posWorkplace]);
 
