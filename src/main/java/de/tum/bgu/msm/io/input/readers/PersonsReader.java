@@ -73,7 +73,6 @@ public class PersonsReader extends CSVReader {
             hh.setYoungAdults(hh.getYoungAdults() + 1);
         } else if (age >= 65) {
             hh.setRetirees(hh.getRetirees() + 1);
-            occupation = Occupation.RETIREE;
         }
         int genderCode = Integer.parseInt(record[posSex]);
         Gender gender = Gender.MALE;
