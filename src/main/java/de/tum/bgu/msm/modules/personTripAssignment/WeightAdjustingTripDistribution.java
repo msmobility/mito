@@ -14,11 +14,8 @@ public class WeightAdjustingTripDistribution extends SimpleTripDistribution{
     public double getWeight(MitoHousehold household, MitoPerson person, MitoTrip trip) {
         double weight = super.getWeight(household, person, trip);
         int divisor = 1;
-        for(MitoTrip householdTrip: household.getTripsByPurpose().get(trip.getTripPurpose())) {
-            if(householdTrip.getPerson() != null && householdTrip.getPerson().equals(person)) {
-                divisor++;
-            }
-        }
+         divisor += household.getTripsByPurpose().get(trip.getTripPurpose()).stream().filter(
+                 t -> t.getPerson() != null && t.getPerson().equals(person)).count();
         return weight / divisor;
     }
 }

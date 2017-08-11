@@ -24,7 +24,8 @@ class SimpleTripDistribution implements TripDistribution {
     }
 
     private boolean personFitsToTrip(MitoHousehold household, MitoPerson person, MitoTrip trip) {
-        if (trip.getTripPurpose().equals(Purpose.HBW) && !person.getOccupation().equals(Occupation.WORKER) || trip.getTripPurpose().equals(Purpose.HBE) && !person.getOccupation().equals(Occupation.STUDENT)) {
+        if (trip.getTripPurpose().equals(Purpose.HBW) && !person.getOccupation().equals(Occupation.WORKER) ||
+                trip.getTripPurpose().equals(Purpose.HBE) && !person.getOccupation().equals(Occupation.STUDENT)) {
             return false;
         }
         return true;
