@@ -74,25 +74,38 @@ public class TravelTimeBudget extends Module {
         }
     }
 
-
     private void calculateTravelTimeBudget() {
         // main method to calculate the travel time budget for every household
         logger.info("  Started microscopic travel time budget calculation.");
         // loop over every household and calculate travel time budget by purpose
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-
             double totalTravelTimeBudget = totalTravelTimeCalc.calculateTTB(household, totalTtbAvail);
             calculateDiscretionaryPurposeBudgets(household);
-
-            // work and school trips are given by work place and school place locations, no budget to be calculated
-            for (MitoPerson person : household.getPersons()) {
-                if (person.getOccupation().equals(Occupation.WORKER)) {
-                    household.setTravelTimeBudgetByPurpose(Purpose.HBW, dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone()));
-                }
-            }
+            calculateHBWBudgets(household);
+            calculateHBEBudgets(household);
             adjustDiscretionaryPurposeBudget(household, totalTravelTimeBudget);
         }
         logger.info("  Finished microscopic travel time budget calculation.");
+    }
+
+    private void calculateHBWBudgets(MitoHousehold household) {
+        double hbwBudget = 0;
+        for (MitoPerson person : household.getPersons()) {
+            if (person.getOccupation().equals(Occupation.WORKER)) {
+                hbwBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
+            }
+        }
+        household.setTravelTimeBudgetByPurpose(Purpose.HBW, hbwBudget);
+    }
+
+    private void calculateHBEBudgets(MitoHousehold household) {
+        double hbeBudget = 0;
+        for (MitoPerson person : household.getPersons()) {
+            if (person.getOccupation().equals(Occupation.STUDENT)) {
+                hbeBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
+            }
+        }
+        household.setTravelTimeBudgetByPurpose(Purpose.HBE, hbeBudget);
     }
 
     private void calculateDiscretionaryPurposeBudgets(MitoHousehold household) {
