@@ -72,12 +72,12 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testPoorBigFamilyHousehold() {
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-        assertEquals(1, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.);
+        assertEquals(3, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.);
         assertEquals(0, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.);
-        assertEquals(0.971, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(1.567, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(0.154, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(1.813, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(0.540, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(0.871, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(0.085, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(1.008, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
@@ -89,12 +89,12 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testRichBigFamilyHousehold() {
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(1, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.);
+        assertEquals(3, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.);
         assertEquals(0, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.);
-        assertEquals(1.298, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(0.964, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(1.165, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(1.078, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(0.722, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(0.536, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(0.648, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(0.600, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
