@@ -4,10 +4,7 @@ import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Holds household objects for the Microsimulation Transport Orchestrator (MITO)
@@ -31,8 +28,8 @@ public class MitoHousehold implements Serializable {
     private int autos;
     private int homeZone;
 
-    private final Map<Purpose, List<MitoTrip>> tripsByPurpose;
-    private final Map<Purpose, Double> travelTimeBudgetByPurpose;
+    private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose;
+    private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose;
 
     private final List<MitoPerson> persons;
 
@@ -51,9 +48,9 @@ public class MitoHousehold implements Serializable {
         this.income = income;
         this.autos = autos;
         this.homeZone = homeZone;
-        this.tripsByPurpose = new HashMap<>();
+        this.tripsByPurpose = new EnumMap(Purpose.class);
         this.persons = new ArrayList<>();
-        this.travelTimeBudgetByPurpose = new HashMap<>();
+        this.travelTimeBudgetByPurpose = new EnumMap(Purpose.class);
     }
 
     public List<MitoPerson> getPersons(){

@@ -7,6 +7,7 @@ import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.Map;
 
 public class TripBalancer {
@@ -14,9 +15,9 @@ public class TripBalancer {
     private static final Logger logger = Logger.getLogger(TripBalancer.class);
 
     private final DataSet dataSet;
-    private final Map<Integer, Map<Purpose, Float>> tripAttractionByZoneAndPurpose;
+    private final Map<Integer, EnumMap<Purpose, Float>> tripAttractionByZoneAndPurpose;
 
-    public TripBalancer(DataSet dataSet, Map<Integer, Map<Purpose, Float>> tripAttractionByZoneAndPurpose) {
+    public TripBalancer(DataSet dataSet, Map<Integer, EnumMap<Purpose, Float>> tripAttractionByZoneAndPurpose) {
         this.dataSet = dataSet;
         this.tripAttractionByZoneAndPurpose = tripAttractionByZoneAndPurpose;
     }

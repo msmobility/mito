@@ -7,6 +7,7 @@ import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class AttractionCalculator {
         this.dataSet = dataSet;
     }
 
-    public Map<Integer, Map<Purpose, Float>> run() {
+    public Map<Integer, EnumMap<Purpose, Float>> run() {
 
         logger.info("  Calculating trip attractions");
         TableDataSet attrRates = dataSet.getTripAttractionRates();
@@ -31,9 +32,9 @@ public class AttractionCalculator {
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
         Collection<Zone> zones = dataSet.getZones().values();
-        Map<Integer, Map<Purpose, Float>> tripAttrByZoneAndPurp = new HashMap<>();
+        Map<Integer, EnumMap<Purpose, Float>> tripAttrByZoneAndPurp = new HashMap<>();
         for (Zone zone: zones) {
-            Map<Purpose, Float> tripAttrByPurp = new HashMap<>();
+            EnumMap<Purpose, Float> tripAttrByPurp = new EnumMap(Purpose.class);
             for (Purpose purpose: Purpose.values()) {
                 float tripAttr = 0;
                 for (String variable: independentVariables) {

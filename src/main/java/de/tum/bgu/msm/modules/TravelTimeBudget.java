@@ -10,6 +10,8 @@ import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.util.EnumSet;
+
 /**
  * Runs calculation of travel time budget for the Microsimulation Transport Orchestrator (MITO)
  *
@@ -34,7 +36,7 @@ public class TravelTimeBudget extends Module {
     private final boolean logCalculationNhboTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBO_TTB);
 
     private int[] totalTtbAvail;
-    private final Purpose[] discretionaryPurposes = {Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO};
+    private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
 
     public TravelTimeBudget(DataSet dataSet) {
         super(dataSet);

@@ -21,7 +21,7 @@ public class TripGenerationWriter {
 
     private static final Logger logger = Logger.getLogger(TripGenerationWriter.class);
 
-    public static void writeTripsByPurposeAndZone(DataSet dataSet, Map<Integer, Map<Purpose, Float>> tripAttractionByZoneAndPurp) {
+    public static void writeTripsByPurposeAndZone(DataSet dataSet) {
         // write number of trips by purpose and zone to output file
 
         String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet);

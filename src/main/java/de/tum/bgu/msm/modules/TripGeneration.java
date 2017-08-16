@@ -10,6 +10,7 @@ import de.tum.bgu.msm.modules.tripGeneration.TripBalancer;
 import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -23,7 +24,7 @@ public class TripGeneration extends Module{
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
 
-    private Map<Integer, Map<Purpose, Float>> tripAttr;
+    private Map<Integer, EnumMap<Purpose, Float>> tripAttr;
 
     public TripGeneration(DataSet dataSet) {
         super(dataSet);
@@ -56,7 +57,7 @@ public class TripGeneration extends Module{
     }
 
     private void writeResults() {
-        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, tripAttr);
+        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
     }
 
