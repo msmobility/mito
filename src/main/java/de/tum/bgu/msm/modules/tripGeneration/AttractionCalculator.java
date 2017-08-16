@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
@@ -22,7 +23,7 @@ public class AttractionCalculator {
         this.dataSet = dataSet;
     }
 
-    public Map<Integer, Map<String, Float>> run() {
+    public Map<Integer, Map<Purpose, Float>> run() {
 
         logger.info("  Calculating trip attractions");
         TableDataSet attrRates = dataSet.getTripAttractionRates();
@@ -30,13 +31,13 @@ public class AttractionCalculator {
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
         Collection<Zone> zones = dataSet.getZones().values();
-        Map<Integer, Map<String, Float>> tripAttrByZoneAndPurp = new HashMap<>();
+        Map<Integer, Map<Purpose, Float>> tripAttrByZoneAndPurp = new HashMap<>();
         for (Zone zone: zones) {
-            Map<String, Float> tripAttrByPurp = new HashMap<>();
-            for (int purp = 0; purp < dataSet.getPurposes().length; purp++) {
+            Map<Purpose, Float> tripAttrByPurp = new HashMap<>();
+            for (Purpose purpose: Purpose.values()) {
                 float tripAttr = 0;
                 for (String variable: independentVariables) {
-                    String token = dataSet.getPurposes()[purp] + "_" + variable;
+                    String token = purpose + "_" + variable;
                     if (attractionRates.containsKey(token)) {
                         float attribute = 0;
                         switch (variable) {
@@ -60,9 +61,11 @@ public class AttractionCalculator {
                                 break;
                         }
                         tripAttr += attribute * attractionRates.get(token);
+                    } else {
+                        logger.warn("No attraction rate found for token " + token);
                     }
                 }
-                tripAttrByPurp.put(dataSet.getPurposes()[purp], tripAttr);
+                tripAttrByPurp.put(purpose, tripAttr);
             }
             tripAttrByZoneAndPurp.put(zone.getZoneId(), tripAttrByPurp);
         }
@@ -76,9 +79,9 @@ public class AttractionCalculator {
         HashMap<String, Float> attractionRates = new HashMap<>();
         for (int row = 1; row <= attrRates.getRowCount(); row++) {
             String generator = attrRates.getStringValueAt(row, "IndependentVariable");
-            for (String purp: dataSet.getPurposes()) {
-                float rate = attrRates.getValueAt(row, purp);
-                String token = purp + "_" + generator;
+            for (Purpose purpose: Purpose.values()) {
+                float rate = attrRates.getValueAt(row, purpose.toString());
+                String token = purpose.toString() + "_" + generator;
                 attractionRates.put(token, rate);
             }
         }

@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import com.pb.common.calculator2.IndexValues;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -97,13 +98,13 @@ public class TravelTimeBudgetDMU implements com.pb.common.calculator2.VariableTa
         this.areaType = areaType;
     }
 
-    public void setTrips(int[] tripCounter, DataSet dataSet) {
-        this.hbwTrips = tripCounter[dataSet.getPurposeIndex("HBW")];
-        this.hbsTrips = tripCounter[dataSet.getPurposeIndex("HBS")];
-        this.hboTrips = tripCounter[dataSet.getPurposeIndex("HBO")];
-        this.hbeTrips = tripCounter[dataSet.getPurposeIndex("HBE")];
-        this.nhbwTrips = tripCounter[dataSet.getPurposeIndex("NHBW")];
-        this.nhboTrips = tripCounter[dataSet.getPurposeIndex("NHBO")];
+    public void setTrips(Map<Purpose, Integer> tripCounter, DataSet dataSet) {
+        this.hbwTrips = tripCounter.get(Purpose.HBW);
+        this.hbsTrips = tripCounter.get(Purpose.HBS);
+        this.hboTrips = tripCounter.get(Purpose.HBO);
+        this.hbeTrips = tripCounter.get(Purpose.HBE);
+        this.nhbwTrips = tripCounter.get(Purpose.NHBW);
+        this.nhboTrips = tripCounter.get(Purpose.NHBO);
     }
 
     public void setHbsTrips(int hbsTrips) {

@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
@@ -19,11 +20,11 @@ public class HouseholdTypeManager {
     private static final Logger logger = Logger.getLogger(HouseholdTypeManager.class);
 
     private final DataSet dataSet;
-    private final String purpose;
+    private final Purpose purpose;
 
     private final List<HouseholdType> householdTypes = new ArrayList<>();
 
-    public HouseholdTypeManager(DataSet dataSet, String purpose) {
+    public HouseholdTypeManager(DataSet dataSet, Purpose purpose) {
         this.dataSet = dataSet;
         this.purpose = purpose;
     }
@@ -149,7 +150,9 @@ public class HouseholdTypeManager {
     private String selectAutoMode() {
         // return autos or autoSufficiency depending on mode chosen
         String autoMode = "autos";
-        if (purpose.equalsIgnoreCase("HBW") || purpose.equalsIgnoreCase("NHBW")) autoMode = "autoSufficiency";
+        if (purpose.equals(Purpose.HBW) || purpose.equals(Purpose.NHBW)) {
+            autoMode = "autoSufficiency";
+        }
         return autoMode;
     }
 

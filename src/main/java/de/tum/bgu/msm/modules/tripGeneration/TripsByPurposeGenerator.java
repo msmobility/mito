@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
@@ -17,16 +18,12 @@ import java.util.Map;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.counterDroppedTripsAtBorder;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.currentTripId;
 
-/**
- * Created by Nico on 21/07/2017.
- */
 class TripsByPurposeGenerator {
 
     private static final Logger logger = Logger.getLogger(TripsByPurposeGenerator.class);
 
     private final DataSet dataSet;
-    private final String purpose;
-    private final int purposeIndex;
+    private final Purpose purpose;
 
     private final HouseholdTypeManager householdTypeManager;
 
@@ -36,10 +33,9 @@ class TripsByPurposeGenerator {
     private final List<MitoTrip> trips = new ArrayList<>();
     private final HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
 
-    public TripsByPurposeGenerator(DataSet dataSet, String purpose) {
+    public TripsByPurposeGenerator(DataSet dataSet, Purpose purpose) {
         this.dataSet = dataSet;
         this.purpose = purpose;
-        this.purposeIndex = dataSet.getPurposeIndex(purpose);
         householdTypeManager = new HouseholdTypeManager(dataSet, purpose);
         travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
         travelSurveyTripsTable = dataSet.getTravelSurveyTripsTable();
@@ -105,7 +101,7 @@ class TripsByPurposeGenerator {
             for (int trRow = pos; trRow <= travelSurveyTripsTable.getRowCount(); trRow++) {
                 if ((int) travelSurveyTripsTable.getValueAt(trRow, "sampn") == sampleId) {
                     pos++;
-                    String htsTripPurpose = travelSurveyTripsTable.getStringValueAt(trRow, "mainPurpose");
+                    Purpose htsTripPurpose = Purpose.valueOf(travelSurveyTripsTable.getStringValueAt(trRow, "mainPurpose"));
                     if (htsTripPurpose.equals(purpose)) {
                         // add this trip to this household
                         tripsOfThisHouseholdForGivenPurpose++;
@@ -152,14 +148,13 @@ class TripsByPurposeGenerator {
     }
 
     private void createTrip(MitoHousehold hh) {
-        // todo: for non-home based trips, do not set origin as home
         int tripOrigin = hh.getHomeZone();
         boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
         if (dropThisTrip) {
             counterDroppedTripsAtBorder.incrementAndGet();
             return;
         }
-        MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), hh.getHhId(), purposeIndex, tripOrigin);
+        MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), hh.getHhId(), purpose, tripOrigin);
         trips.add(trip);
     }
 

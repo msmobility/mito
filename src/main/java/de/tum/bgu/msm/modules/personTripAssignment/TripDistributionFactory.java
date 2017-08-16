@@ -4,6 +4,6 @@ import de.tum.bgu.msm.data.DataSet;
 
 public interface TripDistributionFactory {
 
-    public TripDistribution getTripDistribution(DataSet dataset);
+    public TripDistribution createTripDistribution();
 
 }

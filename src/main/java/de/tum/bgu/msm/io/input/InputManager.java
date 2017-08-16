@@ -33,7 +33,6 @@ public class InputManager {
     }
 
     public void readAdditionalData() {
-        dataSet.setPurposes(Resources.INSTANCE.getArray(Properties.PURPOSES));
         new SchoolEnrollmentReader(dataSet).read();
         new RegionsReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
@@ -48,8 +47,6 @@ public class InputManager {
         dataSet.setTransitTravelTimes(new MatrixTravelTimes(feed.transitTravelTimes));
         setHouseholdsFromFeed(feed.households);
         setPersonsFromFeed(feed.persons);
-        // todo: the household travel survey should not be read every year the model runs, but only in the first year.
-        // todo: It was difficult, however, to get this to work with Travis-CI, not sure why (RM, 25-Mar-2017)
     }
 
     private void setZonesFromFeed(int[] zoneIds, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {

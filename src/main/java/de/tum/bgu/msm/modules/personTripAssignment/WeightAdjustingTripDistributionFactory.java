@@ -4,7 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 
 public class WeightAdjustingTripDistributionFactory implements TripDistributionFactory{
     @Override
-    public TripDistribution getTripDistribution(DataSet dataset) {
+    public TripDistribution createTripDistribution() {
         return new WeightAdjustingTripDistribution();
     }
 }
