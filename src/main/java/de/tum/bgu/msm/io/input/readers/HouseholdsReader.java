@@ -17,9 +17,7 @@ import java.util.Map;
 public class HouseholdsReader extends CSVReader {
 
     private int posId = -1;
-    private int posDwell = -1;
     private int posTaz = -1;
-    private int posSize = -1;
     private int posAutos = -1;
 
     private static final Logger logger = Logger.getLogger(HouseholdsReader.class);
@@ -41,9 +39,7 @@ public class HouseholdsReader extends CSVReader {
     @Override
     protected void processHeader(String[] header) {
         posId = MitoUtil.findPositionInArray("id", header);
-        posDwell = MitoUtil.findPositionInArray("dwelling", header);
         posTaz = MitoUtil.findPositionInArray("zone", header);
-        posSize = MitoUtil.findPositionInArray("hhSize", header);
         posAutos = MitoUtil.findPositionInArray("autos", header);
     }
 
@@ -51,9 +47,8 @@ public class HouseholdsReader extends CSVReader {
     protected void processRecord(String[] record) {
         int id = Integer.parseInt(record[posId]);
         int taz = Integer.parseInt(record[posTaz]);
-        int hhSize = Integer.parseInt(record[posSize]);
         int autos = Integer.parseInt(record[posAutos]);
-        MitoHousehold household = new MitoHousehold(id, hhSize, 0, 0, 0, 0, 0, 0, 0, 0, autos, taz);
+        MitoHousehold household = new MitoHousehold(id, 0, autos, taz);
         households.put(household.getHhId(), household);
         try {
             dataSet.getZones().get(household.getHomeZone()).addHousehold();

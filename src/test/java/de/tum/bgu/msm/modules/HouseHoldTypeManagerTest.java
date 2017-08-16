@@ -3,9 +3,12 @@ package de.tum.bgu.msm.modules;
 import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.modules.tripGeneration.HouseholdType;
 import de.tum.bgu.msm.modules.tripGeneration.HouseholdTypeManager;
+import de.tum.bgu.msm.resources.Gender;
+import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Assert;
@@ -37,7 +40,8 @@ public class HouseHoldTypeManagerTest {
             Assert.assertEquals(0, type.getNumberOfRecords());
         }
 
-        MitoHousehold household = new MitoHousehold(1, 3, 2, 1, 0, 0 , 2, 0, 2, 4, 1, 1);
+        MitoHousehold household = new MitoHousehold(1,  4, 1, 1);
+        household.getPersons().add(new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true));
         Assert.assertNull(manager.determineHouseholdType(household));
 
         Zone zone = new Zone(1, 10);

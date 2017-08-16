@@ -26,10 +26,10 @@ public class TravelTimeBudgetModuleTest {
         Resources.INSTANCE.setResources(bundle);
 
         dataSet = new DataSet();
-        dataSet.setAutoTravelTimes((origin, destination) -> 30);
+        dataSet.setAutoTravelTimes((origin, destination) -> 20);
         addZone();
         addHouseholds();
-        addWorkers();
+        addPersons();
 
         TravelTimeBudget travelTimeBudget = new TravelTimeBudget(dataSet);
         travelTimeBudget.run();
@@ -40,10 +40,10 @@ public class TravelTimeBudgetModuleTest {
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
         assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
         assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
-        assertEquals(19.445, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(9.083, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(12.377, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(9.215, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(18.809, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(10.397, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(9.704, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(11.209, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
@@ -57,10 +57,10 @@ public class TravelTimeBudgetModuleTest {
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
         assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
         assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
-        assertEquals(29.994, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(12.351, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(16.043, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(12.028, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(29.036, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(14.150, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(12.588, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(14.642, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
@@ -72,12 +72,12 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testPoorBigFamilyHousehold() {
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-        assertEquals(90.0, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
-        assertEquals(0, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
-        assertEquals(16.680, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(4.933, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(10.221, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(7.117, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(60.0, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
+        assertEquals(40, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
+        assertEquals(12.148, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(4.252, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(6.034, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(6.518, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
@@ -89,12 +89,12 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testRichBigFamilyHousehold() {
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(90.0, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
-        assertEquals(0, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
-        assertEquals(16.680, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(4.933, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(10.221, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(7.117, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(60.0, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
+        assertEquals(40, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
+        assertEquals(12.381, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(3.750, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(7.365, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(5.456, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
@@ -104,16 +104,16 @@ public class TravelTimeBudgetModuleTest {
     }
 
     private void addHouseholds() {
-        MitoHousehold emptyHousehold = new MitoHousehold(1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1);
+        MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0, 1);
         dataSet.getHouseholds().put(emptyHousehold.getHhId(), emptyHousehold);
 
-        MitoHousehold poorRetirees = new MitoHousehold(2, 2, 1, 0, 0, 2, 0, 0, 0, 1, 0, 1);
+        MitoHousehold poorRetirees = new MitoHousehold(2,  10000, 0, 1);
         dataSet.getHouseholds().put(poorRetirees.getHhId(), poorRetirees);
 
-        MitoHousehold poorBigFamily = new MitoHousehold(3, 5, 3, 2, 1, 0, 3, 2, 2, 1, 0, 1);
+        MitoHousehold poorBigFamily = new MitoHousehold(3,  10000, 0, 1);
         dataSet.getHouseholds().put(poorBigFamily.getHhId(), poorBigFamily);
 
-        MitoHousehold richBigFamily = new MitoHousehold(4, 5, 3, 2, 1, 0, 3, 2, 2, 500000, 0, 1);
+        MitoHousehold richBigFamily = new MitoHousehold(4,  500000, 0, 1);
         dataSet.getHouseholds().put(richBigFamily.getHhId(), richBigFamily);
     }
 
@@ -123,27 +123,41 @@ public class TravelTimeBudgetModuleTest {
         dataSet.getZones().put(zone.getZoneId(), zone);
     }
 
-    private void addWorkers() {
-        MitoPerson worker11 = new MitoPerson(1, 3, Occupation.WORKER, 1, 20, Gender.MALE, true);
-        worker11.setWorkzone(1);
-        MitoPerson worker12 = new MitoPerson(2, 3, Occupation.WORKER, 1, 20, Gender.MALE, true);
-        worker12.setWorkzone(1);
-        MitoPerson worker13 = new MitoPerson(3, 3, Occupation.WORKER, 1, 20, Gender.MALE, false);
-        worker13.setWorkzone(1);
+    private void addPersons() {
 
-        dataSet.getHouseholds().get(3).getPersons().add(worker11);
-        dataSet.getHouseholds().get(3).getPersons().add(worker12);
-        dataSet.getHouseholds().get(3).getPersons().add(worker13);
+        MitoPerson retiree21 = new MitoPerson(21, Occupation.UNEMPLOYED, -1, 70, Gender.MALE, false);
+        MitoPerson retiree22 = new MitoPerson(22, Occupation.UNEMPLOYED, -1, 70, Gender.FEMALE, false);
+        dataSet.getHouseholds().get(2).getPersons().add(retiree21);
+        dataSet.getHouseholds().get(2).getPersons().add(retiree22);
 
-        MitoPerson worker21 = new MitoPerson(1, 4, Occupation.WORKER, 1, 20, Gender.MALE, true);
-        worker21.setWorkzone(1);
-        MitoPerson worker22 = new MitoPerson(2, 4, Occupation.WORKER, 1, 20, Gender.MALE, true);
-        worker22.setWorkzone(1);
-        MitoPerson worker23 = new MitoPerson(3, 4, Occupation.WORKER, 1, 20, Gender.MALE, false);
-        worker23.setWorkzone(1);
+        MitoPerson worker31 = new MitoPerson(31,  Occupation.WORKER, 1, 45, Gender.MALE, true);
+        worker31.setWorkzone(1);
+        MitoPerson worker32 = new MitoPerson(32, Occupation.WORKER, 1, 45, Gender.FEMALE, true);
+        worker32.setWorkzone(1);
+        MitoPerson worker33 = new MitoPerson(33, Occupation.WORKER, 1, 20, Gender.MALE, false);
+        worker33.setWorkzone(1);
+        MitoPerson child34 = new MitoPerson(34, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
+        MitoPerson child35 = new MitoPerson(35, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
 
-        dataSet.getHouseholds().get(4).getPersons().add(worker21);
-        dataSet.getHouseholds().get(4).getPersons().add(worker22);
-        dataSet.getHouseholds().get(4).getPersons().add(worker23);
+        dataSet.getHouseholds().get(3).getPersons().add(worker31);
+        dataSet.getHouseholds().get(3).getPersons().add(worker32);
+        dataSet.getHouseholds().get(3).getPersons().add(worker33);
+        dataSet.getHouseholds().get(3).getPersons().add(child34);
+        dataSet.getHouseholds().get(3).getPersons().add(child35);
+
+        MitoPerson worker41 = new MitoPerson(41,  Occupation.WORKER, 1, 45, Gender.MALE, true);
+        worker41.setWorkzone(1);
+        MitoPerson worker42 = new MitoPerson(42, Occupation.WORKER, 1, 45, Gender.FEMALE, true);
+        worker42.setWorkzone(1);
+        MitoPerson worker43 = new MitoPerson(43, Occupation.WORKER, 1, 20, Gender.MALE, false);
+        worker43.setWorkzone(1);
+        MitoPerson child44 = new MitoPerson(44, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
+        MitoPerson child45 = new MitoPerson(45, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
+
+        dataSet.getHouseholds().get(4).getPersons().add(worker41);
+        dataSet.getHouseholds().get(4).getPersons().add(worker42);
+        dataSet.getHouseholds().get(4).getPersons().add(worker43);
+        dataSet.getHouseholds().get(4).getPersons().add(child44);
+        dataSet.getHouseholds().get(4).getPersons().add(child45);
     }
 }

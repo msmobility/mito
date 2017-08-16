@@ -16,29 +16,19 @@ public class MitoPerson implements Serializable {
 
     private final int id;
     private final Gender gender;
-    private int hhId;
     private Occupation occupation;
     private int workplace;
     private int workzone;
     private int age;
     private boolean driversLicense;
 
-    public MitoPerson(int id, int hhId, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
+    public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
-        this.hhId = hhId;
         this.occupation = occupation;
         this.workplace = workplace;
         this.age = age;
         this.gender = gender;
         this.driversLicense = driversLicense;
-    }
-
-    public int getHhId() {
-        return hhId;
-    }
-
-    public void setHhId(int id) {
-        this.hhId = hhId;
     }
 
     public void setWorkplace(int workplace) {

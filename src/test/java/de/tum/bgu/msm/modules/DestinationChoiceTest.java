@@ -34,7 +34,7 @@ public class DestinationChoiceTest {
         MitoTrip trip1 = new MitoTrip(1, 0 , Purpose.HBS, 1);
         MitoTrip trip2 = new MitoTrip(2, 0 , Purpose.HBS, 2);
 
-        MitoHousehold household = new MitoHousehold(1,1, 1,0,0,0,1,0,1,500,1,1);
+        MitoHousehold household = new MitoHousehold(1,500,1,1);
         household.addTrip(trip1);
         household.addTrip(trip2);
         dataSet.getHouseholds().put(household.getHhId(), household);

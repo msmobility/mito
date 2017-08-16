@@ -57,17 +57,18 @@ public class SummarizeData {
         String filepp = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + Resources.INSTANCE.getString(Properties.PERSONS) + "_t.csv";
         PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp, false);
         pwp.println("id,hhID,hhSize,hhTrips,avTrips");
-        for (MitoPerson pp : dataSet.getPersons().values()) {
-            pwp.print(pp.getId());
-            pwp.print(",");
-            int hhId = pp.getHhId();
-            pwp.print(hhId);
-            pwp.print(",");
-            pwp.print(dataSet.getHouseholds().get(hhId).getHhSize());
-            pwp.print(",");
-            pwp.print(dataSet.getHouseholds().get(hhId).getTripsByPurpose().size());
-            pwp.print(",");
-            pwp.println(dataSet.getHouseholds().get(hhId).getTripsByPurpose().size() / dataSet.getHouseholds().get(hhId).getHhSize());
+        for(MitoHousehold hh: dataSet.getHouseholds().values()) {
+            for (MitoPerson pp : hh.getPersons()) {
+                pwp.print(pp.getId());
+                pwp.print(",");
+                pwp.print(hh.getHhId());
+                pwp.print(",");
+                pwp.print(hh.getHhSize());
+                pwp.print(",");
+                pwp.print(hh.getTripsByPurpose().size());
+                pwp.print(",");
+                pwp.println(hh.getTripsByPurpose().size() / hh.getHhSize());
+            }
         }
         pwp.close();
     }

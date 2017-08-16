@@ -40,8 +40,6 @@ public class InputManager {
     }
 
     public void readFromFeed(InputFeed feed) {
-        // Feed data from other program. Need to write new methods to read these data from files if MitoModel is used as
-        // stand-alone program.
         setZonesFromFeed(feed.zones, feed.retailEmplByZone, feed.officeEmplByZone, feed.otherEmplByZone, feed.totalEmplByZone, feed.sizeOfZonesInAcre);
         dataSet.setAutoTravelTimes(new MatrixTravelTimes(feed.autoTravelTimes));
         dataSet.setTransitTravelTimes(new MatrixTravelTimes(feed.transitTravelTimes));

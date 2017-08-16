@@ -25,11 +25,11 @@ public class WeightAdjustingTripDistributionTest {
     @Test
     public void testAssignment() {
 
-        MitoPerson worker = new MitoPerson(1, 1, Occupation.WORKER, 1, 35, Gender.MALE, true);
-        MitoPerson student = new MitoPerson(4, 1, Occupation.STUDENT, 1, 15,Gender.MALE, false);
-        MitoPerson retiree = new MitoPerson(5, 1, Occupation.UNEMPLOYED, 1, 70,Gender.FEMALE, false);
+        MitoPerson worker = new MitoPerson(1, Occupation.WORKER, 1, 35, Gender.MALE, true);
+        MitoPerson student = new MitoPerson(4, Occupation.STUDENT, 1, 15,Gender.MALE, false);
+        MitoPerson retiree = new MitoPerson(5, Occupation.UNEMPLOYED, 1, 70,Gender.FEMALE, false);
 
-        MitoHousehold household = new MitoHousehold(1, 3, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1);
+        MitoHousehold household = new MitoHousehold(1,  1, 1, 1);
         household.getPersons().add(worker);
         household.getPersons().add(student);
         household.getPersons().add(retiree);

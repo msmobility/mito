@@ -67,26 +67,17 @@ public class PersonsReader extends CSVReader {
         }
         Occupation occupation = Occupation.UNEMPLOYED;
         int age = Integer.parseInt(record[posAge]);
-        if (age < 18) {
-            hh.setChildren(hh.getChildren() + 1);
-        } else if (age <= 25) {
-            hh.setYoungAdults(hh.getYoungAdults() + 1);
-        } else if (age >= 65) {
-            hh.setRetirees(hh.getRetirees() + 1);
-        }
+
         int genderCode = Integer.parseInt(record[posSex]);
         Gender gender = Gender.MALE;
         if (genderCode == 2) {
-            hh.setFemales(hh.getFemales() + 1);
             gender = Gender.FEMALE;
         }
         int occupationCode = Integer.parseInt(record[posOccupation]);
 
         if (occupationCode == 1) {
-            hh.setNumberOfWorkers(hh.getNumberOfWorkers() + 1);
             occupation = Occupation.WORKER;
-        } else if (occupationCode == 3) { //students have occupation equal to 3
-            hh.setStudents(hh.getStudents() + 1);
+        } else if (occupationCode == 3) {
             occupation = Occupation.STUDENT;
         }
         int workplace = Integer.parseInt(record[posWorkplace]);
@@ -94,11 +85,10 @@ public class PersonsReader extends CSVReader {
         boolean driversLicense = false;
         if (Integer.parseInt(record[posLicence]) == 1) {
             driversLicense = true;
-            hh.setLicenseHolders(hh.getLicenseHolders() + 1);
         }
         int income = Integer.parseInt(record[posIncome]);
         hh.setIncome(hh.getIncome() + income);
-        MitoPerson pp = new MitoPerson(id, hhid, occupation, workplace, age, gender, driversLicense);
+        MitoPerson pp = new MitoPerson(id, occupation, workplace, age, gender, driversLicense);
         persons.put(pp.getId(), pp);
         hh.getPersons().add(pp);
     }

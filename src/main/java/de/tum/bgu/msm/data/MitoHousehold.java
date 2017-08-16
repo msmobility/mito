@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.resources.Gender;
+import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
@@ -16,14 +18,6 @@ import java.util.*;
 public class MitoHousehold implements Serializable {
 
     private final int hhId;
-    private int hhSize;
-    private int females;
-    private int children;
-    private int youngAdults;
-    private int retirees;
-    private int numberOfWorkers;
-    private int students;
-    private int licenseHolders;
     private int income;
     private int autos;
     private int homeZone;
@@ -34,17 +28,8 @@ public class MitoHousehold implements Serializable {
     private final List<MitoPerson> persons;
 
 
-    public MitoHousehold(int id, int hhSize, int females, int children, int youngAdults, int retirees,
-                         int numberOfWorkers, int students, int licenseHolders, int income, int autos, int homeZone) {
+    public MitoHousehold(int id, int income, int autos, int homeZone) {
         this.hhId = id;
-        this.hhSize = hhSize;
-        this.females = females;
-        this.children = children;
-        this.youngAdults = youngAdults;
-        this.retirees = retirees;
-        this.numberOfWorkers = numberOfWorkers;
-        this.students = students;
-        this.licenseHolders = licenseHolders;
         this.income = income;
         this.autos = autos;
         this.homeZone = homeZone;
@@ -62,63 +47,35 @@ public class MitoHousehold implements Serializable {
     }
 
     public int getHhSize() {
-        return hhSize;
-    }
-
-    public void setFemales(int females) {
-        this.females = females;
+        return persons.size();
     }
 
     public int getFemales() {
-        return females;
+        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getGender().equals(Gender.FEMALE)).count();
     }
 
     public int getChildren() {
-        return children;
-    }
-
-    public void setChildren(int children) {
-        this.children = children;
+        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getAge() < 18).count();
     }
 
     public int getYoungAdults() {
-        return youngAdults;
-    }
-
-    public void setYoungAdults(int youngAdults) {
-        this.youngAdults = youngAdults;
+        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getAge() >=18 && mitoPerson.getAge() <= 25).count();
     }
 
     public int getRetirees() {
-        return retirees;
-    }
-
-    public void setRetirees(int retirees) {
-        this.retirees = retirees;
+        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getAge() >= 65).count();
     }
 
     public int getNumberOfWorkers() {
-        return numberOfWorkers;
-    }
-
-    public void setNumberOfWorkers(int workers) {
-        numberOfWorkers = workers;
+        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getOccupation().equals(Occupation.WORKER)).count();
     }
 
     public int getStudents() {
-        return students;
-    }
-
-    public void setStudents(int students) {
-        this.students = students;
+        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getOccupation().equals(Occupation.STUDENT)).count();
     }
 
     public int getLicenseHolders() {
-        return licenseHolders;
-    }
-
-    public void setLicenseHolders(int licenseHolders) {
-        this.licenseHolders = licenseHolders;
+        return (int) persons.stream().filter(mitoPerson -> mitoPerson.hasDriversLicense()).count();
     }
 
     public int getIncome() {
