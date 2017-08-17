@@ -41,7 +41,7 @@ public class HouseHoldTypeManagerTest {
         }
 
         MitoHousehold household = new MitoHousehold(1,  4, 1, 1);
-        household.getPersons().add(new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true));
+        household.getPersons().add(new MitoPerson(1,1, Occupation.WORKER, -1, 30, Gender.MALE, true));
         Assert.assertNull(manager.determineHouseholdType(household));
 
         Zone zone = new Zone(1, 10);
