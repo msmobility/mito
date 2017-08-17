@@ -88,7 +88,7 @@ public class PersonsReader extends CSVReader {
         }
         int income = Integer.parseInt(record[posIncome]);
         hh.setIncome(hh.getIncome() + income);
-        MitoPerson pp = new MitoPerson(id, hhid, occupation, workplace, age, gender, driversLicense);
+        MitoPerson pp = new MitoPerson(id, occupation, workplace, age, gender, driversLicense);
         persons.put(pp.getId(), pp);
         hh.getPersons().add(pp);
     }

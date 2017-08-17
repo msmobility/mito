@@ -44,7 +44,6 @@ public class InputManager {
         dataSet.setAutoTravelTimes(new MatrixTravelTimes(feed.autoTravelTimes));
         dataSet.setTransitTravelTimes(new MatrixTravelTimes(feed.transitTravelTimes));
         setHouseholdsFromFeed(feed.households);
-        setPersonsFromFeed(feed.persons);
     }
 
     private void setZonesFromFeed(int[] zoneIds, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
@@ -61,27 +60,16 @@ public class InputManager {
         dataSet.getZones().putAll(zones);
     }
 
-    private void setHouseholdsFromFeed(MitoHousehold[] householdsArray) {
-        Map<Integer, MitoHousehold> households = new HashMap<>();
-        for (MitoHousehold household : householdsArray) {
-            households.put(household.getHhId(), household);
+    private void setHouseholdsFromFeed(Map<Integer, MitoHousehold> households) {
+        for (MitoHousehold household : households.values()) {
             if (dataSet.getZones().containsKey(household.getHomeZone())) {
                 dataSet.getZones().get(household.getHomeZone()).addHousehold();
             } else {
-                logger.error("Feeded household " + household.getHhId() + " refers to non-existing home zone "
+                logger.error("Fed household " + household.getHhId() + " refers to non-existing home zone "
                         + household.getHomeZone() + ". Household will not be considered in any zone.");
             }
         }
         dataSet.getHouseholds().clear();
         dataSet.getHouseholds().putAll(households);
-    }
-
-    private void setPersonsFromFeed(MitoPerson[] personsArray) {
-        Map<Integer, MitoPerson> persons = new HashMap<>();
-        for (MitoPerson person : personsArray) {
-            persons.put(person.getId(), person);
-        }
-        dataSet.getPersons().clear();
-        dataSet.getPersons().putAll(persons);
     }
 }

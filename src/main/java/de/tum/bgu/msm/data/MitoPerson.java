@@ -15,7 +15,6 @@ import java.io.Serializable;
 public class MitoPerson implements Serializable {
 
     private final int id;
-    private final int hhId;
     private final Gender gender;
     private Occupation occupation;
     private int workplace;
@@ -23,9 +22,8 @@ public class MitoPerson implements Serializable {
     private int age;
     private boolean driversLicense;
 
-    public MitoPerson(int id, int hhId, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
+    public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
-        this.hhId = hhId;
         this.occupation = occupation;
         this.workplace = workplace;
         this.age = age;
