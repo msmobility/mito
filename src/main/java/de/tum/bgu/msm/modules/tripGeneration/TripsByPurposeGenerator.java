@@ -154,7 +154,7 @@ class TripsByPurposeGenerator {
             counterDroppedTripsAtBorder.incrementAndGet();
             return;
         }
-        MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), hh.getHhId(), purpose, tripOrigin);
+        MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), hh.getHhId(), purpose);
         trips.add(trip);
     }
 

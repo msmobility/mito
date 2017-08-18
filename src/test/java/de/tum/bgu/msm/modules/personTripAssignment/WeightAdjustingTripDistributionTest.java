@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
@@ -34,9 +35,9 @@ public class WeightAdjustingTripDistributionTest {
         household.getPersons().add(student);
         household.getPersons().add(retiree);
 
-        MitoTrip tripHBW1 = new MitoTrip(1, 1, Purpose.HBW, 1);
-        MitoTrip tripHBW2 = new MitoTrip(2, 1, Purpose.HBW, 1);
-        MitoTrip tripHBW3 = new MitoTrip(3, 1, Purpose.HBW, 1);
+        MitoTrip tripHBW1 = new MitoTrip(1, 1, Purpose.HBW);
+        MitoTrip tripHBW2 = new MitoTrip(2, 1, Purpose.HBW);
+        MitoTrip tripHBW3 = new MitoTrip(3, 1, Purpose.HBW);
 
         List<MitoTrip> trips = new ArrayList<>();
         trips.add(tripHBW1);
@@ -46,11 +47,14 @@ public class WeightAdjustingTripDistributionTest {
 
         TripDistributionFactory factory = new WeightAdjustingTripDistributionFactory();
         TripDistribution distribution = factory.createTripDistribution();
+        Map<MitoPerson, Double> probabilitiesByPersonForTrip1 = distribution.getProbabilityByPersonForTrip(household, tripHBW1);
 
-        assertEquals( 1, distribution.getWeight(household, worker, tripHBW1), 0.);
+        assertEquals( 1, probabilitiesByPersonForTrip1.get(worker), 0.);
         tripHBW1.setPerson(worker);
-        assertEquals( 0.5, distribution.getWeight(household, worker, tripHBW2), 0.);
+        Map<MitoPerson, Double> probabilitiesByPersonForTrip2 = distribution.getProbabilityByPersonForTrip(household, tripHBW2);
+        assertEquals( 0.5,probabilitiesByPersonForTrip2.get(worker), 0.);
         tripHBW2.setPerson(worker);
-        assertEquals( 0.33, distribution.getWeight(household, worker, tripHBW3), 0.01);
+        Map<MitoPerson, Double> probabilitiesByPersonForTrip3 = distribution.getProbabilityByPersonForTrip(household, tripHBW3);
+        assertEquals( 0.33, probabilitiesByPersonForTrip3.get(worker), 0.01);
     }
 }

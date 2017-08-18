@@ -9,20 +9,23 @@ import de.tum.bgu.msm.modules.PersonTripAssignment;
 import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class PersonTripAssignmentTest {
 
     private DataSet dataSet;
 
-    @Before
     public void setupAndRun() {
         MitoUtil.initializeRandomNumber(new Random(42));
         dataSet = new DataSet();
@@ -35,17 +38,17 @@ public class PersonTripAssignmentTest {
         household.getPersons().add(new MitoPerson(5, Occupation.UNEMPLOYED, 1, 70,Gender.FEMALE, false));
         dataSet.getHouseholds().put(household.getHhId(), household);
 
-        MitoTrip tripHBW = new MitoTrip(1, 1, Purpose.HBW, 1);
+        MitoTrip tripHBW = new MitoTrip(1, 1, Purpose.HBW);
         household.getTripsByPurpose().put(Purpose.HBW, Collections.singletonList(tripHBW));
-        MitoTrip tripHBE = new MitoTrip(2, 1, Purpose.HBE, 1);
+        MitoTrip tripHBE = new MitoTrip(2, 1, Purpose.HBE);
         household.getTripsByPurpose().put(Purpose.HBE, Collections.singletonList(tripHBE));
-        MitoTrip tripHBS = new MitoTrip(3, 1, Purpose.HBS, 1);
+        MitoTrip tripHBS = new MitoTrip(3, 1, Purpose.HBS);
         household.getTripsByPurpose().put(Purpose.HBS, Collections.singletonList(tripHBS));
-        MitoTrip tripHBO = new MitoTrip(4, 1, Purpose.HBO, 1);
+        MitoTrip tripHBO = new MitoTrip(4, 1, Purpose.HBO);
         household.getTripsByPurpose().put(Purpose.HBO, Collections.singletonList(tripHBO));
-        MitoTrip tripNHBW = new MitoTrip(5, 1, Purpose.NHBW, 1);
+        MitoTrip tripNHBW = new MitoTrip(5, 1, Purpose.NHBW);
         household.getTripsByPurpose().put(Purpose.NHBW, Collections.singletonList(tripNHBW));
-        MitoTrip tripNHBO = new MitoTrip(6, 1, Purpose.NHBO, 1);
+        MitoTrip tripNHBO = new MitoTrip(6, 1, Purpose.NHBO);
         household.getTripsByPurpose().put(Purpose.NHBO, Collections.singletonList(tripNHBO));
 
         dataSet.getTrips().put(1, tripHBW);
@@ -61,12 +64,26 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testAssignment() {
+        Resources.INSTANCE.setTripDistributionFactory(new SimpleTripDistributionFactory());
+        setupAndRun();
         for(MitoTrip trip: dataSet.getTrips().values()) {
             assertNotNull("No Person set for trip " + trip, trip.getPerson());
             if(trip.getTripPurpose().equals(Purpose.HBW)) {
                 assertEquals(Occupation.WORKER, trip.getPerson().getOccupation());
             } else if(trip.getTripPurpose().equals(Purpose.HBE)) {
                 assertEquals(Occupation.STUDENT, trip.getPerson().getOccupation());
+            }
+        }
+    }
+
+    @Test
+    public void testFailedAssignment() {
+        Resources.INSTANCE.setTripDistributionFactory(() -> (household, trip) -> null);
+        setupAndRun();
+        assertTrue(dataSet.getTrips().isEmpty());
+        for(MitoHousehold household: dataSet.getHouseholds().values()) {
+            for(List<MitoTrip> trips: household.getTripsByPurpose().values()) {
+                assertTrue(trips.isEmpty());
             }
         }
     }

@@ -17,16 +17,15 @@ public class MitoTrip implements Serializable {
     private final int householdId;
     private final Purpose tripPurpose;
 
-    private final int tripOrigin;
+    private int tripOrigin;
     private int tripDestination;
 
     private MitoPerson person;
 
-    public MitoTrip(int tripId, int householdId, Purpose tripPurpose, int origin) {
+    public MitoTrip(int tripId, int householdId, Purpose tripPurpose) {
         this.tripId = tripId;
         this.householdId = householdId;
         this.tripPurpose = tripPurpose;
-        this.tripOrigin = origin;
     }
 
     public int getTripId() {
@@ -35,6 +34,10 @@ public class MitoTrip implements Serializable {
 
     public int getTripOrigin() {
         return tripOrigin;
+    }
+
+    public void setTripOrigin(int origin) {
+        this.tripOrigin = origin;
     }
 
     public Purpose getTripPurpose() {

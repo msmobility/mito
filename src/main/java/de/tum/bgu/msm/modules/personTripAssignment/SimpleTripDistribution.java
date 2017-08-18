@@ -5,17 +5,22 @@ import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This distribution returns random weights for persons fitting to the purpose.
  */
 class SimpleTripDistribution implements TripDistribution {
 
+    private static final Logger logger = Logger.getLogger(SimpleTripDistribution.class);
+
     SimpleTripDistribution(){
 
     }
 
-    @Override
     public double getWeight(MitoHousehold household, MitoPerson person, MitoTrip trip) {
         if (personFitsToTrip(household, person, trip)) {
             return 1;
@@ -29,5 +34,21 @@ class SimpleTripDistribution implements TripDistribution {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip) {
+        double weightSum = 0;
+        Map<MitoPerson, Double> probabilitiesByPerson = new HashMap<>();
+        for (MitoPerson person : household.getPersons()) {
+            double weight = getWeight(household, person, trip);
+            weightSum += weight;
+            probabilitiesByPerson.put(person, weight);
+        }
+        if (probabilitiesByPerson.isEmpty() || weightSum == 0) {
+            logger.error("Household has " + trip.getTripPurpose() + " trip but no suitable persons. Deleting the trip.");
+            return null;
+        }
+        return probabilitiesByPerson;
     }
 }

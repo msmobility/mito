@@ -31,8 +31,8 @@ public class DestinationChoiceTest {
         zone2.setRetailEmpl(100);
         dataSet.getZones().put(zone2.getZoneId(), zone2);
 
-        MitoTrip trip1 = new MitoTrip(1, 0 , Purpose.HBS, 1);
-        MitoTrip trip2 = new MitoTrip(2, 0 , Purpose.HBS, 2);
+        MitoTrip trip1 = new MitoTrip(1, 0 , Purpose.HBS);
+        MitoTrip trip2 = new MitoTrip(2, 0 , Purpose.HBS);
 
         MitoHousehold household = new MitoHousehold(1,500,1,1);
         household.addTrip(trip1);

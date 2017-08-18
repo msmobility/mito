@@ -1,6 +1,8 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.io.output.SummarizeData;
+import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.DestinationChoice;
 import de.tum.bgu.msm.modules.PersonTripAssignment;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
@@ -37,5 +39,8 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Microscopic Destination Choice");
         DestinationChoice dc = new DestinationChoice(dataSet);
         dc.run();
+
+        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
+        SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
     }
 }
