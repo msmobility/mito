@@ -10,10 +10,13 @@ import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static de.tum.bgu.msm.resources.Purpose.*;
 
 /**
  * Created by Nico on 20.07.2017.
@@ -26,6 +29,8 @@ public class RawTripGenerator {
     static final AtomicInteger currentTripId = new AtomicInteger();
 
     private final DataSet dataSet;
+
+    private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
 
     public RawTripGenerator(DataSet dataSet) {
         this.dataSet = dataSet;
@@ -48,7 +53,7 @@ public class RawTripGenerator {
             return null;
         };
 
-        Iterator<Purpose> tripPurposeIterator = ArrayUtil.getIterator(Purpose.values());
+        Iterator<Purpose> tripPurposeIterator = PURPOSES.iterator();
         IteratorAction<Purpose> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
         ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
         pool.execute(itTask);
