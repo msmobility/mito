@@ -104,7 +104,7 @@ public class MitoHousehold implements Serializable {
         }
     }
 
-    public Map<Purpose, ArrayList<MitoTrip>> getTripsByPurpose() {
+    public EnumMap<Purpose, ArrayList<MitoTrip>> getTripsByPurpose() {
         return tripsByPurpose;
     }
 

@@ -3,6 +3,7 @@ package de.tum.bgu.msm.resources;
 import com.pb.common.calculator2.UtilityExpressionCalculator;
 import com.pb.common.calculator2.VariableTable;
 import com.pb.common.util.ResourceUtil;
+import de.tum.bgu.msm.modules.personTripAssignment.DefaultTripDistributionFactory;
 import de.tum.bgu.msm.modules.personTripAssignment.SimpleTripDistributionFactory;
 import de.tum.bgu.msm.modules.personTripAssignment.TripDistributionFactory;
 
@@ -17,7 +18,7 @@ public enum Resources {
     INSTANCE;
 
     private ResourceBundle resources;
-    private TripDistributionFactory tripDistributionFactory = new SimpleTripDistributionFactory();
+    private TripDistributionFactory tripDistributionFactory = new DefaultTripDistributionFactory();
 
     Resources() {
 

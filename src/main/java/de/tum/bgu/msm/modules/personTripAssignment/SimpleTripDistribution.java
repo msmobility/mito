@@ -21,21 +21,6 @@ class SimpleTripDistribution implements TripDistribution {
 
     }
 
-    public double getWeight(MitoHousehold household, MitoPerson person, MitoTrip trip) {
-        if (personFitsToTrip(household, person, trip)) {
-            return 1;
-        }
-        return 0;
-    }
-
-    private boolean personFitsToTrip(MitoHousehold household, MitoPerson person, MitoTrip trip) {
-        if (trip.getTripPurpose().equals(Purpose.HBW) && !person.getOccupation().equals(Occupation.WORKER) ||
-                trip.getTripPurpose().equals(Purpose.HBE) && !person.getOccupation().equals(Occupation.STUDENT)) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip) {
         double weightSum = 0;
@@ -50,5 +35,20 @@ class SimpleTripDistribution implements TripDistribution {
             return null;
         }
         return probabilitiesByPerson;
+    }
+
+    public double getWeight(MitoHousehold household, MitoPerson person, MitoTrip trip) {
+        if (personFitsToTrip(person, trip)) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private boolean personFitsToTrip(MitoPerson person, MitoTrip trip) {
+        if (trip.getTripPurpose().equals(Purpose.HBW) && !person.getOccupation().equals(Occupation.WORKER) ||
+                trip.getTripPurpose().equals(Purpose.HBE) && !person.getOccupation().equals(Occupation.STUDENT)) {
+            return false;
+        }
+        return true;
     }
 }
