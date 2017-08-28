@@ -22,7 +22,7 @@ public class MitoHousehold implements Serializable {
     private int autos;
     private int homeZone;
 
-    private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose;
+    private final EnumMap<Purpose, ArrayList<MitoTrip>> tripsByPurpose;
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose;
 
     private final List<MitoPerson> persons;
@@ -98,13 +98,13 @@ public class MitoHousehold implements Serializable {
         if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
             tripsByPurpose.get(trip.getTripPurpose()).add(trip);
         } else {
-            List<MitoTrip> trips = new ArrayList<>();
+            ArrayList<MitoTrip> trips = new ArrayList<>();
             trips.add(trip);
             tripsByPurpose.put(trip.getTripPurpose(), trips);
         }
     }
 
-    public Map<Purpose, List<MitoTrip>> getTripsByPurpose() {
+    public Map<Purpose, ArrayList<MitoTrip>> getTripsByPurpose() {
         return tripsByPurpose;
     }
 

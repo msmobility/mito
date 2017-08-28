@@ -13,10 +13,7 @@ import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -39,17 +36,29 @@ public class PersonTripAssignmentTest {
         dataSet.getHouseholds().put(household.getHhId(), household);
 
         MitoTrip tripHBW = new MitoTrip(1, 1, Purpose.HBW);
-        household.getTripsByPurpose().put(Purpose.HBW, Collections.singletonList(tripHBW));
+        ArrayList<MitoTrip> tripsHBW = new ArrayList<>();
+        tripsHBW.add(tripHBW);
+        household.getTripsByPurpose().put(Purpose.HBW, tripsHBW);
         MitoTrip tripHBE = new MitoTrip(2, 1, Purpose.HBE);
-        household.getTripsByPurpose().put(Purpose.HBE, Collections.singletonList(tripHBE));
+        ArrayList<MitoTrip> tripsHBE = new ArrayList<>();
+        tripsHBE.add(tripHBE);
+        household.getTripsByPurpose().put(Purpose.HBE, tripsHBE);
         MitoTrip tripHBS = new MitoTrip(3, 1, Purpose.HBS);
-        household.getTripsByPurpose().put(Purpose.HBS, Collections.singletonList(tripHBS));
+        ArrayList<MitoTrip> tripsHBS = new ArrayList<>();
+        tripsHBS.add(tripHBS);
+        household.getTripsByPurpose().put(Purpose.HBS, tripsHBS);
         MitoTrip tripHBO = new MitoTrip(4, 1, Purpose.HBO);
-        household.getTripsByPurpose().put(Purpose.HBO, Collections.singletonList(tripHBO));
+        ArrayList<MitoTrip> tripsHBO = new ArrayList<>();
+        tripsHBO.add(tripHBO);
+        household.getTripsByPurpose().put(Purpose.HBO, tripsHBO);
         MitoTrip tripNHBW = new MitoTrip(5, 1, Purpose.NHBW);
-        household.getTripsByPurpose().put(Purpose.NHBW, Collections.singletonList(tripNHBW));
+        ArrayList<MitoTrip> tripsNHBW = new ArrayList<>();
+        tripsNHBW.add(tripNHBW);
+        household.getTripsByPurpose().put(Purpose.NHBW, tripsNHBW);
         MitoTrip tripNHBO = new MitoTrip(6, 1, Purpose.NHBO);
-        household.getTripsByPurpose().put(Purpose.NHBO, Collections.singletonList(tripNHBO));
+        ArrayList<MitoTrip> tripsNHBO = new ArrayList<>();
+        tripsNHBO.add(tripNHBO);
+        household.getTripsByPurpose().put(Purpose.NHBO, tripsNHBO);
 
         dataSet.getTrips().put(1, tripHBW);
         dataSet.getTrips().put(2, tripHBE);

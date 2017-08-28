@@ -9,8 +9,8 @@ import de.tum.bgu.msm.modules.personTripAssignment.TripDistribution;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class PersonTripAssignment extends Module {
@@ -27,20 +27,20 @@ public class PersonTripAssignment extends Module {
     @Override
     public void run() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            Iterator<List<MitoTrip>> iterator = household.getTripsByPurpose().values().iterator();
-            while (iterator.hasNext()) {
-                for (MitoTrip trip : iterator.next()) {
+            for(ArrayList<MitoTrip> trips: household.getTripsByPurpose().values()) {
+                Iterator<MitoTrip> tripIterator = trips.iterator();
+                while(tripIterator.hasNext()) {
+                    MitoTrip trip = tripIterator.next();
                     Map<MitoPerson, Double> probabilitiesByPerson = distribution.getProbabilityByPersonForTrip(household, trip);
                     if (probabilitiesByPerson != null) {
                         selectPersonForTrip(trip, probabilitiesByPerson);
                     } else {
                         dataSet.getTrips().remove(trip.getTripId());
-                        iterator.remove();
+                        tripIterator.remove();
                     }
                 }
             }
         }
-
     }
 
     private void selectPersonForTrip(MitoTrip trip, Map<MitoPerson, Double> probabilitiesByPerson) {

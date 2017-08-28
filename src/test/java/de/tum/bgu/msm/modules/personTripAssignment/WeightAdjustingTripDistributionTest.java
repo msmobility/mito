@@ -39,7 +39,7 @@ public class WeightAdjustingTripDistributionTest {
         MitoTrip tripHBW2 = new MitoTrip(2, 1, Purpose.HBW);
         MitoTrip tripHBW3 = new MitoTrip(3, 1, Purpose.HBW);
 
-        List<MitoTrip> trips = new ArrayList<>();
+        ArrayList<MitoTrip> trips = new ArrayList<>();
         trips.add(tripHBW1);
         trips.add(tripHBW2);
         trips.add(tripHBW3);
