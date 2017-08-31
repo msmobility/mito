@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.MitoUtil;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
@@ -22,8 +23,6 @@ public class HouseholdsReader extends CSVReader {
 
     private static final Logger logger = Logger.getLogger(HouseholdsReader.class);
 
-    private final Map<Integer, MitoHousehold> households = new HashMap<>();
-
     public HouseholdsReader(DataSet dataSet) {
         super(dataSet);
     }
@@ -33,7 +32,6 @@ public class HouseholdsReader extends CSVReader {
         logger.info("  Reading household micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.HOUSEHOLDS);
         super.readLineByLine(fileName, ",");
-        dataSet.getHouseholds().putAll(households);
     }
 
     @Override
@@ -48,12 +46,13 @@ public class HouseholdsReader extends CSVReader {
         int id = Integer.parseInt(record[posId]);
         int taz = Integer.parseInt(record[posTaz]);
         int autos = Integer.parseInt(record[posAutos]);
-        MitoHousehold household = new MitoHousehold(id, 0, autos, taz);
-        households.put(household.getHhId(), household);
-        try {
-            dataSet.getZones().get(household.getHomeZone()).addHousehold();
-        } catch (Exception e) {
-            System.out.println(e.getStackTrace());
+        Zone zone = dataSet.getZones().get(taz);
+        if (zone == null) {
+            logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
+            return;
         }
+        dataSet.addHousehold(new MitoHousehold(id, 0, autos, zone));
+        zone.addHousehold();
+
     }
 }

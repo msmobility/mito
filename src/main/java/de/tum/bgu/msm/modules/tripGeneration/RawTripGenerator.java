@@ -45,14 +45,8 @@ public class RawTripGenerator {
 
         Function1<Purpose,Void> tripGenByPurposeMethod = purpose -> {
             TripsByPurposeGenerator byPurposeGenerator = new TripsByPurposeGenerator(dataSet, purpose);
-            List<MitoTrip> trips = byPurposeGenerator.generateTrips();
-            synchronized (dataSet) {
-                for (MitoTrip trip : trips) {
-                    dataSet.getTrips().put(trip.getTripId(), trip);
-                    dataSet.getHouseholds().get(trip.getHouseholdId()).addTrip(trip);
-                }
-                return null;
-            }
+           byPurposeGenerator.generateTrips();
+           return null;
         };
 
         Iterator<Purpose> tripPurposeIterator = PURPOSES.iterator();
@@ -63,7 +57,7 @@ public class RawTripGenerator {
     }
 
     private void logTripGeneration() {
-        int rawTrips = dataSet.getTrips().size() + counterDroppedTripsAtBorder.get();
+        long rawTrips = dataSet.getTrips().size() + counterDroppedTripsAtBorder.get();
         logger.info("  Generated " + MitoUtil.customFormat("###,###", rawTrips) + " raw trips.");
         if (counterDroppedTripsAtBorder.get() > 0) {
             logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder.get()) + " trips were dropped at boundary of study area.");

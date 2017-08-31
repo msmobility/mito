@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
+import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.resources.Purpose;
@@ -109,12 +110,12 @@ public class HouseholdTypeManager {
     public HouseholdType determineHouseholdType(MitoHousehold hh) {
         int incCategory = translateIncomeIntoCategory(hh.getIncome());
         int region = -1;
-        if (dataSet.getZones().containsKey(hh.getHomeZone())) {
-            region = dataSet.getZones().get(hh.getHomeZone()).getRegion();
+        if (hh.getHomeZone() != null) {
+            region = hh.getHomeZone().getRegion();
         } else {
-            logger.info("Home Zone " + hh.getHomeZone() + " for Household  " + hh.getHhId() + " does not exist");
+            logger.info("Home Zone for Household  " + hh.getHhId() + " is null!");
         }
-        return determineHouseholdType(hh.getHhSize(), hh.getNumberOfWorkers(),
+        return determineHouseholdType(hh.getHhSize(), MitoUtil.getNumberOfWorkersForHousehold(hh),
                 incCategory, hh.getAutos(), region);
     }
 

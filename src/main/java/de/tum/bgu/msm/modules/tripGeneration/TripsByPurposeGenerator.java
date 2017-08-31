@@ -5,6 +5,7 @@ import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
@@ -30,7 +31,6 @@ class TripsByPurposeGenerator {
     private final TableDataSet travelSurveyHouseholdTable;
     private final TableDataSet travelSurveyTripsTable;
 
-    private final List<MitoTrip> trips = new ArrayList<>();
     private final HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
 
     public TripsByPurposeGenerator(DataSet dataSet, Purpose purpose) {
@@ -41,13 +41,12 @@ class TripsByPurposeGenerator {
         travelSurveyTripsTable = dataSet.getTravelSurveyTripsTable();
     }
 
-    public List<MitoTrip> generateTrips() {
+    public void generateTrips() {
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         defineTripFrequenciesForHouseHoldTypes();
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
             generateTripsForHousehold(hh);
         }
-        return trips;
     }
 
     private void defineTripFrequenciesForHouseHoldTypes() {
@@ -148,21 +147,22 @@ class TripsByPurposeGenerator {
     }
 
     private void createTrip(MitoHousehold hh) {
-        int tripOrigin = hh.getHomeZone();
+        Zone tripOrigin = hh.getHomeZone();
         boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
         if (dropThisTrip) {
             counterDroppedTripsAtBorder.incrementAndGet();
             return;
         }
-        MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), hh.getHhId(), purpose);
-        trips.add(trip);
+        MitoTrip trip = new MitoTrip(currentTripId.incrementAndGet(), purpose);
+        dataSet.addTrip(trip);
+        hh.addTrip(trip);
     }
 
-    private boolean reduceTripGenAtStudyAreaBorder(int tripOrigin) {
+    private boolean reduceTripGenAtStudyAreaBorder(Zone tripOrigin) {
         if (!Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             return false;
         }
-        float damper = dataSet.getZones().get(tripOrigin).getReductionAtBorderDamper();
+        float damper = dataSet.getZones().get(tripOrigin.getZoneId()).getReductionAtBorderDamper();
         return MitoUtil.getRandomFloat() < damper;
     }
 }

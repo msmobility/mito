@@ -3,9 +3,8 @@ package de.tum.bgu.msm.resources;
 import com.pb.common.calculator2.UtilityExpressionCalculator;
 import com.pb.common.calculator2.VariableTable;
 import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.modules.personTripAssignment.DefaultTripDistributionFactory;
-import de.tum.bgu.msm.modules.personTripAssignment.SimpleTripDistributionFactory;
-import de.tum.bgu.msm.modules.personTripAssignment.TripDistributionFactory;
+import de.tum.bgu.msm.modules.personTripAssignment.DefaultTripAssignmentFactory;
+import de.tum.bgu.msm.modules.personTripAssignment.TripAssignmentFactory;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -18,7 +17,7 @@ public enum Resources {
     INSTANCE;
 
     private ResourceBundle resources;
-    private TripDistributionFactory tripDistributionFactory = new DefaultTripDistributionFactory();
+    private TripAssignmentFactory tripAssignmentFactory = new DefaultTripAssignmentFactory();
 
     Resources() {
 
@@ -62,11 +61,11 @@ public enum Resources {
         return ResourceUtil.getDoubleProperty(resources, key);
     }
 
-    public TripDistributionFactory getTripDistributionFactory() {
-        return tripDistributionFactory;
+    public TripAssignmentFactory getTripAssignmentFactory() {
+        return tripAssignmentFactory;
     }
 
-    public void setTripDistributionFactory(TripDistributionFactory tripDistributionFactory) {
-        this.tripDistributionFactory = tripDistributionFactory;
+    public void setTripAssignmentFactory(TripAssignmentFactory tripAssignmentFactory) {
+        this.tripAssignmentFactory = tripAssignmentFactory;
     }
 }

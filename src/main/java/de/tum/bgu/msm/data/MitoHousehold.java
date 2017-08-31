@@ -20,7 +20,7 @@ public class MitoHousehold implements Serializable {
     private final int hhId;
     private int income;
     private int autos;
-    private int homeZone;
+    private Zone homeZone;
 
     private final EnumMap<Purpose, ArrayList<MitoTrip>> tripsByPurpose;
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose;
@@ -28,7 +28,7 @@ public class MitoHousehold implements Serializable {
     private final List<MitoPerson> persons;
 
 
-    public MitoHousehold(int id, int income, int autos, int homeZone) {
+    public MitoHousehold(int id, int income, int autos, Zone homeZone) {
         this.hhId = id;
         this.income = income;
         this.autos = autos;
@@ -38,44 +38,12 @@ public class MitoHousehold implements Serializable {
         this.travelTimeBudgetByPurpose = new EnumMap(Purpose.class);
     }
 
-    public List<MitoPerson> getPersons(){
-        return persons;
-    }
-
     public int getHhId() {
         return hhId;
     }
 
     public int getHhSize() {
         return persons.size();
-    }
-
-    public int getFemales() {
-        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getGender().equals(Gender.FEMALE)).count();
-    }
-
-    public int getChildren() {
-        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getAge() < 18).count();
-    }
-
-    public int getYoungAdults() {
-        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getAge() >=18 && mitoPerson.getAge() <= 25).count();
-    }
-
-    public int getRetirees() {
-        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getAge() >= 65).count();
-    }
-
-    public int getNumberOfWorkers() {
-        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getOccupation().equals(Occupation.WORKER)).count();
-    }
-
-    public int getStudents() {
-        return (int) persons.stream().filter(mitoPerson -> mitoPerson.getOccupation().equals(Occupation.STUDENT)).count();
-    }
-
-    public int getLicenseHolders() {
-        return (int) persons.stream().filter(mitoPerson -> mitoPerson.hasDriversLicense()).count();
     }
 
     public int getIncome() {
@@ -90,9 +58,22 @@ public class MitoHousehold implements Serializable {
         return autos;
     }
 
-    public int getHomeZone() {
+    public Zone getHomeZone() {
         return homeZone;
     }
+
+    public List<MitoPerson> getPersons(){
+        return Collections.unmodifiableList(persons);
+    }
+
+    public void addPerson(MitoPerson person) {
+        this.persons.add(person);
+    }
+
+    public void removePerson(MitoPerson person) {
+        this.persons.remove(person);
+    }
+
 
     public void addTrip(MitoTrip trip) {
         if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
@@ -104,8 +85,20 @@ public class MitoHousehold implements Serializable {
         }
     }
 
-    public EnumMap<Purpose, ArrayList<MitoTrip>> getTripsByPurpose() {
-        return tripsByPurpose;
+    public void removeTrip(MitoTrip trip) {
+        if(trip != null) {
+            if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
+                tripsByPurpose.get(trip.getTripPurpose()).remove(trip);
+            }
+        }
+    }
+
+    public List<MitoTrip> getTripsForPurpose(Purpose purpose) {
+        if(tripsByPurpose.get(purpose) != null) {
+            return Collections.unmodifiableList(tripsByPurpose.get(purpose));
+        } else {
+            return Collections.unmodifiableList(Collections.emptyList());
+        }
     }
 
     public void setTravelTimeBudgetByPurpose(Purpose purpose, double budget) {

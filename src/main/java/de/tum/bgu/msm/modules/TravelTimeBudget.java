@@ -92,6 +92,10 @@ public class TravelTimeBudget extends Module {
         double hbwBudget = 0;
         for (MitoPerson person : household.getPersons()) {
             if (person.getOccupation().equals(Occupation.WORKER)) {
+                if(person.getWorkzone() == null) {
+                    logger.warn(String.format("Person %d is a WORKER but does not have a workzone assigned. Ignoring for budget calculation", person.getId()));
+                    continue;
+                }
                 hbwBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
             }
         }
@@ -102,6 +106,10 @@ public class TravelTimeBudget extends Module {
         double hbeBudget = 0;
         for (MitoPerson person : household.getPersons()) {
             if (person.getOccupation().equals(Occupation.STUDENT)) {
+                if(person.getWorkzone() == null) {
+                    logger.warn(String.format("Person %d is a STUDENT but does not have a workzone assigned. Ignoring for budget calculation", person.getId()));
+                    continue;
+                }
                 hbeBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
             }
         }

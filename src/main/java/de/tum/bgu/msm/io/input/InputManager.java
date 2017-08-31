@@ -1,9 +1,7 @@
 package de.tum.bgu.msm.io.input;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.io.input.readers.*;
-import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;

@@ -1,9 +1,11 @@
 package de.tum.bgu.msm.data;
 
 import com.pb.common.matrix.Matrix;
+import org.apache.log4j.Logger;
 
 public class MatrixTravelTimes implements TravelTimes{
 
+    private static final Logger logger = Logger.getLogger(MatrixTravelTimes.class);
 
     private final Matrix matrix;
 
@@ -12,7 +14,10 @@ public class MatrixTravelTimes implements TravelTimes{
     }
 
     @Override
-    public double getTravelTimeFromTo(int origin, int destination) {
-        return matrix.getValueAt(origin, destination);
+    public double getTravelTimeFromTo(Zone origin, Zone destination) {
+        if(origin == null || destination == null) {
+            throw new IllegalArgumentException("Origin or destination is null.");
+        }
+        return matrix.getValueAt(origin.getZoneId(), destination.getZoneId());
     }
 }

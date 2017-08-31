@@ -1,11 +1,10 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import com.pb.common.calculator2.UtilityExpressionCalculator;
+import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Purpose;
-import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.resources.*;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -44,34 +43,32 @@ public class TravelTimeBudgetCalculator {
     private void setupDMU(MitoHousehold hh) {
         // set DMU attributes
         ttbDMU.setHouseholdSize(hh.getHhSize());
-        ttbDMU.setFemales(hh.getFemales());
-        ttbDMU.setChildren(hh.getChildren());
-        ttbDMU.setYoungAdults(hh.getYoungAdults());
-        ttbDMU.setRetirees(hh.getRetirees());
-        ttbDMU.setWorkers(hh.getNumberOfWorkers());
-        ttbDMU.setStudents(hh.getStudents());
+        ttbDMU.setFemales(MitoUtil.getFemalesForHousehold(hh));
+        ttbDMU.setChildren(MitoUtil.getChildrenForHousehold(hh));
+        ttbDMU.setYoungAdults(MitoUtil.getYoungAdultsForHousehold(hh));
+        ttbDMU.setRetirees(MitoUtil.getRetireesForHousehold(hh));
+        ttbDMU.setWorkers(MitoUtil.getNumberOfWorkersForHousehold(hh));
+        ttbDMU.setStudents(MitoUtil.getStudentsForHousehold(hh));
+        ttbDMU.setLicenseHolders(MitoUtil.getLicenseHoldersForHousehold(hh));
         ttbDMU.setCars(hh.getAutos());
-        ttbDMU.setLicenseHolders(hh.getLicenseHolders());
         ttbDMU.setIncome(hh.getIncome());
-        ttbDMU.setAreaType(dataSet.getZones().get(hh.getHomeZone()).getRegion());
+        ttbDMU.setAreaType(hh.getHomeZone().getRegion());
         Map<Purpose, Integer> tripCounter = new HashMap<>();
-        for (Purpose purpose: Purpose.values()) {
-            if (hh.getTripsByPurpose().containsKey(purpose)) {
-                tripCounter.put(purpose, hh.getTripsByPurpose().get(purpose).size());
-            } else {
-                tripCounter.put(purpose,0);
-            }
+        for (Purpose purpose : Purpose.values()) {
+            tripCounter.put(purpose, hh.getTripsForPurpose(purpose).size());
         }
         ttbDMU.setTrips(tripCounter, dataSet);
     }
 
     private void log(MitoHousehold hh) {
         logger.info("Household " + hh.getHhId() + " with " + hh.getHhSize() + " persons living in area type " +
-                dataSet.getZones().get(hh.getHomeZone()).getRegion());
+                hh.getHomeZone().getRegion());
         calculator.logAnswersArray(logger, purpose + " Travel Time Budget");
     }
 
     public int getNumberOfAlternatives() {
         return calculator.getNumberOfAlternatives();
     }
+
+
 }

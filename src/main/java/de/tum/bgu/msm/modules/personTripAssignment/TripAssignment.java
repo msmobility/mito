@@ -6,6 +6,6 @@ import de.tum.bgu.msm.data.MitoTrip;
 
 import java.util.Map;
 
-public interface TripDistribution {
+public interface TripAssignment {
     Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip);
 }

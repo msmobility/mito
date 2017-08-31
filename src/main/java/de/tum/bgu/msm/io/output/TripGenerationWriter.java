@@ -45,11 +45,11 @@ public class TripGenerationWriter {
             tripProdByZoneAndPurp.put(zoneId, initialValues);
         }
 
-        for (MitoTrip trip: dataSet.getTrips().values()) {
-            Purpose purpose =trip.getTripPurpose();
-            int number = tripProdByZoneAndPurp.get(trip.getTripOrigin()).get(purpose);
-            tripProdByZoneAndPurp.get(trip.getTripOrigin()).replace(purpose, (number + 1));
-        }
+//        for (MitoTrip trip: dataSet.getTrips().values()) {
+//            Purpose purpose =trip.getTripPurpose();
+//            int number = tripProdByZoneAndPurp.get(trip.getTripOrigin()).get(purpose);
+//            tripProdByZoneAndPurp.get(trip.getTripOrigin()).replace(purpose, (number + 1));
+//        }
 
         int totalTrips = 0;
         pwProd.println();

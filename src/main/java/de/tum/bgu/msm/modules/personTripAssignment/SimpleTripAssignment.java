@@ -13,11 +13,11 @@ import java.util.Map;
 /**
  * This distribution returns random weights for persons fitting to the purpose.
  */
-class SimpleTripDistribution implements TripDistribution {
+class SimpleTripAssignment implements TripAssignment {
 
-    private static final Logger logger = Logger.getLogger(SimpleTripDistribution.class);
+    private static final Logger logger = Logger.getLogger(SimpleTripAssignment.class);
 
-    SimpleTripDistribution(){
+    SimpleTripAssignment(){
 
     }
 

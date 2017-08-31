@@ -4,6 +4,9 @@ import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -18,9 +21,11 @@ public class MitoPerson implements Serializable {
     private final Gender gender;
     private Occupation occupation;
     private int workplace;
-    private int workzone;
+    private Zone workzone;
     private int age;
     private boolean driversLicense;
+
+    private List<MitoTrip> trips = new ArrayList();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
@@ -39,7 +44,7 @@ public class MitoPerson implements Serializable {
         return workplace;
     }
 
-    public void setWorkzone(int workzone) {
+    public void setWorkzone(Zone workzone) {
         this.workzone = workzone;
     }
 
@@ -47,7 +52,7 @@ public class MitoPerson implements Serializable {
         return occupation;
     }
 
-    public int getWorkzone() {
+    public Zone getWorkzone() {
         return workzone;
     }
 
@@ -69,5 +74,17 @@ public class MitoPerson implements Serializable {
 
     public void setDriversLicense(boolean driversLicense) {
         this.driversLicense = driversLicense;
+    }
+
+    public List<MitoTrip> getTrips() {
+        return Collections.unmodifiableList(this.trips);
+    }
+
+    public void addTrip(MitoTrip trip) {
+        this.trips.add(trip);
+    }
+
+    public void removeTrip(MitoTrip trip) {
+        this.trips.remove(trip);
     }
 }

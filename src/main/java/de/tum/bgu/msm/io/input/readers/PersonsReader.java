@@ -28,8 +28,6 @@ public class PersonsReader extends CSVReader {
     private int posLicence = -1;
     private int posIncome = -1;
 
-    private final Map<Integer, MitoPerson> persons = new HashMap<>();
-
     public PersonsReader(DataSet dataSet) {
         super(dataSet);
     }
@@ -39,7 +37,6 @@ public class PersonsReader extends CSVReader {
         logger.info("  Reading person micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.PERSONS);
         super.readLineByLine(fileName, ",");
-        dataSet.getPersons().putAll(persons);
     }
 
     @Override
@@ -89,7 +86,7 @@ public class PersonsReader extends CSVReader {
         int income = Integer.parseInt(record[posIncome]);
         hh.setIncome(hh.getIncome() + income);
         MitoPerson pp = new MitoPerson(id, occupation, workplace, age, gender, driversLicense);
-        persons.put(pp.getId(), pp);
-        hh.getPersons().add(pp);
+        dataSet.addPerson(pp);
+        hh.addPerson(pp);
     }
 }
