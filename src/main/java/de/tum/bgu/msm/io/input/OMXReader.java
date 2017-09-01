@@ -1,8 +1,8 @@
 package de.tum.bgu.msm.io.input;
 
 import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.util.MitoUtil;
 import omx.OmxFile;
 
 /**

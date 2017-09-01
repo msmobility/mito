@@ -1,12 +1,12 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 /**

@@ -1,12 +1,12 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.TravelTimeBudget;
 import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -137,7 +137,9 @@ public class TravelTimeBudgetModuleTest {
         MitoPerson worker33 = new MitoPerson(33, Occupation.WORKER, 1, 20, Gender.MALE, false);
         worker33.setWorkzone(dummyZone);
         MitoPerson child34 = new MitoPerson(34, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
+        child34.setWorkzone(dummyZone);
         MitoPerson child35 = new MitoPerson(35, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
+        child35.setWorkzone(dummyZone);
 
         dataSet.getHouseholds().get(3).addPerson(worker31);
         dataSet.getHouseholds().get(3).addPerson(worker32);
@@ -152,7 +154,9 @@ public class TravelTimeBudgetModuleTest {
         MitoPerson worker43 = new MitoPerson(43, Occupation.WORKER, 1, 20, Gender.MALE, false);
         worker43.setWorkzone(dummyZone);
         MitoPerson child44 = new MitoPerson(44, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
+        child44.setWorkzone(dummyZone);
         MitoPerson child45 = new MitoPerson(45, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
+        child45.setWorkzone(dummyZone);
 
         dataSet.getHouseholds().get(4).addPerson(worker41);
         dataSet.getHouseholds().get(4).addPerson(worker42);

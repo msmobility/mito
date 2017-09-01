@@ -1,14 +1,9 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
-import com.pb.common.calculator2.IndexValues;
-import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.resources.Purpose;
-import org.apache.log4j.Logger;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.uec.DMU;
 
 /**
  * Calculates travel time budget
@@ -16,13 +11,9 @@ import java.util.Map;
  * Created on 2 April 2017 in train between Stuttgart and Ulm
  **/
 
-
-public class TravelTimeBudgetDMU implements com.pb.common.calculator2.VariableTable {
-
-    protected transient Logger logger = Logger.getLogger(TravelTimeBudgetDMU.class);
+public class TravelTimeBudgetDMU extends DMU<MitoHousehold> {
 
     // uec variables
-    private final IndexValues dmuIndex;
     private int householdSize;
     private int females;
     private int children;
@@ -40,92 +31,6 @@ public class TravelTimeBudgetDMU implements com.pb.common.calculator2.VariableTa
     private int hbeTrips;
     private int nhbwTrips;
     private int nhboTrips;
-
-    private Map<Integer, String> fieldByIndex;
-
-
-
-    public TravelTimeBudgetDMU() {
-        dmuIndex = new IndexValues();
-        fieldByIndex = new HashMap<>();
-    }
-
-    public IndexValues getDmuIndexValues() {
-        return dmuIndex;
-    }
-
-    public void setHouseholdSize (int householdSize) {
-        this.householdSize = householdSize;
-    }
-
-    public void setWorkers (int workers) {
-        this.workers = workers;
-    }
-
-    public void setIncome(int income) {
-        this.income = income;
-    }
-
-    public void setFemales(int females) {
-        this.females = females;
-    }
-
-    public void setChildren(int children) {
-        this.children = children;
-    }
-
-    public void setYoungAdults(int youngAdults) {
-        this.youngAdults = youngAdults;
-    }
-
-    public void setRetirees(int retirees) {
-        this.retirees = retirees;
-    }
-
-    public void setStudents(int students) {
-        this.students = students;
-    }
-
-    public void setCars(int cars) {
-        this.cars = cars;
-    }
-
-    public void setLicenseHolders(int licenseHolders) {
-        this.licenseHolders = licenseHolders;
-    }
-
-    public void setAreaType(int areaType) {
-        this.areaType = areaType;
-    }
-
-    public void setTrips(Map<Purpose, Integer> tripCounter, DataSet dataSet) {
-        this.hbwTrips = tripCounter.get(Purpose.HBW);
-        this.hbsTrips = tripCounter.get(Purpose.HBS);
-        this.hboTrips = tripCounter.get(Purpose.HBO);
-        this.hbeTrips = tripCounter.get(Purpose.HBE);
-        this.nhbwTrips = tripCounter.get(Purpose.NHBW);
-        this.nhboTrips = tripCounter.get(Purpose.NHBO);
-    }
-
-    public void setHbsTrips(int hbsTrips) {
-        this.hbsTrips = hbsTrips;
-    }
-
-    public void setHboTrips(int hboTrips) {
-        this.hboTrips = hboTrips;
-    }
-
-    public void setHbeTrips(int hbeTrips) {
-        this.hbeTrips = hbeTrips;
-    }
-
-    public void setNhbwTrips(int nhbwTrips) {
-        this.nhbwTrips = nhbwTrips;
-    }
-
-    public void setNhboTrips(int nhboTrips) {
-        this.nhboTrips = nhboTrips;
-    }
 
 
     // DMU methods - define one of these for every @var in the control file.
@@ -198,48 +103,23 @@ public class TravelTimeBudgetDMU implements com.pb.common.calculator2.VariableTa
     }
 
     @Override
-    public int getIndexValue(String variableName) {
-        fieldByIndex.put(fieldByIndex.size(), variableName);
-        return fieldByIndex.size()-1;
-    }
-
-    @Override
-    public int getAssignmentIndexValue(String variableName) {
-        return 0;
-    }
-
-    @Override
-    public double getValueForIndex(int variableIndex) {
-        return getValueForIndex(0, 0);
-    }
-
-    @Override
-    public double getValueForIndex(int variableIndex, int arrayIndex) {
-        String field = fieldByIndex.get(variableIndex);
-        try {
-            Method method = this.getClass().getMethod(field);
-            return Double.parseDouble(String.valueOf(method.invoke(this, null)));
-        } catch (NoSuchMethodException e) {
-            logger.error("Could not find defined field in DMU class");
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            logger.error("Error in method loading");
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            logger.error("Error in method loading");
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
-
-    @Override
-    public void setValue(String variableName, double variableValue) {
-
-    }
-
-    @Override
-    public void setValue(int variableIndex, double variableValue) {
-
+    protected void setup(MitoHousehold hh) {
+        this.householdSize = hh.getHhSize();
+        this.females = MitoUtil.getFemalesForHousehold(hh);
+        this.children = MitoUtil.getChildrenForHousehold(hh);
+        this.youngAdults = MitoUtil.getYoungAdultsForHousehold(hh);
+        this.retirees = MitoUtil.getRetireesForHousehold(hh);
+        this.workers = MitoUtil.getNumberOfWorkersForHousehold(hh);
+        this.students = MitoUtil.getStudentsForHousehold(hh);
+        this.licenseHolders = MitoUtil.getLicenseHoldersForHousehold(hh);
+        this.cars = hh.getAutos();
+        this.income = hh.getIncome();
+        this.areaType = hh.getHomeZone().getRegion();
+        this.hbwTrips = hh.getTripsForPurpose(Purpose.HBW).size();
+        this.hbsTrips = hh.getTripsForPurpose(Purpose.HBS).size();
+        this.hboTrips = hh.getTripsForPurpose(Purpose.HBO).size();
+        this.hbeTrips = hh.getTripsForPurpose(Purpose.HBE).size();
+        this.nhbwTrips = hh.getTripsForPurpose(Purpose.NHBW).size();
+        this.nhboTrips = hh.getTripsForPurpose(Purpose.NHBO).size();
     }
 }

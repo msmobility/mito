@@ -1,18 +1,15 @@
 package de.tum.bgu.msm.io.output;
 
-
-import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Methods to summarize model results
@@ -56,7 +53,7 @@ public class SummarizeData {
         PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp, false);
         pwp.println("id,hhID,hhSize,hhTrips,avTrips");
         for(MitoHousehold hh: dataSet.getHouseholds().values()) {
-            for (MitoPerson pp : hh.getPersons()) {
+            for (MitoPerson pp : hh.getPersons().values()) {
                     pwp.print(pp.getId());
                     pwp.print(",");
                     pwp.print(hh.getHhId());

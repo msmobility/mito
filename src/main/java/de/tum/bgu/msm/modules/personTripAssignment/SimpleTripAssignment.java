@@ -25,7 +25,7 @@ class SimpleTripAssignment implements TripAssignment {
     public Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip) {
         double weightSum = 0;
         Map<MitoPerson, Double> probabilitiesByPerson = new HashMap<>();
-        for (MitoPerson person : household.getPersons()) {
+        for (MitoPerson person : household.getPersons().values()) {
             double weight = getWeight(household, person, trip);
             weightSum += weight;
             probabilitiesByPerson.put(person, weight);

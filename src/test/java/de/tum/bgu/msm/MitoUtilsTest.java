@@ -1,5 +1,6 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Test;
 
 import java.util.HashMap;

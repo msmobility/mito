@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
@@ -9,11 +8,10 @@ import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.counterDroppedTripsAtBorder;

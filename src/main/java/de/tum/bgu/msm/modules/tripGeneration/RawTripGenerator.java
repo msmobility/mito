@@ -1,18 +1,15 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import com.pb.sawdust.calculator.Function1;
-import com.pb.sawdust.util.array.ArrayUtil;
 import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
 import com.pb.sawdust.util.concurrent.IteratorAction;
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 

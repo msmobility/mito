@@ -2,11 +2,10 @@ package de.tum.bgu.msm.data;
 
 import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -17,6 +16,8 @@ import java.util.List;
 
 public class MitoPerson implements Serializable {
 
+    private static final Logger logger = Logger.getLogger(MitoPerson.class);
+
     private final int id;
     private final Gender gender;
     private Occupation occupation;
@@ -25,7 +26,7 @@ public class MitoPerson implements Serializable {
     private int age;
     private boolean driversLicense;
 
-    private List<MitoTrip> trips = new ArrayList();
+    private Map<Integer,MitoTrip> trips = new HashMap();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
@@ -76,15 +77,23 @@ public class MitoPerson implements Serializable {
         this.driversLicense = driversLicense;
     }
 
-    public List<MitoTrip> getTrips() {
-        return Collections.unmodifiableList(this.trips);
+    public Map<Integer, MitoTrip> getTrips() {
+        return Collections.unmodifiableMap(this.trips);
     }
 
     public void addTrip(MitoTrip trip) {
-        this.trips.add(trip);
+        MitoTrip test = this.trips.get(trip.getTripId());
+        if(test != null) {
+            if(test.equals(trip)) {
+                logger.warn("Trip " + trip.getTripId() + "already exists in person " + this.getId());
+            } else {
+                throw new IllegalArgumentException("Trip id " + trip.getTripId() + " already exists in person " + this.getId());
+            }
+        }
+        this.trips.put(trip.getTripId(), trip);
     }
 
-    public void removeTrip(MitoTrip trip) {
-        this.trips.remove(trip);
+    public void removeTrip(Integer tripId) {
+        this.trips.remove(tripId);
     }
 }

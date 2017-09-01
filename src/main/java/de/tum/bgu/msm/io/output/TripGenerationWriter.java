@@ -1,12 +1,12 @@
 package de.tum.bgu.msm.io.output;
 
 import de.tum.bgu.msm.MitoModel;
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -45,11 +45,13 @@ public class TripGenerationWriter {
             tripProdByZoneAndPurp.put(zoneId, initialValues);
         }
 
-//        for (MitoTrip trip: dataSet.getTrips().values()) {
-//            Purpose purpose =trip.getTripPurpose();
-//            int number = tripProdByZoneAndPurp.get(trip.getTripOrigin()).get(purpose);
-//            tripProdByZoneAndPurp.get(trip.getTripOrigin()).replace(purpose, (number + 1));
-//        }
+        for (MitoTrip trip: dataSet.getTrips().values()) {
+            if(trip.getTripOrigin() != null && trip.getTripDestination() != null) {
+                Purpose purpose = trip.getTripPurpose();
+                int number = tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).get(purpose);
+                tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).replace(purpose, (number + 1));
+            }
+        }
 
         int totalTrips = 0;
         pwProd.println();

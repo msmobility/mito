@@ -14,19 +14,6 @@ import static de.tum.bgu.msm.resources.Purpose.*;
 
 public class DefaultTripAssignment implements TripAssignment {
 
-    double hbwAssignedToWorker = 0;
-    double hbwAssignedToUnemployedAdult = 0;
-    double hbwAssignedToUnderagePerson = 0;
-
-    double hbeAssigendToStudent = 0;
-    double hbeAssignedToNonStudent = 0;
-
-    double hbsHboAssignedToWorker = 0;
-    double hbsHboAssignedToUnemployed = 0;
-
-    double partitionOfHBEToStudentsAssigend = 0;
-
-
     @Override
     public Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip) {
         Purpose purpose = trip.getTripPurpose();
@@ -46,15 +33,15 @@ public class DefaultTripAssignment implements TripAssignment {
     }
 
     private void assignHBW(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
-        for (MitoPerson person : household.getPersons()) {
+        for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation() == WORKER) {
-                long previousTrips = person.getTrips().stream().filter(trip -> trip.getTripPurpose() == HBW).count();
+                long previousTrips = person.getTrips().values().stream().filter(trip -> trip.getTripPurpose() == HBW).count();
                 double probability = Math.pow(10, -previousTrips);
                 probabilitiesByPerson.put(person, probability);
             }
         }
         if (probabilitiesByPerson.isEmpty()) {
-            for (MitoPerson person : household.getPersons()) {
+            for (MitoPerson person : household.getPersons().values()) {
                 if (person.getAge() > 16) {
                     probabilitiesByPerson.put(person, 1.);
                 }
@@ -66,9 +53,9 @@ public class DefaultTripAssignment implements TripAssignment {
     }
 
     private void assignHBE(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
-        for (MitoPerson person : household.getPersons()) {
+        for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation() == STUDENT) {
-                long previousTrips = person.getTrips().stream().filter(trip -> trip.getTripPurpose() == HBE).count();
+                long previousTrips = person.getTrips().values().stream().filter(trip -> trip.getTripPurpose() == HBE).count();
                 double probability = Math.pow(10, -previousTrips);
                 probabilitiesByPerson.put(person, probability);
             }
@@ -79,7 +66,7 @@ public class DefaultTripAssignment implements TripAssignment {
     }
 
     private void assignHBSHBO(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
-        for (MitoPerson person : household.getPersons()) {
+        for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation() == WORKER) {
                 probabilitiesByPerson.put(person, 1. / 3.);
             }
@@ -88,11 +75,11 @@ public class DefaultTripAssignment implements TripAssignment {
     }
 
     private void assignNHBW(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
-            for (MitoTrip workTrip : household.getTripsForPurpose(HBW)) {
-                probabilitiesByPerson.put(workTrip.getPerson(), 1.);
-            }
+        for (MitoTrip workTrip : household.getTripsForPurpose(HBW)) {
+            probabilitiesByPerson.put(workTrip.getPerson(), 1.);
+        }
         if (probabilitiesByPerson.isEmpty()) {
-            for (MitoPerson person : household.getPersons()) {
+            for (MitoPerson person : household.getPersons().values()) {
                 if (person.getAge() > 16) {
                     probabilitiesByPerson.put(person, 1.);
                 }
@@ -119,7 +106,7 @@ public class DefaultTripAssignment implements TripAssignment {
     }
 
     private void fillEquallyDistributed(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
-        for (MitoPerson person : household.getPersons()) {
+        for (MitoPerson person : household.getPersons().values()) {
             probabilitiesByPerson.put(person, 1.);
         }
     }

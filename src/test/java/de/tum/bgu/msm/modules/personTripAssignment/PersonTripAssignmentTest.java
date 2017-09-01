@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.personTripAssignment;
 
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -10,14 +9,12 @@ import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Test;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PersonTripAssignmentTest {
 

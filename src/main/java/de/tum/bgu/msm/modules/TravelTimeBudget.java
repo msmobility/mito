@@ -79,7 +79,7 @@ public class TravelTimeBudget extends Module {
         logger.info("  Started microscopic travel time budget calculation.");
         // loop over every household and calculate travel time budget by purpose
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            double totalTravelTimeBudget = totalTravelTimeCalc.calculateTTB(household, totalTtbAvail);
+            double totalTravelTimeBudget = totalTravelTimeCalc.calculate(household, totalTtbAvail);
             calculateDiscretionaryPurposeBudgets(household);
             calculateHBWBudgets(household);
             calculateHBEBudgets(household);
@@ -90,8 +90,12 @@ public class TravelTimeBudget extends Module {
 
     private void calculateHBWBudgets(MitoHousehold household) {
         double hbwBudget = 0;
-        for (MitoPerson person : household.getPersons()) {
+        for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation().equals(Occupation.WORKER)) {
+                if(person.getWorkzone() == null) {
+                    logger.warn("Worker with workzone null will not be considered for travel time budget.");
+                    continue;
+                }
                 hbwBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
             }
         }
@@ -100,8 +104,12 @@ public class TravelTimeBudget extends Module {
 
     private void calculateHBEBudgets(MitoHousehold household) {
         double hbeBudget = 0;
-        for (MitoPerson person : household.getPersons()) {
+        for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation().equals(Occupation.STUDENT)) {
+                if(person.getWorkzone() == null) {
+                    logger.warn("Student with workzone null will not be considered for travel time budget.");
+                    continue;
+                }
                 hbeBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
             }
         }
@@ -109,10 +117,10 @@ public class TravelTimeBudget extends Module {
     }
 
     private void calculateDiscretionaryPurposeBudgets(MitoHousehold household) {
-        household.setTravelTimeBudgetByPurpose(Purpose.HBS, hbsTravelTimeCalc.calculateTTB(household, totalTtbAvail));
-        household.setTravelTimeBudgetByPurpose(Purpose.HBO, hboTravelTimeCalc.calculateTTB(household, totalTtbAvail));
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, nhbwTravelTimeCalc.calculateTTB(household, totalTtbAvail));
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, nhboTravelTimeCalc.calculateTTB(household, totalTtbAvail));
+        household.setTravelTimeBudgetByPurpose(Purpose.HBS, hbsTravelTimeCalc.calculate(household, totalTtbAvail));
+        household.setTravelTimeBudgetByPurpose(Purpose.HBO, hboTravelTimeCalc.calculate(household, totalTtbAvail));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, nhbwTravelTimeCalc.calculate(household, totalTtbAvail));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, nhboTravelTimeCalc.calculate(household, totalTtbAvail));
     }
 
 

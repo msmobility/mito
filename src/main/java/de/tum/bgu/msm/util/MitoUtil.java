@@ -1,8 +1,7 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.util;
 
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
@@ -293,40 +292,40 @@ public class MitoUtil {
     }
 
     public static int getFemalesForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().stream().filter(person ->
+        return (int) household.getPersons().values().stream().filter(person ->
                 person.getGender().equals(Gender.FEMALE)).count();
     }
 
     public static int getChildrenForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().stream().filter(person ->
+        return (int) household.getPersons().values().stream().filter(person ->
                 person.getAge() < 18).count();
     }
 
     public static int getYoungAdultsForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().stream().filter(person ->
+        return (int) household.getPersons().values().stream().filter(person ->
                 person.getAge() >= 18 && person.getAge() <= 25).count();
 
     }
 
     public static int getRetireesForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().stream().filter(person ->
+        return (int) household.getPersons().values().stream().filter(person ->
                 person.getAge() > 65).count();
     }
 
     public static int getNumberOfWorkersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().stream().filter(person ->
+        return (int) household.getPersons().values().stream().filter(person ->
                 person.getOccupation() == Occupation.WORKER).count();
 
     }
 
     public static int getStudentsForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().stream().filter(person ->
+        return (int) household.getPersons().values().stream().filter(person ->
                 person.getOccupation() == Occupation.STUDENT).count();
 
     }
 
     public static int getLicenseHoldersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().stream().filter(person ->
+        return (int) household.getPersons().values().stream().filter(person ->
                 person.hasDriversLicense()).count();
     }
 }

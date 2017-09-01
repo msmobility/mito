@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules;
 
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -11,6 +10,7 @@ import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
