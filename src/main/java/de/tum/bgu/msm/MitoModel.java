@@ -60,7 +60,6 @@ public class MitoModel {
         logger.info("  Reading input data for MITO");
         manager.readAsStandAlone();
         manager.readAdditionalData();
-
     }
 
     public void runModel() {

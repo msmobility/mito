@@ -1,10 +1,10 @@
-package de.tum.bgu.msm.modules;
+package de.tum.bgu.msm.modules.personTripAssignment;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.modules.personTripAssignment.TripAssignment;
+import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;

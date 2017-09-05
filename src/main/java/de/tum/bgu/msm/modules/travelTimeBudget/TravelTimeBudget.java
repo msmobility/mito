@@ -1,9 +1,9 @@
-package de.tum.bgu.msm.modules;
+package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetCalculator;
+import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
@@ -35,7 +35,6 @@ public class TravelTimeBudget extends Module {
     private final boolean logCalculationNhbwTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBW_TTB);
     private final boolean logCalculationNhboTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBO_TTB);
 
-    private int[] totalTtbAvail;
     private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
 
     public TravelTimeBudget(DataSet dataSet) {
@@ -52,26 +51,21 @@ public class TravelTimeBudget extends Module {
     private void setupTravelTimeBudgetModel() {
 
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
+
         int totalTtbSheetNumber = Resources.INSTANCE.getInt(Properties.TOTAL_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        totalTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationTotalTtb, "Total", dataSet, totalTtbSheetNumber);
+        totalTravelTimeCalc = new TravelTimeBudgetCalculator(totalTtbSheetNumber);
 
         int hbsTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        hbsTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationHbsTtb, Purpose.HBS.toString(), dataSet, hbsTtbSheetNumber);
+        hbsTravelTimeCalc = new TravelTimeBudgetCalculator(hbsTtbSheetNumber);
 
         int hboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        hboTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationHboTtb, Purpose.HBO.toString(), dataSet, hboTtbSheetNumber);
+        hboTravelTimeCalc = new TravelTimeBudgetCalculator(hboTtbSheetNumber);
 
         int nhbwTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        nhbwTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationNhbwTtb, Purpose.NHBW.toString(), dataSet, nhbwTtbSheetNumber);
+        nhbwTravelTimeCalc = new TravelTimeBudgetCalculator(nhbwTtbSheetNumber);
 
         int nhboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        nhboTravelTimeCalc = new TravelTimeBudgetCalculator(logCalculationNhboTtb, Purpose.NHBO.toString(), dataSet, nhboTtbSheetNumber);
-
-        int numAltsTravelBudget = totalTravelTimeCalc.getNumberOfAlternatives();
-        totalTtbAvail = new int[numAltsTravelBudget + 1];
-        for (int i = 1; i < totalTtbAvail.length; i++) {
-            totalTtbAvail[i] = 1;
-        }
+        nhboTravelTimeCalc = new TravelTimeBudgetCalculator(nhboTtbSheetNumber);
     }
 
     private void calculateTravelTimeBudget() {
@@ -79,7 +73,7 @@ public class TravelTimeBudget extends Module {
         logger.info("  Started microscopic travel time budget calculation.");
         // loop over every household and calculate travel time budget by purpose
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            double totalTravelTimeBudget = totalTravelTimeCalc.calculate(household, totalTtbAvail);
+            double totalTravelTimeBudget = totalTravelTimeCalc.calculate(logCalculationTotalTtb, household);
             calculateDiscretionaryPurposeBudgets(household);
             calculateHBWBudgets(household);
             calculateHBEBudgets(household);
@@ -117,10 +111,10 @@ public class TravelTimeBudget extends Module {
     }
 
     private void calculateDiscretionaryPurposeBudgets(MitoHousehold household) {
-        household.setTravelTimeBudgetByPurpose(Purpose.HBS, hbsTravelTimeCalc.calculate(household, totalTtbAvail));
-        household.setTravelTimeBudgetByPurpose(Purpose.HBO, hboTravelTimeCalc.calculate(household, totalTtbAvail));
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, nhbwTravelTimeCalc.calculate(household, totalTtbAvail));
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, nhboTravelTimeCalc.calculate(household, totalTtbAvail));
+        household.setTravelTimeBudgetByPurpose(Purpose.HBS, hbsTravelTimeCalc.calculate(logCalculationHbsTtb, household));
+        household.setTravelTimeBudgetByPurpose(Purpose.HBO, hboTravelTimeCalc.calculate(logCalculationHboTtb, household));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, nhbwTravelTimeCalc.calculate(logCalculationNhbwTtb, household));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, nhboTravelTimeCalc.calculate(logCalculationNhboTtb, household));
     }
 
 

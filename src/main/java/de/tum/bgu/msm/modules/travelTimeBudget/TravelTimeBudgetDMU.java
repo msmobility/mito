@@ -11,115 +11,91 @@ import de.tum.bgu.msm.util.uec.DMU;
  * Created on 2 April 2017 in train between Stuttgart and Ulm
  **/
 
-public class TravelTimeBudgetDMU extends DMU<MitoHousehold> {
+public final class TravelTimeBudgetDMU extends DMU<MitoHousehold> {
 
-    // uec variables
-    private int householdSize;
-    private int females;
-    private int children;
-    private int youngAdults;
-    private int retirees;
-    private int workers;
-    private int students;
-    private int cars;
-    private int licenseHolders;
-    private int income;
-    private int areaType;
-    private int hbwTrips;
-    private int hbsTrips;
-    private int hboTrips;
-    private int hbeTrips;
-    private int nhbwTrips;
-    private int nhboTrips;
-
+    private MitoHousehold household;
 
     // DMU methods - define one of these for every @var in the control file.
     public int getHouseholdSize() {
-        return householdSize;
+        return household.getHhSize();
     }
 
     public int getFemales() {
-        return females;
+        return MitoUtil.getFemalesForHousehold(household);
     }
 
     public int getChildren() {
-        return children;
+        return MitoUtil.getChildrenForHousehold(household);
     }
 
     public int getYoungAdults() {
-        return youngAdults;
+        return MitoUtil.getYoungAdultsForHousehold(household);
     }
 
     public int getRetirees() {
-        return retirees;
+        return MitoUtil.getRetireesForHousehold(household);
     }
 
     public int getStudents() {
-        return students;
+        return MitoUtil.getStudentsForHousehold(household);
     }
 
     public int getWorkers() {
-        return workers;
+        return MitoUtil.getNumberOfWorkersForHousehold(household);
     }
 
     public int getIncome() {
-        return income;
+        return household.getIncome();
     }
 
     public int getCars() {
-        return cars;
+        return household.getAutos();
     }
 
     public int getLicenseHolders() {
-        return licenseHolders;
+        return MitoUtil.getLicenseHoldersForHousehold(household);
     }
 
     public int getAreaType() {
-        return areaType;
+        return household.getHomeZone().getRegion();
     }
 
     public int getHbwTrips() {
-        return hbwTrips;
+        return household.getTripsForPurpose(Purpose.HBW).size();
     }
 
     public int getHbsTrips() {
-        return hbsTrips;
+        return household.getTripsForPurpose(Purpose.HBS).size();
     }
 
     public int getHboTrips() {
-        return hboTrips;
+        return household.getTripsForPurpose(Purpose.HBO).size();
     }
 
     public int getHbeTrips() {
-        return hbeTrips;
+        return household.getTripsForPurpose(Purpose.HBE).size();
     }
 
     public int getNhbwTrips() {
-        return nhbwTrips;
+        return household.getTripsForPurpose(Purpose.NHBW).size();
     }
 
     public int getNhboTrips() {
-        return nhboTrips;
+        return household.getTripsForPurpose(Purpose.NHBO).size();
+    }
+
+    TravelTimeBudgetDMU() {
+
     }
 
     @Override
-    protected void setup(MitoHousehold hh) {
-        this.householdSize = hh.getHhSize();
-        this.females = MitoUtil.getFemalesForHousehold(hh);
-        this.children = MitoUtil.getChildrenForHousehold(hh);
-        this.youngAdults = MitoUtil.getYoungAdultsForHousehold(hh);
-        this.retirees = MitoUtil.getRetireesForHousehold(hh);
-        this.workers = MitoUtil.getNumberOfWorkersForHousehold(hh);
-        this.students = MitoUtil.getStudentsForHousehold(hh);
-        this.licenseHolders = MitoUtil.getLicenseHoldersForHousehold(hh);
-        this.cars = hh.getAutos();
-        this.income = hh.getIncome();
-        this.areaType = hh.getHomeZone().getRegion();
-        this.hbwTrips = hh.getTripsForPurpose(Purpose.HBW).size();
-        this.hbsTrips = hh.getTripsForPurpose(Purpose.HBS).size();
-        this.hboTrips = hh.getTripsForPurpose(Purpose.HBO).size();
-        this.hbeTrips = hh.getTripsForPurpose(Purpose.HBE).size();
-        this.nhbwTrips = hh.getTripsForPurpose(Purpose.NHBW).size();
-        this.nhboTrips = hh.getTripsForPurpose(Purpose.NHBO).size();
+    public void updateDMU(MitoHousehold hh) {
+        this.household = hh;
+    }
+
+    @Override
+    public String toString() {
+        return "Household " + household.getHhId() + " with " + household.getHhSize() + " persons living in area type " +
+                household.getHomeZone().getRegion();
     }
 }

@@ -3,10 +3,10 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
-import de.tum.bgu.msm.modules.PersonTripAssignment;
-import de.tum.bgu.msm.modules.TravelTimeBudget;
-import de.tum.bgu.msm.modules.TripDistribution;
-import de.tum.bgu.msm.modules.TripGeneration;
+import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
+import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudget;
+import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import org.apache.log4j.Logger;
 
 /**

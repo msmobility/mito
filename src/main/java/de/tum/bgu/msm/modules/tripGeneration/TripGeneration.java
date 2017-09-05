@@ -1,12 +1,8 @@
-package de.tum.bgu.msm.modules;
+package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.output.SummarizeData;
-import de.tum.bgu.msm.io.output.TripGenerationWriter;
-import de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator;
-import de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator;
-import de.tum.bgu.msm.modules.tripGeneration.TripBalancer;
+import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
@@ -20,7 +16,7 @@ import java.util.Map;
  *
  */
 
-public class TripGeneration extends Module{
+public class TripGeneration extends Module {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
 

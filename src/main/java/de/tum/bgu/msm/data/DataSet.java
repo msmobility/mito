@@ -67,6 +67,9 @@ public class DataSet {
         this.transitTravelTimes = travelTimes;
     }
 
+    public Map<Integer, MitoPerson> getPersons() {
+        return Collections.unmodifiableMap(persons);
+    }
 
     public Map<Integer, Zone> getZones() {
         return Collections.unmodifiableMap(zones);
@@ -74,10 +77,6 @@ public class DataSet {
 
     public Map<Integer, MitoHousehold> getHouseholds() {
         return Collections.unmodifiableMap(households);
-    }
-
-    public Map<Integer, MitoPerson> getPersons() {
-        return Collections.unmodifiableMap(persons);
     }
 
     public Map<Integer, MitoTrip> getTrips() {

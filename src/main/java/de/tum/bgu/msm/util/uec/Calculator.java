@@ -1,41 +1,41 @@
 package de.tum.bgu.msm.util.uec;
 
 import com.pb.common.calculator2.UtilityExpressionCalculator;
-import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 public abstract class Calculator<T> {
 
-    private final UtilityExpressionCalculator calculator;
-    private final DMU dmu;
-    private final boolean log;
+    private static final Logger logger = Logger.getLogger(Calculator.class);
 
-    public Calculator(String uecPropertiesPath, String dataSheetPropertiesPath, DMU dmu, DataSet dataSet, boolean log, int sheetNumber) {
-        this.log = log;
+    private final UtilityExpressionCalculator calculator;
+    protected final DMU<T> dmu;
+    private final int[] altAvailable;
+
+    public Calculator(String uecPropertiesPath, String dataSheetPropertiesPath,
+                      int sheetNumber, DMU dmu) {
         String uecFileName = Resources.INSTANCE.getString(uecPropertiesPath);
         int dataSheetNumber = Resources.INSTANCE.getInt(dataSheetPropertiesPath);
         this.calculator = Resources.INSTANCE.getUtilityExpressionCalculator2(uecFileName, sheetNumber, dataSheetNumber, dmu);
         this.dmu = dmu;
+        int numAlts= calculator.getNumberOfAlternatives();
+        this.altAvailable = new int[numAlts + 1];
+        for (int i = 1; i < altAvailable.length; i++) {
+            altAvailable[i] = 1;
+        }
     }
 
-    protected abstract void log(T object);
-
-    public double calculate(T object, int[] totalAvail) {
-        dmu.setup(object);
-        double util[] = calculator.solve(dmu.getDmuIndexValues(), dmu, totalAvail);
+    public double calculate(boolean log, T object) {
+        updateDMU(object);
+        double util[] = calculator.solve(dmu.getDmuIndexValues(), dmu, altAvailable);
         if (log) {
-            log(object);
+            calculator.logAnswersArray(logger, " Results using dmu: " + dmu.toString());
         }
         return util[0];
     }
 
-    public int getNumberOfAlternatives() {
-        return calculator.getNumberOfAlternatives();
+    protected void updateDMU(T object) {
+            dmu.updateDMU(object);
     }
-
-    public void logAnswersArray(Logger logger, String prefix) {
-        this.calculator.logAnswersArray(logger, prefix);
-    };
 }
 

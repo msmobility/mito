@@ -68,5 +68,5 @@ public abstract class DMU<T> implements com.pb.common.calculator2.VariableTable 
         return dmuIndex;
     }
 
-    protected abstract void setup(T object);
+    public abstract void updateDMU(T object);
 }

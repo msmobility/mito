@@ -1,40 +1,55 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
-import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.TravelTimes;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.util.uec.DMU;
-import javafx.util.Pair;
 
-public class TripDistributionDMU extends DMU<Pair<Zone,Zone>> {
+public class TripDistributionDMU extends DMU<Zone> {
 
-    private final TravelTimes travelTimes;
+    private TravelTimes travelTimes;
+    private double budget;
 
-    //uec variables
-    int totalEmployees;
-    int retailEmployees;
-    int otherEmployees;
-    int schoolEnrollment;
+    private Zone originZone;
+    private Zone zone;
 
-    double travelTime;
+    public int getTotalEmployees() {
+        return zone.getTotalEmpl();
+    }
+
+    public int getRetailEmployees() {
+        return zone.getRetailEmpl();
+    }
+
+    public int getOtherEmployees() {
+        return zone.getOtherEmpl();
+    }
+
+    public int getSchoolEnrollment() {
+        return zone.getSchoolEnrollment();
+    }
+
+    public double getTravelTime() {
+        return travelTimes.getTravelTimeFromTo(originZone, zone);
+    }
+
+    public double getBudgetOffset() {
+        return Math.abs(travelTimes.getTravelTimeFromTo(originZone, zone) - budget);
+    }
+
+    public void setOriginZone(Zone zone) {
+        this.originZone = zone;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
+    }
 
     public TripDistributionDMU(TravelTimes travelTimes) {
         this.travelTimes = travelTimes;
     }
 
-    public int getTotalEmployees() {
-        return totalEmployees;
-    }
-
-    public double getTravelTime() {
-        return travelTime;
-    }
-
     @Override
-    protected void setup(Pair<Zone, Zone> zonePair) {
-        Zone fixed = zonePair.getKey();
-        Zone inQuestion = zonePair.getValue();
-        this.totalEmployees = inQuestion.getTotalEmpl();
-        this.travelTime = travelTimes.getTravelTimeFromTo(fixed, inQuestion);
+    public void updateDMU(Zone object) {
+        this.zone = zone;
     }
 }
