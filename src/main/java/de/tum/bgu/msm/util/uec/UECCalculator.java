@@ -2,18 +2,19 @@ package de.tum.bgu.msm.util.uec;
 
 import com.pb.common.calculator2.UtilityExpressionCalculator;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.Calculator;
 import org.apache.log4j.Logger;
 
-public abstract class Calculator<T> {
+public abstract class UECCalculator<T> implements Calculator<T>{
 
-    private static final Logger logger = Logger.getLogger(Calculator.class);
+    private static final Logger logger = Logger.getLogger(UECCalculator.class);
 
     private final UtilityExpressionCalculator calculator;
     protected final DMU<T> dmu;
     private final int[] altAvailable;
 
-    public Calculator(String uecPropertiesPath, String dataSheetPropertiesPath,
-                      int sheetNumber, DMU dmu) {
+    public UECCalculator(String uecPropertiesPath, String dataSheetPropertiesPath,
+                         int sheetNumber, DMU dmu) {
         String uecFileName = Resources.INSTANCE.getString(uecPropertiesPath);
         int dataSheetNumber = Resources.INSTANCE.getInt(dataSheetPropertiesPath);
         this.calculator = Resources.INSTANCE.getUtilityExpressionCalculator2(uecFileName, sheetNumber, dataSheetNumber, dmu);
@@ -25,6 +26,7 @@ public abstract class Calculator<T> {
         }
     }
 
+    @Override
     public double calculate(boolean log, T object) {
         updateDMU(object);
         double util[] = calculator.solve(dmu.getDmuIndexValues(), dmu, altAvailable);
