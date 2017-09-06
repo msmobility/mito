@@ -15,7 +15,7 @@ public class JavaScriptCalculatorTest {
     private Compilable compileEngine = (Compilable) engine;
 
     @Test
-    public void calculagorTest() {
+    public void calculatorTest() {
 
         int x = 0;
         int y = 0;
