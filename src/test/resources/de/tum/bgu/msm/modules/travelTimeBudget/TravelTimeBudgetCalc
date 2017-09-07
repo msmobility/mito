@@ -1,0 +1,62 @@
+if(purpose == "Total") {
+    var intercept = 4.562;
+    var femalesParam = 0;
+    var childrenParam = 0
+    var youngAdultsParam = 0.071;
+    var retireesParam = -0.032;
+    var workersParam = 0.057;
+    var studentsParam = 0.026;
+    var carsParam = 0;
+    var licensesParam = -0.035;
+    var incomeParam = 0;
+    var incomeScale = -0.5;
+    var wbScale = 0.566;
+    var hbwParam = 0.038;
+    var hbsParam = 0.029;
+    var hboParam = 0.047;
+    var hbeParam = 0.012;
+    var nhbwParam = 0.052;
+    var nhboParam = 0.051;
+
+    if(householdSize == 2) {
+        var householdSizeParam= 0.404;
+    } else if(householdSize == 3) {
+        var householdSizeParam = 0.591;
+    } else if(householdSize == 4) {
+        var householdSizeParam = 0.623;
+    } else if(householdSize >4) {
+        var householdSizeParam = 0.721;
+    } else {
+        var householdSizeParam = 0;
+    }
+
+    if(areaType == 2) {
+        area = -0.078;
+    } else if(areaType == 3) {
+        area = -0.095;
+    } else {
+        area = 0;
+    }
+
+    var scaledIncome = Math.pow(income, incomeScale);
+}
+
+var utility = intercept
++ householdSizeParam
++ area
++ females * femalesParam
++ children * childrenParam
++ youngAdults * youngAdultsParam
++ retirees * retireesParam
++ workers * workersParam
++ students * studentsParam
++ cars * carsParam
++ licenses * licensesParam
++ scaledIncome * incomeParam
++ HBW * hbwParam
++ HBE * hbeParam
++ HBS * hbsParam
++ HBO * hboParam
++ NHBW * nhbwParam
++ NHBO * nhboParam;
+Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility);
