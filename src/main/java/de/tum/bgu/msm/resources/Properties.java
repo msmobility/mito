@@ -58,4 +58,6 @@ public class Properties {
 
     public static final String ACCESSIBILITY_ALPHA = "accessibility.alpha";
     public static final String ACCESSIBILITY_BETA = "accessibility.beta";
+
+    public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
 }

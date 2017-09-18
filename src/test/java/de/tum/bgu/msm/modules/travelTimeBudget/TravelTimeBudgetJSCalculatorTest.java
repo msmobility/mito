@@ -29,6 +29,7 @@ public class TravelTimeBudgetJSCalculatorTest {
     private Calculator uecCalculatorHBS;
     private Calculator uecCalculatorHBO;
     private Calculator uecCalculatorNHBW;
+    private Calculator uecCalculatorNHBO;
 
     private List<MitoHousehold> households = new ArrayList();
 
@@ -48,6 +49,8 @@ public class TravelTimeBudgetJSCalculatorTest {
         uecCalculatorHBS = new TravelTimeBudgetCalculator(hboTtbSheetNumber);
         int nhbwTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
         uecCalculatorNHBW = new TravelTimeBudgetCalculator(nhbwTtbSheetNumber);
+        int nhboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
+        uecCalculatorNHBO = new TravelTimeBudgetCalculator(nhboTtbSheetNumber);
     }
 
     private void setupJSCalculator() throws ScriptException, FileNotFoundException {
@@ -83,6 +86,8 @@ public class TravelTimeBudgetJSCalculatorTest {
             assertEquals(16.586, jsCalculator.calculate(false, household), 0.001);
             ((TravelTimeBudgetJSCalculator) jsCalculator).setPurpose(Purpose.NHBW.name());
             assertEquals(15.481, jsCalculator.calculate(false, household), 0.001);
+            ((TravelTimeBudgetJSCalculator) jsCalculator).setPurpose(Purpose.NHBO.name());
+            assertEquals(17.881, jsCalculator.calculate(false, household), 0.001);
         }
         System.out.println("time: " + (System.currentTimeMillis() - time));
     }
@@ -96,6 +101,7 @@ public class TravelTimeBudgetJSCalculatorTest {
             assertEquals(30.005, uecCalculatorHBO.calculate(false, household), 0.001);
             assertEquals(16.586, uecCalculatorHBS.calculate(false, household), 0.001);
             assertEquals(15.481, uecCalculatorNHBW.calculate(false, household), 0.001);
+            assertEquals(17.881, uecCalculatorNHBO.calculate(false, household), 0.001);
         }
         System.out.println("time: " + (System.currentTimeMillis() - time2));
     }

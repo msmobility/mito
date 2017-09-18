@@ -9,7 +9,7 @@ import java.io.Reader;
 public abstract class JavaScriptCalculator<T> implements Calculator<T> {
 
     private final CompiledScript script;
-    protected final Bindings bindings = new SimpleBindings();
+    protected Bindings bindings = new SimpleBindings();
 
     protected JavaScriptCalculator(Reader reader) throws ScriptException, FileNotFoundException {
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
@@ -21,7 +21,9 @@ public abstract class JavaScriptCalculator<T> implements Calculator<T> {
     public double calculate(boolean log, T object) {
         bindObject(object);
         try {
-            return (double) script.eval(bindings);
+            double result = (double) script.eval(bindings);
+//            bindings = new SimpleBindings();
+            return result;
         } catch (ScriptException e) {
             e.printStackTrace();
             return 0;
