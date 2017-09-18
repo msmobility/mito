@@ -16,6 +16,10 @@ public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<MitoHouse
         bindings.put("purpose", purpose);
     }
 
+    public void setPurpose(String purpose) {
+        bindings.put("purpose", purpose);
+    }
+
     @Override
     protected void bindObject(MitoHousehold household) {
         bindings.put("areaType", household.getHomeZone().getRegion());

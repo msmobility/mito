@@ -10,6 +10,8 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,8 @@ import static de.tum.bgu.msm.resources.Purpose.*;
 
 
 public class TripDistribution extends Module {
+
+    private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 
     private int distributedTripsCounter = 0;
     private int failedTripsCounter = 0;
@@ -89,6 +93,10 @@ public class TripDistribution extends Module {
                 logger.debug(trip + " is not done by a worker (or invalid workzone). Selecting zone by total employment utility");
                 Map<Zone, Double> probabilities = new HashMap<>();
                 for (Zone zone : dataSet.getZones().values()) {
+
+
+
+
                     double utility = hbwCalculator.calculate(false, zone);
                     double probability = Math.exp(utility);
                     if (probability > 0) {
