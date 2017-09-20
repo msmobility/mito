@@ -9,19 +9,23 @@ import javax.script.ScriptException;
 import java.io.FileNotFoundException;
 import java.io.Reader;
 
-public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<MitoHousehold> {
+public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<Double> {
 
-    public TravelTimeBudgetJSCalculator(Reader reader, String purpose) throws ScriptException, FileNotFoundException {
+    /**
+    JavascriptCalculator implementation for calculating travel time budgets of households.
+     */
+    public TravelTimeBudgetJSCalculator(Reader reader, String initialPurpose) throws ScriptException, FileNotFoundException {
         super(reader);
-        bindings.put("purpose", purpose);
+        bindings.put("purpose", initialPurpose);
     }
+
 
     public void setPurpose(String purpose) {
         bindings.put("purpose", purpose);
     }
 
-    @Override
-    protected void bindObject(MitoHousehold household) {
+
+    public void bindHousehold(MitoHousehold household) {
         bindings.put("areaType", household.getHomeZone().getRegion());
         bindings.put("females", MitoUtil.getFemalesForHousehold(household));
         bindings.put("children", MitoUtil.getChildrenForHousehold(household));
@@ -33,6 +37,7 @@ public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<MitoHouse
         bindings.put("licenses", MitoUtil.getLicenseHoldersForHousehold(household));
         bindings.put("income", household.getIncome());
         bindings.put("householdSize", household.getHhSize());
+        bindings.put("hhId", household.getHhId());
 
         for(Purpose purpose: Purpose.values()) {
             bindings.put(purpose.name(), household.getTripsForPurpose(purpose).size());

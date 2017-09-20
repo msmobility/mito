@@ -11,9 +11,7 @@ import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import javax.script.ScriptException;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.EnumSet;
 
 /**
@@ -51,7 +49,7 @@ public class TravelTimeBudget extends Module {
     private void setupTravelTimeBudgetModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
         try {
-            Reader reader = new FileReader(Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_JS));
+            Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
             travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total");
         } catch (ScriptException e) {
             logger.fatal("Error in input script!", e);
@@ -71,7 +69,8 @@ public class TravelTimeBudget extends Module {
         // loop over every household and calculate travel time budget by purpose
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             travelTimeCalc.setPurpose("Total");
-            double totalTravelTimeBudget = travelTimeCalc.calculate(logCalculationTotalTtb, household);
+            travelTimeCalc.bindHousehold(household);
+            double totalTravelTimeBudget = travelTimeCalc.calculate(logCalculationTotalTtb);
             calculateDiscretionaryPurposeBudgets(household);
             calculateHBWBudgets(household);
             calculateHBEBudgets(household);
@@ -110,13 +109,14 @@ public class TravelTimeBudget extends Module {
 
     private void calculateDiscretionaryPurposeBudgets(MitoHousehold household) {
         travelTimeCalc.setPurpose(Purpose.HBS.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.HBS, travelTimeCalc.calculate(logCalculationHbsTtb, household));
+        travelTimeCalc.bindHousehold(household);
+        household.setTravelTimeBudgetByPurpose(Purpose.HBS, travelTimeCalc.calculate(logCalculationHbsTtb));
         travelTimeCalc.setPurpose(Purpose.HBO.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.HBO, travelTimeCalc.calculate(logCalculationHboTtb, household));
+        household.setTravelTimeBudgetByPurpose(Purpose.HBO, travelTimeCalc.calculate(logCalculationHboTtb));
         travelTimeCalc.setPurpose(Purpose.NHBW.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, travelTimeCalc.calculate(logCalculationNhbwTtb, household));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, travelTimeCalc.calculate(logCalculationNhbwTtb));
         travelTimeCalc.setPurpose(Purpose.NHBO.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, travelTimeCalc.calculate(logCalculationNhboTtb, household));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, travelTimeCalc.calculate(logCalculationNhboTtb));
     }
 
 

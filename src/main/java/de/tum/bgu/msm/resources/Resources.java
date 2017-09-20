@@ -27,20 +27,6 @@ public enum Resources {
         this.resources = resources;
     }
 
-    public UtilityExpressionCalculator getUtilityExpressionCalculator2(String fileName, int totalTtbSheetNumber,
-                                                                        int dataSheetNumber, VariableTable dmuObject) {
-        return new UtilityExpressionCalculator(new File(fileName), totalTtbSheetNumber,
-                dataSheetNumber, ResourceUtil.changeResourceBundleIntoHashMap(resources), dmuObject);
-
-    }
-
-    public com.pb.common.calculator.UtilityExpressionCalculator getUtilityExpressionCalculator1(String fileName, int totalTtbSheetNumber,
-                                                                                                                            int dataSheetNumber, Class<?> userClass) {
-        return new com.pb.common.calculator.UtilityExpressionCalculator(new File(fileName), totalTtbSheetNumber,
-                dataSheetNumber, ResourceUtil.changeResourceBundleIntoHashMap(resources), userClass);
-
-    }
-
     public synchronized int getInt(String key) {
         return ResourceUtil.getIntegerProperty(resources, key);
     }

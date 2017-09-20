@@ -5,11 +5,14 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.*;
-import de.tum.bgu.msm.util.Calculator;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.script.ScriptException;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.ResourceBundle;
 
 import static org.junit.Assert.assertEquals;
@@ -18,13 +21,20 @@ public class TravelTimeBudgetCalculatorTest {
 
     private DataSet dataSet;
     private Zone dummyZone;
+    private TravelTimeBudgetJSCalculator calculator;
 
     @Before
     public void setup() {
-
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
         Resources.INSTANCE.setResources(bundle);
-
+        try {
+            Reader reader = new FileReader(Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_JS));
+            calculator = new TravelTimeBudgetJSCalculator(reader, "Total");
+        } catch (ScriptException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         dataSet = new DataSet();
         addZone();
         addHouseholds();
@@ -33,114 +43,128 @@ public class TravelTimeBudgetCalculatorTest {
 
     @Test
     public void testTotalTravelTimeBudget() {
-        int totalTtbSheetNumber = Resources.INSTANCE.getInt(Properties.TOTAL_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        Calculator calculator = new TravelTimeBudgetCalculator( totalTtbSheetNumber);
-
+        calculator.setPurpose("Total");
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
-        assertEquals(50.121, calculator.calculate(false, emptyHousehold), 0.001);
+        calculator.bindHousehold(emptyHousehold);
+        assertEquals(50.121, calculator.calculate(false), 0.001);
 
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
-        assertEquals(70.418, calculator.calculate(false, poorRetirees), 0.001);
+        calculator.bindHousehold(poorRetirees);
+        assertEquals(70.418, calculator.calculate(false), 0.001);
 
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-        assertEquals(128.953, calculator.calculate(false, poorBigFamily), 0.001);
+        calculator.bindHousehold(poorBigFamily);
+        assertEquals(128.953, calculator.calculate(true), 0.001);
 
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(128.953, calculator.calculate(false, richBigFamily), 0.001);
+        calculator.bindHousehold(richBigFamily);
+        assertEquals(128.953, calculator.calculate(false), 0.001);
     }
 
 
     @Test
     public void testHBSTravelTimeBudget() {
-        int hbsTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBS_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        Calculator calculator = new TravelTimeBudgetCalculator(hbsTtbSheetNumber);
 
+        calculator.setPurpose(Purpose.HBS.name());
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
-        assertEquals(16.586, calculator.calculate(false, emptyHousehold), 0.001);
+        calculator.bindHousehold(emptyHousehold);
+        assertEquals(16.586, calculator.calculate(false), 0.001);
 
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
-        assertEquals(21.085, calculator.calculate(false, poorRetirees), 0.001);
+        calculator.bindHousehold(poorRetirees);
+        assertEquals(21.085, calculator.calculate(true), 0.001);
 
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-        assertEquals(24.424, calculator.calculate(false, poorBigFamily), 0.001);
+        calculator.bindHousehold(poorBigFamily);
+        assertEquals(24.424, calculator.calculate(false), 0.001);
 
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(17.649, calculator.calculate(false, richBigFamily), 0.001);
+        calculator.bindHousehold(richBigFamily);
+        assertEquals(17.649, calculator.calculate(false), 0.001);
     }
 
     @Test
     public void testHBOTravelTimeBudget() {
-        int hboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.HBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        Calculator calculator = new TravelTimeBudgetCalculator(hboTtbSheetNumber);
+        calculator.setPurpose(Purpose.HBO.name());
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
-        assertEquals(30.005, calculator.calculate(false, emptyHousehold), 0.001);
+        calculator.bindHousehold(emptyHousehold);
+        assertEquals(30.005, calculator.calculate(false), 0.001);
 
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
-        assertEquals(43.267, calculator.calculate(false, poorRetirees), 0.001);
+        calculator.bindHousehold(poorRetirees);
+        assertEquals(43.267, calculator.calculate(false), 0.001);
 
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-        assertEquals(69.783, calculator.calculate(false, poorBigFamily), 0.001);
+        calculator.bindHousehold(poorBigFamily);
+        assertEquals(69.783, calculator.calculate(false), 0.001);
 
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(58.270, calculator.calculate(false, richBigFamily), 0.001);
+        calculator.bindHousehold(richBigFamily);
+        assertEquals(58.270, calculator.calculate(false), 0.001);
     }
 
     @Test
     public void testNHBWTravelTimeBudget() {
-        int nhbwTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBW_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        Calculator calculator = new TravelTimeBudgetCalculator(nhbwTtbSheetNumber);
+        calculator.setPurpose(Purpose.NHBW.name());
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
-        assertEquals(15.481, calculator.calculate(false, emptyHousehold), 0.001);
+        calculator.bindHousehold(emptyHousehold);
+        assertEquals(15.481, calculator.calculate(false), 0.001);
 
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
-        assertEquals(18.758, calculator.calculate(false, poorRetirees), 0.001);
+        calculator.bindHousehold(poorRetirees);
+        assertEquals(18.758, calculator.calculate(false), 0.001);
 
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-        assertEquals(34.662, calculator.calculate(false, poorBigFamily), 0.001);
+        calculator.bindHousehold(poorBigFamily);
+        assertEquals(34.662, calculator.calculate(false), 0.001);
 
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(34.662, calculator.calculate(false, richBigFamily), 0.001);
+        calculator.bindHousehold(richBigFamily);
+        assertEquals(34.662, calculator.calculate(false), 0.001);
     }
 
     @Test
     public void testNHBOTravelTimeBudget() {
-        int nhboTtbSheetNumber = Resources.INSTANCE.getInt(Properties.NHBO_TRAVEL_TIME_BUDGET_UEC_UTILITY);
-        Calculator calculator = new TravelTimeBudgetCalculator(nhboTtbSheetNumber);
+
+        calculator.setPurpose(Purpose.NHBO.name());
 
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
-        assertEquals(17.881, calculator.calculate(false, emptyHousehold), 0.001);
+        calculator.bindHousehold(emptyHousehold);
+        assertEquals(17.881, calculator.calculate(false), 0.001);
 
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
-        assertEquals(21.818, calculator.calculate(false, poorRetirees), 0.001);
+        calculator.bindHousehold(poorRetirees);
+        assertEquals(21.818, calculator.calculate(false), 0.001);
 
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-
-        assertEquals(37.440, calculator.calculate(false, poorBigFamily), 0.001);
+        calculator.bindHousehold(poorBigFamily);
+        assertEquals(37.440, calculator.calculate(false), 0.001);
 
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(25.681, calculator.calculate(false, richBigFamily), 0.001);
+        calculator.bindHousehold(richBigFamily);
+        assertEquals(25.681, calculator.calculate(false), 0.001);
     }
 
     private void addHouseholds() {
         MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0, dummyZone);
         dataSet.addHousehold(emptyHousehold);
 
-        MitoHousehold poorRetirees = new MitoHousehold(2,  10000, 0, dummyZone);
+        MitoHousehold poorRetirees = new MitoHousehold(2, 10000, 0, dummyZone);
         dataSet.addHousehold(poorRetirees);
 
-        MitoHousehold poorBigFamily = new MitoHousehold(3,   10000, 0, dummyZone);
+        MitoHousehold poorBigFamily = new MitoHousehold(3, 10000, 0, dummyZone);
         dataSet.addHousehold(poorBigFamily);
 
-        MitoHousehold richBigFamily = new MitoHousehold(4,500000, 0, dummyZone);
+        MitoHousehold richBigFamily = new MitoHousehold(4, 500000, 0, dummyZone);
         dataSet.addHousehold(richBigFamily);
     }
 
     private void addPersons() {
 
         MitoPerson retiree21 = new MitoPerson(21, Occupation.UNEMPLOYED, -1, 70, Gender.MALE, false);
-        MitoPerson retiree22 = new MitoPerson(22,  Occupation.UNEMPLOYED, -1, 70, Gender.FEMALE, false);
+        MitoPerson retiree22 = new MitoPerson(22, Occupation.UNEMPLOYED, -1, 70, Gender.FEMALE, false);
         dataSet.getHouseholds().get(2).addPerson(retiree21);
         dataSet.getHouseholds().get(2).addPerson(retiree22);
 
