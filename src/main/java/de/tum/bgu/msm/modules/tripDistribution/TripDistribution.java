@@ -5,6 +5,8 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
@@ -25,7 +27,8 @@ public class TripDistribution extends Module {
     private int distributedTripsCounter = 0;
     private int failedTripsCounter = 0;
 
-    private static final Logger logger = Logger.getLogger(TripDistribution.class);
+    private final static Logger logger = Logger.getLogger(TripDistribution.class);
+    private final static boolean LOG = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TRIP_DISTRIBUTION);
 
     private TripDistributionJSCalculator tripDistributionCalc;
 
@@ -50,8 +53,7 @@ public class TripDistribution extends Module {
     private void setupModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic trip distribution.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
-        tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getAutoTravelTimes());
-
+        tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getAutoTravelTimes(), LOG);
     }
 
     private void distributeHBW(MitoHousehold household) {
@@ -67,7 +69,7 @@ public class TripDistribution extends Module {
                 Map<Zone, Double> probabilities = new HashMap<>();
                 for (Zone zone : dataSet.getZones().values()) {
                     tripDistributionCalc.setTargetZone(zone);
-                    double utility = tripDistributionCalc.calculate(true);
+                    double utility = tripDistributionCalc.calculate();
                     double probability = Math.exp(utility);
                     if (probability > 0) {
                         probabilities.put(zone, probability);
@@ -98,7 +100,7 @@ public class TripDistribution extends Module {
                 Map<Zone, Double> probabilities = new HashMap<>();
                 for (Zone zone : dataSet.getZones().values()) {
                     tripDistributionCalc.setTargetZone(zone);
-                    double utility = tripDistributionCalc.calculate(false);
+                    double utility = tripDistributionCalc.calculate();
                     double probability = Math.exp(utility);
                     if (probability > 0) {
                         probabilities.put(zone, probability);
@@ -126,7 +128,7 @@ public class TripDistribution extends Module {
             trip.setTripOrigin(household.getHomeZone());
             for (Zone zone : dataSet.getZones().values()) {
                 tripDistributionCalc.setTargetZone(zone);
-                double utility = tripDistributionCalc.calculate(true);
+                double utility = tripDistributionCalc.calculate();
                 double probability = Math.exp(utility);
                 if (probability > 0) {
                     probabilities.put(zone, probability);
@@ -153,7 +155,7 @@ public class TripDistribution extends Module {
             trip.setTripOrigin(household.getHomeZone());
             for (Zone zone : dataSet.getZones().values()) {
                 tripDistributionCalc.setTargetZone(zone);
-                double utility = tripDistributionCalc.calculate(true);
+                double utility = tripDistributionCalc.calculate();
                 double probability = Math.exp(utility);
                 if (probability > 0) {
                     probabilities.put(zone, probability);
@@ -191,7 +193,7 @@ public class TripDistribution extends Module {
                 tripDistributionCalc.setBaseZone(household.getHomeZone());
                 for (Zone zone : dataSet.getZones().values()) {
                     tripDistributionCalc.setTargetZone(zone);
-                    double utility = tripDistributionCalc.calculate(false);
+                    double utility = tripDistributionCalc.calculate();
                     double probability = Math.exp(utility);
                     if (probability > 0) {
                         probabilitiesAlt.put(zone, probability);
@@ -202,7 +204,7 @@ public class TripDistribution extends Module {
             tripDistributionCalc.setBaseZone(baseZone);
             for (Zone zone : dataSet.getZones().values()) {
                 tripDistributionCalc.setTargetZone(zone);
-                double utility = tripDistributionCalc.calculate(false);
+                double utility = tripDistributionCalc.calculate();
                 double probability = Math.exp(utility);
                 if (probability > 0) {
                     probabilities.put(zone, probability);
@@ -259,7 +261,7 @@ public class TripDistribution extends Module {
                 tripDistributionCalc.setBaseZone(household.getHomeZone());
                 for (Zone zone : dataSet.getZones().values()) {
                     tripDistributionCalc.setTargetZone(zone);
-                    double utility = tripDistributionCalc.calculate(false);
+                    double utility = tripDistributionCalc.calculate();
                     double probability = Math.exp(utility);
                     if (probability > 0) {
                         probabilitiesAlt.put(zone, probability);
@@ -270,7 +272,7 @@ public class TripDistribution extends Module {
             tripDistributionCalc.setBaseZone(baseZone);
             for (Zone zone : dataSet.getZones().values()) {
                 tripDistributionCalc.setTargetZone(zone);
-                double utility = tripDistributionCalc.calculate(false);
+                double utility = tripDistributionCalc.calculate();
                 double probability = Math.exp(utility);
                 if (probability > 0) {
                     probabilities.put(zone, probability);

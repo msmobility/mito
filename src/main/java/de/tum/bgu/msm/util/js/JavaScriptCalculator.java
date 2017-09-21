@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
-Skeleton class for java script calculations
+ * Skeleton class for java script calculations
  */
 public abstract class JavaScriptCalculator<T> {
 
@@ -18,18 +18,18 @@ public abstract class JavaScriptCalculator<T> {
     protected LoggableBindings bindings = new LoggableBindings();
 
 
-    protected JavaScriptCalculator(Reader reader) {
+    protected JavaScriptCalculator(Reader reader, boolean log) {
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
         BufferedReader bufferedReader = new BufferedReader(reader);
         StringBuilder scriptBuilder = new StringBuilder();
-        String line = null;
         try {
-            line = bufferedReader.readLine();
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                scriptBuilder.append(line + "\n");
+                line = bufferedReader.readLine();
+            }
         } catch (IOException e) {
             logger.fatal("Error in reading script!", e);
-        }
-        while (line != null) {
-            scriptBuilder.append(line);
         }
         logger.debug("Compiling script: " + scriptBuilder.toString());
         Compilable compileEngine = (Compilable) engine;
@@ -39,12 +39,12 @@ public abstract class JavaScriptCalculator<T> {
             logger.fatal("Error in input script!", e);
             e.printStackTrace();
         }
+        bindings.put("log", log);
     }
 
-    public T calculate(boolean log) {
+    public T calculate() {
         try {
             bindings.logValues();
-            bindings.put("log", log);
             return (T) compiledScript.eval(bindings);
         } catch (ScriptException e) {
             e.printStackTrace();

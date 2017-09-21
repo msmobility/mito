@@ -27,11 +27,7 @@ public class TravelTimeBudget extends Module {
 
     private TravelTimeBudgetJSCalculator travelTimeCalc;
 
-    private final boolean logCalculationTotalTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TOTAL_TTB);
-    private final boolean logCalculationHbsTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBS_TTB);
-    private final boolean logCalculationHboTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_HBO_TTB);
-    private final boolean logCalculationNhbwTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBW_TTB);
-    private final boolean logCalculationNhboTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_NHBO_TTB);
+    private final boolean logCalculationTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TTB);
 
     private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
 
@@ -49,7 +45,7 @@ public class TravelTimeBudget extends Module {
     private void setupTravelTimeBudgetModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total");
+        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total",logCalculationTtb);
 
     }
 
@@ -60,7 +56,7 @@ public class TravelTimeBudget extends Module {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             travelTimeCalc.setPurpose("Total");
             travelTimeCalc.bindHousehold(household);
-            double totalTravelTimeBudget = travelTimeCalc.calculate(logCalculationTotalTtb);
+            double totalTravelTimeBudget = travelTimeCalc.calculate();
             calculateDiscretionaryPurposeBudgets(household);
             calculateHBWBudgets(household);
             calculateHBEBudgets(household);
@@ -100,13 +96,13 @@ public class TravelTimeBudget extends Module {
     private void calculateDiscretionaryPurposeBudgets(MitoHousehold household) {
         travelTimeCalc.setPurpose(Purpose.HBS.name());
         travelTimeCalc.bindHousehold(household);
-        household.setTravelTimeBudgetByPurpose(Purpose.HBS, travelTimeCalc.calculate(logCalculationHbsTtb));
+        household.setTravelTimeBudgetByPurpose(Purpose.HBS, travelTimeCalc.calculate());
         travelTimeCalc.setPurpose(Purpose.HBO.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.HBO, travelTimeCalc.calculate(logCalculationHboTtb));
+        household.setTravelTimeBudgetByPurpose(Purpose.HBO, travelTimeCalc.calculate());
         travelTimeCalc.setPurpose(Purpose.NHBW.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, travelTimeCalc.calculate(logCalculationNhbwTtb));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, travelTimeCalc.calculate());
         travelTimeCalc.setPurpose(Purpose.NHBO.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, travelTimeCalc.calculate(logCalculationNhboTtb));
+        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, travelTimeCalc.calculate());
     }
 
 
