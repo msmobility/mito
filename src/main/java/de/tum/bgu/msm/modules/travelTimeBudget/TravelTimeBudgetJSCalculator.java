@@ -5,8 +5,6 @@ import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
-import javax.script.ScriptException;
-import java.io.FileNotFoundException;
 import java.io.Reader;
 
 public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<Double> {
@@ -14,7 +12,7 @@ public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<Double> {
     /**
     JavascriptCalculator implementation for calculating travel time budgets of households.
      */
-    public TravelTimeBudgetJSCalculator(Reader reader, String initialPurpose) throws ScriptException, FileNotFoundException {
+    public TravelTimeBudgetJSCalculator(Reader reader, String initialPurpose) {
         super(reader);
         bindings.put("purpose", initialPurpose);
     }

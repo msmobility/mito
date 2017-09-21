@@ -8,8 +8,6 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import javax.script.ScriptException;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -51,19 +49,9 @@ public class TripDistribution extends Module {
 
     private void setupModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic trip distribution.");
-        try {
-            Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
-            tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getAutoTravelTimes());
-        } catch (ScriptException e) {
-            logger.fatal("Error in input script!", e);
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            logger.fatal("Travel time budget script not found (property: \"ttb.js\")!", e);
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            logger.fatal("Travel time budget script not found (property: \"ttb.js\")!", e);
-            e.printStackTrace();
-        }
+        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
+        tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getAutoTravelTimes());
+
     }
 
     private void distributeHBW(MitoHousehold household) {

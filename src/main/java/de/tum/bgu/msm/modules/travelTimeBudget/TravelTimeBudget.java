@@ -10,8 +10,8 @@ import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
-import javax.script.ScriptException;
-import java.io.*;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.EnumSet;
 
 /**
@@ -48,19 +48,9 @@ public class TravelTimeBudget extends Module {
 
     private void setupTravelTimeBudgetModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
-        try {
-            Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-            travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total");
-        } catch (ScriptException e) {
-            logger.fatal("Error in input script!", e);
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            logger.fatal("Travel time budget script not found (property: \"ttb.js\")!", e);
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            logger.fatal("Travel time budget script not found (property: \"ttb.js\")!", e);
-            e.printStackTrace();
-        }
+        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
+        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total");
+
     }
 
     private void calculateTravelTimeBudget() {
@@ -83,7 +73,7 @@ public class TravelTimeBudget extends Module {
         double hbwBudget = 0;
         for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation().equals(Occupation.WORKER)) {
-                if(person.getWorkzone() == null) {
+                if (person.getWorkzone() == null) {
                     logger.warn("Worker with workzone null will not be considered for travel time budget.");
                     continue;
                 }
@@ -97,7 +87,7 @@ public class TravelTimeBudget extends Module {
         double hbeBudget = 0;
         for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation().equals(Occupation.STUDENT)) {
-                if(person.getWorkzone() == null) {
+                if (person.getWorkzone() == null) {
                     logger.warn("Student with workzone null will not be considered for travel time budget.");
                     continue;
                 }

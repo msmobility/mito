@@ -5,8 +5,6 @@ import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
-import javax.script.ScriptException;
-import java.io.FileNotFoundException;
 import java.io.Reader;
 
 public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
@@ -14,7 +12,7 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
     private TravelTimes travelTimes;
     private Zone baseZone;
 
-    protected TripDistributionJSCalculator(Reader reader, TravelTimes travelTimes) throws ScriptException, FileNotFoundException {
+    protected TripDistributionJSCalculator(Reader reader, TravelTimes travelTimes) {
         super(reader);
         this.travelTimes = travelTimes;
     }
