@@ -157,10 +157,13 @@ public class MitoUtil {
         return myFormatter.format(value);
     }
 
-
     public static int select(double[] probabilities) {
+        return select(probabilities, rand);
+    }
+
+    public static int select(double[] probabilities, Random random) {
         // select item based on probabilities (for zero-based double array)
-        double selPos = getSum(probabilities) * rand.nextDouble();
+        double selPos = getSum(probabilities) * random.nextDouble();
         double sum = 0;
         for (int i = 0; i < probabilities.length; i++) {
             sum += probabilities[i];
@@ -177,10 +180,14 @@ public class MitoUtil {
     }
 
     public static <T> T select(Map<T, Double> mappedProbabilities, double sum) {
+       return select(mappedProbabilities, rand, sum);
+    }
+
+    public static <T> T select(Map<T, Double> probabilities, Random random, double sum) {
         // select item based on probabilities (for mapped double probabilities)
-        double selectedWeight = rand.nextDouble() * sum;
+        double selectedWeight = random.nextDouble() * sum;
         double select = 0;
-        for (Map.Entry<T, Double> entry : mappedProbabilities.entrySet()) {
+        for (Map.Entry<T, Double> entry : probabilities.entrySet()) {
             select += entry.getValue();
             if (select > selectedWeight) {
                 return entry.getKey();

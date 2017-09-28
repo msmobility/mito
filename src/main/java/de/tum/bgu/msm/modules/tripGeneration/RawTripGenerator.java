@@ -1,16 +1,12 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import com.pb.sawdust.calculator.Function1;
-import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
-import com.pb.sawdust.util.concurrent.IteratorAction;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.tum.bgu.msm.resources.Purpose.*;
@@ -39,18 +35,11 @@ public class RawTripGenerator {
     }
 
     private void generateByPurposeMultiThreaded() {
-
-        Function1<Purpose,Void> tripGenByPurposeMethod = purpose -> {
-            TripsByPurposeGenerator byPurposeGenerator = new TripsByPurposeGenerator(dataSet, purpose);
-           byPurposeGenerator.generateTrips();
-           return null;
-        };
-
-        Iterator<Purpose> tripPurposeIterator = PURPOSES.iterator();
-        IteratorAction<Purpose> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
-        ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
-        pool.execute(itTask);
-        itTask.waitForCompletion();
+        ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
+        for(Purpose purpose: PURPOSES) {
+            executor.addFunction(new TripsByPurposeGenerator(dataSet, purpose));
+        }
+        executor.execute();
     }
 
     private void logTripGeneration() {

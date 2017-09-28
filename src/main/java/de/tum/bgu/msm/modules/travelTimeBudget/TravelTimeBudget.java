@@ -25,6 +25,9 @@ public class TravelTimeBudget extends Module {
 
     private static final Logger logger = Logger.getLogger(TravelTimeBudget.class);
 
+    private int ignoredStudents = 0;
+    private int ignoredWorkers = 0;
+
     private TravelTimeBudgetJSCalculator travelTimeCalc;
 
     private final boolean logCalculationTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TTB);
@@ -45,7 +48,7 @@ public class TravelTimeBudget extends Module {
     private void setupTravelTimeBudgetModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total",logCalculationTtb);
+        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total", logCalculationTtb);
 
     }
 
@@ -63,6 +66,11 @@ public class TravelTimeBudget extends Module {
             adjustDiscretionaryPurposeBudget(household, totalTravelTimeBudget);
         }
         logger.info("  Finished microscopic travel time budget calculation.");
+        if (ignoredStudents > 0 || ignoredWorkers > 0) {
+            logger.warn("There have been " + ignoredWorkers + " workers and " + ignoredStudents
+                    + " students that were ignored in the HBW/HBE travel time budgets"
+                    + " because they had no workzone assigned.");
+        }
     }
 
     private void calculateHBWBudgets(MitoHousehold household) {
@@ -70,7 +78,8 @@ public class TravelTimeBudget extends Module {
         for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation().equals(Occupation.WORKER)) {
                 if (person.getWorkzone() == null) {
-                    logger.warn("Worker with workzone null will not be considered for travel time budget.");
+                    logger.debug("Worker with workzone null will not be considered for travel time budget.");
+                    ignoredWorkers++;
                     continue;
                 }
                 hbwBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
@@ -84,7 +93,8 @@ public class TravelTimeBudget extends Module {
         for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation().equals(Occupation.STUDENT)) {
                 if (person.getWorkzone() == null) {
-                    logger.warn("Student with workzone null will not be considered for travel time budget.");
+                    logger.debug("Student with workzone null will not be considered for travel time budget.");
+                    ignoredStudents++;
                     continue;
                 }
                 hbeBudget += dataSet.getAutoTravelTimes().getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());

@@ -9,6 +9,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.counterDroppedTripsAtBorder;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.currentTripId;
 
-class TripsByPurposeGenerator {
+class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
     private static final Logger logger = Logger.getLogger(TripsByPurposeGenerator.class);
 
@@ -39,7 +40,8 @@ class TripsByPurposeGenerator {
         travelSurveyTripsTable = dataSet.getTravelSurveyTripsTable();
     }
 
-    public void generateTrips() {
+    @Override
+    public void execute() {
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         defineTripFrequenciesForHouseHoldTypes();
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
@@ -141,7 +143,7 @@ class TripsByPurposeGenerator {
         for (int i = 0; i < tripFrequencies.length; i++) {
             probabilities[i] = (double) tripFrequencies[i];
         }
-        return MitoUtil.select(probabilities);
+        return MitoUtil.select(probabilities, random);
     }
 
     private void createTrip(MitoHousehold hh) {
@@ -161,6 +163,6 @@ class TripsByPurposeGenerator {
             return false;
         }
         float damper = dataSet.getZones().get(tripOrigin.getZoneId()).getReductionAtBorderDamper();
-        return MitoUtil.getRandomFloat() < damper;
+        return random.nextFloat() < damper;
     }
 }
