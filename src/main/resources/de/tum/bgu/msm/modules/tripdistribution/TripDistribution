@@ -4,224 +4,161 @@ if(purpose == "HBW") {
     impedanceParam = 1;
     attractionParam = 1;
 
-
-    travelImpedance = Math.exp(timeParam * travelTime);
-    impedanceImpact = travelImpedance * impedanceParam;
-    attraction = Math.log(totalEmployees);
+    impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
+    if(totalEmployees == 0) {
+        attraction = 0;
+    } else {
+        attraction = Math.log(totalEmployees);
+    }
     attractionImpact = attraction * attractionParam;
 
-    utility = 0.;
+    utility = intercept + impedanceImpact + attractionImpact;
+
     if(log) {
-        print("_______________________________________________")
-        print("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
-
-        print("Intercept            = " + intercept);
-        utility += intercept;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Impedance            = Math.exp(timeParam * travelTime)");
-        print("Impedance            = Math.exp("+ timeParam + " * " + travelTime + ")");
-        print("Impedance            = Math.exp(" + (timeParam * travelTime) + ")");
-        print("Impedance            = " + travelImpedance);
-        print("Impedance Impact     = impedance * impedanceParam");
-        print("Impedance Impact     = " + travelImpedance + " * " + impedanceParam);
-        print("Impedance Impact     = " + impedanceImpact);
-        utility += impedanceImpact;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Attraction           = Math.log(totalEmployees)");
-        print("Attraction           = Math.log(" + totalEmployees + ")");
-        print("Attraction           = " + attraction);
-        print("Attraction Impact    = attraction * attractionParam");
-        print("Attraction Impact    = " + attraction + " * " + attractionParam + ")");
-        print("Attraction Impact    = " + attractionImpact);
-        utility += attractionImpact;
-        print("Utility              = " + utility);
-
-        print("_______________________________________________")
-
-        utility;
-    } else {
-        utility = intercept + impedanceImpact + attractionImpact;
+        log();
     }
+
+    utility;
+
 } else if(purpose == "HBE") {
     intercept = 1;
     timeParam = -1;
     impedanceParam = 1;
     attractionParam = 1;
 
+    impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
 
-    travelImpedance = Math.exp(timeParam * travelTime);
-    impedanceImpact = travelImpedance * impedanceParam;
+    if(schoolEnrollment == 0) {
+        attraction = 0;
+    } else {
+        attraction = Math.log(schoolEnrollment);
+    }
     attraction = Math.log(schoolEnrollment);
     attractionImpact = attraction * attractionParam;
-    utility = 0.;
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
     if(log) {
-        print("_______________________________________________")
-        print("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
-
-        print("Intercept            = " + intercept);
-        utility += intercept;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Impedance            = Math.exp(timeParam * travelTime)");
-        print("Impedance            = Math.exp("+ timeParam + " * " + travelTime + ")");
-        print("Impedance            = Math.exp(" + (timeParam * travelTime) + ")");
-        print("Impedance            = " + travelImpedance);
-        print("Impedance Impact     = impedance * impedanceParam");
-        print("Impedance Impact     = " + travelImpedance + " * " + impedanceParam);
-        print("Impedance Impact     = " + impedanceImpact);
-        utility += impedanceImpact;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Attraction           = Math.log(schoolEnrollment)");
-        print("Attraction           = Math.log(" + totalEmployees + ")");
-        print("Attraction           = " + attraction);
-        print("Attraction Impact    = attraction * attractionParam");
-        print("Attraction Impact    = " + attraction + " * " + attractionParam + ")");
-        print("Attraction Impact    = " + attractionImpact);
-        utility += attractionImpact;
-        print("Utility              = " + utility);
-
-        print("_______________________________________________")
-
-        utility;
-
-    } else {
-          utility = intercept + impedanceImpact + attractionImpact;
+       log();
     }
+
+    utility;
+
 } else if(purpose == "HBS") {
     intercept = 1;
-    timeParam = -1;
+    budgetParam = -1;
     impedanceParam = 1;
     attractionParam = 1;
-    budgetOffsetParam = -1;
-
-
-    travelImpedance = Math.exp(timeParam * travelTime);
-    impedanceImpact = travelImpedance * impedanceParam;
-    attraction = Math.log(retailEmployees);
-    attractionImpact = attraction * attractionParam;
 
     budgetOffset = Math.abs(budget - travelTime);
-    budgetOffsetImpact = budgetOffset * budgetOffsetParam;
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
 
+    if(retailEmployees == 0) {
+        attraction = 0;
+    } else {
+        attraction = Math.log(retailEmployees);
+    }
+    attractionImpact = attraction * attractionParam;
 
-    utility = 0.;
+    utility = intercept + impedanceImpact + attractionImpact;
 
     if(log) {
-        print("_______________________________________________")
-        print("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
-
-        print("Intercept            = " + intercept);
-        utility += intercept;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Impedance            = Math.exp(timeParam * travelTime)");
-        print("Impedance            = Math.exp("+ timeParam + " * " + travelTime + ")");
-        print("Impedance            = Math.exp(" + (timeParam * travelTime) + ")");
-        print("Impedance            = " + travelImpedance);
-        print("Impedance Impact     = impedance * impedanceParam");
-        print("Impedance Impact     = " + travelImpedance + " * " + impedanceParam);
-        print("Impedance Impact     = " + impedanceImpact);
-        utility += impedanceImpact;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Attraction           = Math.log(retailEmployees)");
-        print("Attraction           = Math.log(" + retailEmployees + ")");
-        print("Attraction           = " + attraction);
-        print("Attraction Impact    = attraction * attractionParam");
-        print("Attraction Impact    = " + attraction + " * " + attractionParam + ")");
-        print("Attraction Impact    = " + attractionImpact);
-        utility += attractionImpact;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Budget Offset        = Math.abs(BudgetPerTrip - travelTime)");
-        print("Budget Offset        = Math.abs(" + budget + " - " + travelTime+")");
-        print("Budget Offset        = " + budgetOffset)
-        print("Budget Offset Impact = budgetOffset * budgetOffsetParam");
-        print("Budget Offset Impact = " + budgetOffset * budgetOffsetParam);
-        print("Budget Offset Impact = " + budgetOffsetImpact);
-        utility += budgetOffsetImpact;
-        print("Utility              = " + utility);
-
-        print("_______________________________________________")
-
-        utility;
-    } else {
-        utility = intercept + impedanceImpact + attractionImpact + budgetOffsetImpact;
+      log();
     }
+
+    utility;
+
 } else if(purpose == "HBO") {
     intercept = 1;
-    timeParam = -1;
+    budgetParam = -1;
     impedanceParam = 1;
     attractionParam = 1;
-    budgetOffsetParam = -1;
-
-
-    travelImpedance = Math.exp(timeParam * travelTime);
-    impedanceImpact = travelImpedance * impedanceParam;
-    attraction = Math.log(households) + Math.log(otherEmployees);
-    attractionImpact = attraction * attractionParam;
 
     budgetOffset = Math.abs(budget - travelTime);
-    budgetOffsetImpact = budgetOffset * budgetOffsetParam;
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+
+    if(households == 0) {
+        householdsAttraction = 0;
+    } else {
+        householdsAttraction = Math.log(households);
+    }
+    if(otherEmployees == 0) {
+        otherEmplAttraction = 0;
+    } else {
+        otherEmplAttraction =  Math.log(otherEmployees);
+    }
+    attraction = householdsAttraction + otherEmplAttraction;
+    attractionImpact = attraction * attractionParam;
 
 
-    utility = 0.;
+    utility = intercept + impedanceImpact + attractionImpact;
 
     if(log) {
-        print("_______________________________________________")
-        print("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
-
-        print("Intercept            = " + intercept);
-        utility += intercept;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Impedance            = Math.exp(timeParam * travelTime)");
-        print("Impedance            = Math.exp("+ timeParam + " * " + travelTime + ")");
-        print("Impedance            = Math.exp(" + (timeParam * travelTime) + ")");
-        print("Impedance            = " + travelImpedance);
-        print("Impedance Impact     = impedance * impedanceParam");
-        print("Impedance Impact     = " + travelImpedance + " * " + impedanceParam);
-        print("Impedance Impact     = " + impedanceImpact);
-        utility += impedanceImpact;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Attraction           = Math.log(# of households) + Math.log(otherEmployees)");
-        print("Attraction           = Math.log(" + households + ") + Math.log(" + otherEmployees +")");
-        print("Attraction           = " + attraction);
-        print("Attraction Impact    = attraction * attractionParam");
-        print("Attraction Impact    = " + attraction + " * " + attractionParam + ")");
-        print("Attraction Impact    = " + attractionImpact);
-        utility += attractionImpact;
-        print("Utility              = " + utility);
-
-        print("***");
-        print("Budget Offset        = Math.abs(BudgetPerTrip - travelTime)");
-        print("Budget Offset        = Math.abs(" + budget + " - " + travelTime+")");
-        print("Budget Offset        = " + budgetOffset)
-        print("Budget Offset Impact = budgetOffset * budgetOffsetParam");
-        print("Budget Offset Impact = " + budgetOffset * budgetOffsetParam);
-        print("Budget Offset Impact = " + budgetOffsetImpact);
-        utility += budgetOffsetImpact;
-        print("Utility              = " + utility);
-
-        print("_______________________________________________")
-
-        utility;
-    } else {
-        utility = intercept + impedanceImpact + attractionImpact + budgetOffsetImpact;
+        log();
     }
+
+    utility;
+
+} else if(purpose == "NHBW") {
+    intercept = 1;
+    budgetParam = -1;
+    impedanceParam = 1;
+    attractionParam = 1;
+
+    budgetOffset = Math.abs(budget - travelTime);
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+
+    if(households == 0) {
+        householdsAttraction = 0;
+    } else {
+        householdsAttraction = Math.log(households);
+    }
+    if(totalEmployees == 0) {
+        totalEmplAttraction = 0;
+    } else {
+        totalEmplAttraction =  Math.log(otherEmployees);
+    }
+    if(retailEmployees == 0) {
+        retailEmplAttraction = 0;
+    } else {
+        retailEmplAttraction =  Math.log(retailEmployees);
+    }
+    attraction = householdsAttraction + totalEmplAttraction + retailEmplAttraction;
+    attractionImpact = attraction * attractionParam;
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
+    if(log) {
+        log();
+    }
+
+    utility;
+
 } else {
     0.;
+}
+
+function calculateImpedance(impedanceParameter, timeParameter, time) {
+    return impedanceParameter * Math.exp(parameter * time);
+}
+
+function log() {
+    print("_______________________________________________")
+    print("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
+
+    print("Intercept            = " + intercept);
+    utility += intercept;
+    print("Utility              = " + utility);
+
+    print("***");
+    print("Impedance        = " + impedanceImpact);
+    utility += impedanceImpact;
+    print("Utility              = " + utility);
+
+    print("***");
+    print("Attraction Impact    = " + attractionImpact);
+    utility += attractionImpact;
+    print("Utility              = " + utility);
+
+    print("_______________________________________________")
 }

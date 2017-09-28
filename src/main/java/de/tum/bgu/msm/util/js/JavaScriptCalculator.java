@@ -19,7 +19,14 @@ public abstract class JavaScriptCalculator<T> {
 
 
     protected JavaScriptCalculator(Reader reader, boolean log) {
-        ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+        logger.debug("Reading script...");
+        String script = readScript(reader);
+        logger.debug("Compiling script: " + script);
+        compileScript(script);
+        bindings.put("log", log);
+    }
+
+    private String readScript(Reader reader) {
         BufferedReader bufferedReader = new BufferedReader(reader);
         StringBuilder scriptBuilder = new StringBuilder();
         try {
@@ -31,15 +38,18 @@ public abstract class JavaScriptCalculator<T> {
         } catch (IOException e) {
             logger.fatal("Error in reading script!", e);
         }
-        logger.debug("Compiling script: " + scriptBuilder.toString());
+        return scriptBuilder.toString();
+    }
+
+    private void compileScript(String script) {
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
         Compilable compileEngine = (Compilable) engine;
         try {
-            compiledScript = compileEngine.compile(scriptBuilder.toString());
+            compiledScript = compileEngine.compile(script);
         } catch (ScriptException e) {
             logger.fatal("Error in input script!", e);
             e.printStackTrace();
         }
-        bindings.put("log", log);
     }
 
     public T calculate() {

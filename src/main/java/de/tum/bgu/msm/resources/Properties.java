@@ -22,7 +22,7 @@ public class Properties {
     public static final String ZONES = "zonal.data.file";
 
     public static final String LOG_UTILITY_CALCULATION_TTB    = "log.util.total.ttb";
-    public static final String LOG_UTILITY_CALCULATION_TRIP_DISTRIBUTION    = "log.util.total.trip.distribution";
+    public static final String LOG_UTILITY_CALCULATION_TRIP_DISTRIBUTION    = "log.util.trip.distribution";
 
     public static final String TRAVEL_SURVEY_HOUSEHOLDS = "household.travel.survey.hh";
     public static final String TRAVEL_SURVEY_TRIPS = "household.travel.survey.trips";

@@ -49,7 +49,6 @@ public class TravelTimeBudget extends Module {
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
         travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total", logCalculationTtb);
-
     }
 
     private void calculateTravelTimeBudget() {
