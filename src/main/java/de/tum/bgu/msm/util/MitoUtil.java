@@ -328,4 +328,8 @@ public class MitoUtil {
         return (int) household.getPersons().values().stream().filter(person ->
                 person.hasDriversLicense()).count();
     }
+
+    public static Random getRandomObject() {
+        return rand;
+    }
 }
