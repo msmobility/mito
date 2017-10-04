@@ -14,33 +14,25 @@ public class DataSet {
 
     private static final Logger logger = Logger.getLogger(DataSet.class);
 
-    private TableDataSet travelSurveyHouseholdTable;
-    private TableDataSet travelSurveyTripsTable;
-
     private TableDataSet tripAttractionRates;
 
     private TravelTimes autoTravelTimes;
     private TravelTimes transitTravelTimes;
+
+    private TravelSurvey survey;
 
     private final Map<Integer, Zone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
 
-    public TableDataSet getTravelSurveyHouseholdTable() {
-        return travelSurveyHouseholdTable;
+
+    public TravelSurvey getSurvey() {
+        return this.survey;
     }
 
-    public void setTravelSurveyHouseholdTable(TableDataSet travelSurveyHouseholdTable) {
-        this.travelSurveyHouseholdTable = travelSurveyHouseholdTable;
-    }
-
-    public TableDataSet getTravelSurveyTripsTable() {
-        return travelSurveyTripsTable;
-    }
-
-    public void setTravelSurveyTripsTable(TableDataSet travelSurveyTripsTable) {
-        this.travelSurveyTripsTable = travelSurveyTripsTable;
+    public void setSurvey(TravelSurvey survey) {
+        this.survey = survey;
     }
 
     public TableDataSet getTripAttractionRates() {

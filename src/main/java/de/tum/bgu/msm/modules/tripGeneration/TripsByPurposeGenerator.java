@@ -1,10 +1,7 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
@@ -27,17 +24,12 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
     private final HouseholdTypeManager householdTypeManager;
 
-    private final TableDataSet travelSurveyHouseholdTable;
-    private final TableDataSet travelSurveyTripsTable;
-
     private final HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
 
     public TripsByPurposeGenerator(DataSet dataSet, Purpose purpose) {
         this.dataSet = dataSet;
         this.purpose = purpose;
         householdTypeManager = new HouseholdTypeManager(dataSet, purpose);
-        travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
-        travelSurveyTripsTable = dataSet.getTravelSurveyTripsTable();
     }
 
     @Override
@@ -51,8 +43,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
     private void defineTripFrequenciesForHouseHoldTypes() {
         householdTypeManager.createHouseHoldTypeDefinitions();
-        TableDataSet travelSurveyHouseholdTable = dataSet.getTravelSurveyHouseholdTable();
-        Map<Integer, HouseholdType> householdTypeBySampleId = householdTypeManager.assignHouseholdTypeOfEachSurveyRecord(travelSurveyHouseholdTable);
+        Map<Integer, HouseholdType> householdTypeBySampleId = householdTypeManager.assignHouseholdTypeOfEachSurveyRecord(dataSet.getSurvey());
         collectTripFrequencyDistribution(householdTypeBySampleId);
     }
 
@@ -91,33 +82,45 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
     private void fillFrequencyArrays(Map<Integer, HouseholdType> householdTypeBySampleId) {
 
-        int pos = 1;
-        for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
 
-            int sampleId = (int) travelSurveyHouseholdTable.getValueAt(hhRow, "sampn");
-            int tripsOfThisHouseholdForGivenPurpose = 0;
-            // Ready through trip file of HTS
-            for (int trRow = pos; trRow <= travelSurveyTripsTable.getRowCount(); trRow++) {
-                if ((int) travelSurveyTripsTable.getValueAt(trRow, "sampn") == sampleId) {
-                    pos++;
-                    Purpose htsTripPurpose = Purpose.valueOf(travelSurveyTripsTable.getStringValueAt(trRow, "mainPurpose"));
-                    if (htsTripPurpose.equals(purpose)) {
-                        // add this trip to this household
-                        tripsOfThisHouseholdForGivenPurpose++;
-                    }
-                } else {
-                    break;
-                }
-            }
-
-            HouseholdType type = householdTypeBySampleId.get(sampleId);
+        for(SurveyRecord record: dataSet.getSurvey().getRecords().values()) {
+            int householdTripsForPurpose = record.getTripsForPurpose(purpose);
+            HouseholdType type = householdTypeBySampleId.get(record.getId());
             if(type == null) {
-                logger.info("Trips for travel survey record " + sampleId + " and purpose " + purpose + " " +
+                logger.info("Trips for travel survey record " + record.getId() + " and purpose " + purpose + " " +
                         "ignored, as no household type is applicable.");
                 continue;
             }
-            addTripFrequencyForHouseholdType(tripsOfThisHouseholdForGivenPurpose, type);
+            addTripFrequencyForHouseholdType(householdTripsForPurpose, type);
         }
+
+//        int pos = 1;
+//        for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
+//
+//            int sampleId = (int) travelSurveyHouseholdTable.getValueAt(hhRow, "sampn");
+//            int tripsOfThisHouseholdForGivenPurpose = 0;
+//            // Ready through trip file of HTS
+//            for (int trRow = pos; trRow <= travelSurveyTripsTable.getRowCount(); trRow++) {
+//                if ((int) travelSurveyTripsTable.getValueAt(trRow, "sampn") == sampleId) {
+//                    pos++;
+//                    Purpose htsTripPurpose = Purpose.valueOf(travelSurveyTripsTable.getStringValueAt(trRow, "mainPurpose"));
+//                    if (htsTripPurpose.equals(purpose)) {
+//                        // add this trip to this household
+//                        tripsOfThisHouseholdForGivenPurpose++;
+//                    }
+//                } else {
+//                    break;
+//                }
+//            }
+//
+//            HouseholdType type = householdTypeBySampleId.get(sampleId);
+//            if(type == null) {
+//                logger.info("Trips for travel survey record " + sampleId + " and purpose " + purpose + " " +
+//                        "ignored, as no household type is applicable.");
+//                continue;
+//            }
+//            addTripFrequencyForHouseholdType(tripsOfThisHouseholdForGivenPurpose, type);
+//        }
     }
 
     private void addTripFrequencyForHouseholdType(int tripsOfThisHouseholdForGivenPurpose, HouseholdType type) {

@@ -1,8 +1,9 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.SurveyRecord;
+import de.tum.bgu.msm.data.TravelSurvey;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -83,21 +84,21 @@ public class HouseholdTypeManager {
         }
     }
 
-    public Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord(TableDataSet travelSurveyHouseholdTable) {
+    public Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord(TravelSurvey survey) {
         // Count number of household records per predefined type
 
         Map<Integer, HouseholdType> householdTypeBySample = new HashMap<>();
 
-        for (int row = 1; row <= travelSurveyHouseholdTable.getRowCount(); row++) {
-            int hhSze = (int) travelSurveyHouseholdTable.getValueAt(row, "hhsiz");
+        for (SurveyRecord record: survey.getRecords().values()) {
+            int hhSze = record.getHouseholdSize();
             hhSze = Math.min(hhSze, 7);    // hhsiz 8 has only 19 records, aggregate with hhsiz 7
-            int hhWrk = (int) travelSurveyHouseholdTable.getValueAt(row, "hhwrk");
+            int hhWrk = record.getWorkers();
             hhWrk = Math.min(hhWrk, 4);    // hhwrk 6 has 1 and hhwrk 5 has 7 records, aggregate with hhwrk 4
-            int hhInc = (int) travelSurveyHouseholdTable.getValueAt(row, "incom");
-            int hhVeh = (int) travelSurveyHouseholdTable.getValueAt(row, "hhveh");
+            int hhInc = record.getIncome();
+            int hhVeh = record.getVehicleNumber();
             hhVeh = Math.min(hhVeh, 3);   // Auto-ownership model will generate groups 0, 1, 2, 3+ only.
-            int region = (int) travelSurveyHouseholdTable.getValueAt(row, "urbanSuburbanRural");
-            int sampleId = (int) travelSurveyHouseholdTable.getValueAt(row, "sampn");
+            int region = record.getRegion();
+            int sampleId = record.getId();
             HouseholdType type = determineHouseholdType(hhSze, hhWrk, hhInc, hhVeh, region);
             householdTypeBySample.put(sampleId, type);
 
