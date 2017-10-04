@@ -1,18 +1,15 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.resources.Gender;
-import de.tum.bgu.msm.resources.Occupation;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Gender;
+import de.tum.bgu.msm.resources.Occupation;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class PersonsReader extends CSVReader {
@@ -28,8 +25,6 @@ public class PersonsReader extends CSVReader {
     private int posLicence = -1;
     private int posIncome = -1;
 
-    private final Map<Integer, MitoPerson> persons = new HashMap<>();
-
     public PersonsReader(DataSet dataSet) {
         super(dataSet);
     }
@@ -39,7 +34,6 @@ public class PersonsReader extends CSVReader {
         logger.info("  Reading person micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.PERSONS);
         super.readLineByLine(fileName, ",");
-        dataSet.getPersons().putAll(persons);
     }
 
     @Override
@@ -89,7 +83,7 @@ public class PersonsReader extends CSVReader {
         int income = Integer.parseInt(record[posIncome]);
         hh.setIncome(hh.getIncome() + income);
         MitoPerson pp = new MitoPerson(id, occupation, workplace, age, gender, driversLicense);
-        persons.put(pp.getId(), pp);
-        hh.getPersons().add(pp);
+        hh.addPerson(pp);
+        dataSet.addPerson(pp);
     }
 }

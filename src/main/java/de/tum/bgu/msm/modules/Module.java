@@ -5,11 +5,11 @@ import de.tum.bgu.msm.data.DataSet;
 /**
  * Created by Nico on 14.07.2017.
  */
-abstract class Module {
+public abstract class Module {
 
-    final DataSet dataSet;
+    protected final DataSet dataSet;
 
-    Module(DataSet dataSet) {
+    protected Module(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 

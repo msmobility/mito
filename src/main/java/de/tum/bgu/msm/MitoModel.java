@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.InputFeed;
 import de.tum.bgu.msm.io.input.InputManager;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.Random;
@@ -59,7 +60,6 @@ public class MitoModel {
         logger.info("  Reading input data for MITO");
         manager.readAsStandAlone();
         manager.readAdditionalData();
-
     }
 
     public void runModel() {

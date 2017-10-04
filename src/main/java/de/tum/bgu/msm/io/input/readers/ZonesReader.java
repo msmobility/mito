@@ -18,8 +18,6 @@ public class ZonesReader extends CSVReader {
 
     private static final Logger logger = Logger.getLogger(ZonesReader.class);
 
-    private final Map<Integer, Zone> zones = new HashMap<>();
-
     public ZonesReader(DataSet dataSet) {
         super(dataSet);
     }
@@ -35,9 +33,8 @@ public class ZonesReader extends CSVReader {
         TableDataSet zonalData = super.readAsTableDataSet(Resources.INSTANCE.getString(Properties.ZONES));
         for (int i = 1; i <= zonalData.getRowCount(); i++) {
             Zone zone = new Zone(zonalData.getColumnAsInt("ZoneId")[i - 1], zonalData.getValueAt(i, "ACRES"));
-            zones.put(zone.getZoneId(), zone);
+            dataSet.addZone(zone);
         }
-        dataSet.getZones().putAll(zones);
     }
 
     private void readReductionDampers() {
@@ -46,8 +43,8 @@ public class ZonesReader extends CSVReader {
             for (int i = 1; i <= reductionNearBorder.getRowCount(); i++) {
                 int id = (int) reductionNearBorder.getValueAt(i, "Zone");
                 float damper = reductionNearBorder.getValueAt(i, "damper");
-                if (zones.containsKey(id)) {
-                    zones.get(id).setReductionAtBorderDamper(damper);
+                if (dataSet.getZones().containsKey(id)) {
+                    dataSet.getZones().get(id).setReductionAtBorderDamper(damper);
                 } else {
                     logger.warn("Damper of " + damper + " refers to non-existing zone " + id + ". Ignoring it.");
                 }

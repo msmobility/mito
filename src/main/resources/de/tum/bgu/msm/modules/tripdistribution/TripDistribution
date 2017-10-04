@@ -1,0 +1,164 @@
+if(purpose == "HBW") {
+    intercept = 1;
+    timeParam = -0.01;
+    impedanceParam = 1;
+    attractionParam = 1;
+
+    impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
+    if(totalEmployees == 0) {
+        attraction = 0;
+    } else {
+        attraction = Math.log(totalEmployees);
+    }
+    attractionImpact = attraction * attractionParam;
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
+    if(log) {
+        log();
+    }
+
+    utility;
+
+} else if(purpose == "HBE") {
+    intercept = 1;
+    timeParam = -0.01;
+    impedanceParam = 1;
+    attractionParam = 1;
+
+    impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
+
+    if(schoolEnrollment == 0) {
+        attraction = 0;
+    } else {
+        attraction = Math.log(schoolEnrollment);
+    }
+    attraction = Math.log(schoolEnrollment);
+    attractionImpact = attraction * attractionParam;
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
+    if(log) {
+       log();
+    }
+
+    utility;
+
+} else if(purpose == "HBS") {
+    intercept = 1;
+    budgetParam = -0.01;
+    impedanceParam = 1;
+    attractionParam = 1;
+
+    budgetOffset = Math.abs(budget - travelTime);
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+
+    if(retailEmployees == 0) {
+        attraction = 0;
+    } else {
+        attraction = Math.log(retailEmployees);
+    }
+    attractionImpact = attraction * attractionParam;
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
+    if(log) {
+      log();
+    }
+
+    utility;
+
+} else if(purpose == "HBO") {
+    intercept = 1;
+    budgetParam = -0.01;
+    impedanceParam = 1;
+    attractionParam = 1;
+
+    budgetOffset = Math.abs(budget - travelTime);
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+
+    if(households == 0) {
+        householdsAttraction = 0;
+    } else {
+        householdsAttraction = Math.log(households);
+    }
+    if(otherEmployees == 0) {
+        otherEmplAttraction = 0;
+    } else {
+        otherEmplAttraction =  Math.log(otherEmployees);
+    }
+    attraction = householdsAttraction + otherEmplAttraction;
+    attractionImpact = attraction * attractionParam;
+
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
+    if(log) {
+        log();
+    }
+
+    utility;
+
+} else if(purpose == "NHBW") {
+    intercept = 1;
+    budgetParam = -0.01;
+    impedanceParam = 1;
+    attractionParam = 1;
+
+    budgetOffset = Math.abs(budget - travelTime);
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+
+    if(households == 0) {
+        householdsAttraction = 0;
+    } else {
+        householdsAttraction = Math.log(households);
+    }
+    if(totalEmployees == 0) {
+        totalEmplAttraction = 0;
+    } else {
+        totalEmplAttraction =  Math.log(otherEmployees);
+    }
+    if(retailEmployees == 0) {
+        retailEmplAttraction = 0;
+    } else {
+        retailEmplAttraction =  Math.log(retailEmployees);
+    }
+    attraction = householdsAttraction + totalEmplAttraction + retailEmplAttraction;
+    attractionImpact = attraction * attractionParam;
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
+    if(log) {
+        log();
+    }
+
+    utility;
+
+} else {
+    0.;
+}
+
+function calculateImpedance(impedanceParameter, timeParameter, time) {
+    return impedanceParameter * Math.exp(timeParameter * time);
+}
+
+function log() {
+    print("_______________________________________________")
+    print("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
+
+    print("Intercept            = " + intercept);
+    utility += intercept;
+    print("Utility              = " + utility);
+
+    print("***");
+    print("Impedance        = " + impedanceImpact);
+    utility += impedanceImpact;
+    print("Utility              = " + utility);
+
+    print("***");
+    print("Attraction Impact    = " + attractionImpact);
+    utility += attractionImpact;
+    print("Utility              = " + utility);
+
+    print("_______________________________________________")
+}

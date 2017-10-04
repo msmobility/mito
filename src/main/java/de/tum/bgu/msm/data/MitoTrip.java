@@ -14,42 +14,39 @@ import java.io.Serializable;
 public class MitoTrip implements Serializable {
 
     private final int tripId;
-    private final int householdId;
     private final Purpose tripPurpose;
 
-    private final int tripOrigin;
-    private int tripDestination;
+    private Zone tripOrigin;
+    private Zone tripDestination;
 
     private MitoPerson person;
 
-    public MitoTrip(int tripId, int householdId, Purpose tripPurpose, int origin) {
+    public MitoTrip(int tripId, Purpose tripPurpose) {
         this.tripId = tripId;
-        this.householdId = householdId;
         this.tripPurpose = tripPurpose;
-        this.tripOrigin = origin;
     }
 
     public int getTripId() {
         return tripId;
     }
 
-    public int getTripOrigin() {
+    public Zone getTripOrigin() {
         return tripOrigin;
+    }
+
+    public void setTripOrigin(Zone origin) {
+        this.tripOrigin = origin;
     }
 
     public Purpose getTripPurpose() {
         return tripPurpose;
     }
 
-    public int getHouseholdId() {
-        return this.householdId;
-    }
-
-    public int getTripDestination() {
+    public Zone getTripDestination() {
         return this.tripDestination;
     }
 
-    public void setTripDestination(int destination) {
+    public void setTripDestination(Zone destination) {
         this.tripDestination = destination;
     }
 

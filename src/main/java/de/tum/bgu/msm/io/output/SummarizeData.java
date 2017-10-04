@@ -1,16 +1,15 @@
 package de.tum.bgu.msm.io.output;
 
-
-import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 
 import java.io.PrintWriter;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Methods to summarize model results
@@ -40,16 +39,12 @@ public class SummarizeData {
             pwh.print(hh.getAutos());
             pwh.print(",");
             int totalNumber = 0;
-            for(List<MitoTrip> trips: hh.getTripsByPurpose().values()) {
-                totalNumber += trips.size();
+            for(Purpose purpose: Purpose.values()) {
+                totalNumber += hh.getTripsForPurpose(purpose).size();
             }
             pwh.print(totalNumber);
             pwh.print(",");
-            if(hh.getTripsByPurpose().containsKey(0)) {
-                pwh.println(hh.getTripsByPurpose().get(0).size());
-            } else {
-                pwh.println(0);
-            }
+            pwh.println(hh.getTripsForPurpose(Purpose.HBW).size());
         }
         pwh.close();
 
@@ -58,18 +53,19 @@ public class SummarizeData {
         PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp, false);
         pwp.println("id,hhID,hhSize,hhTrips,avTrips");
         for(MitoHousehold hh: dataSet.getHouseholds().values()) {
-            for (MitoPerson pp : hh.getPersons()) {
-                pwp.print(pp.getId());
-                pwp.print(",");
-                pwp.print(hh.getHhId());
-                pwp.print(",");
-                pwp.print(hh.getHhSize());
-                pwp.print(",");
-                pwp.print(hh.getTripsByPurpose().size());
-                pwp.print(",");
-                pwp.println(hh.getTripsByPurpose().size() / hh.getHhSize());
+            for (MitoPerson pp : hh.getPersons().values()) {
+                    pwp.print(pp.getId());
+                    pwp.print(",");
+                    pwp.print(hh.getHhId());
+                    pwp.print(",");
+                    pwp.print(hh.getHhSize());
+                    pwp.print(",");
+                    long hhTrips = Arrays.asList(Purpose.values()).stream().flatMap(purpose -> hh.getTripsForPurpose(purpose).stream()).count();
+                    pwp.print(hhTrips);
+                    pwp.print(",");
+                    pwp.println(hhTrips / hh.getHhSize());
+                }
             }
-        }
         pwp.close();
     }
 

@@ -1,19 +1,12 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import com.pb.sawdust.calculator.Function1;
-import com.pb.sawdust.util.array.ArrayUtil;
-import com.pb.sawdust.util.concurrent.ForkJoinPoolFactory;
-import com.pb.sawdust.util.concurrent.IteratorAction;
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.tum.bgu.msm.resources.Purpose.*;
@@ -42,26 +35,15 @@ public class RawTripGenerator {
     }
 
     private void generateByPurposeMultiThreaded() {
-
-        Function1<Purpose,Void> tripGenByPurposeMethod = purpose -> {
-            TripsByPurposeGenerator byPurposeGenerator = new TripsByPurposeGenerator(dataSet, purpose);
-            List<MitoTrip> trips = byPurposeGenerator.generateTrips();
-            for (MitoTrip trip: trips) {
-                dataSet.getTrips().put(trip.getTripId(), trip);
-                dataSet.getHouseholds().get(trip.getHouseholdId()).addTrip(trip);
-            }
-            return null;
-        };
-
-        Iterator<Purpose> tripPurposeIterator = PURPOSES.iterator();
-        IteratorAction<Purpose> itTask = new IteratorAction<>(tripPurposeIterator, tripGenByPurposeMethod);
-        ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
-        pool.execute(itTask);
-        itTask.waitForCompletion();
+        ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
+        for(Purpose purpose: PURPOSES) {
+            executor.addFunction(new TripsByPurposeGenerator(dataSet, purpose));
+        }
+        executor.execute();
     }
 
     private void logTripGeneration() {
-        int rawTrips = dataSet.getTrips().size() + counterDroppedTripsAtBorder.get();
+        long rawTrips = dataSet.getTrips().size() + counterDroppedTripsAtBorder.get();
         logger.info("  Generated " + MitoUtil.customFormat("###,###", rawTrips) + " raw trips.");
         if (counterDroppedTripsAtBorder.get() > 0) {
             logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder.get()) + " trips were dropped at boundary of study area.");

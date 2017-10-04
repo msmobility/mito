@@ -2,8 +2,10 @@ package de.tum.bgu.msm.data;
 
 import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
+import java.util.*;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -14,13 +16,17 @@ import java.io.Serializable;
 
 public class MitoPerson implements Serializable {
 
+    private static final Logger logger = Logger.getLogger(MitoPerson.class);
+
     private final int id;
     private final Gender gender;
     private Occupation occupation;
     private int workplace;
-    private int workzone;
+    private Zone workzone;
     private int age;
     private boolean driversLicense;
+
+    private Map<Integer,MitoTrip> trips = new HashMap();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
@@ -39,7 +45,7 @@ public class MitoPerson implements Serializable {
         return workplace;
     }
 
-    public void setWorkzone(int workzone) {
+    public void setWorkzone(Zone workzone) {
         this.workzone = workzone;
     }
 
@@ -47,7 +53,7 @@ public class MitoPerson implements Serializable {
         return occupation;
     }
 
-    public int getWorkzone() {
+    public Zone getWorkzone() {
         return workzone;
     }
 
@@ -69,5 +75,25 @@ public class MitoPerson implements Serializable {
 
     public void setDriversLicense(boolean driversLicense) {
         this.driversLicense = driversLicense;
+    }
+
+    public Map<Integer, MitoTrip> getTrips() {
+        return Collections.unmodifiableMap(this.trips);
+    }
+
+    public void addTrip(MitoTrip trip) {
+        MitoTrip test = this.trips.get(trip.getTripId());
+        if(test != null) {
+            if(test.equals(trip)) {
+                logger.warn("Trip " + trip.getTripId() + "already exists in person " + this.getId());
+            } else {
+                throw new IllegalArgumentException("Trip id " + trip.getTripId() + " already exists in person " + this.getId());
+            }
+        }
+        this.trips.put(trip.getTripId(), trip);
+    }
+
+    public void removeTrip(Integer tripId) {
+        this.trips.remove(tripId);
     }
 }

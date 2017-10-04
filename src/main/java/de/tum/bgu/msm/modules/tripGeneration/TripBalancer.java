@@ -1,12 +1,10 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -31,7 +29,7 @@ public class TripBalancer {
         logger.info("  Balancing trip production and attractions");
 
         for (Purpose purpose: Purpose.values()) {
-            int tripsByPurp = getTotalNumberOfTripsGeneratedByPurpose(purpose, dataSet.getTrips().values());
+            long tripsByPurp = dataSet.getHouseholds().values().stream().mapToInt(household -> household.getTripsForPurpose(purpose).size()).sum();
             float attrSum = 0;
             for (Zone zone : dataSet.getZones().values()) {
                 attrSum += tripAttractionByZoneAndPurpose.get(zone.getZoneId()).get(purpose);
@@ -46,15 +44,5 @@ public class TripBalancer {
                 tripAttractionByZoneAndPurpose.get(zone.getZoneId()).replaceAll((k, v) -> v * tripsByPurp / attrSumFinal);
             }
         }
-    }
-
-    private int getTotalNumberOfTripsGeneratedByPurpose(Purpose purpose, Collection<MitoTrip> trips) {
-        int prodSum = 0;
-        for (MitoTrip trip : trips) {
-            if (trip.getTripPurpose().equals(purpose)) {
-                prodSum++;
-            }
-        }
-        return prodSum;
     }
 }

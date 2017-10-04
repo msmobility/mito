@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules;
 
-import de.tum.bgu.msm.MitoUtil;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -11,6 +10,7 @@ import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,10 +23,14 @@ import java.util.ResourceBundle;
  */
 public class HouseHoldTypeManagerTest {
 
+    private Zone zone;
+
     @Before
     public void setupTest() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
         Resources.INSTANCE.setResources(bundle);
+        zone = new Zone(1, 10);
+        zone.setRegion(1);
     }
 
     @Test
@@ -40,15 +44,13 @@ public class HouseHoldTypeManagerTest {
             Assert.assertEquals(0, type.getNumberOfRecords());
         }
 
-        MitoHousehold household = new MitoHousehold(1,  4, 1, 1);
-        household.getPersons().add(new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true));
-        Assert.assertNull(manager.determineHouseholdType(household));
+        MitoHousehold household1 = new MitoHousehold(1,  4, 1, null);
+        household1.addPerson(new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true));
+        MitoHousehold household2 = new MitoHousehold(2,  4, 1, zone);
+        household2.addPerson(new MitoPerson(2, Occupation.WORKER, -1, 30, Gender.MALE, true));
+        Assert.assertNull(manager.determineHouseholdType(household1));
 
-        Zone zone = new Zone(1, 10);
-        zone.setRegion(1);
-        dataSet.getZones().put(1, zone);
-
-        HouseholdType determinedType = manager.determineHouseholdType(household);
+        HouseholdType determinedType = manager.determineHouseholdType(household2);
         Assert.assertNotNull(determinedType);
         Assert.assertEquals(1, determinedType.getNumberOfRecords());
     }

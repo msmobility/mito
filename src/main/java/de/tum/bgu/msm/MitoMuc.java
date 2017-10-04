@@ -1,5 +1,6 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.ResourceBundle;

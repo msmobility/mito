@@ -1,10 +1,12 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.modules.DestinationChoice;
-import de.tum.bgu.msm.modules.PersonTripAssignment;
-import de.tum.bgu.msm.modules.TravelTimeBudget;
-import de.tum.bgu.msm.modules.TripGeneration;
+import de.tum.bgu.msm.io.output.SummarizeData;
+import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
+import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudget;
+import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import org.apache.log4j.Logger;
 
 /**
@@ -28,14 +30,17 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet);
         tg.run();
-        logger.info("Running Module: Person to Trip Assignment");
-        PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
-        personTripAssignment.run();
         logger.info("Running Module: Travel Time Budget Calculation");
         TravelTimeBudget ttb = new TravelTimeBudget(dataSet);
         ttb.run();
-        logger.info("Running Module: Microscopic Destination Choice");
-        DestinationChoice dc = new DestinationChoice(dataSet);
-        dc.run();
+        logger.info("Running Module: Person to Trip Assignment");
+        PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
+        personTripAssignment.run();
+        logger.info("Running Module: Microscopic Trip Distribution");
+        TripDistribution distribution = new TripDistribution(dataSet);
+        distribution.run();
+
+        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
+        SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
     }
 }

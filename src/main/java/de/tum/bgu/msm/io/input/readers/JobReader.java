@@ -1,11 +1,12 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import de.tum.bgu.msm.MitoUtil;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 /**
@@ -41,13 +42,23 @@ public class JobReader extends CSVReader {
     @Override
     protected void processRecord(String[] record) {
         int id = Integer.parseInt(record[posId]);
-        int zone = Integer.parseInt(record[posZone]);
+        int zoneId = Integer.parseInt(record[posZone]);
         int worker = Integer.parseInt(record[posWorker]);
         if (worker > 0) {
             MitoPerson pp = dataSet.getPersons().get(worker);
+            if(pp == null) {
+                logger.warn(String.format("Job %d refers to non-existing person %d! Ignoring it.", id, worker));
+                return;
+            }
             if (pp.getWorkplace() != id) {
-                logger.error("Person " + worker + " has workplace " + pp.getWorkplace() + " in person file but workplace "
-                        + id + " in job file.");
+                logger.warn("Person " + worker + " has workplace " + pp.getWorkplace() + " in person file but workplace "
+                        + id + " in job file. Ignoring job.");
+                return;
+            }
+            Zone zone = dataSet.getZones().get(zoneId);
+            if (zone == null) {
+                logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
+                return;
             }
             pp.setWorkzone(zone);
         }

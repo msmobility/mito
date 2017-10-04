@@ -4,6 +4,8 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
 
-public interface TripDistribution {
-    double getWeight(MitoHousehold household, MitoPerson person, MitoTrip trip);
+import java.util.Map;
+
+public interface TripAssignment {
+    Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip);
 }
