@@ -28,6 +28,8 @@ public class MarylandSurveyRecord implements SurveyRecord {
         if(this.tripsByPurpose.containsKey(purpose)) {
             int temp = this.tripsByPurpose.get(purpose);
             this.tripsByPurpose.put(purpose, temp +1);
+        } else {
+            this.tripsByPurpose.put(purpose, 1);
         }
     }
 

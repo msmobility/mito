@@ -34,7 +34,7 @@ public class TravelTimeBudgetCalculatorTest {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        calculator = new TravelTimeBudgetJSCalculator(reader, "Total", true);
+        calculator = new TravelTimeBudgetJSCalculator(reader, "Total", false);
 
         dataSet = new DataSet();
         addZone();

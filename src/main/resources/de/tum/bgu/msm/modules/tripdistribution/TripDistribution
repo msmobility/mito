@@ -1,6 +1,6 @@
 if(purpose == "HBW") {
     intercept = 1;
-    timeParam = -1;
+    timeParam = -0.01;
     impedanceParam = 1;
     attractionParam = 1;
 
@@ -22,7 +22,7 @@ if(purpose == "HBW") {
 
 } else if(purpose == "HBE") {
     intercept = 1;
-    timeParam = -1;
+    timeParam = -0.01;
     impedanceParam = 1;
     attractionParam = 1;
 
@@ -46,7 +46,7 @@ if(purpose == "HBW") {
 
 } else if(purpose == "HBS") {
     intercept = 1;
-    budgetParam = -1;
+    budgetParam = -0.01;
     impedanceParam = 1;
     attractionParam = 1;
 
@@ -70,7 +70,7 @@ if(purpose == "HBW") {
 
 } else if(purpose == "HBO") {
     intercept = 1;
-    budgetParam = -1;
+    budgetParam = -0.01;
     impedanceParam = 1;
     attractionParam = 1;
 
@@ -101,7 +101,7 @@ if(purpose == "HBW") {
 
 } else if(purpose == "NHBW") {
     intercept = 1;
-    budgetParam = -1;
+    budgetParam = -0.01;
     impedanceParam = 1;
     attractionParam = 1;
 
@@ -139,7 +139,7 @@ if(purpose == "HBW") {
 }
 
 function calculateImpedance(impedanceParameter, timeParameter, time) {
-    return impedanceParameter * Math.exp(parameter * time);
+    return impedanceParameter * Math.exp(timeParameter * time);
 }
 
 function log() {
