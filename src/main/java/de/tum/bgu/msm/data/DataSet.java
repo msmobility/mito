@@ -7,9 +7,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Created by Nico on 14.07.2017.
- */
 public class DataSet {
 
     private static final Logger logger = Logger.getLogger(DataSet.class);

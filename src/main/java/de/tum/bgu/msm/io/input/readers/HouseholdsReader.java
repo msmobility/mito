@@ -50,6 +50,5 @@ public class HouseholdsReader extends CSVReader {
         }
         dataSet.addHousehold(new MitoHousehold(id, 0, autos, zone));
         zone.addHousehold();
-
     }
 }

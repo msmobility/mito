@@ -4,12 +4,8 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.input.readers.*;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Nico on 14.07.2017.
- */
 public class InputManager {
 
     private static final Logger logger = Logger.getLogger(InputManager.class);
@@ -38,23 +34,14 @@ public class InputManager {
     }
 
     public void readFromFeed(InputFeed feed) {
-        setZonesFromFeed(feed.zones, feed.retailEmplByZone, feed.officeEmplByZone, feed.otherEmplByZone, feed.totalEmplByZone, feed.sizeOfZonesInAcre);
+        for(Zone zone: feed.zones.values()) {
+            dataSet.addZone(zone);
+        }
         dataSet.setAutoTravelTimes(new MatrixTravelTimes(feed.autoTravelTimes));
         dataSet.setTransitTravelTimes(new MatrixTravelTimes(feed.transitTravelTimes));
         setHouseholdsFromFeed(feed.households);
     }
 
-    private void setZonesFromFeed(int[] zoneIds, int[] retailEmplByZone, int[] officeEmplByZone, int[] otherEmplByZone, int[] totalEmplByZone, float[] sizeOfZonesInAcre) {
-        for (int i = 0; i < zoneIds.length; i++) {
-            Zone zone = new Zone(zoneIds[i], sizeOfZonesInAcre[i]);
-            zone.setRetailEmpl(retailEmplByZone[i]);
-            zone.setOfficeEmpl(officeEmplByZone[i]);
-            zone.setOtherEmpl(otherEmplByZone[i]);
-            zone.setTotalEmpl(totalEmplByZone[i]);
-            dataSet.addZone(zone);
-        }
-
-    }
 
     private void setHouseholdsFromFeed(Map<Integer, MitoHousehold> households) {
         for (MitoHousehold household : households.values()) {
