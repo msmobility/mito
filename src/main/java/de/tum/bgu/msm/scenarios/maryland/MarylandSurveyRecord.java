@@ -1,5 +1,6 @@
-package de.tum.bgu.msm.data;
+package de.tum.bgu.msm.scenarios.maryland;
 
+import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.resources.Purpose;
 
 import java.util.EnumMap;

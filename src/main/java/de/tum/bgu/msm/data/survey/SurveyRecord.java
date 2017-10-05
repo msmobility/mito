@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.data;
+package de.tum.bgu.msm.data.survey;
 
 import de.tum.bgu.msm.resources.Purpose;
 

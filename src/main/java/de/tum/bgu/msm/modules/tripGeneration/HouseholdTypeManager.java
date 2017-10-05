@@ -2,8 +2,8 @@ package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.SurveyRecord;
-import de.tum.bgu.msm.data.TravelSurvey;
+import de.tum.bgu.msm.data.survey.SurveyRecord;
+import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -84,7 +84,7 @@ public class HouseholdTypeManager {
         }
     }
 
-    public Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord(TravelSurvey survey) {
+    public Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord(TravelSurvey<? extends SurveyRecord> survey) {
         // Count number of household records per predefined type
 
         Map<Integer, HouseholdType> householdTypeBySample = new HashMap<>();

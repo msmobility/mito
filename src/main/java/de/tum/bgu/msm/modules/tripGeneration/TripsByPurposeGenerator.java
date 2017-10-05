@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;

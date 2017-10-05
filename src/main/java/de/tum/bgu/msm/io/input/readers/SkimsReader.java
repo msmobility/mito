@@ -1,16 +1,13 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.data.MatrixTravelTimes;
+import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.OMXReader;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
-/**
- * Created by Nico on 17.07.2017.
- */
 public class SkimsReader extends OMXReader {
 
     private static final Logger logger = Logger.getLogger(SkimsReader.class);

@@ -1,6 +1,9 @@
 package de.tum.bgu.msm.data;
 
 import com.pb.common.datafile.TableDataSet;
+import de.tum.bgu.msm.data.survey.SurveyRecord;
+import de.tum.bgu.msm.data.survey.TravelSurvey;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -16,7 +19,7 @@ public class DataSet {
     private TravelTimes autoTravelTimes;
     private TravelTimes transitTravelTimes;
 
-    private TravelSurvey survey;
+    private TravelSurvey<? extends SurveyRecord> survey;
 
     private final Map<Integer, Zone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
@@ -24,11 +27,11 @@ public class DataSet {
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
 
 
-    public TravelSurvey getSurvey() {
+    public TravelSurvey<? extends SurveyRecord> getSurvey() {
         return this.survey;
     }
 
-    public void setSurvey(TravelSurvey survey) {
+    public void setSurvey(TravelSurvey<? extends SurveyRecord> survey) {
         this.survey = survey;
     }
 

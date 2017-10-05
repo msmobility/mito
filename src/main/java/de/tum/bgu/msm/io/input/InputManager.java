@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.input;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import org.apache.log4j.Logger;
 

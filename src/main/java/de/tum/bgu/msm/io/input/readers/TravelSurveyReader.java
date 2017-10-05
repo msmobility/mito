@@ -5,19 +5,18 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.scenarios.maryland.MarylandSurveyRecord;
+import de.tum.bgu.msm.scenarios.maryland.MarylandTravelSurvey;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-/**
- * Created by Nico on 17.07.2017.
- */
 public class TravelSurveyReader extends CSVReader {
 
     private static final Logger logger = Logger.getLogger(TravelSurveyReader.class);
 
     private boolean households = true;
 
-    private final TravelSurvey survey;
+    private final MarylandTravelSurvey survey;
     private int posHhsiz;
     private int posHhwrk;
     private int posIncom;
@@ -29,7 +28,7 @@ public class TravelSurveyReader extends CSVReader {
 
     public TravelSurveyReader(DataSet dataSet) {
         super(dataSet);
-        survey = new TravelSurvey();
+        survey = new MarylandTravelSurvey();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
-import de.tum.bgu.msm.data.TravelTimes;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.resources.Purpose;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
