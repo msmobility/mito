@@ -93,34 +93,6 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
             }
             addTripFrequencyForHouseholdType(householdTripsForPurpose, type);
         }
-
-//        int pos = 1;
-//        for (int hhRow = 1; hhRow <= travelSurveyHouseholdTable.getRowCount(); hhRow++) {
-//
-//            int sampleId = (int) travelSurveyHouseholdTable.getValueAt(hhRow, "sampn");
-//            int tripsOfThisHouseholdForGivenPurpose = 0;
-//            // Ready through trip file of HTS
-//            for (int trRow = pos; trRow <= travelSurveyTripsTable.getRowCount(); trRow++) {
-//                if ((int) travelSurveyTripsTable.getValueAt(trRow, "sampn") == sampleId) {
-//                    pos++;
-//                    Purpose htsTripPurpose = Purpose.valueOf(travelSurveyTripsTable.getStringValueAt(trRow, "mainPurpose"));
-//                    if (htsTripPurpose.equals(purpose)) {
-//                        // add this trip to this household
-//                        tripsOfThisHouseholdForGivenPurpose++;
-//                    }
-//                } else {
-//                    break;
-//                }
-//            }
-//
-//            HouseholdType type = householdTypeBySampleId.get(sampleId);
-//            if(type == null) {
-//                logger.info("Trips for travel survey record " + sampleId + " and purpose " + purpose + " " +
-//                        "ignored, as no household type is applicable.");
-//                continue;
-//            }
-//            addTripFrequencyForHouseholdType(tripsOfThisHouseholdForGivenPurpose, type);
-//        }
     }
 
     private void addTripFrequencyForHouseholdType(int tripsOfThisHouseholdForGivenPurpose, HouseholdType type) {
