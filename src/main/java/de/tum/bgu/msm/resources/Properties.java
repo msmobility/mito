@@ -1,9 +1,5 @@
 package de.tum.bgu.msm.resources;
 
-
-/**
- * Created by Nico on 17.07.2017.
- */
 public class Properties {
 
     public static final String RANDOM_SEED = "random.seed";
@@ -20,9 +16,6 @@ public class Properties {
     public static final String SCHOOL_ENROLLMENT = "school.enrollment.data";
     public static final String TRANSIT_PEAK_SKIM = "transit.peak.time";
     public static final String ZONES = "zonal.data.file";
-
-    public static final String LOG_UTILITY_CALCULATION_TTB    = "log.util.total.ttb";
-    public static final String LOG_UTILITY_CALCULATION_TRIP_DISTRIBUTION    = "log.util.trip.distribution";
 
     public static final String TRAVEL_SURVEY_HOUSEHOLDS = "household.travel.survey.hh";
     public static final String TRAVEL_SURVEY_TRIPS = "household.travel.survey.trips";
