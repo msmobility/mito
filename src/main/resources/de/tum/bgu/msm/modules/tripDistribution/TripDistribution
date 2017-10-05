@@ -14,7 +14,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log) {
+    if(log == true) {
         log();
     }
 
@@ -38,7 +38,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log) {
+    if(log == true) {
        log();
     }
 
@@ -62,7 +62,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log) {
+    if(log == true) {
       log();
     }
 
@@ -93,7 +93,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log) {
+    if(log == true) {
         log();
     }
 
@@ -128,7 +128,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log) {
+    if(log == true) {
         log();
     }
 
