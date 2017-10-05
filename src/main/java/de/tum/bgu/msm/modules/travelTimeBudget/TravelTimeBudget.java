@@ -30,8 +30,6 @@ public class TravelTimeBudget extends Module {
 
     private TravelTimeBudgetJSCalculator travelTimeCalc;
 
-    private final boolean logCalculationTtb = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TTB);
-
     private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
 
     public TravelTimeBudget(DataSet dataSet) {
@@ -48,7 +46,7 @@ public class TravelTimeBudget extends Module {
     private void setupTravelTimeBudgetModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total", logCalculationTtb);
+        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total");
     }
 
     private void calculateTravelTimeBudget() {

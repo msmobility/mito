@@ -12,18 +12,18 @@ import java.io.Reader;
  */
 public abstract class JavaScriptCalculator<T> {
 
-    private static final Logger logger = Logger.getLogger(JavaScriptCalculator.class);
+    protected static final Logger logger = Logger.getLogger(JavaScriptCalculator.class);
 
     private CompiledScript compiledScript;
     protected LoggableBindings bindings = new LoggableBindings();
 
 
-    protected JavaScriptCalculator(Reader reader, boolean log) {
+    protected JavaScriptCalculator(Reader reader) {
         logger.debug("Reading script...");
         String script = readScript(reader);
         logger.debug("Compiling script: " + script);
         compileScript(script);
-        bindings.put("log", log);
+        bindings.put("logger", logger);
     }
 
     private String readScript(Reader reader) {

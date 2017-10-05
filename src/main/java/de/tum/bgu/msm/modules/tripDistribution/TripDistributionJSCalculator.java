@@ -12,8 +12,8 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
     private TravelTimes travelTimes;
     private Zone baseZone;
 
-    protected TripDistributionJSCalculator(Reader reader, TravelTimes travelTimes, boolean log) {
-        super(reader, log);
+    protected TripDistributionJSCalculator(Reader reader, TravelTimes travelTimes) {
+        super(reader);
         this.travelTimes = travelTimes;
     }
 

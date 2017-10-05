@@ -12,8 +12,8 @@ public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<Double> {
     /**
     JavascriptCalculator implementation for calculating travel time budgets of households.
      */
-    public TravelTimeBudgetJSCalculator(Reader reader, String initialPurpose, boolean log) {
-        super(reader, log);
+    public TravelTimeBudgetJSCalculator(Reader reader, String initialPurpose) {
+        super(reader);
         bindings.put("purpose", initialPurpose);
     }
 

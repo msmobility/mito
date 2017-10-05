@@ -13,11 +13,8 @@ if(purpose == "HBW") {
     attractionImpact = attraction * attractionParam;
 
     utility = intercept + impedanceImpact + attractionImpact;
-
-    if(log == true) {
-        log();
-    }
-
+    log();
+    
     utility;
 
 } else if(purpose == "HBE") {
@@ -38,9 +35,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log == true) {
-       log();
-    }
+    log();
 
     utility;
 
@@ -62,9 +57,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log == true) {
-      log();
-    }
+    log();
 
     utility;
 
@@ -93,9 +86,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log == true) {
-        log();
-    }
+    log();
 
     utility;
 
@@ -128,9 +119,7 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    if(log == true) {
-        log();
-    }
+    log();
 
     utility;
 
@@ -143,22 +132,22 @@ function calculateImpedance(impedanceParameter, timeParameter, time) {
 }
 
 function log() {
-    print("_______________________________________________")
-    print("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
+    logger.debug("_______________________________________________")
+    logger.debug("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
 
-    print("Intercept            = " + intercept);
+    logger.debug("Intercept            = " + intercept);
     utility += intercept;
-    print("Utility              = " + utility);
+    logger.debug("Utility              = " + utility);
 
-    print("***");
-    print("Impedance        = " + impedanceImpact);
+    logger.debug("***");
+    logger.debug("Impedance        = " + impedanceImpact);
     utility += impedanceImpact;
-    print("Utility              = " + utility);
+    logger.debug("Utility              = " + utility);
 
-    print("***");
-    print("Attraction Impact    = " + attractionImpact);
+    logger.debug("***");
+    logger.debug("Attraction Impact    = " + attractionImpact);
     utility += attractionImpact;
-    print("Utility              = " + utility);
+    logger.debug("Utility              = " + utility);
 
-    print("_______________________________________________")
+    logger.debug("_______________________________________________")
 }

@@ -28,7 +28,6 @@ public class TripDistribution extends Module {
     private int failedTripsCounter = 0;
 
     private final static Logger logger = Logger.getLogger(TripDistribution.class);
-    private final static boolean LOG = Resources.INSTANCE.getBoolean(Properties.LOG_UTILITY_CALCULATION_TRIP_DISTRIBUTION);
 
     private TripDistributionJSCalculator tripDistributionCalc;
 
@@ -53,7 +52,7 @@ public class TripDistribution extends Module {
     private void setupModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic trip distribution.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
-        tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getAutoTravelTimes(), LOG);
+        tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getAutoTravelTimes());
     }
 
     private void distributeHBW(MitoHousehold household) {
