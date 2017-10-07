@@ -180,7 +180,7 @@ public class MitoUtil {
     }
 
     public static <T> T select(Map<T, Double> mappedProbabilities, double sum) {
-       return select(mappedProbabilities, rand, sum);
+        return select(mappedProbabilities, rand, sum);
     }
 
     public static <T> T select(Map<T, Double> probabilities, Random random, double sum) {
@@ -256,6 +256,9 @@ public class MitoUtil {
         // open file and return PrintWriter object
 
         File outputFile = new File(fileName);
+        File parent = new File(outputFile.getParent());
+        parent.mkdirs();
+
         try {
             FileWriter fw = new FileWriter(outputFile, appendFile);
             BufferedWriter bw = new BufferedWriter(fw);
