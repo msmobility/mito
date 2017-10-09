@@ -256,8 +256,10 @@ public class MitoUtil {
         // open file and return PrintWriter object
 
         File outputFile = new File(fileName);
-        File parent = new File(outputFile.getParent());
-        parent.mkdirs();
+        if(outputFile.getParent() != null) {
+            File parent = new File(outputFile.getParent());
+            parent.mkdirs();
+        }
 
         try {
             FileWriter fw = new FileWriter(outputFile, appendFile);
