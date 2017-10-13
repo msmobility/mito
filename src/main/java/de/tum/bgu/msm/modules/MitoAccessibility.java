@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -40,6 +41,8 @@ public class MitoAccessibility extends Module {
         Map<Integer, Float> autoAccessibilityOtherByZone = new HashMap<>();
         Map<Integer, Float> transitAccessibilityOtherByZone = new HashMap<>();
 
+        TravelTimes carTravelTimes = dataSet.getTravelTimes("car");
+        TravelTimes transitTravelTimes = dataSet.getTravelTimes("pt");
         for (Zone zone : zones) {
             float autoAccessibilityHouseholds = 0;
             float autoAccessibilityRetail = 0;
@@ -47,14 +50,14 @@ public class MitoAccessibility extends Module {
             float transitAccessibilityOther = 0;
             for (Zone toZone : zones) {
                 double autoImpedance;
-                double autoTravelTime = dataSet.getAutoTravelTimes().getTravelTimeFromTo(zone, toZone);
+                double autoTravelTime = carTravelTimes.getTravelTimeFromTo(zone, toZone);
                 if (autoTravelTime == 0) {      // should never happen for auto
                     autoImpedance = 0;
                 } else {
                     autoImpedance = Math.exp(beta * autoTravelTime);
                 }
                 double transitImpedance;
-                double transitTravelTime = dataSet.getTransitTravelTimes().getTravelTimeFromTo(zone, toZone);
+                double transitTravelTime = transitTravelTimes.getTravelTimeFromTo(zone, toZone);
                 if (transitTravelTime == 0) {   // zone is not connected by walk-to-transit
                     transitImpedance = 0;
                 } else {

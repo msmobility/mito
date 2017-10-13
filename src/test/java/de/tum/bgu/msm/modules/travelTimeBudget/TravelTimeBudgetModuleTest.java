@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Gender;
 import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Purpose;
@@ -25,7 +27,9 @@ public class TravelTimeBudgetModuleTest {
         Resources.INSTANCE.setResources(bundle);
 
         dataSet = new DataSet();
-        dataSet.setAutoTravelTimes((origin, destination) -> 20);
+        TravelTimes travelTimes = (origin, destination) -> 20;
+        dataSet.addTravelTimeForMode("car", travelTimes);
+        dataSet.addTravelTimeForMode("pt", travelTimes);
         addZone();
         addHouseholds();
         addPersons();

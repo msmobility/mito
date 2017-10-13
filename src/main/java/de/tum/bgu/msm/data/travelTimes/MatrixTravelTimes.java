@@ -4,7 +4,7 @@ import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
-public class MatrixTravelTimes implements TravelTimes{
+public class MatrixTravelTimes implements TravelTimes {
 
     private static final Logger logger = Logger.getLogger(MatrixTravelTimes.class);
 

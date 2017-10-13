@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.io.input;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import org.apache.log4j.Logger;
 
@@ -38,8 +38,9 @@ public class InputManager {
         for(Zone zone: feed.zones.values()) {
             dataSet.addZone(zone);
         }
-        dataSet.setAutoTravelTimes(new MatrixTravelTimes(feed.autoTravelTimes));
-        dataSet.setTransitTravelTimes(new MatrixTravelTimes(feed.transitTravelTimes));
+        for(Map.Entry<String, TravelTimes> travelTimes: feed.travelTimes.entrySet())  {
+            dataSet.addTravelTimeForMode(travelTimes.getKey(), travelTimes.getValue());
+        }
         setHouseholdsFromFeed(feed.households);
     }
 

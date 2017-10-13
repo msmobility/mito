@@ -257,7 +257,7 @@ public class MitoUtil {
 
         File outputFile = new File(fileName);
         if(outputFile.getParent() != null) {
-            File parent = new File(outputFile.getParent());
+            File parent = outputFile.getParentFile();
             parent.mkdirs();
         }
 

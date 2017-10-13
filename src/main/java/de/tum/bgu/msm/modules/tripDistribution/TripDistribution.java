@@ -52,7 +52,7 @@ public class TripDistribution extends Module {
     private void setupModel() {
         logger.info("  Creating Utility Expression Calculators for microscopic trip distribution.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
-        tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getAutoTravelTimes());
+        tripDistributionCalc = new TripDistributionJSCalculator(reader, dataSet.getTravelTimes("car"));
     }
 
     private void distributeHBW(MitoHousehold household) {

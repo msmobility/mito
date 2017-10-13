@@ -16,8 +16,7 @@ public class DataSet {
 
     private TableDataSet tripAttractionRates;
 
-    private TravelTimes autoTravelTimes;
-    private TravelTimes transitTravelTimes;
+    private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
 
     private TravelSurvey<? extends SurveyRecord> survey;
 
@@ -43,21 +42,15 @@ public class DataSet {
         this.tripAttractionRates = tripAttractionRates;
     }
 
-    public TravelTimes getAutoTravelTimes() {
-        return this.autoTravelTimes;
+    public TravelTimes getTravelTimes(String mode) {
+        return this.travelTimes.get(mode);
     }
 
-    public void setAutoTravelTimes(TravelTimes travelTimes) {
-        this.autoTravelTimes = travelTimes;
+    public TravelTimes addTravelTimeForMode(String mode, TravelTimes travelTimes) {
+        return this.travelTimes.put(mode, travelTimes);
     }
 
-    public TravelTimes getTransitTravelTimes() {
-        return this.transitTravelTimes;
-    }
 
-    public void setTransitTravelTimes(TravelTimes travelTimes) {
-        this.transitTravelTimes = travelTimes;
-    }
 
     public Map<Integer, MitoPerson> getPersons() {
         return Collections.unmodifiableMap(persons);

@@ -4,5 +4,5 @@ import de.tum.bgu.msm.data.Zone;
 
 public interface TravelTimes {
 
-    public double getTravelTimeFromTo(Zone origin, Zone destination);
+    double getTravelTimeFromTo(Zone origin, Zone destination);
 }
