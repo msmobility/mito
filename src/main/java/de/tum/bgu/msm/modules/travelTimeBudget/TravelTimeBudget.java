@@ -79,7 +79,7 @@ public class TravelTimeBudget extends Module {
                     ignoredWorkers++;
                     continue;
                 }
-                hbwBudget += dataSet.getTravelTimes("car").getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
+                hbwBudget += dataSet.getTravelTimes("car").getTravelTimeFromTo(household.getHomeZone().getZoneId(), person.getWorkzone().getZoneId());
             }
         }
         household.setTravelTimeBudgetByPurpose(Purpose.HBW, hbwBudget);
@@ -94,7 +94,7 @@ public class TravelTimeBudget extends Module {
                     ignoredStudents++;
                     continue;
                 }
-                hbeBudget += dataSet.getTravelTimes("pt").getTravelTimeFromTo(household.getHomeZone(), person.getWorkzone());
+                hbeBudget += dataSet.getTravelTimes("pt").getTravelTimeFromTo(household.getHomeZone().getZoneId(), person.getWorkzone().getZoneId());
             }
         }
         household.setTravelTimeBudgetByPurpose(Purpose.HBE, hbeBudget);

@@ -1,8 +1,8 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
+
+import com.pb.common.matrix.Matrix;
 
 public class MatrixTravelTimes implements TravelTimes {
 
@@ -15,11 +15,7 @@ public class MatrixTravelTimes implements TravelTimes {
     }
 
     @Override
-    public double getTravelTimeFromTo(Zone origin, Zone destination) {
-        if(origin == null || destination == null) {
-           logger.warn("Origin or Destination is null. Returning 0 Travel time.");
-           return 0;
-        }
-        return matrix.getValueAt(origin.getZoneId(), destination.getZoneId());
+    public double getTravelTimeFromTo(int origin, int destination) {
+        return matrix.getValueAt(origin, destination);
     }
 }

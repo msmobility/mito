@@ -29,7 +29,7 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
 
     public void setTargetZone(Zone zone) {
         bindings.put("targetZone", zone.getZoneId());
-        bindings.put("travelTime", travelTimes.getTravelTimeFromTo(baseZone, zone));
+        bindings.put("travelTime", travelTimes.getTravelTimeFromTo(baseZone.getZoneId(), zone.getZoneId()));
         bindings.put("totalEmployees", zone.getTotalEmpl());
         bindings.put("retailEmployees", zone.getRetailEmpl());
         bindings.put("otherEmployees", zone.getOtherEmpl());
