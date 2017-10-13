@@ -66,7 +66,7 @@ public class SimpleRunTest {
         Assert.assertEquals(2, model.getTravelDemand().getPersons().size());
         Assert.assertNotNull(model.getTravelDemand().getTripAttractionRates());
         Assert.assertNotNull(model.getTravelDemand().getSurvey());
-        Assert.assertEquals(1., model.getTravelDemand().getTravelTimes("car").getTravelTimeFromTo(new Zone(1,10), new Zone(1,10)), 0.);
+        Assert.assertEquals(1., model.getTravelDemand().getTravelTimes("car").getTravelTimeFromTo(1, 1), 0.);
 
         model.runModel();
     }
