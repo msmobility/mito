@@ -1,6 +1,5 @@
-package de.tum.bgu.msm.scenarios.maryland;
+package de.tum.bgu.msm.data.survey.maryland;
 
-import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
 
 import java.util.Collections;
@@ -15,7 +14,6 @@ public class MarylandTravelSurvey implements TravelSurvey<MarylandSurveyRecord>{
     public void addRecord(MarylandSurveyRecord record) {
         this.records.put(record.getId(), record);
     }
-
 
     @Override
     public Map<Integer, MarylandSurveyRecord> getRecords() {

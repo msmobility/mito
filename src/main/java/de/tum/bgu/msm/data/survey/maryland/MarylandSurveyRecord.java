@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.scenarios.maryland;
+package de.tum.bgu.msm.data.survey.maryland;
 
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.resources.Purpose;
