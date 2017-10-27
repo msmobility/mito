@@ -45,8 +45,7 @@ if(purpose == "HBW") {
     impedanceParam = 1;
     attractionParam = 1;
 
-    budgetOffset = Math.abs(budget - travelTime);
-    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
 
     if(retailEmployees == 0) {
         attraction = 0;
@@ -67,8 +66,7 @@ if(purpose == "HBW") {
     impedanceParam = 1;
     attractionParam = 1;
 
-    budgetOffset = Math.abs(budget - travelTime);
-    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
 
     if(households == 0) {
         householdsAttraction = 0;
@@ -96,8 +94,7 @@ if(purpose == "HBW") {
     impedanceParam = 1;
     attractionParam = 1;
 
-    budgetOffset = Math.abs(budget - travelTime);
-    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, budgetOffset);
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
 
     if(households == 0) {
         householdsAttraction = 0;

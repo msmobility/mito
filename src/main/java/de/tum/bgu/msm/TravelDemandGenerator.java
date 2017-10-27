@@ -4,7 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
-import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudget;
+import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import org.apache.log4j.Logger;
@@ -31,7 +31,7 @@ public class TravelDemandGenerator {
         TripGeneration tg = new TripGeneration(dataSet);
         tg.run();
         logger.info("Running Module: Travel Time Budget Calculation");
-        TravelTimeBudget ttb = new TravelTimeBudget(dataSet);
+        TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
         ttb.run();
         logger.info("Running Module: Person to Trip Assignment");
         PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);

@@ -193,7 +193,7 @@ public class MitoUtil {
                 return entry.getKey();
             }
         }
-        logger.info("Error selecting item from weighted probabilities");
+        logger.fatal("Error selecting item from weighted probabilities", new RuntimeException());
         return null;
     }
 

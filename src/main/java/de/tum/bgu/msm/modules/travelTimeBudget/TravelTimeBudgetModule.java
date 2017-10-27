@@ -5,9 +5,7 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Occupation;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Purpose;
-import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
@@ -21,9 +19,9 @@ import java.util.EnumSet;
  * Created on Apr 2, 2017 in Mannheim, Germany
  */
 
-public class TravelTimeBudget extends Module {
+public class TravelTimeBudgetModule extends Module {
 
-    private static final Logger logger = Logger.getLogger(TravelTimeBudget.class);
+    private static final Logger logger = Logger.getLogger(TravelTimeBudgetModule.class);
 
     private int ignoredStudents = 0;
     private int ignoredWorkers = 0;
@@ -32,7 +30,7 @@ public class TravelTimeBudget extends Module {
 
     private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
 
-    public TravelTimeBudget(DataSet dataSet) {
+    public TravelTimeBudgetModule(DataSet dataSet) {
         super(dataSet);
         setupTravelTimeBudgetModel();
     }
@@ -118,13 +116,24 @@ public class TravelTimeBudget extends Module {
                 household.getTravelTimeBudgetForPurpose(Purpose.HBE);
 
         discretionaryTTB = Math.max(discretionaryTTB, 0);
+        if(Double.isNaN(discretionaryTTB)) {
+            System.out.println("NAN!");
+        }
 
         double calcDiscretionaryTTB = 0;
         for (Purpose purpose : discretionaryPurposes) {
             calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
         }
         for (Purpose purpose : discretionaryPurposes) {
-            household.setTravelTimeBudgetByPurpose(purpose, household.getTravelTimeBudgetForPurpose(purpose) * discretionaryTTB / calcDiscretionaryTTB);
+            double budget = household.getTravelTimeBudgetForPurpose(purpose);
+            if(budget != 0) {
+                budget = budget *discretionaryTTB / calcDiscretionaryTTB;
+                household.setTravelTimeBudgetByPurpose(purpose, budget);
+            }
+            if(Double.isNaN(budget)) {
+                System.out.println("NAN!");
+            }
+            purpose.addAndUpdateBudget(budget);
         }
     }
 }

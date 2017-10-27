@@ -213,6 +213,11 @@ utility += intercept;
 logger.debug("Utility              = " + utility);
 logger.debug("***");
 
+
+if(income == 0) {
+    logger.warn("Household " + hhId + " has no income. Setting ttb income impact to 0.");
+    incomeImpact = 0;
+}
 logger.debug("scaledIncome         = Math.pow(income, incomeScale)");
 logger.debug("scaledIncome         = Math.pow(" + income + ", " + incomeScale+ ")");
 logger.debug("scaledIncome         = " + scaledIncome)
@@ -335,7 +340,7 @@ logger.debug("***") ;
 
 logger.debug("Result               = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility)");
 logger.debug("Result               = Math.pow(-Math.log(0.5), 1./"+ wbScale +") * Math.exp("+utility+")");
-result = result = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility);
+result = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility);
 logger.debug("Result               = " + result);
 logger.debug("_______________________________________________");
 result;

@@ -19,13 +19,13 @@ public class ConcurrentFunctionExecutor {
 
     public void execute() {
         // Multi-threading code
-        Function1<ConcurrentFunction, Void> threadableFunction = function -> {
+        Function1<ConcurrentFunction, Void> concurrentFunction = function -> {
             function.execute();
             return null;
         };
 
-        Iterator<ConcurrentFunction> incomeChangeIterator = functions.listIterator();
-        IteratorAction<ConcurrentFunction> itTask = new IteratorAction<>(incomeChangeIterator, threadableFunction);
+        Iterator<ConcurrentFunction> concurrentFunctionIterator = functions.listIterator();
+        IteratorAction<ConcurrentFunction> itTask = new IteratorAction<>(concurrentFunctionIterator, concurrentFunction);
         ForkJoinPool pool = ForkJoinPoolFactory.getForkJoinPool();
         pool.execute(itTask);
         itTask.waitForCompletion();
