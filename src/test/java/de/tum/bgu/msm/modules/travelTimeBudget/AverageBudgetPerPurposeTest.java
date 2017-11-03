@@ -2,9 +2,16 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.Purpose;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class AverageBudgetPerPurposeTest {
+
+    @Before
+    public void cleanUpBudgets() {
+        Purpose.clearBudgets();
+    }
 
     @Test
     public void test() {
