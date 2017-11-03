@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.data.survey;
 
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 
 public interface SurveyRecord {
 

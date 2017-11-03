@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 

@@ -3,8 +3,8 @@ package de.tum.bgu.msm.util;
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.resources.Gender;
-import de.tum.bgu.msm.resources.Occupation;
+import de.tum.bgu.msm.data.Gender;
+import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import omx.OmxMatrix;
@@ -183,6 +183,10 @@ public class MitoUtil {
         return select(mappedProbabilities, rand, sum);
     }
 
+    public static <T> T select(Map<T, Double> mappedProbabilities, Random random) {
+        return select(mappedProbabilities, random, getSum(mappedProbabilities.values()));
+    }
+
     public static <T> T select(Map<T, Double> probabilities, Random random, double sum) {
         // select item based on probabilities (for mapped double probabilities)
         double selectedWeight = random.nextDouble() * sum;
@@ -193,7 +197,7 @@ public class MitoUtil {
                 return entry.getKey();
             }
         }
-        logger.info("Error selecting item from weighted probabilities");
+        logger.fatal("Error selecting item from weighted probabilities", new RuntimeException());
         return null;
     }
 

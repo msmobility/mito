@@ -3,7 +3,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;

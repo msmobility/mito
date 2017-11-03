@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.InputFeed;
 import de.tum.bgu.msm.io.input.InputManager;
 import de.tum.bgu.msm.resources.Resources;
@@ -70,6 +71,7 @@ public class MitoModel {
         ttd.generateTravelDemand();
 
         printOutline(startTime);
+        Purpose.clearBudgets();
     }
 
     private void printOutline(long startTime) {

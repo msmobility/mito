@@ -1,5 +1,8 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
+import de.tum.bgu.msm.data.Gender;
+import de.tum.bgu.msm.data.Occupation;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -9,7 +12,6 @@ import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.script.ScriptException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;

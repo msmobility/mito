@@ -1,20 +1,17 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
-import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.data.Zone;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
 import java.io.Reader;
 
 public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
 
-    private TravelTimes travelTimes;
     private Zone baseZone;
 
-    protected TripDistributionJSCalculator(Reader reader, TravelTimes travelTimes) {
+    protected TripDistributionJSCalculator(Reader reader) {
         super(reader);
-        this.travelTimes = travelTimes;
     }
 
     public void setBaseZone(Zone zone) {
@@ -22,14 +19,13 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
         this.bindings.put("baseZone", zone.getZoneId());
     }
 
-    public void setPurposeAndBudget(Purpose purpose, double budget) {
+    public void setPurpose(Purpose purpose) {
         bindings.put("purpose", purpose.name());
-        bindings.put("budget", budget);
     }
 
-    public void setTargetZone(Zone zone) {
+    public void setTargetZone(Zone zone, double travelTime) {
         bindings.put("targetZone", zone.getZoneId());
-        bindings.put("travelTime", travelTimes.getTravelTimeFromTo(baseZone.getZoneId(), zone.getZoneId()));
+        bindings.put("travelTime", travelTime);
         bindings.put("totalEmployees", zone.getTotalEmpl());
         bindings.put("retailEmployees", zone.getRetailEmpl());
         bindings.put("otherEmployees", zone.getOtherEmpl());

@@ -3,13 +3,13 @@ package de.tum.bgu.msm.modules.personTripAssignment;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.tum.bgu.msm.resources.Occupation.*;
-import static de.tum.bgu.msm.resources.Purpose.*;
+import static de.tum.bgu.msm.data.Occupation.*;
+import static de.tum.bgu.msm.data.Purpose.*;
 
 
 public class DefaultTripAssignment implements TripAssignment {

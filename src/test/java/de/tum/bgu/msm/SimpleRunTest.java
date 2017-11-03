@@ -2,14 +2,10 @@ package de.tum.bgu.msm;
 
 import com.pb.common.matrix.IdentityMatrix;
 import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.InputFeed;
-import de.tum.bgu.msm.resources.Gender;
-import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;

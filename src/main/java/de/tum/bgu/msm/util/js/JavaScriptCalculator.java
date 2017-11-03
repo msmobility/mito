@@ -54,8 +54,11 @@ public abstract class JavaScriptCalculator<T> {
 
     public T calculate() {
         try {
-            bindings.logValues();
-            return (T) compiledScript.eval(bindings);
+            if(logger.isDebugEnabled()) {
+                bindings.logValues();
+            }
+            T result = (T) compiledScript.eval(bindings);
+            return result;
         } catch (ScriptException e) {
             e.printStackTrace();
             return null;
