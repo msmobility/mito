@@ -17,4 +17,10 @@ public enum Purpose {
     public double getAverageBudgetPerHousehold() {
         return this.averageBudget.getBudget();
     }
+
+    public static void clearBudgets() {
+        for(Purpose purpose: Purpose.values()) {
+            purpose.averageBudget.reset();
+        }
+    }
 }

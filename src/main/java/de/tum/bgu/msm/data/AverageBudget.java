@@ -19,4 +19,10 @@ public class AverageBudget {
         counts++;
         this.budget = budgetSum / counts;
     }
+
+    public void reset() {
+        this.budgetSum = 0;
+        this.budget = 0;
+        this.counts = 0;
+    }
 }
