@@ -1,6 +1,4 @@
-package de.tum.bgu.msm.resources;
-
-import de.tum.bgu.msm.data.AverageBudget;
+package de.tum.bgu.msm.data;
 
 public enum Purpose {
     HBW,

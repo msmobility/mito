@@ -3,7 +3,7 @@ package de.tum.bgu.msm.io.input.readers;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.io.input.CSVReader;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.data.survey.maryland.MarylandSurveyRecord;
 import de.tum.bgu.msm.data.survey.maryland.MarylandTravelSurvey;

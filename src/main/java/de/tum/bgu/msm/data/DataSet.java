@@ -25,7 +25,6 @@ public class DataSet {
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
 
-
     public TravelSurvey<? extends SurveyRecord> getSurvey() {
         return this.survey;
     }
@@ -49,8 +48,6 @@ public class DataSet {
     public TravelTimes addTravelTimeForMode(String mode, TravelTimes travelTimes) {
         return this.travelTimes.put(mode, travelTimes);
     }
-
-
 
     public Map<Integer, MitoPerson> getPersons() {
         return Collections.unmodifiableMap(persons);

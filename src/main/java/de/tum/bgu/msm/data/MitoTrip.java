@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import de.tum.bgu.msm.resources.Purpose;
-
 import java.io.Serializable;
 
 /**

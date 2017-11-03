@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import org.junit.Assert;
 import org.junit.Test;
 

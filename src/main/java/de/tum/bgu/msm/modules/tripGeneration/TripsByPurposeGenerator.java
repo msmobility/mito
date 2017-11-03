@@ -3,7 +3,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;

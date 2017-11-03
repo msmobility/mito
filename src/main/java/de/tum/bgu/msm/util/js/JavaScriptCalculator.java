@@ -54,11 +54,10 @@ public abstract class JavaScriptCalculator<T> {
 
     public T calculate() {
         try {
-            bindings.logValues();
-            T result = (T) compiledScript.eval(bindings);
-            if((result instanceof Double)&& Double.isNaN((Double) result)) {
-                System.out.println("NAN!");
+            if(logger.isDebugEnabled()) {
+                bindings.logValues();
             }
+            T result = (T) compiledScript.eval(bindings);
             return result;
         } catch (ScriptException e) {
             e.printStackTrace();

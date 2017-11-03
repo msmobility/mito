@@ -2,9 +2,9 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.resources.Gender;
-import de.tum.bgu.msm.resources.Occupation;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Gender;
+import de.tum.bgu.msm.data.Occupation;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Before;

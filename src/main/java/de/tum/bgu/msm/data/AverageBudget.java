@@ -18,8 +18,5 @@ public class AverageBudget {
         this.budgetSum += budget;
         counts++;
         this.budget = budgetSum / counts;
-        if(Double.isNaN(this.budget)) {
-            System.out.println("NAN!");
-        }
     }
 }

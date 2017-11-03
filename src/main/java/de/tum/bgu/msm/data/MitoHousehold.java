@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import de.tum.bgu.msm.resources.Purpose;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;

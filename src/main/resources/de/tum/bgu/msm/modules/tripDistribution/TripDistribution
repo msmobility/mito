@@ -1,7 +1,7 @@
 if(purpose == "HBW") {
     intercept = 1;
     timeParam = -0.01;
-    impedanceParam = 1;
+    impedanceParam = 0.1;
     attractionParam = 1;
 
     impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
@@ -20,7 +20,7 @@ if(purpose == "HBW") {
 } else if(purpose == "HBE") {
     intercept = 1;
     timeParam = -0.01;
-    impedanceParam = 1;
+    impedanceParam = 0.1;
     attractionParam = 1;
 
     impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
@@ -30,7 +30,6 @@ if(purpose == "HBW") {
     } else {
         attraction = Math.log(schoolEnrollment);
     }
-    attraction = Math.log(schoolEnrollment);
     attractionImpact = attraction * attractionParam;
 
     utility = intercept + impedanceImpact + attractionImpact;
@@ -42,7 +41,7 @@ if(purpose == "HBW") {
 } else if(purpose == "HBS") {
     intercept = 1;
     budgetParam = -0.01;
-    impedanceParam = 1;
+    impedanceParam = 0.1;
     attractionParam = 1;
 
     impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
@@ -63,7 +62,7 @@ if(purpose == "HBW") {
 } else if(purpose == "HBO") {
     intercept = 1;
     budgetParam = -0.01;
-    impedanceParam = 1;
+    impedanceParam = 0.1;
     attractionParam = 1;
 
     impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
@@ -91,7 +90,7 @@ if(purpose == "HBW") {
 } else if(purpose == "NHBW") {
     intercept = 1;
     budgetParam = -0.01;
-    impedanceParam = 1;
+    impedanceParam = 0.1;
     attractionParam = 1;
 
     impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
@@ -104,7 +103,7 @@ if(purpose == "HBW") {
     if(totalEmployees == 0) {
         totalEmplAttraction = 0;
     } else {
-        totalEmplAttraction =  Math.log(otherEmployees);
+        totalEmplAttraction =  Math.log(totalEmployees);
     }
     if(retailEmployees == 0) {
         retailEmplAttraction = 0;
@@ -120,6 +119,37 @@ if(purpose == "HBW") {
 
     utility;
 
+} else if(purpose == "NHBO") {
+    intercept = 1;
+    budgetParam = -0.01;
+    impedanceParam = 0.1;
+    attractionParam = 1;
+
+    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
+
+    if(households == 0) {
+        householdsAttraction = 0;
+    } else {
+        householdsAttraction = Math.log(households);
+    }
+    if(totalEmployees == 0) {
+        totalEmplAttraction = 0;
+    } else {
+        totalEmplAttraction =  Math.log(totalEmployees);
+    }
+    if(retailEmployees == 0) {
+        retailEmplAttraction = 0;
+    } else {
+        retailEmplAttraction =  Math.log(retailEmployees);
+    }
+    attraction = householdsAttraction + totalEmplAttraction + retailEmplAttraction;
+    attractionImpact = attraction * attractionParam;
+
+    utility = intercept + impedanceImpact + attractionImpact;
+
+    log();
+
+    utility;
 } else {
     0.;
 }
@@ -129,22 +159,16 @@ function calculateImpedance(impedanceParameter, timeParameter, time) {
 }
 
 function log() {
-    logger.debug("_______________________________________________")
-    logger.debug("Calculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose);
-
-    logger.debug("Intercept            = " + intercept);
-    utility += intercept;
-    logger.debug("Utility              = " + utility);
-
-    logger.debug("***");
-    logger.debug("Impedance        = " + impedanceImpact);
-    utility += impedanceImpact;
-    logger.debug("Utility              = " + utility);
-
-    logger.debug("***");
-    logger.debug("Attraction Impact    = " + attractionImpact);
-    utility += attractionImpact;
-    logger.debug("Utility              = " + utility);
-
-    logger.debug("_______________________________________________")
+    logVal = 0;
+    logger.debug("\n_______________________________________________" +
+    "\nCalculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose +
+    "\nIntercept            = " + intercept +
+    "\nUtility              = " + (logVal+= intercept) +
+    "\n***" +
+    "\nImpedance        = " + impedanceImpact +
+    "\nUtility              = " + (logVal+= impedanceImpact) +
+    "\n***" +
+    "\nAttraction Impact    = " + attractionImpact +
+    "\nUtility              = " + (logVal+=attractionImpact) +
+    "\n_______________________________________________");
 }

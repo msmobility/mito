@@ -23,7 +23,7 @@ public class Zone {
     private float autoAccessibilityOther = 0;
     private float transitAccessibilityOther = 0;
 
-    public Zone(int zoneId){
+    public Zone(int zoneId) {
         this.zoneId = zoneId;
     }
 
@@ -156,5 +156,10 @@ public class Zone {
 
     public void setTransitAccessibilityOther(float transitAcessibilityOther) {
         this.transitAccessibilityOther = transitAcessibilityOther;
+    }
+
+    @Override
+    public String toString() {
+        return "[Zone " + zoneId + "]";
     }
 }

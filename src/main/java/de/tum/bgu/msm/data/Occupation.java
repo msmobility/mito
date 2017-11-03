@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.resources;
+package de.tum.bgu.msm.data;
 
 public enum Occupation {
     WORKER,

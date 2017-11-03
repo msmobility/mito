@@ -3,8 +3,8 @@ package de.tum.bgu.msm.modules.personTripAssignment;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.resources.Occupation;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Occupation;
+import de.tum.bgu.msm.data.Purpose;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
