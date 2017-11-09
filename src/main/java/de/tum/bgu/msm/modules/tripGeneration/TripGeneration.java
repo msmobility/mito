@@ -3,11 +3,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.data.Purpose;
 import org.apache.log4j.Logger;
-
-import java.util.EnumMap;
-import java.util.Map;
 
 /**
  * Runs trip generation for the Transport in Microsimulation Orchestrator (MITO)
@@ -19,8 +15,6 @@ import java.util.Map;
 public class TripGeneration extends Module {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
-
-    private Map<Integer, EnumMap<Purpose, Float>> tripAttr;
 
     public TripGeneration(DataSet dataSet) {
         super(dataSet);
@@ -42,11 +36,11 @@ public class TripGeneration extends Module {
 
     private void calculateAttractions() {
         AttractionCalculator calculator = new AttractionCalculator(dataSet);
-        tripAttr =  calculator.run();
+        calculator.run();
     }
 
     private void balanceTrips() {
-        TripBalancer tripBalancer = new TripBalancer(dataSet, tripAttr);
+        TripBalancer tripBalancer = new TripBalancer(dataSet);
         tripBalancer.run();
     }
 

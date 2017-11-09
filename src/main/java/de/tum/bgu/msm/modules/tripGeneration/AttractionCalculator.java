@@ -11,9 +11,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Nico on 20.07.2017.
- */
 public class AttractionCalculator {
 
     private static final Logger logger = Logger.getLogger(AttractionCalculator.class);
@@ -24,7 +21,7 @@ public class AttractionCalculator {
         this.dataSet = dataSet;
     }
 
-    public Map<Integer, EnumMap<Purpose, Float>> run() {
+    public void run() {
 
         logger.info("  Calculating trip attractions");
         TableDataSet attrRates = dataSet.getTripAttractionRates();
@@ -32,11 +29,9 @@ public class AttractionCalculator {
         String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
 
         Collection<Zone> zones = dataSet.getZones().values();
-        Map<Integer, EnumMap<Purpose, Float>> tripAttrByZoneAndPurp = new HashMap<>();
         for (Zone zone: zones) {
-            EnumMap<Purpose, Float> tripAttrByPurp = new EnumMap(Purpose.class);
             for (Purpose purpose: Purpose.values()) {
-                float tripAttr = 0;
+                float tripAttraction = 0;
                 for (String variable: independentVariables) {
                     String token = purpose + "_" + variable;
                     if (attractionRates.containsKey(token)) {
@@ -61,16 +56,14 @@ public class AttractionCalculator {
                                 attribute = zone.getSchoolEnrollment();
                                 break;
                         }
-                        tripAttr += attribute * attractionRates.get(token);
+                        tripAttraction += attribute * attractionRates.get(token);
                     } else {
                         logger.warn("No attraction rate found for token " + token);
                     }
                 }
-                tripAttrByPurp.put(purpose, tripAttr);
+                zone.setTripAttractionRate(purpose, tripAttraction);
             }
-            tripAttrByZoneAndPurp.put(zone.getZoneId(), tripAttrByPurp);
         }
-        return tripAttrByZoneAndPurp;
     }
 
 
