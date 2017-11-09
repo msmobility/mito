@@ -1,9 +1,15 @@
 package de.tum.bgu.msm.data;
 
+import org.apache.log4j.Logger;
+
+import java.util.EnumMap;
+
 /**
  * Created by Nico on 7/7/2017.
  */
 public class Zone {
+
+    private static final Logger logger = Logger.getLogger(Zone.class);
 
     private final int zoneId;
     private float size;
@@ -23,7 +29,9 @@ public class Zone {
     private float autoAccessibilityOther = 0;
     private float transitAccessibilityOther = 0;
 
-    public Zone(int zoneId) {
+    private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
+
+    public Zone(int zoneId){
         this.zoneId = zoneId;
     }
 
@@ -156,6 +164,19 @@ public class Zone {
 
     public void setTransitAccessibilityOther(float transitAcessibilityOther) {
         this.transitAccessibilityOther = transitAcessibilityOther;
+    }
+
+    public void setTripAttractionRate(Purpose purpose, double tripAttractionRate) {
+        this.tripAttractionRates.put(purpose, tripAttractionRate);
+    }
+
+    public double getTripAttractionRate(Purpose purpose) {
+        Double rate = this.tripAttractionRates.get(purpose);
+        if(rate == null)  {
+            logger.error("No trip attraction rate set for zone " + zoneId + ". Please make sure to only call " +
+                    "this method after trip generation module!");
+        }
+        return rate;
     }
 
     @Override

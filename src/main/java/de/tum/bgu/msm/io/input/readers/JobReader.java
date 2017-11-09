@@ -29,7 +29,7 @@ public class JobReader extends CSVReader {
     public void read() {
         logger.info("  Reading job micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.JOBS);
-        super.readLineByLine(fileName, ",");
+        super.read(fileName, ",");
     }
 
     @Override

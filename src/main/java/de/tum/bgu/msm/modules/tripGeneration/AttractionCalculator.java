@@ -1,20 +1,13 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.Zone;
 import org.apache.log4j.Logger;
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by Nico on 20.07.2017.
- */
 public class AttractionCalculator {
+
+    public enum explanatoryVariable {HH, TOT, RE, OFF, OTH, ENR};
 
     private static final Logger logger = Logger.getLogger(AttractionCalculator.class);
 
@@ -24,68 +17,42 @@ public class AttractionCalculator {
         this.dataSet = dataSet;
     }
 
-    public Map<Integer, EnumMap<Purpose, Float>> run() {
-
+    public void run() {
         logger.info("  Calculating trip attractions");
-        TableDataSet attrRates = dataSet.getTripAttractionRates();
-        Map<String, Float> attractionRates = getAttractionRates(attrRates);
-        String[] independentVariables = attrRates.getColumnAsString("IndependentVariable");
-
-        Collection<Zone> zones = dataSet.getZones().values();
-        Map<Integer, EnumMap<Purpose, Float>> tripAttrByZoneAndPurp = new HashMap<>();
-        for (Zone zone: zones) {
-            EnumMap<Purpose, Float> tripAttrByPurp = new EnumMap(Purpose.class);
-            for (Purpose purpose: Purpose.values()) {
-                float tripAttr = 0;
-                for (String variable: independentVariables) {
-                    String token = purpose + "_" + variable;
-                    if (attractionRates.containsKey(token)) {
-                        float attribute = 0;
-                        switch (variable) {
-                            case "HH":
-                                attribute = zone.getNumberOfHouseholds();
-                                break;
-                            case "TOT":
-                                attribute = zone.getTotalEmpl();
-                                break;
-                            case "RE":
-                                attribute = zone.getRetailEmpl();
-                                break;
-                            case "OFF":
-                                attribute = zone.getOfficeEmpl();
-                                break;
-                            case "OTH":
-                                attribute = zone.getOtherEmpl();
-                                break;
-                            case "ENR":
-                                attribute = zone.getSchoolEnrollment();
-                                break;
-                        }
-                        tripAttr += attribute * attractionRates.get(token);
-                    } else {
-                        logger.warn("No attraction rate found for token " + token);
+        for (Zone zone : dataSet.getZones().values()) {
+            for (Purpose purpose : Purpose.values()) {
+                float tripAttraction = 0;
+                for (explanatoryVariable variable : explanatoryVariable.values()) {
+                    float attribute = 0;
+                    switch (variable) {
+                        case HH:
+                            attribute = zone.getNumberOfHouseholds();
+                            break;
+                        case TOT:
+                            attribute = zone.getTotalEmpl();
+                            break;
+                        case RE:
+                            attribute = zone.getRetailEmpl();
+                            break;
+                        case OFF:
+                            attribute = zone.getOfficeEmpl();
+                            break;
+                        case OTH:
+                            attribute = zone.getOtherEmpl();
+                            break;
+                        case ENR:
+                            attribute = zone.getSchoolEnrollment();
+                            break;
                     }
+                    Double rate = purpose.getTripAttractionForVariable(variable);
+                    if(rate == null || rate == 0) {
+                        logger.error("Purpose " + purpose + " does not have an attraction" +
+                                " rate for variable " + variable + " registered.");
+                    }
+                    tripAttraction += attribute * rate;
                 }
-                tripAttrByPurp.put(purpose, tripAttr);
-            }
-            tripAttrByZoneAndPurp.put(zone.getZoneId(), tripAttrByPurp);
-        }
-        return tripAttrByZoneAndPurp;
-    }
-
-
-    private HashMap<String, Float> getAttractionRates (TableDataSet attrRates) {
-        // read attraction rate file and create HashMap
-
-        HashMap<String, Float> attractionRates = new HashMap<>();
-        for (int row = 1; row <= attrRates.getRowCount(); row++) {
-            String generator = attrRates.getStringValueAt(row, "IndependentVariable");
-            for (Purpose purpose: Purpose.values()) {
-                float rate = attrRates.getValueAt(row, purpose.toString());
-                String token = purpose.toString() + "_" + generator;
-                attractionRates.put(token, rate);
+                zone.setTripAttractionRate(purpose, tripAttraction);
             }
         }
-        return attractionRates;
     }
 }

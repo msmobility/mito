@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import com.pb.common.datafile.TableDataSet;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
@@ -13,8 +12,6 @@ import java.util.Map;
 public class DataSet {
 
     private static final Logger logger = Logger.getLogger(DataSet.class);
-
-    private TableDataSet tripAttractionRates;
 
     private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
 
@@ -31,14 +28,6 @@ public class DataSet {
 
     public void setSurvey(TravelSurvey<? extends SurveyRecord> survey) {
         this.survey = survey;
-    }
-
-    public TableDataSet getTripAttractionRates() {
-        return tripAttractionRates;
-    }
-
-    public void setTripAttractionRates(TableDataSet tripAttractionRates) {
-        this.tripAttractionRates = tripAttractionRates;
     }
 
     public TravelTimes getTravelTimes(String mode) {

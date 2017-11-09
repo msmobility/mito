@@ -13,11 +13,9 @@ public class TripBalancer {
     private static final Logger logger = Logger.getLogger(TripBalancer.class);
 
     private final DataSet dataSet;
-    private final Map<Integer, EnumMap<Purpose, Float>> tripAttractionByZoneAndPurpose;
 
-    public TripBalancer(DataSet dataSet, Map<Integer, EnumMap<Purpose, Float>> tripAttractionByZoneAndPurpose) {
+    public TripBalancer(DataSet dataSet) {
         this.dataSet = dataSet;
-        this.tripAttractionByZoneAndPurpose = tripAttractionByZoneAndPurpose;
     }
 
     public void run() {
@@ -28,20 +26,23 @@ public class TripBalancer {
 
         logger.info("  Balancing trip production and attractions");
 
-        for (Purpose purpose: Purpose.values()) {
+        for (Purpose purpose : Purpose.values()) {
             long tripsByPurp = dataSet.getHouseholds().values().stream().mapToInt(household -> household.getTripsForPurpose(purpose).size()).sum();
-            float attrSum = 0;
-            for (Zone zone : dataSet.getZones().values()) {
-                attrSum += tripAttractionByZoneAndPurpose.get(zone.getZoneId()).get(purpose);
-            }
-            if (attrSum == 0) {
+            double attrSum = dataSet.getZones().values().stream().mapToDouble(zone -> zone.getTripAttractionRate(purpose)).sum();
+            if (tripsByPurp == 0) {
                 logger.warn("No trips for purpose " + purpose + " were generated.");
                 continue;
             }
-            // adjust attractions (or productions for NHBW and NHBO)
-            for (Zone zone : dataSet.getZones().values()) {
-                final float attrSumFinal = attrSum;
-                tripAttractionByZoneAndPurpose.get(zone.getZoneId()).replaceAll((k, v) -> v * tripsByPurp / attrSumFinal);
+            double ratio = tripsByPurp / attrSum;
+            adjustAttractions(ratio);
+        }
+    }
+
+    private void adjustAttractions(double ratio) {
+        for (Zone zone : dataSet.getZones().values()) {
+            for (Purpose purpose : Purpose.values()) {
+                double oldValue = zone.getTripAttractionRate(purpose);
+                zone.setTripAttractionRate(purpose, oldValue * ratio);
             }
         }
     }
