@@ -33,7 +33,7 @@ public class SimpleRunTest {
     public final void fedInitialization() {
 
         Map<Integer, Zone> zones = new HashMap();
-        zones.put(1, new Zone(1));
+        zones.put(1, new Zone(1, 10, AreaType.RURAL));
 
         Matrix autoTravelTimes = new IdentityMatrix(2);
         Matrix transitTravelTimes = new IdentityMatrix(2);

@@ -9,14 +9,11 @@ import java.io.Reader;
 
 public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<Double> {
 
-    /**
-    JavascriptCalculator implementation for calculating travel time budgets of households.
-     */
+
     public TravelTimeBudgetJSCalculator(Reader reader, String initialPurpose) {
         super(reader);
         bindings.put("purpose", initialPurpose);
     }
-
 
     public void setPurpose(String purpose) {
         bindings.put("purpose", purpose);
@@ -24,7 +21,7 @@ public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<Double> {
 
 
     public void bindHousehold(MitoHousehold household) {
-        bindings.put("areaType", household.getHomeZone().getRegion());
+        bindings.put("areaType", household.getHomeZone().getAreaType().ordinal()+1);
         bindings.put("females", MitoUtil.getFemalesForHousehold(household));
         bindings.put("children", MitoUtil.getChildrenForHousehold(household));
         bindings.put("youngAdults", MitoUtil.getYoungAdultsForHousehold(household));

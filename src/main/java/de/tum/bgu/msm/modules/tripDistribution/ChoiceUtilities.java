@@ -3,7 +3,6 @@ package de.tum.bgu.msm.modules.tripDistribution;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.AverageBudget;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
@@ -63,19 +62,19 @@ final class ChoiceUtilities {
      * If the expected budget is lower, updates should be made the other way
      * round accordingly.
     */
-    void updateUtilitiesForOriginAndPurpose(int originId, Purpose purpose) {
-        double targetValue = purpose.getAverageBudgetPerHousehold();
-        double actualValue = currentAverageTTB.get(purpose).getBudget();
+    void updateUtilitiesForOriginAndPurpose(int originId, Purpose purpose, int numberOfTrips) {
+        double targetValue = purpose.getAverageBudgetPerHousehold() / numberOfTrips;
+        double actualValue = currentAverageTTB.get(purpose).getBudget() / numberOfTrips;
         double signum = Math.signum(targetValue - actualValue);
         utilityMatrices.get(purpose).row(originId).replaceAll((key, value) -> {
             double travelTime = travelTimes.getTravelTimeFromTo(originId, key);
-            double scale = Math.pow((travelTime +1) / (targetValue + 1), 0.1 * signum);
+            double scale = Math.pow((travelTime +1) / (targetValue + 1), 0.015*(targetValue-actualValue));
             return value * scale;
         });
     }
 
 
-    public void addSelectedRelationForPurpose(Zone origin, Zone destination, Purpose purpose) {
-        currentAverageTTB.get(purpose).addBudgetAndUpdate(travelTimes.getTravelTimeFromTo(origin.getZoneId(), destination.getZoneId()));
+    public void addBudgetForPurpose(Purpose purpose, double budget) {
+        currentAverageTTB.get(purpose).addBudgetAndUpdate(budget);
     }
 }

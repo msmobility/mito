@@ -1,8 +1,8 @@
 if(purpose == "HBW") {
-    intercept = 1;
+    intercept = 0.3;
     timeParam = -0.01;
-    impedanceParam = 0.1;
-    attractionParam = 1;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
 
     impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
     if(totalEmployees == 0) {
@@ -13,15 +13,12 @@ if(purpose == "HBW") {
     attractionImpact = attraction * attractionParam;
 
     utility = intercept + impedanceImpact + attractionImpact;
-    log();
-    
-    utility;
 
 } else if(purpose == "HBE") {
-    intercept = 1;
+    intercept = 0.3;
     timeParam = -0.01;
-    impedanceParam = 0.1;
-    attractionParam = 1;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
 
     impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
 
@@ -34,15 +31,11 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    log();
-
-    utility;
-
 } else if(purpose == "HBS") {
-    intercept = 1;
+    intercept = 0.3;
     budgetParam = -0.01;
-    impedanceParam = 0.1;
-    attractionParam = 1;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
 
     impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
 
@@ -55,15 +48,11 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    log();
-
-    utility;
-
 } else if(purpose == "HBO") {
-    intercept = 1;
+    intercept = 0.3;
     budgetParam = -0.01;
-    impedanceParam = 0.1;
-    attractionParam = 1;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
 
     impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
 
@@ -83,15 +72,11 @@ if(purpose == "HBW") {
 
     utility = intercept + impedanceImpact + attractionImpact;
 
-    log();
-
-    utility;
-
 } else if(purpose == "NHBW") {
-    intercept = 1;
+    intercept = 0.3;
     budgetParam = -0.01;
-    impedanceParam = 0.1;
-    attractionParam = 1;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
 
     impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
 
@@ -114,16 +99,12 @@ if(purpose == "HBW") {
     attractionImpact = attraction * attractionParam;
 
     utility = intercept + impedanceImpact + attractionImpact;
-
-    log();
-
-    utility;
 
 } else if(purpose == "NHBO") {
-    intercept = 1;
+    intercept = 0.3;
     budgetParam = -0.01;
-    impedanceParam = 0.1;
-    attractionParam = 1;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
 
     impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
 
@@ -146,10 +127,6 @@ if(purpose == "HBW") {
     attractionImpact = attraction * attractionParam;
 
     utility = intercept + impedanceImpact + attractionImpact;
-
-    log();
-
-    utility;
 } else {
     0.;
 }

@@ -34,6 +34,15 @@ public class PersonsReader extends CSVReader {
         logger.info("  Reading person micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.PERSONS);
         super.read(fileName, ",");
+        int noIncomeHouseholds = 0;
+        for(MitoHousehold household: dataSet.getHouseholds().values()) {
+            if(household.getIncome() == 0) {
+                noIncomeHouseholds++;
+            }
+        }
+        if(noIncomeHouseholds > 0) {
+            logger.warn("There are " + noIncomeHouseholds + " households with no income after reading all persons.");
+        }
     }
 
     @Override

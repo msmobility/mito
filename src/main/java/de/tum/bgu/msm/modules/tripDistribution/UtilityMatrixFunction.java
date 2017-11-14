@@ -31,31 +31,36 @@ public class UtilityMatrixFunction implements ConcurrentFunction {
         this.utilityMatrices = utilityMatrices;
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
         calculator = new TripDistributionJSCalculator(reader);
+        calculator.setPurpose(purpose);
     }
 
     @Override
     public void execute() {
         Table utilityMatrix = HashBasedTable.create();
+        long counter = 0;
+        double total = zones.size() * zones.size();
         for (Zone origin : zones) {
+            calculator.setBaseZone(origin);
             for (Zone destination : zones) {
-                double utility = calculateUtility(purpose, origin, destination);
-                if(Double.isInfinite(utility)) {
+                final double travelTimeFromTo = travelTimes.getTravelTimeFromTo(origin.getZoneId(), destination.getZoneId());
+                calculator.setTargetZone(destination, travelTimeFromTo);
+                double utility = calculator.calculate();
+                if (Double.isInfinite(utility)) {
                     throw new RuntimeException("Infinite utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination +
                             " | Purpose: " + purpose);
                 }
-                utilityMatrix.put(origin.getZoneId(), destination.getZoneId(), utility);
+                utilityMatrix.put(origin.getZoneId(), destination.getZoneId(), /*Math.exp(*/utility);
+
+                double ratio = counter / total;
+                boolean log = Math.log10(counter) / Math.log10(2.) % 1 == 0;
+                if (log) {
+                    logger.info(counter + " OD pairs done for purpose " + purpose);
+                }
+                counter++;
             }
         }
         utilityMatrices.put(purpose, utilityMatrix);
         logger.info("Utility matrix for purpose " + purpose + " done.");
-    }
-
-    private double calculateUtility(Purpose purpose, Zone origin, Zone destination) {
-        calculator.setBaseZone(origin);
-        final double travelTimeFromTo = travelTimes.getTravelTimeFromTo(origin.getZoneId(), destination.getZoneId());
-        calculator.setTargetZone(destination, travelTimeFromTo);
-        calculator.setPurpose(purpose);
-        return calculator.calculate();
     }
 }

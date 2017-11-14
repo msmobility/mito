@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
 import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
@@ -23,117 +24,56 @@ public class TravelTimeBudgetModule extends Module {
 
     private static final Logger logger = Logger.getLogger(TravelTimeBudgetModule.class);
 
-    private int ignoredStudents = 0;
-    private int ignoredWorkers = 0;
-
-    private TravelTimeBudgetJSCalculator travelTimeCalc;
-
     private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
+    private final TravelTimeBudgetJSCalculator travelTimeCalc;
 
     public TravelTimeBudgetModule(DataSet dataSet) {
         super(dataSet);
-        setupTravelTimeBudgetModel();
-    }
-
-    @Override
-    public void run() {
-        calculateTravelTimeBudget();
-    }
-
-
-    private void setupTravelTimeBudgetModel() {
-        logger.info("  Creating Utility Expression Calculators for microscopic travel time budget calculation.");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
         travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total");
     }
 
-    private void calculateTravelTimeBudget() {
-        // main method to calculate the travel time budget for every household
+    @Override
+    public void run() {
+        calculateTravelTimeBudgets();
+    }
+
+
+    private void calculateTravelTimeBudgets() {
         logger.info("  Started microscopic travel time budget calculation.");
-        // loop over every household and calculate travel time budget by purpose
+        ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
+        for(Purpose purpose: discretionaryPurposes) {
+            executor.addFunction(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values()));
+        }
+        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes("car")));
+        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes("car")));
+        executor.execute();
+        logger.info("  Adjusting travel time budgets.");
+        adjustDiscretionaryPurposeBudgets();
+        logger.info("  Finished microscopic travel time budget calculation.");
+
+    }
+
+    private void adjustDiscretionaryPurposeBudgets() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            travelTimeCalc.setPurpose("Total");
             travelTimeCalc.bindHousehold(household);
             double totalTravelTimeBudget = travelTimeCalc.calculate();
-            calculateDiscretionaryPurposeBudgets(household);
-            calculateHBWBudgets(household);
-            calculateHBEBudgets(household);
-            adjustDiscretionaryPurposeBudget(household, totalTravelTimeBudget);
-        }
-        logger.info("  Finished microscopic travel time budget calculation.");
-        if (ignoredStudents > 0 || ignoredWorkers > 0) {
-            logger.warn("There have been " + ignoredWorkers + " workers and " + ignoredStudents
-                    + " students that were ignored in the HBW/HBE travel time budgets"
-                    + " because they had no workzone assigned.");
-        }
-    }
+            double discretionaryTTB = totalTravelTimeBudget - household.getTravelTimeBudgetForPurpose(Purpose.HBW) -
+                    household.getTravelTimeBudgetForPurpose(Purpose.HBE);
+            discretionaryTTB = Math.max(discretionaryTTB, 0);
 
-    private void calculateHBWBudgets(MitoHousehold household) {
-        double hbwBudget = 0;
-        for (MitoPerson person : household.getPersons().values()) {
-            if (person.getOccupation().equals(Occupation.WORKER)) {
-                if (person.getWorkzone() == null) {
-                    logger.debug("Worker with workzone null will not be considered for travel time budget.");
-                    ignoredWorkers++;
-                    continue;
+            double calcDiscretionaryTTB = 0;
+            for (Purpose purpose : discretionaryPurposes) {
+                calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
+            }
+            for (Purpose purpose : discretionaryPurposes) {
+                double budget = household.getTravelTimeBudgetForPurpose(purpose);
+                if (budget != 0) {
+                    budget = budget * discretionaryTTB / calcDiscretionaryTTB;
+                    household.setTravelTimeBudgetByPurpose(purpose, budget);
                 }
-                hbwBudget += dataSet.getTravelTimes("car").getTravelTimeFromTo(household.getHomeZone().getZoneId(), person.getWorkzone().getZoneId());
+                purpose.addAndUpdateBudget(budget);
             }
-        }
-        household.setTravelTimeBudgetByPurpose(Purpose.HBW, hbwBudget);
-    }
-
-    private void calculateHBEBudgets(MitoHousehold household) {
-        double hbeBudget = 0;
-        for (MitoPerson person : household.getPersons().values()) {
-            if (person.getOccupation().equals(Occupation.STUDENT)) {
-                if (person.getWorkzone() == null) {
-                    logger.debug("Student with workzone null will not be considered for travel time budget.");
-                    ignoredStudents++;
-                    continue;
-                }
-                hbeBudget += dataSet.getTravelTimes("pt").getTravelTimeFromTo(household.getHomeZone().getZoneId(), person.getWorkzone().getZoneId());
-            }
-        }
-        household.setTravelTimeBudgetByPurpose(Purpose.HBE, hbeBudget);
-    }
-
-    private void calculateDiscretionaryPurposeBudgets(MitoHousehold household) {
-        travelTimeCalc.setPurpose(Purpose.HBS.name());
-        travelTimeCalc.bindHousehold(household);
-        household.setTravelTimeBudgetByPurpose(Purpose.HBS, travelTimeCalc.calculate());
-        travelTimeCalc.setPurpose(Purpose.HBO.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.HBO, travelTimeCalc.calculate());
-        travelTimeCalc.setPurpose(Purpose.NHBW.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBW, travelTimeCalc.calculate());
-        travelTimeCalc.setPurpose(Purpose.NHBO.name());
-        household.setTravelTimeBudgetByPurpose(Purpose.NHBO, travelTimeCalc.calculate());
-    }
-
-
-    private void adjustDiscretionaryPurposeBudget(MitoHousehold household, double totalTravelTimeBudget) {
-        double discretionaryTTB = totalTravelTimeBudget - household.getTravelTimeBudgetForPurpose(Purpose.HBW) -
-                household.getTravelTimeBudgetForPurpose(Purpose.HBE);
-
-        discretionaryTTB = Math.max(discretionaryTTB, 0);
-        if(Double.isNaN(discretionaryTTB)) {
-            System.out.println("NAN!");
-        }
-
-        double calcDiscretionaryTTB = 0;
-        for (Purpose purpose : discretionaryPurposes) {
-            calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
-        }
-        for (Purpose purpose : discretionaryPurposes) {
-            double budget = household.getTravelTimeBudgetForPurpose(purpose);
-            if(budget != 0) {
-                budget = budget *discretionaryTTB / calcDiscretionaryTTB;
-                household.setTravelTimeBudgetByPurpose(purpose, budget);
-            }
-            if(Double.isNaN(budget)) {
-                System.out.println("NAN!");
-            }
-            purpose.addAndUpdateBudget(budget);
         }
     }
 }

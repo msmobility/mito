@@ -1,14 +1,8 @@
-package de.tum.bgu.msm.modules;
+package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripGeneration.HouseholdType;
 import de.tum.bgu.msm.modules.tripGeneration.HouseholdTypeManager;
-import de.tum.bgu.msm.data.Gender;
-import de.tum.bgu.msm.data.Occupation;
-import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
@@ -29,16 +23,14 @@ public class HouseHoldTypeManagerTest {
     public void setupTest() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
         Resources.INSTANCE.setResources(bundle);
-        zone = new Zone(1, 10);
-        zone.setRegion(1);
+        zone = new Zone(1, 10, AreaType.RURAL);
     }
 
     @Test
     public final void test() {
-
-        DataSet dataSet = new DataSet();
-        HouseholdTypeManager manager = new HouseholdTypeManager(dataSet, Purpose.HBW);
-        List<HouseholdType> types = manager.createHouseHoldTypeDefinitions();
+        HouseholdTypeManager manager = new HouseholdTypeManager(Purpose.HBW);
+        manager.createHouseHoldTypeDefinitions();
+        List<HouseholdType> types = manager.householdTypes;
         Assert.assertEquals(24, types.size());
         for(HouseholdType type: types) {
             Assert.assertEquals(0, type.getNumberOfRecords());

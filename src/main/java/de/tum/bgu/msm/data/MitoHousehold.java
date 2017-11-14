@@ -78,7 +78,7 @@ public class MitoHousehold implements Serializable {
         this.persons.remove(personId);
     }
 
-    public void addTrip(MitoTrip trip) {
+    public synchronized void addTrip(MitoTrip trip) {
         if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
             tripsByPurpose.get(trip.getTripPurpose()).add(trip);
         } else {
@@ -88,7 +88,7 @@ public class MitoHousehold implements Serializable {
         }
     }
 
-    public void removeTrip(MitoTrip trip) {
+    public synchronized void removeTrip(MitoTrip trip) {
         if(trip != null) {
             if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
                 tripsByPurpose.get(trip.getTripPurpose()).remove(trip);
@@ -104,7 +104,7 @@ public class MitoHousehold implements Serializable {
         }
     }
 
-    public void setTravelTimeBudgetByPurpose(Purpose purpose, double budget) {
+    public synchronized void setTravelTimeBudgetByPurpose(Purpose purpose, double budget) {
         this.travelTimeBudgetByPurpose.put(purpose, budget);
     }
 

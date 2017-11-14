@@ -45,7 +45,7 @@ public class AttractionCalculator {
                             break;
                     }
                     Double rate = purpose.getTripAttractionForVariable(variable);
-                    if(rate == null || rate == 0) {
+                    if(rate == null) {
                         logger.error("Purpose " + purpose + " does not have an attraction" +
                                 " rate for variable " + variable + " registered.");
                     }

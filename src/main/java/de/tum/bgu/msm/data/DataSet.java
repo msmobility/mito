@@ -54,7 +54,7 @@ public class DataSet {
         return Collections.unmodifiableMap(trips);
     }
 
-    public synchronized void addZone(final Zone zone) {
+    public void addZone(final Zone zone) {
         Zone test = this.zones.get(zone.getZoneId());
         if(test != null) {
             if(test.equals(zone)) {
@@ -102,7 +102,7 @@ public class DataSet {
         persons.remove(personId);
     }
 
-    public synchronized  void addTrip(final MitoTrip trip) {
+    public synchronized void addTrip(final MitoTrip trip) {
         MitoTrip test = this.trips.get(trip.getTripId());
         if(test != null) {
             if(test.equals(trip)) {

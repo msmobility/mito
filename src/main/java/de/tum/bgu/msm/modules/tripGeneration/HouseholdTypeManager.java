@@ -1,10 +1,9 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
-import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -21,17 +20,15 @@ public class HouseholdTypeManager {
 
     private static final Logger logger = Logger.getLogger(HouseholdTypeManager.class);
 
-    private final DataSet dataSet;
     private final Purpose purpose;
 
-    private final List<HouseholdType> householdTypes = new ArrayList<>();
+    final List<HouseholdType> householdTypes = new ArrayList<>();
 
-    public HouseholdTypeManager(DataSet dataSet, Purpose purpose) {
-        this.dataSet = dataSet;
+    public HouseholdTypeManager(Purpose purpose) {
         this.purpose = purpose;
     }
 
-    public List<HouseholdType> createHouseHoldTypeDefinitions() {
+    public void createHouseHoldTypeDefinitions() {
         String[] householdDefinitionToken = Resources.INSTANCE.getArray("hh.type." + purpose);
         String sizeToken = householdDefinitionToken[2];
         String[] sizePortions = sizeToken.split("\\.");
@@ -46,7 +43,6 @@ public class HouseholdTypeManager {
 
         createHouseholdTypes(sizePortions, workerPortions,
                 incomePortions, autoPortions, regionPortions);
-        return householdTypes;
     }
 
     private void createHouseholdTypes(String[] sizePortions, String[] workerPortions,
@@ -110,14 +106,14 @@ public class HouseholdTypeManager {
 
     public HouseholdType determineHouseholdType(MitoHousehold hh) {
         int incCategory = translateIncomeIntoCategory(hh.getIncome());
-        int region = -1;
+        int areaType = -1;
         if (hh.getHomeZone() != null) {
-            region = hh.getHomeZone().getRegion();
+            areaType = hh.getHomeZone().getAreaType().ordinal()+1;
         } else {
             logger.info("Home Zone for Household  " + hh.getHhId() + " is null!");
         }
         return determineHouseholdType(hh.getHhSize(), MitoUtil.getNumberOfWorkersForHousehold(hh),
-                incCategory, hh.getAutos(), region);
+                incCategory, hh.getAutos(), areaType);
     }
 
     private HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {

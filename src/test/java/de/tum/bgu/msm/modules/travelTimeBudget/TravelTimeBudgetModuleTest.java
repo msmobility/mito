@@ -120,8 +120,7 @@ public class TravelTimeBudgetModuleTest {
     }
 
     private void addZone() {
-        dummyZone = new Zone(1);
-        dummyZone.setRegion(1);
+        dummyZone = new Zone(1, 10, AreaType.RURAL);
         dataSet.addZone(dummyZone);
     }
 

@@ -24,7 +24,6 @@ public class InputManager {
         if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
-        new RegionsReader(dataSet).read();
         new SkimsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
         new PersonsReader(dataSet).read();
@@ -34,7 +33,6 @@ public class InputManager {
 
     public void readAdditionalData() {
         new SchoolEnrollmentReader(dataSet).read();
-        new RegionsReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
         new TravelSurveyReader(dataSet).read();
     }

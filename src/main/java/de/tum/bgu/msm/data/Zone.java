@@ -12,9 +12,9 @@ public class Zone {
     private static final Logger logger = Logger.getLogger(Zone.class);
 
     private final int zoneId;
+    private final AreaType areaType;
     private float size;
     private float reductionAtBorderDamper = 0;
-    private int region = -1;
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
 
@@ -31,13 +31,10 @@ public class Zone {
 
     private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
 
-    public Zone(int zoneId){
-        this.zoneId = zoneId;
-    }
-
-    public Zone(int zoneId, float size) {
-        this.zoneId = zoneId;
+    public Zone(int id, float size, AreaType areaType){
+        this.zoneId = id;
         this.size = size;
+        this.areaType = areaType;
     }
 
     public int getZoneId() {
@@ -48,7 +45,6 @@ public class Zone {
         return this.size;
     }
 
-
     public float getReductionAtBorderDamper() {
         return reductionAtBorderDamper;
     }
@@ -57,15 +53,9 @@ public class Zone {
         this.reductionAtBorderDamper = damper;
     }
 
-
-    public int getRegion() {
-        return region;
+    public AreaType getAreaType() {
+        return areaType;
     }
-
-    public void setRegion(int region) {
-        this.region = region;
-    }
-
 
     public int getNumberOfHouseholds() {
         return this.numberOfHouseholds;

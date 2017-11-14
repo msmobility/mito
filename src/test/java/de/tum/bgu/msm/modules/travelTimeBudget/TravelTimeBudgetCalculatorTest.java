@@ -1,12 +1,6 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
-import de.tum.bgu.msm.data.Gender;
-import de.tum.bgu.msm.data.Occupation;
-import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.*;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Before;
@@ -203,8 +197,7 @@ public class TravelTimeBudgetCalculatorTest {
     }
 
     private void addZone() {
-        dummyZone = new Zone(1);
-        dummyZone.setRegion(1);
+        dummyZone = new Zone(1, 1, AreaType.RURAL);
         dataSet.addZone(dummyZone);
     }
 }
