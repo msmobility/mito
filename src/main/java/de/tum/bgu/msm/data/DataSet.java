@@ -66,10 +66,6 @@ public class DataSet {
         zones.put(zone.getZoneId(), zone);
     }
 
-    public synchronized void removeZone(final int zoneId) {
-       zones.remove(zoneId);
-    }
-
     public synchronized void addHousehold(final MitoHousehold household) {
         MitoHousehold test = this.households.get(household.getHhId());
         if(test != null) {
@@ -82,10 +78,6 @@ public class DataSet {
         households.put(household.getHhId(), household);
     }
 
-    public void removeHousehold(final int householdId) {
-        households.remove(householdId);
-    }
-
     public synchronized void addPerson(final MitoPerson person) {
         MitoPerson test = this.persons.get(person.getId());
         if(test != null) {
@@ -96,10 +88,6 @@ public class DataSet {
             throw new IllegalArgumentException("Person id " + person.getId() + " already exists!");
         }
         persons.put(person.getId(), person);
-    }
-
-    public synchronized void removePerson(final int personId) {
-        persons.remove(personId);
     }
 
     public synchronized void addTrip(final MitoTrip trip) {

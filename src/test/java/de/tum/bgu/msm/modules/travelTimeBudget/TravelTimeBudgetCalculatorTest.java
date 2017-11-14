@@ -197,7 +197,7 @@ public class TravelTimeBudgetCalculatorTest {
     }
 
     private void addZone() {
-        dummyZone = new Zone(1, 1, AreaType.RURAL);
+        dummyZone = new Zone(1, 1, AreaType.URBAN);
         dataSet.addZone(dummyZone);
     }
 }
