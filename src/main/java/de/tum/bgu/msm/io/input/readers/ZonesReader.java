@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.pb.common.datafile.TableDataSet;
+import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeHBWModeChoice;
+import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeNHBOModeChoice;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
@@ -26,6 +28,7 @@ public class ZonesReader extends CSVReader {
     public void read() {
         readZones();
         readReductionDampers();
+        readZonesDataForModeChoice();
     }
 
     private void readZones() {
@@ -48,6 +51,23 @@ public class ZonesReader extends CSVReader {
                 } else {
                     logger.warn("Damper of " + damper + " refers to non-existing zone " + id + ". Ignoring it.");
                 }
+            }
+        }
+    }
+
+    private void readZonesDataForModeChoice(){
+        TableDataSet zoneDataForModeChoice = super.readAsTableDataSet(Resources.INSTANCE.getString(Properties.AREA_TYPES_AND_TRANSIT_DISTANCE));
+        for (int i = 1; i <= zoneDataForModeChoice.getRowCount(); i++){
+            int id = (int) zoneDataForModeChoice.getValueAt(i,"ZoneID");
+            float distanceToNearestTransitStop = zoneDataForModeChoice.getValueAt(i,"distToTransit");
+            AreaTypeHBWModeChoice areaTypeHBWModeChoice = AreaTypeHBWModeChoice.valueOf(zoneDataForModeChoice.getStringValueAt(i,"areaTypeHBW"));
+            AreaTypeNHBOModeChoice areaTypeNHBOModeChoice = AreaTypeNHBOModeChoice.valueOf(zoneDataForModeChoice.getStringValueAt(i,"areaTypeNHBO"));
+            if (dataSet.getZones().containsKey(id)){
+                dataSet.getZones().get(id).setDistanceToNearestTransitStop(distanceToNearestTransitStop);
+                dataSet.getZones().get(id).setAreaTypeHBWModeChoice(areaTypeHBWModeChoice);
+                dataSet.getZones().get(id).setAreaTypeNHBOmodeChoice(areaTypeNHBOModeChoice);
+            } else {
+                logger.warn("Could not assign area type and distance to nearest transit stop for zone " + id + ". Ignoring it.");
             }
         }
     }

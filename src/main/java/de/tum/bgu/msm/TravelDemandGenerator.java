@@ -3,6 +3,7 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
@@ -39,6 +40,9 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Microscopic Trip Distribution");
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
+        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        ModeChoice modeChoice = new ModeChoice(dataSet);
+        modeChoice.run();
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);

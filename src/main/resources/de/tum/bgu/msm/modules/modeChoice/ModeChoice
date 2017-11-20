@@ -1,0 +1,157 @@
+nestingCoefficient = 0.25;
+
+if(purpose=="HBW"){
+
+VOT_1500 = 4.63;
+VOT_5600 = 8.94;
+VOT_7000 = 12.15;
+
+interceptAutoD = 0;
+ageAutoD = 0;
+maleAutoD = 0;
+driversLicenseAutoD = 0;
+hhSizeAutoD = 0;
+hhAutosAutoD = 0;
+numWorkersAutoD = 0;
+distToTransitAutoD = 0;
+coreCityAutoD = 1;
+mediumSizedCityAutoD = 0;
+townOrRuralCommunityAutoD = 0;
+generalizedCostAutoD = -0.0087;
+tripLengthAutoD = 0;
+
+
+
+utilityAutoD = interceptAutoD + ageAutoD*age + maleAutoD*gender + driversLicenseAutoD*driversLicense + hhSizeAutoD*hhSize + 
+                hhAutosAutoD*hhAutos + numWorkersAutoD*nWorkers + distToTransitAutoD*distToTransit + coreCityAutoD*(areaType==10) +
+                mediumSizedCityAutoD*(areaType==20) + townOrRuralCommunityAutoD*(areaType==30 | areaType==40) +
+                generalizedCostAutoD*gcAutoD;
+
+interceptAutoP = 0.55;
+ageAutoP = -0.0034;
+maleAutoP = -0.16;
+driversLicenseAutoP = -1.03;
+hhSizeAutoP = 0.04;
+hhAutosAutoP = -0.19;
+numWorkersAutoP = 0.10;
+distToTransitAutoP = 0;
+coreCityAutoP = 1;
+mediumSizedCityAutoP = 0;
+townOrRuralCommunityAutoP = 0.07;
+generalizedCostAutoP = -0.0087;
+tripLengthAutoP = 0;
+
+utilityAutoP = interceptAutoP + ageAutoP*age + maleAutoP*gender + driversLicenseAutoP*driversLicense + hhSizeAutoP*hhSize + 
+                hhAutosAutoP*hhAutos + numWorkersAutoP*nWorkers + distToTransitAutoP*distToTransit + coreCityAutoP*(areaType==10) +
+                mediumSizedCityAutoP*(areaType==20) + townOrRuralCommunityAutoP*(areaType==30 | areaType==40) +
+                generalizedCostAutoP*gcAutoP;
+
+interceptBicycle = 2.64;
+ageBicycle = 0;
+maleBicycle = 0.23;
+driversLicenseBicycle = -1.8;
+hhSizeBicycle = 0.17;
+hhAutosBicycle = -1.25;
+numWorkersBicycle = 0.40;
+distToTransitBicycle = 0;
+coreCityBicycle = 1;
+mediumSizedCityBicycle = -0.28;
+townOrRuralCommunityBicycle = -0.38;
+generalizedCostBicycle = 0;
+tripLengthBicycle = -0.32;
+
+utilityBicycle = interceptBicycle + ageBicycle*age + maleBicycle*gender + driversLicenseBicycle*driversLicense + hhSizeBicycle*hhSize + 
+                hhAutosBicycle*hhAutos + numWorkersBicycle*nWorkers + distToTransitBicycle*distToTransit + coreCityBicycle*(areaType==10) +
+                mediumSizedCityBicycle*(areaType==20) + townOrRuralCommunityBicycle*(areaType==30 | areaType==40) +
+                tripLengthBicycle*travelDistance;
+
+interceptBus = 2.62;
+ageBus = -0.015;
+maleBus = -0.26;
+driversLicenseBus = -2.20;
+hhSizeBus = 0.10;
+hhAutosBus = -1.37;
+numWorkersBus = 0.34;
+distToTransitBus = -0.35;
+coreCityBus = 1;
+mediumSizedCityBus = -0.69;
+townOrRuralCommunityBus = -0.85;
+generalizedCostBus = -0.0087;
+tripLengthBus = 0;
+
+utilityBus = interceptBus + ageBus*age + maleBus*gender + driversLicenseBus*driversLicense + hhSizeBus*hhSize + 
+                hhAutosBus*hhAutos + numWorkersBus*nWorkers + distToTransitBus*distToTransit + coreCityBus*(areaType==10) +
+                mediumSizedCityBus*(areaType==20) + townOrRuralCommunityBus*(areaType==30 | areaType==40) +
+                generalizedCostBus*gcBus;
+
+interceptTrain = 2.55;
+ageTrain = -0.017;
+maleTrain = -0.24;
+driversLicenseTrain = -2.05;
+hhSizeTrain = 0.11;
+hhAutosTrain = -1.36;
+numWorkersTrain = 0.34;
+distToTransitTrain = -0.38;
+coreCityTrain = 1;
+mediumSizedCityTrain = -0.75;
+townOrRuralCommunityTrain = -0.87;
+generalizedCostTrain = -0.0087;
+tripLengthTrain = 0;
+
+utilityTrain = interceptTrain + ageTrain*age + maleTrain*gender + driversLicenseTrain*driversLicense + hhSizeTrain*hhSize + 
+                hhAutosTrain*hhAutos + numWorkersTrain*nWorkers + distToTransitTrain*distToTransit + coreCityTrain*(areaType==10) +
+                mediumSizedCityTrain*(areaType==20) + townOrRuralCommunityTrain*(areaType==30 | areaType==40) +
+                generalizedCostTrain*gcTrain;
+
+interceptTramMetro = 2.69;
+ageTramMetro = -0.013;
+maleTramMetro = -0.17;
+driversLicenseTramMetro = -2.09;
+hhSizeTramMetro = 0.08;
+hhAutosTramMetro = -1.40;
+numWorkersTramMetro = 0.37;
+distToTransitTramMetro = -0.39;
+coreCityTramMetro = 1;
+mediumSizedCityTramMetro = -1.05;
+townOrRuralCommunityTramMetro = -1.21;
+generalizedCostTramMetro = -0.0087;
+tripLengthTramMetro = 0;
+
+utilityTramMetro = interceptTramMetro + ageTramMetro*age + maleTramMetro*gender + driversLicenseTramMetro*driversLicense + hhSizeTramMetro*hhSize + 
+                hhAutosTramMetro*hhAutos + numWorkersTramMetro*nWorkers + distToTransitTramMetro*distToTransit + coreCityTramMetro*(areaType==10) +
+                mediumSizedCityTramMetro*(areaType==20) + townOrRuralCommunityTramMetro*(areaType==30 | areaType==40) +
+                generalizedCostTramMetro*gcTramMetro;
+
+interceptWalk = 5.46;
+ageWalk = 0;
+maleWalk = 0;
+driversLicenseWalk = -2.07;
+hhSizeWalk = 0;
+hhAutosWalk = -0.89;
+numWorkersWalk = 0.32;
+distToTransitWalk = 0;
+coreCityWalk = 1;
+mediumSizedCityWalk = -0.59;
+townOrRuralCommunityWalk = -0.89;
+generalizedCostWalk = 0;
+tripLengthWalk = -2.02;
+
+utilityWalk = interceptWalk + ageWalk*age + maleWalk*gender + driversLicenseWalk*driversLicense + hhSizeWalk*hhSize + 
+                hhAutosWalk*hhAutos + numWorkersWalk*nWorkers + distToTransitWalk*distToTransit + coreCityWalk*(areaType==10) +
+                mediumSizedCityWalk*(areaType==20) + townOrRuralCommunityWalk*(areaType==30 | areaType==40) +
+                tripLengthWalk*travelDistance;
+
+logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
+
+probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+[probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk];
+
+}

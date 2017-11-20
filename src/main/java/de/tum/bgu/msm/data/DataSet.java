@@ -1,20 +1,22 @@
 package de.tum.bgu.msm.data;
 
 import com.pb.common.datafile.TableDataSet;
+import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
+import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DataSet {
 
     private static final Logger logger = Logger.getLogger(DataSet.class);
 
     private TableDataSet tripAttractionRates;
+
+    private TravelDistances travelDistances;
 
     private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
 
@@ -42,15 +44,21 @@ public class DataSet {
         this.tripAttractionRates = tripAttractionRates;
     }
 
+    public TravelDistances getTravelDistances(){return this.travelDistances;}
+
+    public void setTravelDistances(TravelDistances travelDistances){this.travelDistances = travelDistances;}
+
     public TravelTimes getTravelTimes(String mode) {
         return this.travelTimes.get(mode);
+    }
+
+    public Map<String, TravelTimes> getTravelTimes() {
+        return Collections.unmodifiableMap(this.travelTimes);
     }
 
     public TravelTimes addTravelTimeForMode(String mode, TravelTimes travelTimes) {
         return this.travelTimes.put(mode, travelTimes);
     }
-
-
 
     public Map<Integer, MitoPerson> getPersons() {
         return Collections.unmodifiableMap(persons);

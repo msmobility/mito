@@ -1,9 +1,19 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeForModeChoice;
+import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeHBWModeChoice;
+import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeNHBOModeChoice;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Created by Nico on 7/7/2017.
  */
 public class Zone {
+
+    //private final Map<String, String> areaTypesForModeChoice = new ConcurrentHashMap<>();
 
     private final int zoneId;
     private float size;
@@ -23,6 +33,11 @@ public class Zone {
     private float autoAccessibilityOther = 0;
     private float transitAccessibilityOther = 0;
 
+    private AreaTypeHBWModeChoice areaTypeHBWModeChoice;
+    private AreaTypeNHBOModeChoice areaTypeNHBOmodeChoice;
+
+    private float distanceToNearestTransitStop;
+
     public Zone(int zoneId){
         this.zoneId = zoneId;
     }
@@ -31,6 +46,20 @@ public class Zone {
         this.zoneId = zoneId;
         this.size = size;
     }
+
+    //public Map<String, String> getAreaTypesForModeChoice() {return Collections.unmodifiableMap(areaTypesForModeChoice);}
+
+    public AreaTypeHBWModeChoice getAreaTypeHBWModeChoice() {return areaTypeHBWModeChoice;}
+
+    public void setAreaTypeHBWModeChoice(AreaTypeHBWModeChoice areaTypeHBWModeChoice){this.areaTypeHBWModeChoice = areaTypeHBWModeChoice;}
+
+    public AreaTypeNHBOModeChoice getAreaTypeNHBOmodeChoice() {return areaTypeNHBOmodeChoice;}
+
+    public void setAreaTypeNHBOmodeChoice(AreaTypeNHBOModeChoice areaTypeNHBOmodeChoice){this.areaTypeNHBOmodeChoice = areaTypeNHBOmodeChoice;}
+
+    public float getDistanceToNearestTransitStop() {return distanceToNearestTransitStop;}
+
+    public void setDistanceToNearestTransitStop(float distanceToNearestTransitStop) {this.distanceToNearestTransitStop = distanceToNearestTransitStop;}
 
     public int getZoneId() {
         return this.zoneId;
