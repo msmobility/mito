@@ -185,7 +185,12 @@ if(purpose == "Total") {
 
 
 incomeScale = -0.5;
-scaledIncome = Math.pow(income, incomeScale);
+if(income == 0) {
+    scaledIncome = 0;
+} else {
+    scaledIncome = Math.pow(income, incomeScale);
+}
+
 incomeImpact = scaledIncome * incomeParam;
 femalesImpact = females * femalesParam;
 childrenImpact = children * childrenParam;
@@ -203,140 +208,9 @@ nhbwImpact = NHBW * nhbwParam;
 nhboImpact = NHBO * nhboParam;
 
 
-utility = 0;
-
-logger.debug("_______________________________________________")
-logger.debug("Household " + hhId + " | Purpose " + purpose);
-
-logger.debug("Intercept            = " + intercept);
-utility += intercept;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-
-if(income == 0) {
-    logger.warn("Household " + hhId + " has no income. Setting ttb income impact to 0.");
-    incomeImpact = 0;
-}
-logger.debug("scaledIncome         = Math.pow(income, incomeScale)");
-logger.debug("scaledIncome         = Math.pow(" + income + ", " + incomeScale+ ")");
-logger.debug("scaledIncome         = " + scaledIncome)
-logger.debug("Income Impact        = scaledIncome * incomeParam");
-logger.debug("Income Impact        = " + scaledIncome + " * " + incomeParam);
-logger.debug("Income Impact        = " + incomeImpact);
-utility += incomeImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Householdsize        = " + householdSize);
-logger.debug("Householdsize Impact = " + householdSizeParam);
-utility += householdSizeParam;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Area Type            = " + areaType);
-logger.debug("Area Type Impact     = " + area);
-utility += area;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Females Impact       = females * femalesParam");
-logger.debug("Females Impact       = " + females +" * "+ femalesParam);
-logger.debug("Females Impact       = " + femalesImpact);
-utility += femalesImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Children Impact      = children * childrenParam");
-logger.debug("Children Impact      = " + children +" * "+ childrenParam);
-logger.debug("Children Impact      = " + childrenImpact);
-utility += childrenImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Young Adults Impact  = youngAdults * youngAdultsParam");
-logger.debug("Young Adults Impact  = " + youngAdults +" * "+  youngAdultsParam);
-logger.debug("Young Adults Impact  = " + youngAdultsImpact);
-utility += youngAdultsImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Retirees Impact      = retirees * retireesParam");
-logger.debug("Retirees Impact      = " + retirees +" * "+  retireesParam);
-logger.debug("Retirees Impact      = " + retireesImpact);
-utility += retireesImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Workers Impact       = workers * workersParam");
-logger.debug("Workers Impact       = " + workers +" * "+  workersParam);
-logger.debug("Workers Impact       = " + workersImpact);
-utility += workersImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Students Impact      = students * studentsParam");
-logger.debug("Students Impact      = " + students +" * "+  studentsParam);
-logger.debug("Students Impact      = " + studentsImpact);
-utility += studentsImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Cars Impact          = cars * carsParam");
-logger.debug("Cars Impact          = " + cars +" * "+  carsParam);
-logger.debug("Cars Impact          = " + carsImpact);
-utility += carsImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("Licenses Impact      = licenses * licensesParam");
-logger.debug("Licenses Impact      = " + licenses +" * "+  licensesParam);
-logger.debug("Licenses Impact      = " + licensesImpact);
-utility += licensesImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("HBW Impact           = # hbw trips * hbwParam");
-logger.debug("HBW Impact           = " + HBW +" * "+  hbwParam);
-logger.debug("HBW Impact           = " + hbwImpact);
-utility += hbwImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("HBE Impact           = # hbe trips * hbeParam");
-logger.debug("HBE Impact           = " + HBE +" * "+  hbeParam);
-logger.debug("HBE Impact           = " + hbeImpact);
-utility += hbeImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("HBS Impact           = # hbs trips * hbsParam");
-logger.debug("HBS Impact           = " + HBS +" * "+  hbsParam);
-logger.debug("HBS Impact           = " + hbsImpact);
-utility += hbsImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("HBO Impact           = # hbo trips * hboParam");
-logger.debug("HBO Impact           = " + HBO +" * "+  hboParam);
-logger.debug("HBO Impact           = " + hboImpact);
-utility += hboImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("NHBW Impact          = # nhbw trips * nhbwParam");
-logger.debug("NHBW Impact          = " + NHBW +" * "+  nhbwParam);
-logger.debug("NHBW Impact          = " + nhbwImpact);
-utility += nhbwImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***");
-
-logger.debug("NHBO Impact          = # nhbo trips * nhboParam");
-logger.debug("NHBO Impact          = " + NHBO +" * "+  nhboParam);
-logger.debug("NHBO Impact          = " + nhboImpact);
-utility += nhboImpact;
-logger.debug("Utility              = " + utility);
-logger.debug("***") ;
+utility = intercept + incomeImpact + householdSizeParam + area + femalesImpact + childrenImpact +
+    youngAdultsImpact + retireesImpact + workersImpact + studentsImpact + carsImpact + licensesImpact +
+    hbwImpact + hbeImpact + hbsImpact + hboImpact + nhbwImpact + nhboImpact;
 
 logger.debug("Result               = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility)");
 logger.debug("Result               = Math.pow(-Math.log(0.5), 1./"+ wbScale +") * Math.exp("+utility+")");

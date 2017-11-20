@@ -1,24 +1,21 @@
 package de.tum.bgu.msm.data;
 
-import com.pb.common.datafile.TableDataSet;
-import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class DataSet {
 
     private static final Logger logger = Logger.getLogger(DataSet.class);
 
-    private TableDataSet tripAttractionRates;
-
-    private TravelDistances travelDistances;
-
     private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
+    private TravelDistances travelDistances;
 
     private TravelSurvey<? extends SurveyRecord> survey;
 
@@ -26,7 +23,6 @@ public class DataSet {
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
-
 
     public TravelSurvey<? extends SurveyRecord> getSurvey() {
         return this.survey;
@@ -36,24 +32,13 @@ public class DataSet {
         this.survey = survey;
     }
 
-    public TableDataSet getTripAttractionRates() {
-        return tripAttractionRates;
-    }
-
-    public void setTripAttractionRates(TableDataSet tripAttractionRates) {
-        this.tripAttractionRates = tripAttractionRates;
-    }
-
     public TravelDistances getTravelDistances(){return this.travelDistances;}
 
     public void setTravelDistances(TravelDistances travelDistances){this.travelDistances = travelDistances;}
 
+
     public TravelTimes getTravelTimes(String mode) {
         return this.travelTimes.get(mode);
-    }
-
-    public Map<String, TravelTimes> getTravelTimes() {
-        return Collections.unmodifiableMap(this.travelTimes);
     }
 
     public TravelTimes addTravelTimeForMode(String mode, TravelTimes travelTimes) {
@@ -76,7 +61,7 @@ public class DataSet {
         return Collections.unmodifiableMap(trips);
     }
 
-    public synchronized void addZone(final Zone zone) {
+    public void addZone(final Zone zone) {
         Zone test = this.zones.get(zone.getZoneId());
         if(test != null) {
             if(test.equals(zone)) {
@@ -86,10 +71,6 @@ public class DataSet {
             throw new IllegalArgumentException("Zone id " + zone.getZoneId() + " already exists!");
         }
         zones.put(zone.getZoneId(), zone);
-    }
-
-    public synchronized void removeZone(final int zoneId) {
-       zones.remove(zoneId);
     }
 
     public synchronized void addHousehold(final MitoHousehold household) {
@@ -104,10 +85,6 @@ public class DataSet {
         households.put(household.getHhId(), household);
     }
 
-    public void removeHousehold(final int householdId) {
-        households.remove(householdId);
-    }
-
     public synchronized void addPerson(final MitoPerson person) {
         MitoPerson test = this.persons.get(person.getId());
         if(test != null) {
@@ -120,11 +97,7 @@ public class DataSet {
         persons.put(person.getId(), person);
     }
 
-    public synchronized void removePerson(final int personId) {
-        persons.remove(personId);
-    }
-
-    public synchronized  void addTrip(final MitoTrip trip) {
+    public synchronized void addTrip(final MitoTrip trip) {
         MitoTrip test = this.trips.get(trip.getTripId());
         if(test != null) {
             if(test.equals(trip)) {

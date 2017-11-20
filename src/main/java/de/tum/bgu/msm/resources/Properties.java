@@ -11,7 +11,6 @@ public class Properties {
     public static final String JOBS = "job.file.ascii";
     public static final String HOUSEHOLDS = "household.file.ascii";
     public static final String PERSONS = "person.file.ascii";
-    public static final String REGIONS = "household.travel.survey.reg";
     public static final String REDUCTION_NEAR_BORDER_DAMPERS = "reduction.near.outer.border";
     public static final String SCHOOL_ENROLLMENT = "school.enrollment.data";
     public static final String TRANSIT_PEAK_SKIM = "transit.peak.time";

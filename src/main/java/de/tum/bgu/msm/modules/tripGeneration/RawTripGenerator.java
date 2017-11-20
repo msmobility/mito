@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
 import org.apache.log4j.Logger;
@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static de.tum.bgu.msm.resources.Purpose.*;
+import static de.tum.bgu.msm.data.Purpose.*;
 
 /**
  * Created by Nico on 20.07.2017.

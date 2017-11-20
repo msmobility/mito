@@ -91,11 +91,6 @@
   			<version>2</version>
   		</dependency>
 		<dependency>
-			<groupId>jexcelapi</groupId>
-			<artifactId>jxl</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>

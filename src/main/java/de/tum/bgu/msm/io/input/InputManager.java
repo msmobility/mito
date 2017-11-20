@@ -3,6 +3,8 @@ package de.tum.bgu.msm.io.input;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -19,7 +21,9 @@ public class InputManager {
 
     public void readAsStandAlone() {
         new ZonesReader(dataSet).read();
-        new RegionsReader(dataSet).read();
+        if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
+            new BorderDampersReader(dataSet).read();
+        }
         new SkimsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
         new PersonsReader(dataSet).read();
@@ -29,7 +33,6 @@ public class InputManager {
 
     public void readAdditionalData() {
         new SchoolEnrollmentReader(dataSet).read();
-        new RegionsReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
         new TravelSurveyReader(dataSet).read();
     }

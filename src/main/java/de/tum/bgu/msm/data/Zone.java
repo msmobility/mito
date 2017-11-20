@@ -1,24 +1,22 @@
 package de.tum.bgu.msm.data;
 
-import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeForModeChoice;
 import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeHBWModeChoice;
 import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeNHBOModeChoice;
+import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.EnumMap;
 
 /**
  * Created by Nico on 7/7/2017.
  */
 public class Zone {
 
-    //private final Map<String, String> areaTypesForModeChoice = new ConcurrentHashMap<>();
+    private static final Logger logger = Logger.getLogger(Zone.class);
 
     private final int zoneId;
+    private final AreaType areaType;
     private float size;
     private float reductionAtBorderDamper = 0;
-    private int region = -1;
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
 
@@ -33,18 +31,17 @@ public class Zone {
     private float autoAccessibilityOther = 0;
     private float transitAccessibilityOther = 0;
 
+    private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
+
     private AreaTypeHBWModeChoice areaTypeHBWModeChoice;
     private AreaTypeNHBOModeChoice areaTypeNHBOmodeChoice;
 
     private float distanceToNearestTransitStop;
 
-    public Zone(int zoneId){
-        this.zoneId = zoneId;
-    }
-
-    public Zone(int zoneId, float size) {
-        this.zoneId = zoneId;
+    public Zone(int id, float size, AreaType areaType){
+        this.zoneId = id;
         this.size = size;
+        this.areaType = areaType;
     }
 
     //public Map<String, String> getAreaTypesForModeChoice() {return Collections.unmodifiableMap(areaTypesForModeChoice);}
@@ -69,7 +66,6 @@ public class Zone {
         return this.size;
     }
 
-
     public float getReductionAtBorderDamper() {
         return reductionAtBorderDamper;
     }
@@ -78,15 +74,9 @@ public class Zone {
         this.reductionAtBorderDamper = damper;
     }
 
-
-    public int getRegion() {
-        return region;
+    public AreaType getAreaType() {
+        return areaType;
     }
-
-    public void setRegion(int region) {
-        this.region = region;
-    }
-
 
     public int getNumberOfHouseholds() {
         return this.numberOfHouseholds;
@@ -185,5 +175,23 @@ public class Zone {
 
     public void setTransitAccessibilityOther(float transitAcessibilityOther) {
         this.transitAccessibilityOther = transitAcessibilityOther;
+    }
+
+    public void setTripAttractionRate(Purpose purpose, double tripAttractionRate) {
+        this.tripAttractionRates.put(purpose, tripAttractionRate);
+    }
+
+    public double getTripAttractionRate(Purpose purpose) {
+        Double rate = this.tripAttractionRates.get(purpose);
+        if(rate == null)  {
+            logger.error("No trip attraction rate set for zone " + zoneId + ". Please make sure to only call " +
+                    "this method after trip generation module!");
+        }
+        return rate;
+    }
+
+    @Override
+    public String toString() {
+        return "[Zone " + zoneId + "]";
     }
 }

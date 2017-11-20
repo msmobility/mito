@@ -2,15 +2,10 @@ package de.tum.bgu.msm;
 
 import com.pb.common.matrix.IdentityMatrix;
 import com.pb.common.matrix.Matrix;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Zone;
-import de.tum.bgu.msm.data.travelDistances.TravelDistances;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.InputFeed;
-import de.tum.bgu.msm.resources.Gender;
-import de.tum.bgu.msm.resources.Occupation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
@@ -38,7 +33,7 @@ public class SimpleRunTest {
     public final void fedInitialization() {
 
         Map<Integer, Zone> zones = new HashMap();
-        zones.put(1, new Zone(1));
+        zones.put(1, new Zone(1, 10, AreaType.RURAL));
 
         Matrix autoTravelTimes = new IdentityMatrix(2);
         Matrix transitTravelTimes = new IdentityMatrix(2);
@@ -65,7 +60,6 @@ public class SimpleRunTest {
         Assert.assertEquals(1, model.getTravelDemand().getZones().size());
         Assert.assertEquals(1, model.getTravelDemand().getHouseholds().size());
         Assert.assertEquals(2, model.getTravelDemand().getPersons().size());
-        Assert.assertNotNull(model.getTravelDemand().getTripAttractionRates());
         Assert.assertNotNull(model.getTravelDemand().getSurvey());
         Assert.assertEquals(1., model.getTravelDemand().getTravelTimes("car").getTravelTimeFromTo(1, 1), 0.);
 

@@ -5,7 +5,7 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -28,8 +28,8 @@ public class PersonTripAssignment extends Module {
     @Override
     public void run() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            List<MitoTrip> tripsToDrop = new ArrayList();
             for(Purpose purpose: Purpose.values()) {
+                List<MitoTrip> tripsToDrop = new ArrayList();
                 List<MitoTrip> trips = household.getTripsForPurpose(purpose);
                 for(MitoTrip trip: trips) {
                     if(trip != null) {

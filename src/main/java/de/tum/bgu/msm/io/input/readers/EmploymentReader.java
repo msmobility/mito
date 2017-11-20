@@ -1,21 +1,21 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import com.pb.common.datafile.TableDataSet;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.util.Map;
-
-/**
- * Created by Nico on 17.07.2017.
- */
 public class EmploymentReader extends CSVReader {
 
     private static final Logger logger = Logger.getLogger(EmploymentReader.class);
+    private int indEmpl;
+    private int retEmpl;
+    private int offEmpl;
+    private int othEmpl;
+    private int zoneIndex;
 
 
     public EmploymentReader(DataSet dataSet) {
@@ -24,23 +24,31 @@ public class EmploymentReader extends CSVReader {
 
     @Override
     public void read() {
-        // SMZ,State,RET00,OFF00,IND00,OTH00,RET07,OFF07,IND07,OTH07,RET10,OFF10,IND10,OTH10,RET30,OFF30,IND30,OTH30,RET40,OFF40,IND40,OTH40
         String fileName = Resources.INSTANCE.getString(Properties.EMPLOYMENT);
-        TableDataSet employment = super.readAsTableDataSet(fileName);
-        int[] indEmpl = employment.getColumnAsInt("IND00");
-        int[] retEmpl = employment.getColumnAsInt("RET00");
-        int[] offEmpl = employment.getColumnAsInt("OFF00");
-        int[] othEmpl = employment.getColumnAsInt("OTH00");
-        int[] totEmpl = new int[employment.getRowCount()];
-        for (int i = 0; i < employment.getRowCount(); i++) {
-            totEmpl[i] = indEmpl[i] + retEmpl[i] + offEmpl[i] + othEmpl[i];
-            int zoneId = employment.getColumnAsInt("SMZ")[i];
-            Map<Integer, Zone> zones = dataSet.getZones();
-            if (zones.containsKey(zoneId)) {
-                assignEmployeesToZone(indEmpl[i], retEmpl[i], offEmpl[i], othEmpl[i], totEmpl[i], zones.get(zoneId));
-            } else {
-                logger.warn("Zone " + zoneId + " of employment table not found. Ignoring it.");
-            }
+        super.read(fileName, ",");
+    }
+
+    @Override
+    protected void processHeader(String[] header) {
+        indEmpl = MitoUtil.findPositionInArray("IND00", header);
+        retEmpl = MitoUtil.findPositionInArray("RET00", header);
+        offEmpl = MitoUtil.findPositionInArray("OFF00", header);
+        othEmpl = MitoUtil.findPositionInArray("OTH00", header);
+        zoneIndex = MitoUtil.findPositionInArray("SMZ", header);
+    }
+
+    @Override
+    protected void processRecord(String[] record) {
+        int industryEmployees = Integer.parseInt(record[indEmpl]);
+        int retailEmployees = Integer.parseInt(record[retEmpl]);
+        int officeEmployees = Integer.parseInt(record[offEmpl]);
+        int otherEmployees = Integer.parseInt(record[othEmpl]);
+        int totalEmployees = industryEmployees + retailEmployees + officeEmployees + otherEmployees;
+        int zoneId = Integer.parseInt(record[zoneIndex]);
+        if (dataSet.getZones().containsKey(zoneId)) {
+            assignEmployeesToZone(industryEmployees, retailEmployees, officeEmployees, otherEmployees, totalEmployees, dataSet.getZones().get(zoneId));
+        } else {
+            logger.warn("Zone " + zoneId + " of employment table not found. Ignoring it.");
         }
     }
 
@@ -50,15 +58,5 @@ public class EmploymentReader extends CSVReader {
         zone.setOfficeEmpl(officerEmpl);
         zone.setOtherEmpl(otherEmpl);
         zone.setTotalEmpl(totalEmpl);
-    }
-
-    @Override
-    protected void processHeader(String[] header) {
-
-    }
-
-    @Override
-    protected void processRecord(String[] record) {
-
     }
 }
