@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 public class AttractionCalculator {
 
-    public enum explanatoryVariable {HH, TOT, RE, OFF, OTH, ENR};
+    public enum ExplanatoryVariable {HH, TOT, RE, OFF, OTH, ENR};
 
     private static final Logger logger = Logger.getLogger(AttractionCalculator.class);
 
@@ -22,7 +22,7 @@ public class AttractionCalculator {
         for (Zone zone : dataSet.getZones().values()) {
             for (Purpose purpose : Purpose.values()) {
                 float tripAttraction = 0;
-                for (explanatoryVariable variable : explanatoryVariable.values()) {
+                for (ExplanatoryVariable variable : ExplanatoryVariable.values()) {
                     float attribute = 0;
                     switch (variable) {
                         case HH:
@@ -43,10 +43,12 @@ public class AttractionCalculator {
                         case ENR:
                             attribute = zone.getSchoolEnrollment();
                             break;
+                        default:
+                            throw new RuntimeException("Unknown trip attraction Variable.");
                     }
                     Double rate = purpose.getTripAttractionForVariable(variable);
                     if(rate == null) {
-                        logger.error("Purpose " + purpose + " does not have an attraction" +
+                        throw new RuntimeException("Purpose " + purpose + " does not have an attraction" +
                                 " rate for variable " + variable + " registered.");
                     }
                     tripAttraction += attribute * rate;

@@ -36,7 +36,7 @@ public class TripAttractionRatesReader extends CSVReader{
     @Override
     protected void processRecord(String[] record) {
         for(Purpose purpose: Purpose.values()) {
-            AttractionCalculator.explanatoryVariable variable = AttractionCalculator.explanatoryVariable.valueOf(record[variableIndex]);
+            AttractionCalculator.ExplanatoryVariable variable = AttractionCalculator.ExplanatoryVariable.valueOf(record[variableIndex]);
             double rate = Double.parseDouble(record[indexForPurpose.get(purpose)]);
             purpose.putTripAttractionForVariable(variable, rate);
         }

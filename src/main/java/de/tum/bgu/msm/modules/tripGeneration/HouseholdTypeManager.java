@@ -58,20 +58,20 @@ public class HouseholdTypeManager {
                         String[] autoParts = autoToken.split("-");
                         for (String regionToken : regionPortions) {
                             String[] regionParts = regionToken.split("-");
-                            final int size_l = Integer.parseInt(sizeParts[0]);
-                            final int size_h = Integer.parseInt(sizeParts[1]);
-                            final int workers_l = Integer.parseInt(workerParts[0]) - 1;
-                            final int workers_h = Integer.parseInt(workerParts[1]) - 1;
-                            final int income_l = Integer.parseInt(incomeParts[0]);
-                            final int income_h = Integer.parseInt(incomeParts[1]);
-                            final int autos_l = Integer.parseInt(autoParts[0]) - 1;
-                            final int autos_h = Integer.parseInt(autoParts[1]) - 1;
-                            final int region_l = Integer.parseInt(regionParts[0]);
-                            final int region_h = Integer.parseInt(regionParts[1]);
+                            final int sizeL = Integer.parseInt(sizeParts[0]);
+                            final int sizeH = Integer.parseInt(sizeParts[1]);
+                            final int workersL = Integer.parseInt(workerParts[0]) - 1;
+                            final int workersH = Integer.parseInt(workerParts[1]) - 1;
+                            final int incomeL = Integer.parseInt(incomeParts[0]);
+                            final int incomeH = Integer.parseInt(incomeParts[1]);
+                            final int autosL = Integer.parseInt(autoParts[0]) - 1;
+                            final int autosH = Integer.parseInt(autoParts[1]) - 1;
+                            final int regionL = Integer.parseInt(regionParts[0]);
+                            final int regionH = Integer.parseInt(regionParts[1]);
 
-                            householdTypes.add(new HouseholdType(id, size_l, size_h, workers_l, workers_h,
-                                    income_l, income_h, autos_l, autos_h, region_l,
-                                    region_h));
+                            householdTypes.add(new HouseholdType(id, sizeL, sizeH, workersL, workersH,
+                                    incomeL, incomeH, autosL, autosH, regionL,
+                                    regionH));
                             id++;
                         }
                     }
@@ -124,7 +124,7 @@ public class HouseholdTypeManager {
         int hhAut;
         String autoDef = selectAutoMode();
 
-        if (autoDef.equalsIgnoreCase("autos")) {
+        if ("autos".equalsIgnoreCase(autoDef)) {
             hhAut = Math.min(hhVeh, 3);
         } else {
             if (hhVeh < hhWrk) {
@@ -167,17 +167,30 @@ public class HouseholdTypeManager {
     private int translateIncomeIntoCategory(int hhIncome) {
         // translate income in absolute dollars into household travel survey income categories
 
-        if (hhIncome < 10000) return 1;
-        else if (hhIncome < 15000) return 2;
-        else if (hhIncome < 30000) return 3;
-        else if (hhIncome < 40000) return 4;
-        else if (hhIncome < 50000) return 5;
-        else if (hhIncome < 60000) return 6;
-        else if (hhIncome < 75000) return 7;
-        else if (hhIncome < 100000) return 8;
-        else if (hhIncome < 125000) return 9;
-        else if (hhIncome < 150000) return 10;
-        else if (hhIncome < 200000) return 11;
-        else return 12;
+        if (hhIncome < 10000) {
+            return 1;
+        } else if (hhIncome < 15000) {
+            return 2;
+        } else if (hhIncome < 30000) {
+            return 3;
+        } else if (hhIncome < 40000) {
+            return 4;
+        } else if (hhIncome < 50000) {
+            return 5;
+        } else if (hhIncome < 60000) {
+            return 6;
+        } else if (hhIncome < 75000) {
+            return 7;
+        } else if (hhIncome < 100000) {
+            return 8;
+        } else if (hhIncome < 125000) {
+            return 9;
+        } else if (hhIncome < 150000) {
+            return 10;
+        } else if (hhIncome < 200000) {
+            return 11;
+        } else {
+            return 12;
+        }
     }
 }

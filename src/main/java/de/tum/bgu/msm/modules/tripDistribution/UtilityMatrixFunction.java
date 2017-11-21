@@ -38,7 +38,6 @@ public class UtilityMatrixFunction implements ConcurrentFunction {
     public void execute() {
         Table utilityMatrix = HashBasedTable.create();
         long counter = 0;
-        double total = zones.size() * zones.size();
         for (Zone origin : zones) {
             calculator.setBaseZone(origin);
             for (Zone destination : zones) {
@@ -52,7 +51,6 @@ public class UtilityMatrixFunction implements ConcurrentFunction {
                 }
                 utilityMatrix.put(origin.getZoneId(), destination.getZoneId(), /*Math.exp(*/utility);
 
-                double ratio = counter / total;
                 boolean log = Math.log10(counter) / Math.log10(2.) % 1 == 0;
                 if (log) {
                     logger.info(counter + " OD pairs done for purpose " + purpose);

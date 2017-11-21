@@ -23,7 +23,7 @@ public class TravelTimeBudgetModuleTest {
     public void setup() {
 
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.INSTANCE.setResources(bundle);
+        Resources.initializeResources(bundle);
 
         dataSet = new DataSet();
         TravelTimes travelTimes = (origin, destination) -> 20;

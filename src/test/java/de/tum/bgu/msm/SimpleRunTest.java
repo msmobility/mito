@@ -24,7 +24,7 @@ public class SimpleRunTest {
     @Before
     public void setupTest() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.INSTANCE.setResources(bundle);
+        Resources.initializeResources(bundle);
         model = new MitoModel(bundle);
         model.setBaseDirectory("./testInput/");
     }

@@ -12,8 +12,6 @@ if(purpose == "HBW") {
     }
     attractionImpact = attraction * attractionParam;
 
-    utility = intercept + impedanceImpact + attractionImpact;
-
 } else if(purpose == "HBE") {
     intercept = 0.3;
     timeParam = -0.01;
@@ -29,8 +27,6 @@ if(purpose == "HBW") {
     }
     attractionImpact = attraction * attractionParam;
 
-    utility = intercept + impedanceImpact + attractionImpact;
-
 } else if(purpose == "HBS") {
     intercept = 0.3;
     budgetParam = -0.01;
@@ -45,8 +41,6 @@ if(purpose == "HBW") {
         attraction = Math.log(retailEmployees);
     }
     attractionImpact = attraction * attractionParam;
-
-    utility = intercept + impedanceImpact + attractionImpact;
 
 } else if(purpose == "HBO") {
     intercept = 0.3;
@@ -68,9 +62,6 @@ if(purpose == "HBW") {
     }
     attraction = householdsAttraction + otherEmplAttraction;
     attractionImpact = attraction * attractionParam;
-
-
-    utility = intercept + impedanceImpact + attractionImpact;
 
 } else if(purpose == "NHBW") {
     intercept = 0.3;
@@ -98,8 +89,6 @@ if(purpose == "HBW") {
     attraction = householdsAttraction + totalEmplAttraction + retailEmplAttraction;
     attractionImpact = attraction * attractionParam;
 
-    utility = intercept + impedanceImpact + attractionImpact;
-
 } else if(purpose == "NHBO") {
     intercept = 0.3;
     budgetParam = -0.01;
@@ -123,13 +112,13 @@ if(purpose == "HBW") {
     } else {
         retailEmplAttraction =  Math.log(retailEmployees);
     }
-    attraction = householdsAttraction + totalEmplAttraction + retailEmplAttraction;
-    attractionImpact = attraction * attractionParam;
+    attractionImpact = (householdsAttraction + totalEmplAttraction + retailEmplAttraction) * attractionParam;
 
-    utility = intercept + impedanceImpact + attractionImpact;
+
 } else {
-    0.;
+    throw "Undefined Purpose given!"
 }
+utility = intercept + impedanceImpact + attractionImpact;
 
 function calculateImpedance(impedanceParameter, timeParameter, time) {
     return impedanceParameter * Math.exp(timeParameter * time);

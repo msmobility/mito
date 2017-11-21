@@ -36,10 +36,10 @@ public class MitoAccessibility extends Module {
         float beta = (float) Resources.INSTANCE.getDouble(Properties.ACCESSIBILITY_BETA);
 
         Collection<Zone> zones = dataSet.getZones().values();
-        Map<Integer, Float> autoAccessibilityHouseholdsByZone = new HashMap<>();
-        Map<Integer, Float> autoAccessibilityRetailByZone = new HashMap<>();
-        Map<Integer, Float> autoAccessibilityOtherByZone = new HashMap<>();
-        Map<Integer, Float> transitAccessibilityOtherByZone = new HashMap<>();
+        Map<Integer, Float> autoAccessibilityHouseholdsByZone = new HashMap<>(zones.size());
+        Map<Integer, Float> autoAccessibilityRetailByZone = new HashMap<>(zones.size());
+        Map<Integer, Float> autoAccessibilityOtherByZone = new HashMap<>(zones.size());
+        Map<Integer, Float> transitAccessibilityOtherByZone = new HashMap<>(zones.size());
 
         TravelTimes carTravelTimes = dataSet.getTravelTimes("car");
         TravelTimes transitTravelTimes = dataSet.getTravelTimes("pt");

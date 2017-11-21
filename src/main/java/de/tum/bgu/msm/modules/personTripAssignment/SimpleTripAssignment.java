@@ -45,10 +45,14 @@ class SimpleTripAssignment implements TripAssignment {
     }
 
     private boolean personFitsToTrip(MitoPerson person, MitoTrip trip) {
-        if (trip.getTripPurpose().equals(Purpose.HBW) && !person.getOccupation().equals(Occupation.WORKER) ||
-                trip.getTripPurpose().equals(Purpose.HBE) && !person.getOccupation().equals(Occupation.STUDENT)) {
+        if (personNotSuitableForPurpose(person, trip, Purpose.HBW, Occupation.WORKER) ||
+                personNotSuitableForPurpose(person, trip, Purpose.HBE, Occupation.STUDENT)) {
             return false;
         }
         return true;
+    }
+
+    private boolean personNotSuitableForPurpose(MitoPerson person, MitoTrip trip, Purpose purpose, Occupation occupation) {
+        return trip.getTripPurpose().equals(purpose) && !person.getOccupation().equals(occupation);
     }
 }

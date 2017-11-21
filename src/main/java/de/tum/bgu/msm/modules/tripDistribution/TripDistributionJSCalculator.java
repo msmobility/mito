@@ -8,14 +8,11 @@ import java.io.Reader;
 
 public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
 
-    private Zone baseZone;
-
     protected TripDistributionJSCalculator(Reader reader) {
         super(reader);
     }
 
     public void setBaseZone(Zone zone) {
-        this.baseZone = zone;
         this.bindings.put("baseZone", zone.getZoneId());
     }
 

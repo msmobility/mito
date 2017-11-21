@@ -12,7 +12,7 @@ import java.util.*;
  *
  */
 
-public class MitoPerson implements Serializable {
+public class MitoPerson {
 
     private static final Logger logger = Logger.getLogger(MitoPerson.class);
 

@@ -163,7 +163,7 @@ public class Zone {
     public double getTripAttractionRate(Purpose purpose) {
         Double rate = this.tripAttractionRates.get(purpose);
         if(rate == null)  {
-            logger.error("No trip attraction rate set for zone " + zoneId + ". Please make sure to only call " +
+            throw new RuntimeException("No trip attraction rate set for zone " + zoneId + ". Please make sure to only call " +
                     "this method after trip generation module!");
         }
         return rate;

@@ -22,15 +22,14 @@ public class TravelTimeBudgetCalculatorTest {
     @Before
     public void setup() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.INSTANCE.setResources(bundle);
+        Resources.initializeResources(bundle);
 
-        Reader reader = null;
         try {
-            reader = new FileReader(Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_JS));
+            Reader reader = new FileReader(Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_JS));
+            calculator = new TravelTimeBudgetJSCalculator(reader, "Total");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        calculator = new TravelTimeBudgetJSCalculator(reader, "Total");
 
         dataSet = new DataSet();
         addZone();

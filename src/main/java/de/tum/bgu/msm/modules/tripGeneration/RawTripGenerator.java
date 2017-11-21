@@ -18,8 +18,8 @@ public class RawTripGenerator {
 
     private static final Logger logger = Logger.getLogger(RawTripGenerator.class);
 
-    static final AtomicInteger counterDroppedTripsAtBorder = new AtomicInteger();
-    static final AtomicInteger currentTripId = new AtomicInteger();
+    final static AtomicInteger DROPPED_TRIPS_AT_BORDER_COUNTER = new AtomicInteger();
+    final static AtomicInteger TRIP_ID_COUNTER = new AtomicInteger();
 
     private final DataSet dataSet;
 
@@ -43,10 +43,10 @@ public class RawTripGenerator {
     }
 
     private void logTripGeneration() {
-        long rawTrips = dataSet.getTrips().size() + counterDroppedTripsAtBorder.get();
+        long rawTrips = dataSet.getTrips().size() + DROPPED_TRIPS_AT_BORDER_COUNTER.get();
         logger.info("  Generated " + MitoUtil.customFormat("###,###", rawTrips) + " raw trips.");
-        if (counterDroppedTripsAtBorder.get() > 0) {
-            logger.info(MitoUtil.customFormat("  " + "###,###", counterDroppedTripsAtBorder.get()) + " trips were dropped at boundary of study area.");
+        if (DROPPED_TRIPS_AT_BORDER_COUNTER.get() > 0) {
+            logger.info(MitoUtil.customFormat("  " + "###,###", DROPPED_TRIPS_AT_BORDER_COUNTER.get()) + " trips were dropped at boundary of study area.");
         }
     }
 }
