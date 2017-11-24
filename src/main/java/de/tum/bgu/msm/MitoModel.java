@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.InputFeed;
 import de.tum.bgu.msm.io.input.InputManager;
@@ -41,10 +42,10 @@ public class MitoModel {
 
     private boolean initialised = false;
 
-    public MitoModel(ResourceBundle resources) {
+    public MitoModel(ResourceBundle resources, Implementation implementation) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
-        Resources.initializeResources(resources);
+        Resources.initializeResources(resources, implementation);
         MitoUtil.initializeRandomNumber();
     }
 

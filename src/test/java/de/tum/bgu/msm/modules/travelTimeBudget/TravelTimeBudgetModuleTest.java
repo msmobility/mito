@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.data.Gender;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Before;
@@ -23,7 +24,7 @@ public class TravelTimeBudgetModuleTest {
     public void setup() {
 
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.initializeResources(bundle);
+        Resources.initializeResources(bundle, Implementation.MUNICH);
 
         dataSet = new DataSet();
         TravelTimes travelTimes = (origin, destination) -> 20;

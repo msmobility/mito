@@ -1,5 +1,9 @@
 package de.tum.bgu.msm.data;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMultiset;
+import com.google.common.collect.Multiset;
+import de.tum.bgu.msm.data.jobTypes.JobType;
 import org.apache.log4j.Logger;
 
 import java.util.EnumMap;
@@ -18,18 +22,13 @@ public class Zone {
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
 
-    private int industrialEmpl = 0;
-    private int retailEmpl = 0;
-    private int officeEmpl = 0;
-    private int otherEmpl = 0;
-    private int totalEmpl = 0;
-
     private float autoAccessibilityHouseholds = 0;
     private float autoAccessibilityRetail = 0;
     private float autoAccessibilityOther = 0;
     private float transitAccessibilityOther = 0;
 
     private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
+    private final Multiset<JobType> employeesByType = HashMultiset.create();
 
     public Zone(int id, float size, AreaType areaType){
         this.zoneId = id;
@@ -69,7 +68,6 @@ public class Zone {
         this.numberOfHouseholds++;
     }
 
-
     public int getSchoolEnrollment() {
         return schoolEnrollment;
     }
@@ -78,48 +76,17 @@ public class Zone {
         this.schoolEnrollment = schoolEnrollment;
     }
 
-
-    public void setIndEmpl(int indEmpl) {
-        this.industrialEmpl = indEmpl;
+    public void addEmployeeForType(JobType type) {
+        this.employeesByType.add(type);
     }
 
-    public void setRetailEmpl(int retailEmpl) {
-        this.retailEmpl = retailEmpl;
+    public int getNumberOfEmployeesForType(JobType type) {
+        return this.employeesByType.count(type);
     }
-
-    public void setOfficeEmpl(int officerEmpl) {
-        this.officeEmpl = officerEmpl;
-    }
-
-    public void setOtherEmpl(int otherEmpl) {
-        this.otherEmpl = otherEmpl;
-    }
-
-    public void setTotalEmpl(int totalEmpl) {
-        this.totalEmpl = totalEmpl;
-    }
-
 
     public int getTotalEmpl() {
-        return totalEmpl;
+        return this.employeesByType.size();
     }
-
-    public int getIndustrialEmpl() {
-        return industrialEmpl;
-    }
-
-    public int getRetailEmpl() {
-        return retailEmpl;
-    }
-
-    public int getOfficeEmpl() {
-        return officeEmpl;
-    }
-
-    public int getOtherEmpl() {
-        return otherEmpl;
-    }
-
 
     public float getAutoAccessibilityHouseholds() {
         return autoAccessibilityHouseholds;
@@ -129,7 +96,6 @@ public class Zone {
         this.autoAccessibilityHouseholds = autoAccessibilityHouseholds;
     }
 
-
     public float getAutoAccessibilityRetail() {
         return autoAccessibilityRetail;
     }
@@ -138,7 +104,6 @@ public class Zone {
         this.autoAccessibilityRetail = autoAcessibilityRetail;
     }
 
-
     public float getAutoAccessibilityOther() {
         return autoAccessibilityOther;
     }
@@ -146,7 +111,6 @@ public class Zone {
     public void setAutoAccessibilityOther(float autoAcessibilityOther) {
         this.autoAccessibilityOther = autoAcessibilityOther;
     }
-
 
     public float getTransitAccessibilityOther() {
         return transitAccessibilityOther;
@@ -167,6 +131,10 @@ public class Zone {
                     "this method after trip generation module!");
         }
         return rate;
+    }
+
+    public Multiset<JobType> getEmployeesByType() {
+        return ImmutableMultiset.copyOf(employeesByType);
     }
 
     @Override

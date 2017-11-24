@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.InputFeed;
+import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
@@ -24,8 +25,7 @@ public class SimpleRunTest {
     @Before
     public void setupTest() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.initializeResources(bundle);
-        model = new MitoModel(bundle);
+        model = new MitoModel(bundle, Implementation.MUNICH);
         model.setBaseDirectory("./testInput/");
     }
 

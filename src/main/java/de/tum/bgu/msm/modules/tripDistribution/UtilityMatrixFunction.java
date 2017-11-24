@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.tripDistribution;
 
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
+import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.Zone;
@@ -46,9 +47,7 @@ public class UtilityMatrixFunction implements ConcurrentFunction {
                             " | Purpose: " + purpose);
                 }
                 utilityMatrix.put(origin.getZoneId(), destination.getZoneId(), /*Math.exp(*/utility);
-
-                boolean log = Math.log10(counter) / Math.log10(2.) % 1 == 0;
-                if (log) {
+                if (LongMath.isPowerOfTwo(counter)) {
                     logger.info(counter + " OD pairs done for purpose " + purpose);
                 }
                 counter++;

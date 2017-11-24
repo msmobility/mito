@@ -14,14 +14,17 @@ public class Resources {
     public static Resources INSTANCE;
 
     private final ResourceBundle resources;
+    public final Implementation implementation;
     private TripAssignmentFactory tripAssignmentFactory = new DefaultTripAssignmentFactory();
 
-    private Resources(ResourceBundle bundle) {
+    private Resources(ResourceBundle bundle, Implementation implementation) {
         this.resources = bundle;
+        this.implementation = implementation;
     }
 
-    public static void initializeResources(ResourceBundle resources) {
-        INSTANCE = new Resources(resources);
+    public static void initializeResources(ResourceBundle resources, Implementation implementation) {
+        INSTANCE = new Resources(resources, implementation);
+        implementation = implementation;
     }
 
     public synchronized int getInt(String key) {

@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.tripDistribution;
 
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
 import java.io.Reader;
@@ -18,8 +19,8 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
                 travelTime,
                 targetZone.getZoneId(),
                 targetZone.getTotalEmpl(),
-                targetZone.getRetailEmpl(),
-                targetZone.getOtherEmpl(),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.Retl),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.Agri),
                 targetZone.getSchoolEnrollment(),
                 targetZone.getNumberOfHouseholds());
     }
