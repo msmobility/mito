@@ -57,6 +57,7 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testAssignment() {
+        Resources.initializeResources(null);
         Resources.INSTANCE.setTripAssignmentFactory(new SimpleTripAssignmentFactory());
         setupAndRun();
         for (MitoTrip trip : dataSet.getTrips().values()) {
@@ -71,6 +72,7 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testFailedAssignment() {
+        Resources.initializeResources(null);
         Resources.INSTANCE.setTripAssignmentFactory(() -> (household, trip) -> null);
         setupAndRun();
         for (MitoHousehold household : dataSet.getHouseholds().values()) {

@@ -28,7 +28,6 @@ public class InputManager {
         new HouseholdsReader(dataSet).read();
         new PersonsReader(dataSet).read();
         new JobReader(dataSet).read();
-        new EmploymentReader(dataSet).read();
     }
 
     public void readAdditionalData() {
