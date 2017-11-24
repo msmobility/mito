@@ -5,10 +5,10 @@ import de.tum.bgu.msm.data.jobTypes.JobType;
 
 public enum MarylandJobType implements JobType {
 
-    INDUSTRY (Category.INDUSTRY),
-    OFFICE (Category.OFFICE),
-    RETAIL (Category.RETAIL),
-    OTHER (Category.OTHER);
+    IND (Category.INDUSTRY),
+    OFF (Category.OFFICE),
+    RET (Category.RETAIL),
+    OTH (Category.OTHER);
 
     private final Category category;
 
