@@ -1,3 +1,5 @@
+var calculate = function (purpose, travelTime, destinationId, totalEmployees,retailEmployees, otherEmployees, schoolEnrollment, households) {
+
 if(purpose == "HBW") {
     intercept = 0.3;
     timeParam = -0.01;
@@ -119,6 +121,8 @@ if(purpose == "HBW") {
     throw "Undefined Purpose given!"
 }
 utility = intercept + impedanceImpact + attractionImpact;
+return utility;
+};
 
 function calculateImpedance(impedanceParameter, timeParameter, time) {
     return impedanceParameter * Math.exp(timeParameter * time);

@@ -14,8 +14,9 @@ public abstract class JavaScriptCalculator<T> {
 
     protected static final Logger logger = Logger.getLogger(JavaScriptCalculator.class);
 
-    private CompiledScript compiledScript;
+    protected CompiledScript compiledScript;
     protected LoggableBindings bindings = new LoggableBindings();
+    protected Invocable invocable;
 
 
     protected JavaScriptCalculator(Reader reader) {
@@ -46,22 +47,24 @@ public abstract class JavaScriptCalculator<T> {
         Compilable compileEngine = (Compilable) engine;
         try {
             compiledScript = compileEngine.compile(script);
+            compiledScript.eval();
+            invocable = (Invocable) compiledScript.getEngine();
         } catch (ScriptException e) {
             logger.fatal("Error in input script!", e);
             e.printStackTrace();
         }
     }
 
-    public T calculate() {
+    protected T calculate(String function, Object... args) {
         try {
             if(logger.isDebugEnabled()) {
                 bindings.logValues();
             }
-            T result = (T) compiledScript.eval(bindings);
-            return result;
+            return (T) invocable.invokeFunction(function, args);
         } catch (ScriptException e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
         }
     }
 }

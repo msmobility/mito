@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 public class AttractionCalculator {
 
-    public enum ExplanatoryVariable {HH, TOT, RE, OFF, OTH, ENR};
+    public enum ExplanatoryVariable {HH, TOT, RE, OFF, OTH, ENR}
 
     private static final Logger logger = Logger.getLogger(AttractionCalculator.class);
 

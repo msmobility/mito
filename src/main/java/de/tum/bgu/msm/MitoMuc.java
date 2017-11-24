@@ -17,8 +17,6 @@ class MitoMuc {
     private static final Logger logger = Logger.getLogger(MitoMuc.class);
 
     public static void main(String[] args) {
-        // main run method
-
         MitoMuc mito = new MitoMuc();
         ResourceBundle rb = MitoUtil.createResourceBundle(args[0]);
         MitoUtil.setBaseDirectory(rb.getString("base.directory"));
@@ -26,7 +24,6 @@ class MitoMuc {
     }
 
     private void run (ResourceBundle resources) {
-        // main run method
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
         MitoModel model = new MitoModel(resources);
         model.initializeStandAlone();

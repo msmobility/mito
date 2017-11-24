@@ -32,16 +32,16 @@ public class SimpleRunTest {
     @Test
     public final void fedInitialization() {
 
-        Map<Integer, Zone> zones = new HashMap();
+        Map<Integer, Zone> zones = new HashMap<>();
         zones.put(1, new Zone(1, 10, AreaType.RURAL));
 
         Matrix autoTravelTimes = new IdentityMatrix(2);
         Matrix transitTravelTimes = new IdentityMatrix(2);
 
-        Map<Integer, MitoHousehold> households = new HashMap();
+        Map<Integer, MitoHousehold> households = new HashMap<>();
         MitoHousehold household = new MitoHousehold(1, 1, 1, zones.get(1));
         households.put(1, household);
-        Map<Integer, MitoPerson> persons = new HashMap();
+        Map<Integer, MitoPerson> persons = new HashMap<>();
         MitoPerson person = new MitoPerson(1, Occupation.WORKER, 1, 1, Gender.MALE, true);
         persons.put(1, person);
         household.addPerson(person);

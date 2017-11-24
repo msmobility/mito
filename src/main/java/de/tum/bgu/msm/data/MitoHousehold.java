@@ -20,8 +20,8 @@ public class MitoHousehold {
     private int autos;
     private Zone homeZone;
 
-    private final EnumMap<Purpose, ArrayList<MitoTrip>> tripsByPurpose = new EnumMap(Purpose.class);;
-    private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap(Purpose.class);
+    private final EnumMap<Purpose, ArrayList<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
 
     private final Map<Integer, MitoPerson> persons  = new HashMap<>();
 

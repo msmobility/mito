@@ -30,7 +30,7 @@ public class TravelTimeBudgetModule extends Module {
     public TravelTimeBudgetModule(DataSet dataSet) {
         super(dataSet);
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, "Total");
+        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader);
     }
 
     @Override
@@ -56,8 +56,7 @@ public class TravelTimeBudgetModule extends Module {
 
     private void adjustDiscretionaryPurposeBudgets() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            travelTimeCalc.bindHousehold(household);
-            double totalTravelTimeBudget = travelTimeCalc.calculate();
+            double totalTravelTimeBudget = travelTimeCalc.calculateBudget(household, "Total");
             double discretionaryTTB = totalTravelTimeBudget - household.getTravelTimeBudgetForPurpose(Purpose.HBW) -
                     household.getTravelTimeBudgetForPurpose(Purpose.HBE);
             discretionaryTTB = Math.max(discretionaryTTB, 0);

@@ -12,21 +12,15 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
         super(reader);
     }
 
-    public void setBaseZone(Zone zone) {
-        this.bindings.put("baseZone", zone.getZoneId());
-    }
-
-    public void setPurpose(Purpose purpose) {
-        bindings.put("purpose", purpose.name());
-    }
-
-    public void setTargetZone(Zone zone, double travelTime) {
-        bindings.put("targetZone", zone.getZoneId());
-        bindings.put("travelTime", travelTime);
-        bindings.put("totalEmployees", zone.getTotalEmpl());
-        bindings.put("retailEmployees", zone.getRetailEmpl());
-        bindings.put("otherEmployees", zone.getOtherEmpl());
-        bindings.put("schoolEnrollment", zone.getSchoolEnrollment());
-        bindings.put("households", zone.getNumberOfHouseholds());
+    public Double calculateUtility(Zone targetZone, double travelTime, Purpose purpose) {
+        return super.calculate("calculate",
+                purpose.name(),
+                travelTime,
+                targetZone.getZoneId(),
+                targetZone.getTotalEmpl(),
+                targetZone.getRetailEmpl(),
+                targetZone.getOtherEmpl(),
+                targetZone.getSchoolEnrollment(),
+                targetZone.getNumberOfHouseholds());
     }
 }

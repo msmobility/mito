@@ -24,7 +24,7 @@ public class MitoPerson {
     private int age;
     private boolean driversLicense;
 
-    private Map<Integer,MitoTrip> trips = new HashMap();
+    private Map<Integer,MitoTrip> trips = new HashMap<>();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
