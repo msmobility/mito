@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.jobTypes.maryland.MarylandJobType;
 import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Implementation;
@@ -65,7 +66,13 @@ public class JobReader extends CSVReader {
             }
             if(Resources.INSTANCE.implementation == Implementation.MUNICH) {
                 try {
-                    zone.addEmployeeForType(MunichJobType.valueOf(type));
+                    zone.addEmployeeForType(MunichJobType.valueOf(type.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    logger.error("Job Type " + type + " used in job microdata but is not defined in " + Resources.INSTANCE.implementation + " implementation.");
+                }
+            } else if (Resources.INSTANCE.implementation == Implementation.MARYLAND){
+                try {
+                    zone.addEmployeeForType(MarylandJobType.valueOf(type.toUpperCase()));
                 } catch (IllegalArgumentException e) {
                     logger.error("Job Type " + type + " used in job microdata but is not defined in " + Resources.INSTANCE.implementation + " implementation.");
                 }

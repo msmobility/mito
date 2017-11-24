@@ -4,16 +4,16 @@ import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
 
 public enum MunichJobType implements JobType{
-    Agri (Category.OTHER),
-    Mnft(Category.INDUSTRY),
-    Util(Category.INDUSTRY),
-    Cons(Category.INDUSTRY),
-    Retl(Category.RETAIL),
-    Trns(Category.OTHER),
-    Finc(Category.OFFICE),
-    Rlst(Category.OFFICE),
-    Admn(Category.OFFICE),
-    Serv(Category.OFFICE);
+    AGRI (Category.OTHER),
+    MNFT(Category.INDUSTRY),
+    UTIL(Category.INDUSTRY),
+    CONS(Category.INDUSTRY),
+    RETL(Category.RETAIL),
+    TRNS(Category.OTHER),
+    FINC(Category.OFFICE),
+    RLST(Category.OFFICE),
+    ADMN(Category.OFFICE),
+    SERV(Category.OFFICE);
 
     private final Category category;
 
