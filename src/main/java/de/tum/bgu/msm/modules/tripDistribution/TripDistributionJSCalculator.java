@@ -19,8 +19,8 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
                 travelTime,
                 targetZone.getZoneId(),
                 targetZone.getTotalEmpl(),
-                targetZone.getNumberOfEmployeesForType(MunichJobType.Retl),
-                targetZone.getNumberOfEmployeesForType(MunichJobType.Agri),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.RETL),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.AGRI),
                 targetZone.getSchoolEnrollment(),
                 targetZone.getNumberOfHouseholds());
     }
