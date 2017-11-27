@@ -1,8 +1,8 @@
 package de.tum.bgu.msm.data;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.Multiset;
+import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
 import org.apache.log4j.Logger;
 
@@ -30,7 +30,7 @@ public class Zone {
     private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
 
-    public Zone(int id, float size, AreaType areaType){
+    public Zone(int id, float size, AreaType areaType) {
         this.zoneId = id;
         this.size = size;
         this.areaType = areaType;
@@ -126,15 +126,22 @@ public class Zone {
 
     public double getTripAttractionRate(Purpose purpose) {
         Double rate = this.tripAttractionRates.get(purpose);
-        if(rate == null)  {
+        if (rate == null) {
             throw new RuntimeException("No trip attraction rate set for zone " + zoneId + ". Please make sure to only call " +
                     "this method after trip generation module!");
         }
         return rate;
     }
 
-    public Multiset<JobType> getEmployeesByType() {
-        return ImmutableMultiset.copyOf(employeesByType);
+    public int getEmployeesByCategory(Category category) {
+        int sum = 0;
+        Multiset<JobType> jobTypes = employeesByType;
+        for (JobType distinctType : jobTypes.elementSet()) {
+            if (category == distinctType.getCategory()) {
+                sum += jobTypes.count(distinctType);
+            }
+        }
+        return sum;
     }
 
     @Override

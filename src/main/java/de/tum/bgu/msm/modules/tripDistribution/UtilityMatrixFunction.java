@@ -40,7 +40,7 @@ public class UtilityMatrixFunction implements ConcurrentFunction {
         for (Zone origin : zones.values()) {
             for (Zone destination : zones.values()) {
                 final double travelTimeFromTo = travelTimes.getTravelTimeFromTo(origin.getZoneId(), destination.getZoneId());
-                double utility = calculator.calculateUtility(destination, travelTimeFromTo, purpose);
+                double utility = getUtility(destination, travelTimeFromTo);
                 if (Double.isInfinite(utility)) {
                     throw new RuntimeException("Infinite utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination +
@@ -55,5 +55,24 @@ public class UtilityMatrixFunction implements ConcurrentFunction {
         }
         utilityMatrices.put(purpose, utilityMatrix);
         logger.info("Utility matrix for purpose " + purpose + " done.");
+    }
+
+    private double getUtility(Zone destination, double travelTimeFromTo) {
+        switch (purpose) {
+            case HBW:
+                return calculator.calculateHbwUtility(destination, travelTimeFromTo);
+            case HBE:
+                return calculator.calculateHbeUtility(destination, travelTimeFromTo);
+            case HBS:
+                return calculator.calculateHbsUtility(destination, travelTimeFromTo);
+            case HBO:
+                return calculator.calculateHboUtility(destination, travelTimeFromTo);
+            case NHBW:
+                return calculator.calculateNhbwUtility(destination, travelTimeFromTo);
+            case NHBO:
+                return calculator.calculateNhboUtility(destination, travelTimeFromTo);
+            default:
+                throw new IllegalStateException();
+        }
     }
 }

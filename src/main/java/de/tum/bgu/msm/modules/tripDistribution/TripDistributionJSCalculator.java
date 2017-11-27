@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
 import de.tum.bgu.msm.data.Zone;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
@@ -13,15 +13,32 @@ public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
         super(reader);
     }
 
-    public Double calculateUtility(Zone targetZone, double travelTime, Purpose purpose) {
-        return super.calculate("calculate",
-                purpose.name(),
-                travelTime,
-                targetZone.getZoneId(),
-                targetZone.getTotalEmpl(),
-                targetZone.getNumberOfEmployeesForType(MunichJobType.RETL),
-                targetZone.getNumberOfEmployeesForType(MunichJobType.AGRI),
-                targetZone.getSchoolEnrollment(),
-                targetZone.getNumberOfHouseholds());
+    public Double calculateHbwUtility(Zone targetZone, double travelTime) {
+        return super.calculate("calculateHBW", travelTime, targetZone.getTotalEmpl());
+    }
+
+    public Double calculateHbeUtility(Zone targetZone, double travelTime) {
+        return super.calculate("calculateHBE", travelTime, targetZone.getSchoolEnrollment());
+    }
+
+    public Double calculateHbsUtility(Zone targetZone, double travelTime) {
+        return super.calculate("calculateHBS", travelTime, targetZone.getEmployeesByCategory(Category.RETAIL));
+    }
+
+    public Double calculateHboUtility(Zone targetZone, double travelTime) {
+        return super.calculate("calculateHBO", travelTime, targetZone.getNumberOfHouseholds(),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.ADMN), targetZone.getNumberOfEmployeesForType(MunichJobType.SERV));
+    }
+
+    public Double calculateNhbwUtility(Zone targetZone, double travelTime) {
+        return super.calculate("calculateNHBW", travelTime, targetZone.getNumberOfHouseholds(),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.ADMN), targetZone.getNumberOfEmployeesForType(MunichJobType.SERV),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.RETL));
+    }
+
+    public Double calculateNhboUtility(Zone targetZone, double travelTime) {
+        return super.calculate("calculateNHBW", travelTime, targetZone.getNumberOfHouseholds(),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.ADMN), targetZone.getNumberOfEmployeesForType(MunichJobType.SERV),
+                targetZone.getNumberOfEmployeesForType(MunichJobType.RETL));
     }
 }

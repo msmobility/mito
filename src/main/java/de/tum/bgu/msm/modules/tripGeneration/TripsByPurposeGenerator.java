@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
+import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.resources.Properties;
@@ -41,8 +42,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
         long counter = 0;
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-            boolean log = Math.log10(counter) / Math.log10(2.) % 1 == 0;
-            if (log) {
+            if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for purpose " + purpose + ".");
             }
             generateTripsForHousehold(hh);

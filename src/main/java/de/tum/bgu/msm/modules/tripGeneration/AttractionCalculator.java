@@ -23,9 +23,7 @@ public class AttractionCalculator {
     public void run() {
         logger.info("  Calculating trip attractions");
         for (Zone zone : dataSet.getZones().values()) {
-            int retail = getEmployeesByCategory(zone, Category.RETAIL);
-            int office = getEmployeesByCategory(zone, Category.OFFICE);
-            int other = getEmployeesByCategory(zone, Category.OTHER);
+
             for (Purpose purpose : Purpose.values()) {
                 float tripAttraction = 0;
                 for (ExplanatoryVariable variable : ExplanatoryVariable.values()) {
@@ -38,13 +36,13 @@ public class AttractionCalculator {
                             attribute = zone.getTotalEmpl();
                             break;
                         case RE:
-                            attribute = retail;
+                            attribute = zone.getEmployeesByCategory(Category.RETAIL);
                             break;
                         case OFF:
-                            attribute = office;
+                            attribute = zone.getEmployeesByCategory(Category.OFFICE);
                             break;
                         case OTH:
-                            attribute = other;
+                            attribute = zone.getEmployeesByCategory(Category.OTHER);
                             break;
                         case ENR:
                             attribute = zone.getSchoolEnrollment();
@@ -62,16 +60,5 @@ public class AttractionCalculator {
                 zone.setTripAttractionRate(purpose, tripAttraction);
             }
         }
-    }
-
-    private int getEmployeesByCategory(Zone zone, Category category) {
-        int sum = 0;
-        Multiset<JobType> jobTypes = zone.getEmployeesByType();
-        for(JobType distinctType: jobTypes.elementSet()) {
-            if(category == distinctType.getCategory()) {
-                sum += jobTypes.count(distinctType);
-            }
-        }
-        return sum;
     }
 }

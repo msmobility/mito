@@ -1,131 +1,125 @@
-var calculate = function (purpose, travelTime, destinationId, totalEmployees,retailEmployees, otherEmployees, schoolEnrollment, households) {
-
-if(purpose == "HBW") {
+var calculateHBW = function (travelTime, totalEmployees) {
     intercept = 0.3;
-    timeParam = -0.01;
+    travelTimeParam = -0.01;
     impedanceParam = 0.01;
     attractionParam = 0.1;
 
-    impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
+    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
+
     if(totalEmployees == 0) {
         attraction = 0;
     } else {
         attraction = Math.log(totalEmployees);
     }
     attractionImpact = attraction * attractionParam;
+    return intercept + impedanceImpact + attractionImpact;
+}
 
-} else if(purpose == "HBE") {
+var calculateHBE = function (travelTime, schoolEnrollment) {
     intercept = 0.3;
-    timeParam = -0.01;
+    travelTimeParam = -0.01;
     impedanceParam = 0.01;
     attractionParam = 0.1;
-
-    impedanceImpact = calculateImpedance(impedanceParam, timeParam, travelTime);
+    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
 
     if(schoolEnrollment == 0) {
         attraction = 0;
     } else {
         attraction = Math.log(schoolEnrollment);
     }
-    attractionImpact = attraction * attractionParam;
 
-} else if(purpose == "HBS") {
+    attractionImpact = attraction * attractionParam;
+    return intercept + impedanceImpact + attractionImpact;
+}
+
+var calculateHBS  = function (travelTime, retailEmployees) {
     intercept = 0.3;
-    budgetParam = -0.01;
+    travelTimeParam = -0.01;
     impedanceParam = 0.01;
     attractionParam = 0.1;
 
-    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
+    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
 
     if(retailEmployees == 0) {
         attraction = 0;
     } else {
         attraction = Math.log(retailEmployees);
     }
+
     attractionImpact = attraction * attractionParam;
-
-} else if(purpose == "HBO") {
-    intercept = 0.3;
-    budgetParam = -0.01;
-    impedanceParam = 0.01;
-    attractionParam = 0.1;
-
-    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
-
-    if(households == 0) {
-        householdsAttraction = 0;
-    } else {
-        householdsAttraction = Math.log(households);
-    }
-    if(otherEmployees == 0) {
-        otherEmplAttraction = 0;
-    } else {
-        otherEmplAttraction =  Math.log(otherEmployees);
-    }
-    attraction = householdsAttraction + otherEmplAttraction;
-    attractionImpact = attraction * attractionParam;
-
-} else if(purpose == "NHBW") {
-    intercept = 0.3;
-    budgetParam = -0.01;
-    impedanceParam = 0.01;
-    attractionParam = 0.1;
-
-    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
-
-    if(households == 0) {
-        householdsAttraction = 0;
-    } else {
-        householdsAttraction = Math.log(households);
-    }
-    if(totalEmployees == 0) {
-        totalEmplAttraction = 0;
-    } else {
-        totalEmplAttraction =  Math.log(totalEmployees);
-    }
-    if(retailEmployees == 0) {
-        retailEmplAttraction = 0;
-    } else {
-        retailEmplAttraction =  Math.log(retailEmployees);
-    }
-    attraction = householdsAttraction + totalEmplAttraction + retailEmplAttraction;
-    attractionImpact = attraction * attractionParam;
-
-} else if(purpose == "NHBO") {
-    intercept = 0.3;
-    budgetParam = -0.01;
-    impedanceParam = 0.01;
-    attractionParam = 0.1;
-
-    impedanceImpact = calculateImpedance(impedanceParam, budgetParam, travelTime);
-
-    if(households == 0) {
-        householdsAttraction = 0;
-    } else {
-        householdsAttraction = Math.log(households);
-    }
-    if(totalEmployees == 0) {
-        totalEmplAttraction = 0;
-    } else {
-        totalEmplAttraction =  Math.log(totalEmployees);
-    }
-    if(retailEmployees == 0) {
-        retailEmplAttraction = 0;
-    } else {
-        retailEmplAttraction =  Math.log(retailEmployees);
-    }
-    attractionImpact = (householdsAttraction + totalEmplAttraction + retailEmplAttraction) * attractionParam;
-
-
-} else {
-    throw "Undefined Purpose given!"
+    return intercept + impedanceImpact + attractionImpact;
 }
-utility = intercept + impedanceImpact + attractionImpact;
-return utility;
-};
 
-function calculateImpedance(impedanceParameter, timeParameter, time) {
-    return impedanceParameter * Math.exp(timeParameter * time);
+var calculateHBO = function (travelTime, households, adminEmployees, serviceEmployees) {
+    intercept = 0.3;
+    travelTimeParam = -0.01;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
+
+    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
+
+    attraction = 0;
+    if(households > 0) {
+        attraction += Math.log(households);
+    }
+    if(adminEmployees > 0) {
+        attraction += Math.log(adminEmployees);
+    }
+    if(serviceEmployees > 0) {
+        attraction += Math.log(serviceEmployees);
+    }
+    attractionImpact = attraction * attractionParam;
+    return intercept + impedanceImpact + attractionImpact;
+}
+
+var calculateNHBW = function (travelTime, households, adminEmployees, serviceEmployees, retailEmployees) {
+    intercept = 0.3;
+    travelTimeParam = -0.01;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
+
+    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
+
+    attraction = 0;
+    if(households > 0) {
+        attraction += Math.log(households);
+    }
+    if(retailEmployees > 0) {
+        attraction += Math.log(retailEmployees);
+    }
+    if(serviceEmployees > 0) {
+        attraction += Math.log(serviceEmployees);
+    }
+    if(adminEmployees > 0) {
+        attraction += Math.log(adminEmployees);
+    }
+    attractionImpact = attraction * attractionParam;
+    return intercept + impedanceImpact + attractionImpact;
+}
+
+var calculateNHBO = function (travelTime, households, adminEmployees, serviceEmployees, retailEmployees) {
+    intercept = 0.3;
+    travelTimeParam = -0.01;
+    impedanceParam = 0.01;
+    attractionParam = 0.1;
+
+    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
+
+    attraction = 0;
+    if(households > 0) {
+        attraction += Math.log(households);
+    }
+    if(retailEmployees > 0) {
+        attraction += Math.log(retailEmployees);
+    }
+    if(serviceEmployees > 0) {
+        attraction += Math.log(serviceEmployees);
+    }
+    if(adminEmployees > 0) {
+        attraction += Math.log(adminEmployees);
+    }
+    attractionImpact = attraction * attractionParam;
+    return intercept + impedanceImpact + attractionImpact;
 }
 
 function log() {
