@@ -35,10 +35,11 @@ public class MitoUtil {
     public static void initializeRandomNumber() {
         // initialize random number generator
         int seed = Resources.INSTANCE.getInt(Properties.RANDOM_SEED);
-        if (seed == -1)
+        if (seed == -1) {
             rand = new Random();
-        else
+        } else {
             rand = new Random(seed);
+        }
     }
 
 
@@ -73,29 +74,41 @@ public class MitoUtil {
     private static int getHighestVal(int[] array) {
         // return highest number in int array
         int high = Integer.MIN_VALUE;
-        for (int num : array) high = Math.max(high, num);
+        for (int num : array) {
+            high = Math.max(high, num);
+        }
         return high;
     }
 
     public static int findPositionInArray(String element, String[] arr) {
         // return index position of element in array arr
         int ind = -1;
-        for (int a = 0; a < arr.length; a++) if (arr[a].equalsIgnoreCase(element)) ind = a;
-        if (ind == -1) logger.error("Could not find element " + element +
-                " in array (see method <findPositionInArray> in class <SiloUtil>");
+        for (int a = 0; a < arr.length; a++) {
+            if (arr[a].equalsIgnoreCase(element)) {
+                ind = a;
+            }
+        }
+        if (ind == -1) {
+            logger.error("Could not find element " + element +
+                    " in array (see method <findPositionInArray> in class <SiloUtil>");
+        }
         return ind;
     }
 
 
     public static Integer getSum(Integer[] array) {
         Integer sm = 0;
-        for (Integer value : array) sm += value;
+        for (Integer value : array) {
+            sm += value;
+        }
         return sm;
     }
 
     public static float getSum(float[] array) {
         float sm = 0;
-        for (float value : array) sm += value;
+        for (float value : array) {
+            sm += value;
+        }
         return sm;
     }
 
@@ -103,7 +116,9 @@ public class MitoUtil {
         // return array of two-dimensional int array
         int sm = 0;
         for (int[] anArray : array) {
-            for (int i = 0; i < array[0].length; i++) sm += anArray[i];
+            for (int i = 0; i < array[0].length; i++) {
+                sm += anArray[i];
+            }
         }
         return sm;
     }
@@ -113,7 +128,9 @@ public class MitoUtil {
         // return array of two-dimensional int array
         int sm = 0;
         for (float[] anArray : array) {
-            for (int i = 0; i < array[0].length; i++) sm += anArray[i];
+            for (int i = 0; i < array[0].length; i++) {
+                sm += anArray[i];
+            }
         }
         return sm;
     }
@@ -122,7 +139,9 @@ public class MitoUtil {
     private static double getSum(double[] array) {
         // return sum of all elements in array
         double sum = 0;
-        for (double val : array) sum += val;
+        for (double val : array) {
+            sum += val;
+        }
         return sum;
     }
 
@@ -132,7 +151,9 @@ public class MitoUtil {
         float sm = 0;
         for (float[][] anArray : array) {
             for (int i = 0; i < array[0][0].length; i++) {
-                for (int j = 0; j < array[0].length; j++) sm += anArray[i][j];
+                for (int j = 0; j < array[0].length; j++) {
+                    sm += anArray[i][j];
+                }
             }
         }
         return sm;
@@ -217,8 +238,12 @@ public class MitoUtil {
         // scale float array so that largest value equals maxVal
 
         float highestVal = Float.MIN_VALUE;
-        for (float val : array) highestVal = Math.max(val, highestVal);
-        for (int i = 0; i < array.length; i++) array[i] = (float) ((array[i] * maxVal * 1.) / (highestVal * 1.));
+        for (float val : array) {
+            highestVal = Math.max(val, highestVal);
+        }
+        for (int i = 0; i < array.length; i++) {
+            array[i] = (float) ((array[i] * maxVal * 1.) / (highestVal * 1.));
+        }
         return array;
     }
 

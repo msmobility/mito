@@ -68,21 +68,13 @@ public class PersonsReader extends CSVReader {
             logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
             return;
         }
-        Occupation occupation = Occupation.UNEMPLOYED;
         int age = Integer.parseInt(record[posAge]);
 
         int genderCode = Integer.parseInt(record[posSex]);
-        Gender gender = Gender.MALE;
-        if (genderCode == 2) {
-            gender = Gender.FEMALE;
-        }
-        int occupationCode = Integer.parseInt(record[posOccupation]);
+        Gender gender = Gender.valueOf(genderCode);
 
-        if (occupationCode == 1) {
-            occupation = Occupation.WORKER;
-        } else if (occupationCode == 3) {
-            occupation = Occupation.STUDENT;
-        }
+        int occupationCode = Integer.parseInt(record[posOccupation]);
+        Occupation occupation = Occupation.valueOf(occupationCode);
         int workplace = Integer.parseInt(record[posWorkplace]);
 
         boolean driversLicense = false;

@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.InputFeed;
+import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
@@ -24,24 +25,23 @@ public class SimpleRunTest {
     @Before
     public void setupTest() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.INSTANCE.setResources(bundle);
-        model = new MitoModel(bundle);
+        model = new MitoModel(bundle, Implementation.MUNICH);
         model.setBaseDirectory("./testInput/");
     }
 
     @Test
     public final void fedInitialization() {
 
-        Map<Integer, Zone> zones = new HashMap();
+        Map<Integer, Zone> zones = new HashMap<>();
         zones.put(1, new Zone(1, 10, AreaType.RURAL));
 
         Matrix autoTravelTimes = new IdentityMatrix(2);
         Matrix transitTravelTimes = new IdentityMatrix(2);
 
-        Map<Integer, MitoHousehold> households = new HashMap();
+        Map<Integer, MitoHousehold> households = new HashMap<>();
         MitoHousehold household = new MitoHousehold(1, 1, 1, zones.get(1));
         households.put(1, household);
-        Map<Integer, MitoPerson> persons = new HashMap();
+        Map<Integer, MitoPerson> persons = new HashMap<>();
         MitoPerson person = new MitoPerson(1, Occupation.WORKER, 1, 1, Gender.MALE, true);
         persons.put(1, person);
         household.addPerson(person);

@@ -9,7 +9,7 @@ import java.io.Serializable;
  *
  */
 
-public class MitoTrip implements Serializable {
+public class MitoTrip {
 
     private final int tripId;
     private final Purpose tripPurpose;

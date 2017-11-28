@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
+import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.resources.Properties;
@@ -10,8 +11,8 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.counterDroppedTripsAtBorder;
-import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.currentTripId;
+import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.DROPPED_TRIPS_AT_BORDER_COUNTER;
+import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
 
 class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
@@ -41,8 +42,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
         long counter = 0;
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-            boolean log = Math.log10(counter) / Math.log10(2.) % 1 == 0;
-            if (log) {
+            if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for purpose " + purpose + ".");
             }
             generateTripsForHousehold(hh);
@@ -77,10 +77,8 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
             return;
         }
 
-        int numTrips = selectNumberOfTrips(tripFrequencies);
-
         List<MitoTrip> trips = new ArrayList<>();
-        for (int i = 0; i < numTrips; i++) {
+        for (int i = 0; i < selectNumberOfTrips(tripFrequencies); i++) {
             MitoTrip trip = createTrip(hh);
             if(trip != null) {
                 trips.add(trip);
@@ -102,16 +100,14 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
     private void fillFrequencyArrays(Map<Integer, HouseholdType> householdTypeBySampleId) {
 
-
         for (SurveyRecord record : dataSet.getSurvey().getRecords().values()) {
-            int householdTripsForPurpose = record.getTripsForPurpose(purpose);
             HouseholdType type = householdTypeBySampleId.get(record.getId());
             if (type == null) {
                 logger.info("Trips for travel survey record " + record.getId() + " and purpose " + purpose + " " +
                         "ignored, as no household type is applicable.");
                 continue;
             }
-            addTripFrequencyForHouseholdType(householdTripsForPurpose, type);
+            addTripFrequencyForHouseholdType(record.getTripsForPurpose(purpose), type);
         }
     }
 
@@ -133,7 +129,6 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
     }
 
     private int selectNumberOfTrips(Integer[] tripFrequencies) {
-        // select number of trips
         double[] probabilities = new double[tripFrequencies.length];
         for (int i = 0; i < tripFrequencies.length; i++) {
             probabilities[i] = (double) tripFrequencies[i];
@@ -145,10 +140,10 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         Zone tripOrigin = hh.getHomeZone();
         boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
         if (dropThisTrip) {
-            counterDroppedTripsAtBorder.incrementAndGet();
+            DROPPED_TRIPS_AT_BORDER_COUNTER.incrementAndGet();
             return null;
         }
-        return new MitoTrip(currentTripId.incrementAndGet(), purpose);
+        return new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
     }
 
     private boolean reduceTripGenAtStudyAreaBorder(Zone tripOrigin) {

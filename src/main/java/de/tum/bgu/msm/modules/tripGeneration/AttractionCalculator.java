@@ -1,13 +1,16 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
+import com.google.common.collect.Multiset;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.jobTypes.Category;
+import de.tum.bgu.msm.data.jobTypes.JobType;
 import org.apache.log4j.Logger;
 
 public class AttractionCalculator {
 
-    public enum explanatoryVariable {HH, TOT, RE, OFF, OTH, ENR};
+    public enum ExplanatoryVariable {HH, TOT, RE, OFF, OTH, ENR}
 
     private static final Logger logger = Logger.getLogger(AttractionCalculator.class);
 
@@ -20,10 +23,11 @@ public class AttractionCalculator {
     public void run() {
         logger.info("  Calculating trip attractions");
         for (Zone zone : dataSet.getZones().values()) {
+
             for (Purpose purpose : Purpose.values()) {
                 float tripAttraction = 0;
-                for (explanatoryVariable variable : explanatoryVariable.values()) {
-                    float attribute = 0;
+                for (ExplanatoryVariable variable : ExplanatoryVariable.values()) {
+                    float attribute;
                     switch (variable) {
                         case HH:
                             attribute = zone.getNumberOfHouseholds();
@@ -32,21 +36,23 @@ public class AttractionCalculator {
                             attribute = zone.getTotalEmpl();
                             break;
                         case RE:
-                            attribute = zone.getRetailEmpl();
+                            attribute = zone.getEmployeesByCategory(Category.RETAIL);
                             break;
                         case OFF:
-                            attribute = zone.getOfficeEmpl();
+                            attribute = zone.getEmployeesByCategory(Category.OFFICE);
                             break;
                         case OTH:
-                            attribute = zone.getOtherEmpl();
+                            attribute = zone.getEmployeesByCategory(Category.OTHER);
                             break;
                         case ENR:
                             attribute = zone.getSchoolEnrollment();
                             break;
+                        default:
+                            throw new RuntimeException("Unknown trip attraction Variable.");
                     }
                     Double rate = purpose.getTripAttractionForVariable(variable);
                     if(rate == null) {
-                        logger.error("Purpose " + purpose + " does not have an attraction" +
+                        throw new RuntimeException("Purpose " + purpose + " does not have an attraction" +
                                 " rate for variable " + variable + " registered.");
                     }
                     tripAttraction += attribute * rate;

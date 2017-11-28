@@ -1,8 +1,7 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.modules.tripGeneration.HouseholdType;
-import de.tum.bgu.msm.modules.tripGeneration.HouseholdTypeManager;
+import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
@@ -22,7 +21,7 @@ public class HouseHoldTypeManagerTest {
     @Before
     public void setupTest() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.INSTANCE.setResources(bundle);
+        Resources.initializeResources(bundle, Implementation.MUNICH);
         zone = new Zone(1, 10, AreaType.RURAL);
     }
 

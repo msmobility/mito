@@ -9,33 +9,30 @@ import java.io.Reader;
 
 public class TravelTimeBudgetJSCalculator extends JavaScriptCalculator<Double> {
 
-
-    public TravelTimeBudgetJSCalculator(Reader reader, String initialPurpose) {
+    public TravelTimeBudgetJSCalculator(Reader reader) {
         super(reader);
-        bindings.put("purpose", initialPurpose);
     }
 
-    public void setPurpose(String purpose) {
-        bindings.put("purpose", purpose);
-    }
-
-
-    public void bindHousehold(MitoHousehold household) {
-        bindings.put("areaType", household.getHomeZone().getAreaType().ordinal()+1);
-        bindings.put("females", MitoUtil.getFemalesForHousehold(household));
-        bindings.put("children", MitoUtil.getChildrenForHousehold(household));
-        bindings.put("youngAdults", MitoUtil.getYoungAdultsForHousehold(household));
-        bindings.put("retirees", MitoUtil.getRetireesForHousehold(household));
-        bindings.put("workers", MitoUtil.getNumberOfWorkersForHousehold(household));
-        bindings.put("students", MitoUtil.getStudentsForHousehold(household));
-        bindings.put("cars", household.getAutos());
-        bindings.put("licenses", MitoUtil.getLicenseHoldersForHousehold(household));
-        bindings.put("income", household.getIncome());
-        bindings.put("householdSize", household.getHhSize());
-        bindings.put("hhId", household.getHhId());
-
-        for(Purpose purpose: Purpose.values()) {
-            bindings.put(purpose.name(), household.getTripsForPurpose(purpose).size());
-        }
+    public Double calculateBudget(MitoHousehold household, String purpose) {
+        return super.calculate("calculate",
+                purpose,
+                household.getHomeZone().getAreaType().ordinal() + 1,
+                MitoUtil.getFemalesForHousehold(household),
+                MitoUtil.getChildrenForHousehold(household),
+                MitoUtil.getYoungAdultsForHousehold(household),
+                MitoUtil.getRetireesForHousehold(household),
+                MitoUtil.getNumberOfWorkersForHousehold(household),
+                MitoUtil.getStudentsForHousehold(household),
+                MitoUtil.getLicenseHoldersForHousehold(household),
+                household.getAutos(),
+                household.getIncome(),
+                household.getHhSize(),
+                household.getHhId(),
+                household.getTripsForPurpose(Purpose.HBW).size(),
+                household.getTripsForPurpose(Purpose.HBE).size(),
+                household.getTripsForPurpose(Purpose.HBS).size(),
+                household.getTripsForPurpose(Purpose.HBO).size(),
+                household.getTripsForPurpose(Purpose.NHBW).size(),
+                household.getTripsForPurpose(Purpose.NHBO).size());
     }
 }

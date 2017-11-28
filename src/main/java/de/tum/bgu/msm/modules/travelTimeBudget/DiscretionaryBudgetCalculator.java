@@ -18,15 +18,14 @@ public class DiscretionaryBudgetCalculator implements ConcurrentFunction {
         this.purpose = purpose;
         this.households = households;
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader, purpose.name());
+        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader);
     }
 
     @Override
     public void execute() {
         households.forEach(hh -> {
-            travelTimeCalc.bindHousehold(hh);
-            hh.setTravelTimeBudgetByPurpose(purpose, travelTimeCalc.calculate());
+            double budget = travelTimeCalc.calculateBudget(hh, purpose.name());
+            hh.setTravelTimeBudgetByPurpose(purpose, budget);
         });
-
     }
 }

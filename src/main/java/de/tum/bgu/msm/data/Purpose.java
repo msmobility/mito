@@ -3,7 +3,7 @@ package de.tum.bgu.msm.data;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator.explanatoryVariable;
+import static de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator.ExplanatoryVariable;
 
 public enum Purpose {
     HBW,
@@ -14,7 +14,7 @@ public enum Purpose {
     NHBO;
 
     private final AverageBudget averageBudget = new AverageBudget(0);
-    private final Map<explanatoryVariable, Double> tripAtractionByVariable = new EnumMap<>(explanatoryVariable.class);
+    private final Map<ExplanatoryVariable, Double> tripAtractionByVariable = new EnumMap<>(ExplanatoryVariable.class);
 
     public void addAndUpdateBudget(double budget) {
        averageBudget.addBudgetAndUpdate(budget);
@@ -30,11 +30,11 @@ public enum Purpose {
         }
     }
 
-    public void putTripAttractionForVariable(explanatoryVariable variable, double rate) {
+    public void putTripAttractionForVariable(ExplanatoryVariable variable, double rate) {
         this.tripAtractionByVariable.put(variable, rate);
     }
 
-    public double getTripAttractionForVariable(explanatoryVariable variable) {
+    public double getTripAttractionForVariable(ExplanatoryVariable variable) {
         return this.tripAtractionByVariable.get(variable);
     }
 }

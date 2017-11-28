@@ -12,7 +12,7 @@ import java.util.*;
  *
  */
 
-public class MitoPerson implements Serializable {
+public class MitoPerson {
 
     private static final Logger logger = Logger.getLogger(MitoPerson.class);
 
@@ -24,7 +24,7 @@ public class MitoPerson implements Serializable {
     private int age;
     private boolean driversLicense;
 
-    private Map<Integer,MitoTrip> trips = new HashMap();
+    private Map<Integer,MitoTrip> trips = new HashMap<>();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;

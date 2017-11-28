@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.InputFeed;
 import de.tum.bgu.msm.io.input.InputManager;
@@ -41,10 +42,10 @@ public class MitoModel {
 
     private boolean initialised = false;
 
-    public MitoModel(ResourceBundle resources) {
+    public MitoModel(ResourceBundle resources, Implementation implementation) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
-        Resources.INSTANCE.setResources(resources);
+        Resources.initializeResources(resources, implementation);
         MitoUtil.initializeRandomNumber();
     }
 
@@ -78,7 +79,7 @@ public class MitoModel {
         String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTrips().size());
         logger.info("A total of " + trips.trim() + " microscopic trips were generated");
         logger.info("Completed the Microsimulation Transport Orchestrator (MITO)");
-        float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000), 1);
+        float endTime = MitoUtil.rounder(((System.currentTimeMillis() - startTime) / 60000.f), 1);
         int hours = (int) (endTime / 60);
         int min = (int) (endTime - 60 * hours);
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
@@ -96,8 +97,8 @@ public class MitoModel {
         return scenarioName;
     }
 
-    public static void setScenarioName(String scenarioName) {
-        scenarioName = scenarioName;
+    public static void setScenarioName(String setScenarioName) {
+        scenarioName = setScenarioName;
     }
 
     public void setRandomNumberGenerator(Random random) {

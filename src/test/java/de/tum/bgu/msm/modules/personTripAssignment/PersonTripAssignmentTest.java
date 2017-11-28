@@ -7,6 +7,7 @@ import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Gender;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Test;
@@ -57,6 +58,7 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testAssignment() {
+        Resources.initializeResources(null, Implementation.MUNICH);
         Resources.INSTANCE.setTripAssignmentFactory(new SimpleTripAssignmentFactory());
         setupAndRun();
         for (MitoTrip trip : dataSet.getTrips().values()) {
@@ -71,6 +73,7 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testFailedAssignment() {
+        Resources.initializeResources(null, Implementation.MUNICH);
         Resources.INSTANCE.setTripAssignmentFactory(() -> (household, trip) -> null);
         setupAndRun();
         for (MitoHousehold household : dataSet.getHouseholds().values()) {

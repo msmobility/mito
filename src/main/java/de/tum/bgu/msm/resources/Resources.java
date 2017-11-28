@@ -9,19 +9,22 @@ import java.util.ResourceBundle;
 /**
  * Created by Nico on 19.07.2017.
  */
-public enum Resources {
+public class Resources {
 
-    INSTANCE;
+    public static Resources INSTANCE;
 
-    private ResourceBundle resources;
+    private final ResourceBundle resources;
+    public final Implementation implementation;
     private TripAssignmentFactory tripAssignmentFactory = new DefaultTripAssignmentFactory();
 
-    Resources() {
-
+    private Resources(ResourceBundle bundle, Implementation implementation) {
+        this.resources = bundle;
+        this.implementation = implementation;
     }
 
-    public void setResources(ResourceBundle resources) {
-        this.resources = resources;
+    public static void initializeResources(ResourceBundle resources, Implementation implementation) {
+        INSTANCE = new Resources(resources, implementation);
+        implementation = implementation;
     }
 
     public synchronized int getInt(String key) {

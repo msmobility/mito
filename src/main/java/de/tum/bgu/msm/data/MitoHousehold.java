@@ -2,7 +2,6 @@ package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -12,7 +11,7 @@ import java.util.*;
  *
  */
 
-public class MitoHousehold implements Serializable {
+public class MitoHousehold {
 
     private static final Logger logger = Logger.getLogger(MitoHousehold.class);
 
@@ -21,11 +20,10 @@ public class MitoHousehold implements Serializable {
     private int autos;
     private Zone homeZone;
 
-    private final EnumMap<Purpose, ArrayList<MitoTrip>> tripsByPurpose = new EnumMap(Purpose.class);;
-    private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap(Purpose.class);
+    private final EnumMap<Purpose, ArrayList<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
 
     private final Map<Integer, MitoPerson> persons  = new HashMap<>();
-
 
     public MitoHousehold(int id, int income, int autos, Zone homeZone) {
         this.hhId = id;
@@ -88,19 +86,11 @@ public class MitoHousehold implements Serializable {
         }
     }
 
-    public synchronized void removeTrip(MitoTrip trip) {
-        if(trip != null) {
-            if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
-                tripsByPurpose.get(trip.getTripPurpose()).remove(trip);
-            }
-        }
-    }
-
     public List<MitoTrip> getTripsForPurpose(Purpose purpose) {
         if(tripsByPurpose.get(purpose) != null) {
-            return Collections.unmodifiableList(tripsByPurpose.get(purpose));
+            return tripsByPurpose.get(purpose);
         } else {
-            return Collections.unmodifiableList(Collections.emptyList());
+            return Collections.emptyList();
         }
     }
 

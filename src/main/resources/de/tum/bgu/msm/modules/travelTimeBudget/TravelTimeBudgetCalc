@@ -1,3 +1,6 @@
+var calculate = function (purpose, areaType, females, children, youngAdults, retirees, workers, students, licenses, cars, income, householdSize, hhId, HBW, HBE
+, HBS, HBO, NHBW, NHBO) {
+
 if(purpose == "Total") {
     intercept = 4.562;
     femalesParam = 0;
@@ -211,11 +214,11 @@ nhboImpact = NHBO * nhboParam;
 utility = intercept + incomeImpact + householdSizeParam + area + femalesImpact + childrenImpact +
     youngAdultsImpact + retireesImpact + workersImpact + studentsImpact + carsImpact + licensesImpact +
     hbwImpact + hbeImpact + hbsImpact + hboImpact + nhbwImpact + nhboImpact;
-
-logger.debug("Result               = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility)");
-logger.debug("Result               = Math.pow(-Math.log(0.5), 1./"+ wbScale +") * Math.exp("+utility+")");
+//logger.debug("Result               = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility)");
+//logger.debug("Result               = Math.pow(-Math.log(0.5), 1./"+ wbScale +") * Math.exp("+utility+")");
 result = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility);
-logger.debug("Result               = " + result);
-logger.debug("_______________________________________________");
-result;
+//logger.debug("Result               = " + result);
+//logger.debug("_______________________________________________");
+return result;
+};
 

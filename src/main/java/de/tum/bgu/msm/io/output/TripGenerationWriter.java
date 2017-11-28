@@ -35,10 +35,10 @@ public class TripGenerationWriter {
             pwAttr.print("," + purpose + "A");
         }
 
-        Map<Integer, Map<Purpose, Integer>> tripProdByZoneAndPurp = new HashMap<>();
+        Map<Integer, Map<Purpose, Integer>> tripProdByZoneAndPurp = new HashMap<>(dataSet.getZones().size());
 
         for(Integer zoneId: dataSet.getZones().keySet()) {
-            Map<Purpose, Integer> initialValues = new HashMap<>();
+            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.values().length);
             for(Purpose purpose: Purpose.values()) {
                 initialValues.put(purpose, 0);
             }
@@ -79,7 +79,9 @@ public class TripGenerationWriter {
             File dir = new File("scenOutput/" + MitoModel.getScenarioName() + "/tripGeneration");
             if(!dir.exists()){
                 boolean directoryCreated = dir.mkdir();
-                if (!directoryCreated) logger.warn("Could not create directory for trip gen output: " + dir.toString());
+                if (!directoryCreated) {
+                    logger.warn("Could not create directory for trip gen output: " + dir.toString());
+                }
             }
             fileName = "scenOutput/" + MitoModel.getScenarioName() + "/tripGeneration/" + fileName;
         }
