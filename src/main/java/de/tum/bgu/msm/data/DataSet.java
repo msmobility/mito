@@ -36,6 +36,9 @@ public class DataSet {
 
     public void setTravelDistances(TravelDistances travelDistances){this.travelDistances = travelDistances;}
 
+    public Map<String, TravelTimes> getTravelTimes() {
+        return Collections.unmodifiableMap(travelTimes);
+    }
 
     public TravelTimes getTravelTimes(String mode) {
         return this.travelTimes.get(mode);

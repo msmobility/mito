@@ -1,13 +1,10 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
 
-import de.tum.bgu.msm.resources.Purpose;
+
 import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
@@ -19,7 +16,6 @@ public class ModeChoice extends Module {
     private final static Logger logger = Logger.getLogger(ModeChoice.class);
 
     private final ModeChoiceJSCalculator calculator;
-
 
     public ModeChoice(DataSet dataSet) {
         super(dataSet);
@@ -45,8 +41,6 @@ public class ModeChoice extends Module {
                 }
             }
         }
-
-
     }
 
     private void assignMode() {

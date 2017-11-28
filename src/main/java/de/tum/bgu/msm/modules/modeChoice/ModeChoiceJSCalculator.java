@@ -3,13 +3,11 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Zone;
-import de.tum.bgu.msm.resources.Purpose;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
 import java.io.Reader;
-import java.util.Map;
 
 public class ModeChoiceJSCalculator extends JavaScriptCalculator<Double[]>{
 
@@ -37,7 +35,7 @@ public class ModeChoiceJSCalculator extends JavaScriptCalculator<Double[]>{
     public void setAreaTypesAndDistanceToTransit(MitoTrip trip){
         bindings.put("distanceToNearestTransitStop", trip.getTripOrigin().getDistanceToNearestTransitStop() );
         bindings.put("areaTypeHBW", trip.getTripOrigin().getAreaTypeHBWModeChoice());
-        bindings.put("areaTypeNHBO", trip.getTripOrigin().getAreaTypeNHBOmodeChoice());
+        bindings.put("areaTypeNHBO", trip.getTripOrigin().getAreaTypeNHBOModeChoice());
     }
 
     /*public void setAreaTypes(Map<String, String> areaTypes){

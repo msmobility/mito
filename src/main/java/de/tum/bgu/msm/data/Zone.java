@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeHBWModeChoice;
-import de.tum.bgu.msm.data.areaTypesForModeChoice.AreaTypeNHBOModeChoice;
 import org.apache.log4j.Logger;
 
 import java.util.EnumMap;
@@ -33,8 +31,8 @@ public class Zone {
 
     private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
 
-    private AreaTypeHBWModeChoice areaTypeHBWModeChoice;
-    private AreaTypeNHBOModeChoice areaTypeNHBOmodeChoice;
+    private AreaTypeForModeChoice areaTypeHBWModeChoice;
+    private AreaTypeForModeChoice areaTypeNHBOmodeChoice;
 
     private float distanceToNearestTransitStop;
 
@@ -44,15 +42,13 @@ public class Zone {
         this.areaType = areaType;
     }
 
-    //public Map<String, String> getAreaTypesForModeChoice() {return Collections.unmodifiableMap(areaTypesForModeChoice);}
+    public AreaTypeForModeChoice getAreaTypeHBWModeChoice() {return areaTypeHBWModeChoice;}
 
-    public AreaTypeHBWModeChoice getAreaTypeHBWModeChoice() {return areaTypeHBWModeChoice;}
+    public void setAreaTypeHBWModeChoice(AreaTypeForModeChoice areaTypeHBWModeChoice){this.areaTypeHBWModeChoice = areaTypeHBWModeChoice;}
 
-    public void setAreaTypeHBWModeChoice(AreaTypeHBWModeChoice areaTypeHBWModeChoice){this.areaTypeHBWModeChoice = areaTypeHBWModeChoice;}
+    public AreaTypeForModeChoice getAreaTypeNHBOModeChoice() {return areaTypeNHBOmodeChoice;}
 
-    public AreaTypeNHBOModeChoice getAreaTypeNHBOmodeChoice() {return areaTypeNHBOmodeChoice;}
-
-    public void setAreaTypeNHBOmodeChoice(AreaTypeNHBOModeChoice areaTypeNHBOmodeChoice){this.areaTypeNHBOmodeChoice = areaTypeNHBOmodeChoice;}
+    public void setAreaTypeNHBOModeChoice(AreaTypeForModeChoice areaTypeNHBOModeChoice){this.areaTypeNHBOmodeChoice = areaTypeNHBOModeChoice;}
 
     public float getDistanceToNearestTransitStop() {return distanceToNearestTransitStop;}
 
