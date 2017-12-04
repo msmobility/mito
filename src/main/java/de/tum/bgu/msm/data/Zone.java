@@ -22,11 +22,6 @@ public class Zone {
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
 
-    private float autoAccessibilityHouseholds = 0;
-    private float autoAccessibilityRetail = 0;
-    private float autoAccessibilityOther = 0;
-    private float transitAccessibilityOther = 0;
-
     private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
 
@@ -86,38 +81,6 @@ public class Zone {
 
     public int getTotalEmpl() {
         return this.employeesByType.size();
-    }
-
-    public float getAutoAccessibilityHouseholds() {
-        return autoAccessibilityHouseholds;
-    }
-
-    public void setAutoAccessibilityHouseholds(float autoAccessibilityHouseholds) {
-        this.autoAccessibilityHouseholds = autoAccessibilityHouseholds;
-    }
-
-    public float getAutoAccessibilityRetail() {
-        return autoAccessibilityRetail;
-    }
-
-    public void setAutoAccessibilityRetail(float autoAcessibilityRetail) {
-        this.autoAccessibilityRetail = autoAcessibilityRetail;
-    }
-
-    public float getAutoAccessibilityOther() {
-        return autoAccessibilityOther;
-    }
-
-    public void setAutoAccessibilityOther(float autoAcessibilityOther) {
-        this.autoAccessibilityOther = autoAcessibilityOther;
-    }
-
-    public float getTransitAccessibilityOther() {
-        return transitAccessibilityOther;
-    }
-
-    public void setTransitAccessibilityOther(float transitAcessibilityOther) {
-        this.transitAccessibilityOther = transitAcessibilityOther;
     }
 
     public void setTripAttractionRate(Purpose purpose, double tripAttractionRate) {

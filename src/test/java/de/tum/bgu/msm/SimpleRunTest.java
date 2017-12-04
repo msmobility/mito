@@ -1,13 +1,11 @@
 package de.tum.bgu.msm;
 
 import com.pb.common.matrix.IdentityMatrix;
-import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.InputFeed;
 import de.tum.bgu.msm.resources.Implementation;
-import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,9 +33,6 @@ public class SimpleRunTest {
         Map<Integer, Zone> zones = new HashMap<>();
         zones.put(1, new Zone(1, 10, AreaType.RURAL));
 
-        Matrix autoTravelTimes = new IdentityMatrix(2);
-        Matrix transitTravelTimes = new IdentityMatrix(2);
-
         Map<Integer, MitoHousehold> households = new HashMap<>();
         MitoHousehold household = new MitoHousehold(1, 1, 1, zones.get(1));
         households.put(1, household);
@@ -49,8 +44,8 @@ public class SimpleRunTest {
         household.addPerson(person2);
 
         Map<String, TravelTimes> map = new LinkedHashMap<>();
-        map.put("car", new MatrixTravelTimes(autoTravelTimes));
-        map.put("pt", new MatrixTravelTimes(transitTravelTimes));
+        map.put("car", new MatrixTravelTimes(new IdentityMatrix(1)));
+        map.put("pt", new MatrixTravelTimes(new IdentityMatrix(1)));
         InputFeed feed = new InputFeed(zones, map, households);
         model.feedData(feed);
         testSetInput();
@@ -61,8 +56,7 @@ public class SimpleRunTest {
         Assert.assertEquals(1, model.getTravelDemand().getHouseholds().size());
         Assert.assertEquals(2, model.getTravelDemand().getPersons().size());
         Assert.assertNotNull(model.getTravelDemand().getSurvey());
-        Assert.assertEquals(1., model.getTravelDemand().getTravelTimes("car").getTravelTimeFromTo(1, 1), 0.);
-
+        Assert.assertEquals(1., model.getTravelDemand().getTravelTimes("car").getTravelTime(1, 1), 0.);
         model.runModel();
     }
 }

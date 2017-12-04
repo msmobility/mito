@@ -14,9 +14,9 @@ public abstract class OMXReader extends AbstractInputReader{
         super(dataSet);
     }
 
-    protected Matrix readAndConvertToMatrix(String fileName, String matrixName) {
+    protected Matrix readAndConvertToMatrix(String fileName, String matrixName, String lookupName) {
         OmxFile travelTimeOmx = new OmxFile(fileName);
         travelTimeOmx.openReadOnly();
-        return MitoUtil.convertOmxToMatrix(travelTimeOmx.getMatrix(matrixName));
+        return MitoUtil.convertOmxToMatrix(travelTimeOmx.getMatrix(matrixName), travelTimeOmx.getLookup(lookupName));
     }
 }

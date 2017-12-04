@@ -1,15 +1,15 @@
 package de.tum.bgu.msm.io.output;
 
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.charts.histogram.Histogram;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Methods to summarize model results
@@ -70,4 +70,25 @@ public class SummarizeData {
     }
 
 
+    private static void writeHistogram(DataSet dataSet, Purpose purpose) {
+        List<Double> trips = new ArrayList<>();
+        for (MitoTrip trip : dataSet.getTrips().values()) {
+            if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
+                trips.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+            }
+        }
+        double[] travelTimesArray = new double[trips.size()];
+        int i = 0;
+        for (Double value : trips) {
+            travelTimesArray[i] = value;
+            i++;
+        }
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 1, 80);
+    }
+
+    public static void writeHistograms(DataSet dataSet) {
+        for(Purpose purpose: Purpose.values()) {
+            writeHistogram(dataSet, purpose);
+        }
+    }
 }

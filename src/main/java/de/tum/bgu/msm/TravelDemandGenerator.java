@@ -42,5 +42,6 @@ public class TravelDemandGenerator {
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
+        SummarizeData.writeHistograms(dataSet);
     }
 }

@@ -39,14 +39,13 @@ public class UtilityMatrixFunction implements ConcurrentFunction {
         long counter = 0;
         for (Zone origin : zones.values()) {
             for (Zone destination : zones.values()) {
-                final double travelTimeFromTo = travelTimes.getTravelTimeFromTo(origin.getZoneId(), destination.getZoneId());
-                double utility = getUtility(destination, travelTimeFromTo);
+                final double utility = getUtility(destination, travelTimes.getTravelTime(origin.getZoneId(), destination.getZoneId()));
                 if (Double.isInfinite(utility)) {
                     throw new RuntimeException("Infinite utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination +
                             " | Purpose: " + purpose);
                 }
-                utilityMatrix.put(origin.getZoneId(), destination.getZoneId(), /*Math.exp(*/utility);
+                utilityMatrix.put(origin.getZoneId(), destination.getZoneId(), utility);
                 if (LongMath.isPowerOfTwo(counter)) {
                     logger.info(counter + " OD pairs done for purpose " + purpose);
                 }
