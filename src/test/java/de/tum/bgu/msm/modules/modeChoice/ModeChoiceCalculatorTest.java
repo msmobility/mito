@@ -46,12 +46,12 @@ public class ModeChoiceCalculatorTest {
         travelTimeByMode.put("bus", 30.);
         travelTimeByMode.put("tramMetro", 25.);
         travelTimeByMode.put("train", 40.);
-        for(int i= 0; i< 1000000; i ++) {
+        //for(int i= 0; i< 1000000; i ++) {
             double[] result = calculator.calculateHBSProbabilities(hh, pp, trip, travelTimeByMode, 5.);
+        //}
+        for(int i = 0; i < result.length; i++) {
+            Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
         }
-//        for(int i = 0; i < result.length; i++) {
-//            Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
-//        }
 
     }
 
