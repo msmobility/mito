@@ -2,6 +2,7 @@ package de.tum.bgu.msm.data;
 
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
+import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import org.apache.log4j.Logger;
 
@@ -14,6 +15,7 @@ public class DataSet {
     private static final Logger logger = Logger.getLogger(DataSet.class);
 
     private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
+    private TravelDistances travelDistances;
 
     private TravelSurvey<? extends SurveyRecord> survey;
 
@@ -28,6 +30,14 @@ public class DataSet {
 
     public void setSurvey(TravelSurvey<? extends SurveyRecord> survey) {
         this.survey = survey;
+    }
+
+    public TravelDistances getTravelDistances(){return this.travelDistances;}
+
+    public void setTravelDistances(TravelDistances travelDistances){this.travelDistances = travelDistances;}
+
+    public Map<String, TravelTimes> getTravelTimes() {
+        return Collections.unmodifiableMap(travelTimes);
     }
 
     public TravelTimes getTravelTimes(String mode) {

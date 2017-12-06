@@ -29,4 +29,13 @@ public class Properties {
     public static final String ACCESSIBILITY_BETA = "accessibility.beta";
 
     public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
+
+    public static final String AUTO_TRAVEL_TIME_SKIM = "auto.travelTime";
+    public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
+    public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";
+    public static final String TRAIN_TRAVEL_TIME_SKIM = "train.travelTime";
+    public static final String TRAVEL_DISTANCE_SKIM = "auto.travelDistance";
+    public static final String AREA_TYPES_AND_TRANSIT_DISTANCE = "areaTypes.distToTransit";
+
+
 }

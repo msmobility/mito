@@ -1,0 +1,436 @@
+nestingCoefficient = 0.25;
+
+VOT_1500 = 4.63;
+VOT_5600 = 8.94;
+VOT_7000 = 12.15;
+
+fuelCostEurosPerKm = 0.07;
+transitFareEurosPerKm = 0.12;
+
+///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
+
+interceptAutoD_HBW = 0;
+ageAutoD_HBW = 0;
+maleAutoD_HBW = 0;
+driversLicenseAutoD_HBW = 0;
+hhSizeAutoD_HBW = 0;
+hhAutosAutoD_HBW = 0;
+distToTransitAutoD_HBW = 0;
+coreCityAutoD_HBW = 1;
+mediumSizedCityAutoD_HBW = 0;
+townOrRuralCommunityAutoD_HBW = 0;
+generalisedCostAutoD_HBW = -0.00877;
+
+interceptAutoP_HBW = 0.636;
+ageAutoP_HBW = -0.00368;
+maleAutoP_HBW = -0.162;
+driversLicenseAutoP_HBW = -1.03;
+hhSizeAutoP_HBW = 0.0634;
+hhAutosAutoP_HBW = -0.159;
+distToTransitAutoP_HBW = 0;
+coreCityAutoP_HBW = 0;
+mediumSizedCityAutoP_HBW = 0;
+townOrRuralCommunityAutoP_HBW = 0.071;
+generalisedCostAutoP_HBW = -0.00877;
+
+interceptBicycle_HBW = 2.98;
+ageBicycle_HBW = 0;
+maleBicycle_HBW = 0.215;
+driversLicenseBicycle_HBW = -1.86;
+hhSizeBicycle_HBW = 0.245;
+hhAutosBicycle_HBW = -1.11;
+distToTransitBicycle_HBW = 0;
+coreCityBicycle_HBW = 0;
+mediumSizedCityBicycle_HBW = -0.291;
+townOrRuralCommunityBicycle_HBW = -0.392;
+tripLengthBicycle_HBW = -0.317;
+
+interceptBus_HBW = 2.95;
+ageBus_HBW = -0.0158;
+maleBus_HBW = -0.275;
+driversLicenseBus_HBW = -2.25;
+hhSizeBus_HBW = 0.166;
+hhAutosBus_HBW = -1.27;
+distToTransitBus_HBW = -0.363;
+coreCityBus_HBW = 0;
+mediumSizedCityBus_HBW = -0.697;
+townOrRuralCommunityBus_HBW = -0.857;
+generalisedCostBus_HBW = -0.00877;
+
+interceptTrain_HBW = 2.87;
+ageTrain_HBW = -0.0173;
+maleTrain_HBW = -0.253;
+driversLicenseTrain_HBW = -2.09;
+hhSizeTrain_HBW = 0.176;
+hhAutosTrain_HBW = -1.26;
+distToTransitTrain_HBW = -0.389;
+coreCityTrain_HBW = 0;
+mediumSizedCityTrain_HBW = -0.75;
+townOrRuralCommunityTrain_HBW = -0.876;
+generalisedCostTrain_HBW = -0.00877;
+
+interceptTramMetro_HBW = 3.03;
+ageTramMetro_HBW = -0.0139;
+maleTramMetro_HBW = -0.184;
+driversLicenseTramMetro_HBW = -2.14;
+hhSizeTramMetro_HBW = 0.151;
+hhAutosTramMetro_HBW = -1.29;
+distToTransitTramMetro_HBW = -0.403;
+coreCityTramMetro_HBW = 0;
+mediumSizedCityTramMetro_HBW = -1.05;
+townOrRuralCommunityTramMetro_HBW = -1.22;
+generalisedCostTramMetro_HBW = -0.00877;
+
+interceptWalk_HBW = 5.84;
+ageWalk_HBW = 0;
+maleWalk_HBW = 0;
+driversLicenseWalk_HBW = -2.16;
+hhSizeWalk_HBW = 0;
+hhAutosWalk_HBW = -0.727;
+distToTransitWalk_HBW = 0;
+coreCityWalk_HBW = 0;
+mediumSizedCityWalk_HBW = -0.592;
+townOrRuralCommunityWalk_HBW = -0.886;
+tripLengthWalk_HBW = -2.02;
+
+var calculateHBWProbabilities = function(hh, person, trip, travelTimeByMode, travelDistance){
+
+timeAutoD = travelTimeByMode.get("autoD");
+timeAutoP =  travelTimeByMode.get("autoP");
+timeBus =  travelTimeByMode.get("bus");
+timeTrain =  travelTimeByMode.get("train");
+timeTramMetro =  travelTimeByMode.get("tramMetro");
+income = hh.getIncome();
+age = person.getAge();
+gender = person.getGender();
+driversLicense = person.hasDriversLicense();
+hhSize = hh.getHhSize();
+hhAutos = hh.getAutos();
+distToTransit = trip.getTripOrigin().getDistanceToNearestTransitStop();
+areaType = trip.getTripOrigin().getAreaTypeHBWModeChoice();
+
+if(income/12 <= 1500){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_1500
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_1500
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_1500
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_1500
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_1500
+} else if (income/12 > 1500 & income/12 <= 5600){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_5600
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_5600
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_5600
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_5600
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_5600
+} else if (income/12 > 5600){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_7000
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_7000
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_7000
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_7000
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_7000
+}
+
+utilityAutoD = interceptAutoD_HBW + ageAutoD_HBW*age + maleAutoD_HBW*(gender.name().equals("MALE")) + driversLicenseAutoD_HBW*driversLicense + hhSizeAutoD_HBW*hhSize +
+                hhAutosAutoD_HBW*hhAutos + distToTransitAutoD_HBW*distToTransit + coreCityAutoD_HBW*(areaType.name().equals("HBW_coreCity")) +
+                mediumSizedCityAutoD_HBW*(areaType.name().equals("HBW_mediumSizedCity")) + townOrRuralCommunityAutoD_HBW*(areaType.name().equals("HBW_townOrRural")) +
+                generalisedCostAutoD_HBW*gcAutoD;
+
+utilityAutoP = interceptAutoP_HBW + ageAutoP_HBW*age + maleAutoP_HBW*(gender.name().equals("MALE")) + driversLicenseAutoP_HBW*driversLicense + hhSizeAutoP_HBW*hhSize +
+                hhAutosAutoP_HBW*hhAutos + distToTransitAutoP_HBW*distToTransit + coreCityAutoP_HBW*(areaType.name().equals("HBW_coreCity")) +
+                mediumSizedCityAutoP_HBW*(areaType.name().equals("HBW_mediumSizedCity")) + townOrRuralCommunityAutoP_HBW*(areaType.name().equals("HBW_townOrRural")) +
+                generalisedCostAutoP_HBW*gcAutoP;
+
+utilityBicycle = interceptBicycle_HBW + ageBicycle_HBW*age + maleBicycle_HBW*(gender.name().equals("MALE")) + driversLicenseBicycle_HBW*driversLicense + hhSizeBicycle_HBW*hhSize +
+                hhAutosBicycle_HBW*hhAutos + distToTransitBicycle_HBW*distToTransit + coreCityBicycle_HBW*(areaType.name().equals("HBW_coreCity")) +
+                mediumSizedCityBicycle_HBW*(areaType.name().equals("HBW_mediumSizedCity")) + townOrRuralCommunityBicycle_HBW*(areaType.name().equals("HBW_townOrRural")) +
+                tripLengthBicycle_HBW*travelDistance;
+
+utilityBus = interceptBus_HBW + ageBus_HBW*age + maleBus_HBW*(gender.name().equals("MALE")) + driversLicenseBus_HBW*driversLicense + hhSizeBus_HBW*hhSize +
+                hhAutosBus_HBW*hhAutos + distToTransitBus_HBW*distToTransit + coreCityBus_HBW*(areaType.name().equals("HBW_coreCity")) +
+                mediumSizedCityBus_HBW*(areaType.name().equals("HBW_mediumSizedCity")) + townOrRuralCommunityBus_HBW*(areaType.name().equals("HBW_townOrRural")) +
+                generalisedCostBus_HBW*gcBus;
+
+utilityTrain = interceptTrain_HBW + ageTrain_HBW*age + maleTrain_HBW*(gender.name().equals("MALE")) + driversLicenseTrain_HBW*driversLicense + hhSizeTrain_HBW*hhSize +
+                hhAutosTrain_HBW*hhAutos + distToTransitTrain_HBW*distToTransit + coreCityTrain_HBW*(areaType.name().equals("HBW_coreCity")) +
+                mediumSizedCityTrain_HBW*(areaType.name().equals("HBW_mediumSizedCity")) + townOrRuralCommunityTrain_HBW*(areaType.name().equals("HBW_townOrRural")) +
+                generalisedCostTrain_HBW*gcTrain;
+
+utilityTramMetro = interceptTramMetro_HBW + ageTramMetro_HBW*age + maleTramMetro_HBW*(gender.name().equals("MALE")) + driversLicenseTramMetro_HBW*driversLicense + hhSizeTramMetro_HBW*hhSize +
+                hhAutosTramMetro_HBW*hhAutos + distToTransitTramMetro_HBW*distToTransit + coreCityTramMetro_HBW*(areaType.name().equals("HBW_coreCity")) +
+                mediumSizedCityTramMetro_HBW*(areaType.name().equals("HBW_mediumSizedCity")) + townOrRuralCommunityTramMetro_HBW*(areaType.name().equals("HBW_townOrRural")) +
+                generalisedCostTramMetro_HBW*gcTramMetro;
+
+utilityWalk = interceptWalk_HBW + ageWalk_HBW*age + maleWalk_HBW*(gender.name().equals("MALE")) + driversLicenseWalk_HBW*driversLicense + hhSizeWalk_HBW*hhSize +
+                hhAutosWalk_HBW*hhAutos + distToTransitWalk_HBW*distToTransit + coreCityWalk_HBW*(areaType.name().equals("HBW_coreCity")) +
+                mediumSizedCityWalk_HBW*(areaType.name().equals("HBW_mediumSizedCity")) + townOrRuralCommunityWalk_HBW*(areaType.name().equals("HBW_townOrRural")) +
+                tripLengthWalk_HBW*travelDistance;
+
+logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
+
+probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+
+}
+
+
+///////////////////////////////////////////////// HBE Mode Choice /////////////////////////////////////////////////////
+
+interceptAutoD_HBE = 0;
+maleAutoD_HBE = 0;
+driversLicenseAutoD_HBE = 0;
+hhAutosAutoD_HBE = 0;
+distToTransitAutoD_HBE = 0;
+generalisedCostAutoD_HBE = -0.0025;
+
+interceptAutoP_HBE = 1.25;
+maleAutoP_HBE = -0.167;
+driversLicenseAutoP_HBE = -1.26;
+hhAutosAutoP_HBE = -0.113;
+distToTransitAutoP_HBE = 0;
+generalisedCostAutoP_HBE = -0.0025;
+
+interceptBicycle_HBE = 2.82;
+maleBicycle_HBE = 0;
+driversLicenseBicycle_HBE = -0.428;
+hhAutosBicycle_HBE = -0.56;
+distToTransitBicycle_HBE = 0;
+tripLengthBicycle_HBE = -0.419;
+
+interceptBus_HBE = 2.15;
+maleBus_HBE = -0.135;
+driversLicenseBus_HBE = -1.23;
+hhAutosBus_HBE = -0.517;
+distToTransitBus_HBE = -0.276;
+generalisedCostBus_HBE = -0.0025;
+
+interceptTrain_HBE = 1.73;
+maleTrain_HBE = -0.147;
+driversLicenseTrain_HBE = -0.748;
+hhAutosTrain_HBE = -0.556;
+distToTransitTrain_HBE = -0.261;
+generalisedCostTrain_HBE = -0.0025;
+
+interceptTramMetro_HBE = 1.97;
+maleTramMetro_HBE = -0.512;
+driversLicenseTramMetro_HBE = -0.766;
+hhAutosTramMetro_HBE = -0.696;
+distToTransitTramMetro_HBE = -0.463;
+generalisedCostTramMetro_HBE = -0.0025;
+
+interceptWalk_HBE = 5.14;
+maleWalk_HBE = 0;
+driversLicenseWalk_HBE = -0.545;
+hhAutosWalk_HBE = -0.677;
+distToTransitWalk_HBE = 0;
+tripLengthWalk_HBE = -1.71;
+
+var calculateHBEProbabilities = function(hh, person, trip, travelTimeByMode, travelDistance){
+
+timeAutoD = travelTimeByMode.get("autoD");
+timeAutoP =  travelTimeByMode.get("autoP");
+timeBus =  travelTimeByMode.get("bus");
+timeTrain =  travelTimeByMode.get("train");
+timeTramMetro =  travelTimeByMode.get("tramMetro");
+income = hh.getIncome();
+gender = person.getGender();
+driversLicense = person.hasDriversLicense();
+hhAutos = hh.getAutos();
+distToTransit = trip.getTripOrigin().getDistanceToNearestTransitStop();
+
+if(income/12 <= 1500){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_1500
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_1500
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_1500
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_1500
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_1500
+} else if (income/12 > 1500 & income/12 <= 5600){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_5600
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_5600
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_5600
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_5600
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_5600
+} else if (income/12 > 5600){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_7000
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_7000
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_7000
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_7000
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_7000
+}
+
+utilityAutoD = interceptAutoD_HBE + maleAutoD_HBE*(gender.name().equals("MALE")) + driversLicenseAutoD_HBE*driversLicense +
+                hhAutosAutoD_HBE*hhAutos + distToTransitAutoD_HBE*distToTransit + generalisedCostAutoD_HBE*gcAutoD;
+
+utilityAutoP = interceptAutoP_HBE + maleAutoP_HBE*(gender.name().equals("MALE")) + driversLicenseAutoP_HBE*driversLicense +
+                hhAutosAutoP_HBE*hhAutos + distToTransitAutoP_HBE*distToTransit + generalisedCostAutoP_HBE*gcAutoP;
+
+utilityBicycle = interceptBicycle_HBE + maleBicycle_HBE*(gender.name().equals("MALE")) + driversLicenseBicycle_HBE*driversLicense +
+                hhAutosBicycle_HBE*hhAutos + distToTransitBicycle_HBE*distToTransit + tripLengthBicycle_HBE*travelDistance;
+
+utilityBus = interceptBus_HBE + maleBus_HBE*(gender.name().equals("MALE")) + driversLicenseBus_HBE*driversLicense +
+                hhAutosBus_HBE*hhAutos + distToTransitBus_HBE*distToTransit + generalisedCostBus_HBE*gcBus;
+
+utilityTrain = interceptTrain_HBE + maleTrain_HBE*(gender.name().equals("MALE")) + driversLicenseTrain_HBE*driversLicense +
+                hhAutosTrain_HBE*hhAutos + distToTransitTrain_HBE*distToTransit + generalisedCostTrain_HBE*gcTrain;
+
+utilityTramMetro = interceptTramMetro_HBE + maleTramMetro_HBE*(gender.name().equals("MALE")) + driversLicenseTramMetro_HBE*driversLicense +
+                hhAutosTramMetro_HBE*hhAutos + distToTransitTramMetro_HBE*distToTransit + generalisedCostTramMetro_HBE*gcTramMetro;
+
+utilityWalk = interceptWalk_HBE + maleWalk_HBE*(gender.name().equals("MALE")) + driversLicenseWalk_HBE*driversLicense +
+                hhAutosWalk_HBE*hhAutos + distToTransitWalk_HBE*distToTransit + tripLengthWalk_HBE*travelDistance;
+
+logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
+
+probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+
+}
+
+
+///////////////////////////////////////////////// HBS Mode Choice /////////////////////////////////////////////////////
+
+interceptAutoD_HBS = 0;
+maleAutoD_HBS = 0;
+driversLicenseAutoD_HBS = 0;
+hhAutosAutoD_HBS = 0;
+distToTransitAutoD_HBS = 0;
+hhChildrenAutoD_HBS = 0;
+generalisedCostSqAutoD_HBS = -0.00000682;
+
+interceptAutoP_HBS = 1.27;
+maleAutoP_HBS = -0.471;
+driversLicenseAutoP_HBS = -1.43;
+hhAutosAutoP_HBS = -0.03;
+distToTransitAutoP_HBS = 0;
+hhChildrenAutoP_HBS = -0.0509;
+generalisedCostSqAutoP_HBS = -0.00000682;
+
+interceptBicycle_HBS = 2.58;
+maleBicycle_HBS = -0.137;
+driversLicenseBicycle_HBS = -1.86;
+hhAutosBicycle_HBS = -0.812;
+distToTransitBicycle_HBS = 0;
+hhChildrenBicycle_HBS = 0;
+tripLengthBicycle_HBS = -0.415;
+
+interceptBus_HBS = 1.8;
+maleBus_HBS = -0.617;
+driversLicenseBus_HBS = -2.43;
+hhAutosBus_HBS = -1.88;
+distToTransitBus_HBS = -0.869;
+hhChildrenBus_HBS = 0;
+generalisedCostSqBus_HBS = -0.00000682;
+
+interceptTrain_HBS = 1.36;
+maleTrain_HBS = -0.471;
+driversLicenseTrain_HBS = -2.46;
+hhAutosTrain_HBS = -1.73;
+distToTransitTrain_HBS = -0.675;
+hhChildrenTrain_HBS = 0;
+generalisedCostSqTrain_HBS = -0.00000682;
+
+interceptTramMetro_HBS = 1.76;
+maleTramMetro_HBS = -0.531;
+driversLicenseTramMetro_HBS = -2.39;
+hhAutosTramMetro_HBS = -1.88;
+distToTransitTramMetro_HBS = -1.02;
+hhChildrenTramMetro_HBS = 0;
+generalisedCostSqTramMetro_HBS = -0.00000682;
+
+interceptWalk_HBS = 5.01;
+maleWalk_HBS = -0.154;
+driversLicenseWalk_HBS = -2.1;
+hhAutosWalk_HBS = -0.863;
+distToTransitWalk_HBS = 0;
+hhChildrenWalk_HBS = -0.174;
+tripLengthWalk_HBS = -1.46;
+
+var calculateHBSProbabilities = function(hh, hhChildren, person, trip, travelTimeByMode, travelDistance){
+
+timeAutoD = travelTimeByMode.get("autoD");
+timeAutoP =  travelTimeByMode.get("autoP");
+timeBus =  travelTimeByMode.get("bus");
+timeTrain =  travelTimeByMode.get("train");
+timeTramMetro =  travelTimeByMode.get("tramMetro");
+income = hh.getIncome();
+gender = person.getGender();
+driversLicense = person.hasDriversLicense();
+hhAutos = hh.getAutos();
+distToTransit = trip.getTripOrigin().getDistanceToNearestTransitStop();
+
+if(income/12 <= 1500){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_1500
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_1500
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_1500
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_1500
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_1500
+} else if (income/12 > 1500 & income/12 <= 5600){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_5600
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_5600
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_5600
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_5600
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_5600
+} else if (income/12 > 5600){
+gcAutoD = timeAutoD + (travelDistance*fuelCostEurosPerKm)/VOT_7000
+gcAutoP = timeAutoP + (travelDistance*fuelCostEurosPerKm)/VOT_7000
+gcBus = timeBus + (travelDistance*transitFareEurosPerKm)/VOT_7000
+gcTrain = timeTrain + (travelDistance*transitFareEurosPerKm)/VOT_7000
+gcTramMetro = timeTramMetro + (travelDistance*transitFareEurosPerKm)/VOT_7000
+}
+
+utilityAutoD = interceptAutoD_HBS + maleAutoD_HBS*(gender.name().equals("MALE")) + driversLicenseAutoD_HBS*driversLicense +
+                hhAutosAutoD_HBS*hhAutos + distToTransitAutoD_HBS*distToTransit + hhChildrenAutoD_HBS*hhChildren + 
+                generalisedCostSqAutoD_HBS*Math.pow(gcAutoD,2);
+
+utilityAutoP = interceptAutoP_HBS + maleAutoP_HBS*(gender.name().equals("MALE")) + driversLicenseAutoP_HBS*driversLicense +
+                hhAutosAutoP_HBS*hhAutos + distToTransitAutoP_HBS*distToTransit + hhChildrenAutoP_HBS*hhChildren +
+                generalisedCostSqAutoP_HBS*Math.pow(gcAutoP,2);
+
+utilityBicycle = interceptBicycle_HBS + maleBicycle_HBS*(gender.name().equals("MALE")) + driversLicenseBicycle_HBS*driversLicense +
+                hhAutosBicycle_HBS*hhAutos + distToTransitBicycle_HBS*distToTransit + hhChildrenBicycle_HBS*hhChildren +
+                tripLengthBicycle_HBS*travelDistance;
+
+utilityBus = interceptBus_HBS + maleBus_HBS*(gender.name().equals("MALE")) + driversLicenseBus_HBS*driversLicense +
+                hhAutosBus_HBS*hhAutos + distToTransitBus_HBS*distToTransit + hhChildrenBus_HBS*hhChildren +
+                generalisedCostSqBus_HBS*Math.pow(gcBus,2);
+
+utilityTrain = interceptTrain_HBS + maleTrain_HBS*(gender.name().equals("MALE")) + driversLicenseTrain_HBS*driversLicense +
+                hhAutosTrain_HBS*hhAutos + distToTransitTrain_HBS*distToTransit + hhChildrenTrain_HBS*hhChildren +
+                generalisedCostSqTrain_HBS*Math.pow(gcTrain,2);
+
+utilityTramMetro = interceptTramMetro_HBS + maleTramMetro_HBS*(gender.name().equals("MALE")) + driversLicenseTramMetro_HBS*driversLicense +
+                hhAutosTramMetro_HBS*hhAutos + distToTransitTramMetro_HBS*distToTransit + hhChildrenTramMetro_HBS*hhChildren +
+                generalisedCostSqTramMetro_HBS*Math.pow(gcTramMetro,2);
+
+utilityWalk = interceptWalk_HBS + maleWalk_HBS*(gender.name().equals("MALE")) + driversLicenseWalk_HBS*driversLicense +
+                hhAutosWalk_HBS*hhAutos + distToTransitWalk_HBS*distToTransit + hhChildrenWalk_HBS*hhChildren +
+                tripLengthWalk_HBS*travelDistance;
+
+logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
+
+probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+
+}

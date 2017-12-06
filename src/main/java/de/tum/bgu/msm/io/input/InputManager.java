@@ -34,6 +34,7 @@ public class InputManager {
         new SchoolEnrollmentReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
         new TravelSurveyReader(dataSet).read();
+        new ModeChoiceInputReader(dataSet).read();
     }
 
     public void readFromFeed(InputFeed feed) {

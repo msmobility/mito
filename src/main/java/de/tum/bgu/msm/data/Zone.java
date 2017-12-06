@@ -25,11 +25,28 @@ public class Zone {
     private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
 
+    private AreaTypeForModeChoice areaTypeHBWModeChoice;
+    private AreaTypeForModeChoice areaTypeNHBOmodeChoice;
+
+    private float distanceToNearestTransitStop;
+
     public Zone(int id, float size, AreaType areaType) {
         this.zoneId = id;
         this.size = size;
         this.areaType = areaType;
     }
+
+    public AreaTypeForModeChoice getAreaTypeHBWModeChoice() {return areaTypeHBWModeChoice;}
+
+    public void setAreaTypeHBWModeChoice(AreaTypeForModeChoice areaTypeHBWModeChoice){this.areaTypeHBWModeChoice = areaTypeHBWModeChoice;}
+
+    public AreaTypeForModeChoice getAreaTypeNHBOModeChoice() {return areaTypeNHBOmodeChoice;}
+
+    public void setAreaTypeNHBOModeChoice(AreaTypeForModeChoice areaTypeNHBOModeChoice){this.areaTypeNHBOmodeChoice = areaTypeNHBOModeChoice;}
+
+    public float getDistanceToNearestTransitStop() {return distanceToNearestTransitStop;}
+
+    public void setDistanceToNearestTransitStop(float distanceToNearestTransitStop) {this.distanceToNearestTransitStop = distanceToNearestTransitStop;}
 
     public int getZoneId() {
         return this.zoneId;
