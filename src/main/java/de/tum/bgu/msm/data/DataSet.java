@@ -101,14 +101,6 @@ public class DataSet {
     }
 
     public synchronized void addTrip(final MitoTrip trip) {
-        MitoTrip test = this.trips.get(trip.getTripId());
-        if(test != null) {
-            if(test.equals(trip)) {
-                logger.warn("Trip " + trip.getTripId() + " was already added to data set.");
-                return;
-            }
-            throw new IllegalArgumentException("Trip " +trip.getTripId() + " already exists!");
-        }
         trips.put(trip.getTripId(), trip);
     }
 

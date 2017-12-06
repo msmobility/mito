@@ -30,12 +30,12 @@ public class SkimsReader extends OMXReader {
     }
 
     private void readHighwaySkims() {
-        Matrix timeSkimAutos = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "HOVTime");
+        Matrix timeSkimAutos = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "mat1", "lookup1");
         dataSet.addTravelTimeForMode("car", new MatrixTravelTimes(timeSkimAutos));
     }
 
     private void readTransitSkims() {
-        Matrix timeSkimTransit = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRANSIT_PEAK_SKIM), "CheapJrnyTime");
+        Matrix timeSkimTransit = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRANSIT_PEAK_SKIM), "CheapJrnyTime", "lookup1");
         dataSet.addTravelTimeForMode("pt", new MatrixTravelTimes(timeSkimTransit));
     }
 

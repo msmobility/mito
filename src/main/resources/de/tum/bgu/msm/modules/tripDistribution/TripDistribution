@@ -1,3 +1,8 @@
+travelTimeParamHbs = -0.009;
+impedanceParamHbs = 12.4;
+attractionParamHbs = 0.5;
+
+
 var calculateHBW = function (travelTime, totalEmployees) {
     intercept = 0.3;
     travelTimeParam = -0.01;
@@ -12,7 +17,7 @@ var calculateHBW = function (travelTime, totalEmployees) {
         attraction = Math.log(totalEmployees);
     }
     attractionImpact = attraction * attractionParam;
-    return intercept + impedanceImpact + attractionImpact;
+    return Math.exp(intercept + impedanceImpact + attractionImpact);
 }
 
 var calculateHBE = function (travelTime, schoolEnrollment) {
@@ -29,25 +34,17 @@ var calculateHBE = function (travelTime, schoolEnrollment) {
     }
 
     attractionImpact = attraction * attractionParam;
-    return intercept + impedanceImpact + attractionImpact;
+     return Math.exp(intercept + impedanceImpact + attractionImpact);
 }
 
 var calculateHBS  = function (travelTime, retailEmployees) {
-    intercept = 0.3;
-    travelTimeParam = -0.01;
-    impedanceParam = 0.01;
-    attractionParam = 0.1;
-
-    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
-
+    impedanceImpact = impedanceParamHbs * Math.exp(travelTimeParamHbs * travelTime);
     if(retailEmployees == 0) {
-        attraction = 0;
+        attractionImpact = 0;
     } else {
-        attraction = Math.log(retailEmployees);
+        attractionImpact = Math.log(retailEmployees) * attractionParamHbs;
     }
-
-    attractionImpact = attraction * attractionParam;
-    return intercept + impedanceImpact + attractionImpact;
+    return Math.exp(impedanceImpact + attractionImpact);
 }
 
 var calculateHBO = function (travelTime, households, adminEmployees, serviceEmployees) {
@@ -69,7 +66,7 @@ var calculateHBO = function (travelTime, households, adminEmployees, serviceEmpl
         attraction += Math.log(serviceEmployees);
     }
     attractionImpact = attraction * attractionParam;
-    return intercept + impedanceImpact + attractionImpact;
+    return Math.exp(intercept + impedanceImpact + attractionImpact);
 }
 
 var calculateNHBW = function (travelTime, households, adminEmployees, serviceEmployees, retailEmployees) {
@@ -94,7 +91,7 @@ var calculateNHBW = function (travelTime, households, adminEmployees, serviceEmp
         attraction += Math.log(adminEmployees);
     }
     attractionImpact = attraction * attractionParam;
-    return intercept + impedanceImpact + attractionImpact;
+    return Math.exp(intercept + impedanceImpact + attractionImpact);
 }
 
 var calculateNHBO = function (travelTime, households, adminEmployees, serviceEmployees, retailEmployees) {
@@ -119,7 +116,7 @@ var calculateNHBO = function (travelTime, households, adminEmployees, serviceEmp
         attraction += Math.log(adminEmployees);
     }
     attractionImpact = attraction * attractionParam;
-    return intercept + impedanceImpact + attractionImpact;
+    return Math.exp(intercept + impedanceImpact + attractionImpact);
 }
 
 function log() {

@@ -2,11 +2,12 @@ package de.tum.bgu.msm.util;
 
 import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Gender;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import omx.OmxLookup;
 import omx.OmxMatrix;
 import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
@@ -168,6 +169,8 @@ public class MitoUtil {
     }
 
 
+
+
     static public String customFormat(String pattern, double value) {
         // function copied from: http://docs.oracle.com/javase/tutorial/java/data/numberformat.html
         // 123456.789 ###,###.###  123,456.789 The pound sign (#) denotes a digit, the comma is a placeholder for the grouping separator, and the period is a placeholder for the decimal separator.
@@ -183,6 +186,19 @@ public class MitoUtil {
     }
 
     public static int select(double[] probabilities, Random random) {
+        // select item based on probabilities (for zero-based double array)
+        double selPos = getSum(probabilities) * random.nextDouble();
+        double sum = 0;
+        for (int i = 0; i < probabilities.length; i++) {
+            sum += probabilities[i];
+            if (sum > selPos) {
+                return i;
+            }
+        }
+        return probabilities.length - 1;
+    }
+
+    public static int select(float[] probabilities, Random random) {
         // select item based on probabilities (for zero-based double array)
         double selPos = getSum(probabilities) * random.nextDouble();
         double sum = 0;
@@ -218,8 +234,7 @@ public class MitoUtil {
                 return entry.getKey();
             }
         }
-        logger.fatal("Error selecting item from weighted probabilities", new RuntimeException());
-        return null;
+        throw new RuntimeException("Error selecting item from weighted probabilities");
     }
 
 
@@ -301,35 +316,31 @@ public class MitoUtil {
     }
 
 
-    public static Matrix convertOmxToMatrix(OmxMatrix omxMatrix) {
-        // convert OMX matrix into java matrix
+    public static Matrix convertOmxToMatrix(OmxMatrix omxMatrix, OmxLookup lookup) {
 
         OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
+        final int[] intLookup = (int[]) lookup.getLookup();
         String name = omxMatrix.getName();
         int[] dimensions = omxMatrix.getShape();
+        Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
         if (type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             float[][] fArray = (float[][]) omxMatrix.getData();
-            Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
-                    mat.setValueAt(i + 1, j + 1, fArray[i][j]);
+                    mat.setValueAt(intLookup[i], intLookup[j], fArray[i][j]);
                 }
             }
-            return mat;
         } else if (type.equals(OmxHdf5Datatype.OmxJavaType.DOUBLE)) {
             double[][] dArray = (double[][]) omxMatrix.getData();
-            Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
                     mat.setValueAt(i + 1, j + 1, (float) dArray[i][j]);
                 }
             }
-            return mat;
         } else {
-            logger.info("OMX Matrix type " + type.toString() + " not yet implemented. Program exits.");
-            System.exit(1);
-            return null;
+            throw new RuntimeException("OMX Matrix type " + type.toString() + " not yet implemented");
         }
+        return mat;
     }
 
     public static int getFemalesForHousehold(MitoHousehold household) {

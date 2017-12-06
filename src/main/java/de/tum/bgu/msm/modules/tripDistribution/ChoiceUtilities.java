@@ -15,7 +15,6 @@ import java.util.Map;
 final class ChoiceUtilities {
 
     private final static Logger logger = Logger.getLogger(ChoiceUtilities.class);
-    private final TravelTimes travelTimes;
 
     Map<Purpose, Table<Integer, Integer, Double>> utilityMatrices = Collections.synchronizedMap(new EnumMap<>(Purpose.class));
     Map<Purpose, AverageBudget> currentAverageTTB = Collections.synchronizedMap(new EnumMap<>(Purpose.class));
@@ -24,7 +23,6 @@ final class ChoiceUtilities {
 
     public ChoiceUtilities(DataSet dataSet) {
         this.dataSet = dataSet;
-        travelTimes = dataSet.getTravelTimes("car");
         logger.info("Creating Utility Expression Calculators for microscopic trip distribution.");
         buildMatrices();
         initializeAverageTTB();
@@ -48,31 +46,6 @@ final class ChoiceUtilities {
         }
         executor.execute();
     }
-
-    /**
-     * Adjusts the utility of every destination for given origin
-     * and purpose to push the current average travel time budget
-     * towards the results from the
-     * {@link de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule}
-     * by scaling each utility with a value >=0.
-     * If the current average distributed budget is lower than the expected
-     * budget, destinations with lower travel times should get a lower utility
-     * and destinations requiring higher travel times should get an increase in
-     * utility.
-     * If the expected budget is lower, updates should be made the other way
-     * round accordingly.
-    */
-    void updateUtilitiesForOriginAndPurpose(int originId, Purpose purpose, int numberOfTrips) {
-        double targetValue = purpose.getAverageBudgetPerHousehold() / numberOfTrips;
-        double actualValue = currentAverageTTB.get(purpose).getBudget() / numberOfTrips;
-        double signum = Math.signum(targetValue - actualValue);
-        utilityMatrices.get(purpose).row(originId).replaceAll((key, value) -> {
-            double travelTime = travelTimes.getTravelTimeFromTo(originId, key);
-            double scale = Math.pow((travelTime +1) / (targetValue + 1), 0.015*(targetValue-actualValue));
-            return value * scale;
-        });
-    }
-
 
     public void addBudgetForPurpose(Purpose purpose, double budget) {
         currentAverageTTB.get(purpose).addBudgetAndUpdate(budget);

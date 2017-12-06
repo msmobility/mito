@@ -39,7 +39,6 @@ public class PersonTripAssignment extends Module {
                         logger.warn("Removing " + trip + " since no person could be assigned.");
                         iterator.remove();
                         dataSet.removeTrip(trip.getTripId());
-
                     }
                 }
             }

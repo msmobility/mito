@@ -15,7 +15,6 @@ public abstract class JavaScriptCalculator<T> {
     protected static final Logger logger = Logger.getLogger(JavaScriptCalculator.class);
 
     protected CompiledScript compiledScript;
-    protected LoggableBindings bindings = new LoggableBindings();
     protected Invocable invocable;
 
 
@@ -24,7 +23,6 @@ public abstract class JavaScriptCalculator<T> {
         String script = readScript(reader);
         logger.debug("Compiling script: " + script);
         compileScript(script);
-        bindings.put("logger", logger);
     }
 
     private String readScript(Reader reader) {
@@ -57,9 +55,6 @@ public abstract class JavaScriptCalculator<T> {
 
     protected T calculate(String function, Object... args) {
         try {
-            if(logger.isDebugEnabled()) {
-                bindings.logValues();
-            }
             return (T) invocable.invokeFunction(function, args);
         } catch (ScriptException e) {
             throw new RuntimeException(e);
