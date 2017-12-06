@@ -11,7 +11,7 @@ public class MatrixTravelDistances implements TravelDistances{
     }
 
     @Override
-    public double getTravelDistanceFromTo(int origin, int destination) {
+    public double getTravelDistance(int origin, int destination) {
         return matrix.getValueAt(origin, destination);
     }
 }

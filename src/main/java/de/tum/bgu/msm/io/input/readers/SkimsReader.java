@@ -40,28 +40,28 @@ public class SkimsReader extends OMXReader {
     }
 
     private void readAutoSkimForModeChoice(){
-        Matrix timeSkimAuto = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_TIME_SKIM),"AutoTravelTime");
+        Matrix timeSkimAuto = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_TIME_SKIM),"HOVTime", "lookup1");
         dataSet.addTravelTimeForMode("autoD", new MatrixTravelTimes(timeSkimAuto));
         dataSet.addTravelTimeForMode("autoP", new MatrixTravelTimes(timeSkimAuto));
     }
 
     private void readBusSkimForModeChoice(){
-        Matrix timeSkimBus = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.BUS_TRAVEL_TIME_SKIM),"BusTravelTime");
+        Matrix timeSkimBus = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.BUS_TRAVEL_TIME_SKIM),"mat1", "lookup1");
         dataSet.addTravelTimeForMode("bus", new MatrixTravelTimes(timeSkimBus));
     }
 
     private void readTramMetroSkimForModeChoice(){
-        Matrix timeSkimTramMetro = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM),"TramMetroTravelTime");
+        Matrix timeSkimTramMetro = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM),"mat1", "lookup1");
         dataSet.addTravelTimeForMode("tramMetro", new MatrixTravelTimes(timeSkimTramMetro));
     }
 
     private void readTrainSkimForModeChoice(){
-        Matrix timeSkimTrain = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM),"TrainTravelTime");
+        Matrix timeSkimTrain = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM),"mat1", "lookup1");
         dataSet.addTravelTimeForMode("train", new MatrixTravelTimes(timeSkimTrain));
     }
 
     private void readTravelDistanceForModeChoice(){
-        Matrix distanceSkim = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRAVEL_DISTANCE_SKIM),"TravelDistance");
+        Matrix distanceSkim = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRAVEL_DISTANCE_SKIM),"mat1", "lookup1");
         dataSet.setTravelDistances(new MatrixTravelDistances(distanceSkim));
     }
 

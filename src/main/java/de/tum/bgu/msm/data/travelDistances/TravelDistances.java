@@ -2,5 +2,5 @@ package de.tum.bgu.msm.data.travelDistances;
 
 public interface TravelDistances {
 
-    double getTravelDistanceFromTo(int origin, int destination);
+    double getTravelDistance(int origin, int destination);
 }

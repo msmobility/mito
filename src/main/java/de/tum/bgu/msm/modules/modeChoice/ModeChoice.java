@@ -50,12 +50,12 @@ public class ModeChoice extends Module {
         for (Purpose purpose : Purpose.values()){
             for (MitoHousehold household : dataSet.getHouseholds().values()){
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)){
-                    travelTimeByMode.put("autoD",dataSet.getTravelTimes("auto").getTravelTimeFromTo(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                    travelTimeByMode.put("autoP",dataSet.getTravelTimes("auto").getTravelTimeFromTo(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                    travelTimeByMode.put("bus",dataSet.getTravelTimes("auto").getTravelTimeFromTo(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                    travelTimeByMode.put("tramMetro",dataSet.getTravelTimes("auto").getTravelTimeFromTo(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                    travelTimeByMode.put("train",dataSet.getTravelTimes("auto").getTravelTimeFromTo(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                    double travelDistance = dataSet.getTravelDistances().getTravelDistanceFromTo(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+                    travelTimeByMode.put("autoD",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                    travelTimeByMode.put("autoP",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                    travelTimeByMode.put("bus",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                    travelTimeByMode.put("tramMetro",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                    travelTimeByMode.put("train",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                    double travelDistance = dataSet.getTravelDistances().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
                     if(purpose.equals("HBW")){
                         double[] probabilities = calculator.calculateHBWProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
                         assignMode();
