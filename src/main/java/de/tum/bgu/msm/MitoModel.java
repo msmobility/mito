@@ -72,7 +72,6 @@ public class MitoModel {
         ttd.generateTravelDemand();
 
         printOutline(startTime);
-        Purpose.clearBudgets();
     }
 
     private void printOutline(long startTime) {

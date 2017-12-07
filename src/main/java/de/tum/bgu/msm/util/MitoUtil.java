@@ -14,10 +14,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Utilities for the Transport in Microsimulation Orchestrator (TIMO)
@@ -237,6 +234,21 @@ public class MitoUtil {
         throw new RuntimeException("Error selecting item from weighted probabilities");
     }
 
+    public static <T> T select(T... objects) {
+        return objects[rand.nextInt(objects.length)];
+    }
+
+    public static <T> T select(Random rand, T... objects) {
+        return objects[rand.nextInt(objects.length)];
+    }
+
+    public static <T> T select(List<T> objects) {
+        return objects.get(rand.nextInt(objects.size()));
+    }
+
+    public static <T> T select(Random rand, List<T> objects) {
+        return objects.get(rand.nextInt(objects.size()));
+    }
 
     public static int[] createIndexArray(int[] array) {
         // create indexArray for array
@@ -318,11 +330,10 @@ public class MitoUtil {
 
     public static Matrix convertOmxToMatrix(OmxMatrix omxMatrix, OmxLookup lookup) {
 
-        OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
+        final OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
         final int[] intLookup = (int[]) lookup.getLookup();
-        String name = omxMatrix.getName();
-        int[] dimensions = omxMatrix.getShape();
-        Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
+        final int[] dimensions = omxMatrix.getShape();
+        final Matrix mat = new Matrix(dimensions[0], dimensions[1]);
         if (type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             float[][] fArray = (float[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
@@ -384,4 +395,5 @@ public class MitoUtil {
     public static Random getRandomObject() {
         return rand;
     }
+
 }

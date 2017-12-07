@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -41,8 +42,12 @@ public class Histogram {
         renderer.setSeriesOutlinePaint(0, Color.white);
         BufferedImage chartImage = chart.createBufferedImage(1600,800);
         logger.info("Writing histogram \"" + title + "\" to " + path);
+        File outputFile = new File(path + ".png");
+        if(outputFile.getParentFile() != null) {
+            outputFile.getParentFile().mkdirs();
+        }
         try {
-            ImageIO.write(chartImage, "png", new BufferedOutputStream(new FileOutputStream(path+".png")));
+            ImageIO.write(chartImage, "png", new BufferedOutputStream(new FileOutputStream(outputFile)));
         } catch (IOException e) {
             e.printStackTrace();
         }

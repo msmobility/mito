@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.personTripAssignment;
 
+import com.google.common.collect.Lists;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -12,6 +13,7 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -33,24 +35,24 @@ public class PersonTripAssignmentTest {
         dataSet.addHousehold(household);
 
         MitoTrip tripHBW = new MitoTrip(1, Purpose.HBW);
-        household.addTrip(tripHBW);
+        household.setTripsByPurpose(Lists.newArrayList(tripHBW), Purpose.HBW);
         MitoTrip tripHBE = new MitoTrip(2, Purpose.HBE);
-        household.addTrip(tripHBE);
+        household.setTripsByPurpose(Lists.newArrayList(tripHBE), Purpose.HBE);
         MitoTrip tripHBS = new MitoTrip(3, Purpose.HBS);
-        household.addTrip(tripHBS);
+        household.setTripsByPurpose(Lists.newArrayList(tripHBS), Purpose.HBS);
         MitoTrip tripHBO = new MitoTrip(4, Purpose.HBO);
-        household.addTrip(tripHBO);
+        household.setTripsByPurpose(Lists.newArrayList(tripHBO), Purpose.HBO);
         MitoTrip tripNHBW = new MitoTrip(5, Purpose.NHBW);
-        household.addTrip(tripNHBW);
+        household.setTripsByPurpose(Lists.newArrayList(tripNHBW), Purpose.NHBW);
         MitoTrip tripNHBO = new MitoTrip(6, Purpose.NHBO);
-        household.addTrip(tripNHBO);
+        household.setTripsByPurpose(Lists.newArrayList(tripNHBO), Purpose.NHBO);
 
-        dataSet.addTrip(tripHBW);
-        dataSet.addTrip(tripHBE);
-        dataSet.addTrip(tripHBS);
-        dataSet.addTrip(tripHBO);
-        dataSet.addTrip(tripNHBW);
-        dataSet.addTrip(tripNHBO);
+        dataSet.getTrips().put(tripHBW.getTripId(), tripHBW);
+        dataSet.getTrips().put(tripHBE.getTripId(), tripHBE);
+        dataSet.getTrips().put(tripHBS.getTripId(), tripHBS);
+        dataSet.getTrips().put(tripHBO.getTripId(), tripHBO);
+        dataSet.getTrips().put(tripNHBW.getTripId(), tripNHBW);
+        dataSet.getTrips().put(tripNHBO.getTripId(), tripNHBO);
 
         PersonTripAssignment assignment = new PersonTripAssignment(dataSet);
         assignment.run();

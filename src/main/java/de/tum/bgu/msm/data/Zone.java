@@ -13,11 +13,9 @@ import java.util.EnumMap;
  */
 public class Zone {
 
-    private static final Logger logger = Logger.getLogger(Zone.class);
-
     private final int zoneId;
     private final AreaType areaType;
-    private float size;
+    private final float size;
     private float reductionAtBorderDamper = 0;
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
@@ -70,10 +68,6 @@ public class Zone {
 
     public int getNumberOfHouseholds() {
         return this.numberOfHouseholds;
-    }
-
-    public void setNumberOfHouseholds(int number) {
-        this.numberOfHouseholds = number;
     }
 
     public void addHousehold() {

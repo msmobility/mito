@@ -77,7 +77,7 @@ public class JobReader extends CSVReader {
                     logger.error("Job Type " + type + " used in job microdata but is not defined in " + Resources.INSTANCE.implementation + " implementation.");
                 }
             }
-            pp.setWorkzone(zone);
+            pp.setOccupationZone(zone);
         }
     }
 }

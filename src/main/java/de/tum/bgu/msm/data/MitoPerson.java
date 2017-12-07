@@ -2,7 +2,6 @@ package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -18,11 +17,11 @@ public class MitoPerson {
 
     private final int id;
     private final Gender gender;
-    private Occupation occupation;
+    private final Occupation occupation;
     private int workplace;
-    private Zone workzone;
-    private int age;
-    private boolean driversLicense;
+    private Zone occupationZone;
+    private final int age;
+    private final boolean driversLicense;
 
     private Map<Integer,MitoTrip> trips = new HashMap<>();
 
@@ -35,24 +34,20 @@ public class MitoPerson {
         this.driversLicense = driversLicense;
     }
 
-    public void setWorkplace(int workplace) {
-        this.workplace = workplace;
-    }
-
     public int getWorkplace() {
         return workplace;
     }
 
-    public void setWorkzone(Zone workzone) {
-        this.workzone = workzone;
+    public void setOccupationZone(Zone occupationZone) {
+        this.occupationZone = occupationZone;
     }
 
     public Occupation getOccupation() {
         return occupation;
     }
 
-    public Zone getWorkzone() {
-        return workzone;
+    public Zone getOccupationZone() {
+        return occupationZone;
     }
 
     public int getId() {
@@ -71,10 +66,6 @@ public class MitoPerson {
         return driversLicense;
     }
 
-    public void setDriversLicense(boolean driversLicense) {
-        this.driversLicense = driversLicense;
-    }
-
     public Map<Integer, MitoTrip> getTrips() {
         return Collections.unmodifiableMap(this.trips);
     }
@@ -89,9 +80,5 @@ public class MitoPerson {
             }
         }
         this.trips.put(trip.getTripId(), trip);
-    }
-
-    public void removeTrip(Integer tripId) {
-        this.trips.remove(tripId);
     }
 }

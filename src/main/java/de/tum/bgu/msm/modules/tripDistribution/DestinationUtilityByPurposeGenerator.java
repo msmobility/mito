@@ -1,8 +1,7 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.Table;
 import com.google.common.math.LongMath;
+import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.Zone;
@@ -14,38 +13,46 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
 
-public class UtilityMatrixFunction implements ConcurrentFunction {
+public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction {
 
-    private final static Logger logger = Logger.getLogger(UtilityMatrixFunction.class);
+    private final static Logger logger = Logger.getLogger(DestinationUtilityByPurposeGenerator.class);
 
-    private final TripDistributionJSCalculator calculator;
+    private final DestinationUtilityJSCalculator calculator;
     private final Purpose purpose;
     private final Map<Integer, Zone> zones;
     private final TravelTimes travelTimes;
-    private final Map<Purpose, Table<Integer, Integer, Double>> utilityMatrices;
+    private final Map<Purpose, Matrix> utilityMatrices;
 
-    UtilityMatrixFunction(Purpose purpose, DataSet dataSet, Map<Purpose, Table<Integer, Integer, Double>> utilityMatrices) {
+    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet, Map<Purpose, Matrix> utilityMatrices) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelTimes = dataSet.getTravelTimes("car");
         this.utilityMatrices = utilityMatrices;
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
-        calculator = new TripDistributionJSCalculator(reader);
+        calculator = new DestinationUtilityJSCalculator(reader);
     }
 
     @Override
     public void execute() {
-        Table utilityMatrix = ArrayTable.create(zones.keySet(), zones.keySet());
+
+        Matrix utilityMatrix = new Matrix(zones.keySet().size(), zones.keySet().size());
         long counter = 0;
+        int[] numbering = new int[zones.size()+1];
+        int i = 1;
+        for(int id: zones.keySet()) {
+            numbering[i] = id;
+            i++;
+        }
+        utilityMatrix.setExternalNumbers(numbering);
         for (Zone origin : zones.values()) {
             for (Zone destination : zones.values()) {
-                final double utility = getUtility(destination, travelTimes.getTravelTime(origin.getZoneId(), destination.getZoneId()));
+                final float utility = (float) getUtility(destination, travelTimes.getTravelTime(origin.getZoneId(), destination.getZoneId()));
                 if (Double.isInfinite(utility)) {
                     throw new RuntimeException("Infinite utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination +
                             " | Purpose: " + purpose);
                 }
-                utilityMatrix.put(origin.getZoneId(), destination.getZoneId(), utility);
+                utilityMatrix.setValueAt(origin.getZoneId(), destination.getZoneId(), utility);
                 if (LongMath.isPowerOfTwo(counter)) {
                     logger.info(counter + " OD pairs done for purpose " + purpose);
                 }

@@ -39,12 +39,12 @@ public class MandatoryBudgetCalculator implements ConcurrentFunction{
             double budget = 0;
             for (MitoPerson person : household.getPersons().values()) {
                 if (person.getOccupation().equals(occupation)) {
-                    if (person.getWorkzone() == null) {
+                    if (person.getOccupationZone() == null) {
                         logger.debug(occupation + " with workzone null will not be considered for travel time budget.");
                         ignored++;
                         continue;
                     }
-                    budget += travelTimes.getTravelTime(household.getHomeZone().getZoneId(), person.getWorkzone().getZoneId());
+                    budget += travelTimes.getTravelTime(household.getHomeZone().getZoneId(), person.getOccupationZone().getZoneId());
                 }
             }
             household.setTravelTimeBudgetByPurpose(purpose, budget);

@@ -7,9 +7,9 @@ import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
 import java.io.Reader;
 
-public class TripDistributionJSCalculator extends JavaScriptCalculator<Double> {
+public class DestinationUtilityJSCalculator extends JavaScriptCalculator<Double> {
 
-    protected TripDistributionJSCalculator(Reader reader) {
+    protected DestinationUtilityJSCalculator(Reader reader) {
         super(reader);
     }
 

@@ -133,15 +133,15 @@ public class TravelTimeBudgetModuleTest {
         dataSet.getHouseholds().get(2).addPerson(retiree22);
 
         MitoPerson worker31 = new MitoPerson(31, Occupation.WORKER, 1, 45, Gender.MALE, true);
-        worker31.setWorkzone(dummyZone);
+        worker31.setOccupationZone(dummyZone);
         MitoPerson worker32 = new MitoPerson(32, Occupation.WORKER, 1, 45, Gender.FEMALE, true);
-        worker32.setWorkzone(dummyZone);
+        worker32.setOccupationZone(dummyZone);
         MitoPerson worker33 = new MitoPerson(33, Occupation.WORKER, 1, 20, Gender.MALE, false);
-        worker33.setWorkzone(dummyZone);
+        worker33.setOccupationZone(dummyZone);
         MitoPerson child34 = new MitoPerson(34, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
-        child34.setWorkzone(dummyZone);
+        child34.setOccupationZone(dummyZone);
         MitoPerson child35 = new MitoPerson(35, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
-        child35.setWorkzone(dummyZone);
+        child35.setOccupationZone(dummyZone);
 
         dataSet.getHouseholds().get(3).addPerson(worker31);
         dataSet.getHouseholds().get(3).addPerson(worker32);
@@ -150,15 +150,15 @@ public class TravelTimeBudgetModuleTest {
         dataSet.getHouseholds().get(3).addPerson(child35);
 
         MitoPerson worker41 = new MitoPerson(41, Occupation.WORKER, 1, 45, Gender.MALE, true);
-        worker41.setWorkzone(dummyZone);
+        worker41.setOccupationZone(dummyZone);
         MitoPerson worker42 = new MitoPerson(42, Occupation.WORKER, 1, 45, Gender.FEMALE, true);
-        worker42.setWorkzone(dummyZone);
+        worker42.setOccupationZone(dummyZone);
         MitoPerson worker43 = new MitoPerson(43, Occupation.WORKER, 1, 20, Gender.MALE, false);
-        worker43.setWorkzone(dummyZone);
+        worker43.setOccupationZone(dummyZone);
         MitoPerson child44 = new MitoPerson(44, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
-        child44.setWorkzone(dummyZone);
+        child44.setOccupationZone(dummyZone);
         MitoPerson child45 = new MitoPerson(45, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
-        child45.setWorkzone(dummyZone);
+        child45.setOccupationZone(dummyZone);
 
         dataSet.getHouseholds().get(4).addPerson(worker41);
         dataSet.getHouseholds().get(4).addPerson(worker42);

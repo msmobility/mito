@@ -48,10 +48,14 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
             generateTripsForHousehold(hh);
             counter++;
         }
-        tripsByHH.forEach((hh, trips) -> trips.forEach(trip -> {
-            hh.addTrip(trip);
-            dataSet.addTrip(trip);
-        }));
+        tripsByHH.forEach((hh, trips) -> {
+            hh.setTripsByPurpose(trips, purpose);
+            trips.forEach(trip -> {
+                if(dataSet.getTrips().putIfAbsent(trip.getTripId(), trip) != null) {
+                    throw new RuntimeException("Trip with id " + trip.getTripId() + " was already added to data set!");
+                }
+            });
+        });
     }
 
     private void defineTripFrequenciesForHouseHoldTypes() {
@@ -80,7 +84,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         List<MitoTrip> trips = new ArrayList<>();
         for (int i = 0; i < selectNumberOfTrips(tripFrequencies); i++) {
             MitoTrip trip = createTrip(hh);
-            if(trip != null) {
+            if (trip != null) {
                 trips.add(trip);
             }
         }

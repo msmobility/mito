@@ -71,7 +71,6 @@ public class TravelTimeBudgetModule extends Module {
                     budget = budget * discretionaryTTB / calcDiscretionaryTTB;
                     household.setTravelTimeBudgetByPurpose(purpose, budget);
                 }
-                purpose.addAndUpdateBudget(budget);
             }
         }
     }
