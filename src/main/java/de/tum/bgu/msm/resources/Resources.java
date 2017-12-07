@@ -24,7 +24,6 @@ public class Resources {
 
     public static void initializeResources(ResourceBundle resources, Implementation implementation) {
         INSTANCE = new Resources(resources, implementation);
-        implementation = implementation;
     }
 
     public synchronized int getInt(String key) {

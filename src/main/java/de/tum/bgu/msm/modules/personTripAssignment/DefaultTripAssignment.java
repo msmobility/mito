@@ -17,7 +17,7 @@ public class DefaultTripAssignment implements TripAssignment {
     @Override
     public Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip) {
         Purpose purpose = trip.getTripPurpose();
-        Map<MitoPerson, Double> probabilitiesByPerson = new HashMap<>();
+        Map<MitoPerson, Double> probabilitiesByPerson = new HashMap<>(household.getHhSize());
         if (purpose == HBW) {
             assignHBW(household, probabilitiesByPerson);
         } else if (purpose == HBE) {

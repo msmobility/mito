@@ -19,7 +19,7 @@ public enum Purpose {
         this.tripAtractionByVariable.put(variable, rate);
     }
 
-    public double getTripAttractionForVariable(ExplanatoryVariable variable) {
+    public Double getTripAttractionForVariable(ExplanatoryVariable variable) {
         return this.tripAtractionByVariable.get(variable);
     }
 }

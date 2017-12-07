@@ -4,6 +4,7 @@ import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.data.Gender;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -388,8 +389,7 @@ public class MitoUtil {
     }
 
     public static int getLicenseHoldersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.hasDriversLicense()).count();
+        return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
     }
 
     public static Random getRandomObject() {
