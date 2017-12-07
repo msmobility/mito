@@ -28,8 +28,13 @@ public class Histogram {
         logger.info("Creating histogram \"" + title + "\"...");
         HistogramDataset dataset = new HistogramDataset();
         dataset.setType(HistogramType.FREQUENCY);
+        double sum = 0;
+        for(double value: values) {
+            sum += value;
+        }
+        double average = sum / values.length;
         dataset.addSeries("Frequency", values, bins, minXValue, maxXValue);
-        JFreeChart chart = ChartFactory.createHistogram(title, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, false, false);
+        JFreeChart chart = ChartFactory.createHistogram(title + " | Average: " + average, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, false, false);
         XYPlot plot = (XYPlot) chart.getPlot();
         XYBarRenderer renderer = (XYBarRenderer) plot.getRenderer();
         renderer.setBarPainter(new StandardXYBarPainter());
