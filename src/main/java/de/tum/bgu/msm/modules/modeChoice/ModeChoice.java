@@ -56,18 +56,38 @@ public class ModeChoice extends Module {
                     travelTimeByMode.put("tramMetro",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
                     travelTimeByMode.put("train",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
                     double travelDistance = dataSet.getTravelDistances().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
-                    if(purpose.equals("HBW")){
-                        double[] probabilities = calculator.calculateHBWProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
-                        assignMode();
+                    switch (purpose){
+                        case HBW:
+                            double[] probabilities = calculator.calculateHBWProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
+                            assignMode(probabilities);
+                            break;
+                        case HBE:
+                            probabilities = calculator.calculateHBEProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
+                            assignMode(probabilities);
+                            break;
+                        case HBS:
+                            probabilities = calculator.calculateHBSProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
+                            assignMode(probabilities);
+                            break;
+                        case HBO:
+                            probabilities = calculator.calculateHBOProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
+                            assignMode(probabilities);
+                            break;
+                        case NHBW:
+                            probabilities = calculator.calculateNHBWProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
+                            assignMode(probabilities);
+                            break;
+                        case NHBO:
+                            probabilities = calculator.calculateNHBOProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistance);
+                            assignMode(probabilities);
+                            break;
                     }
-
                 }
             }
         }
     }
 
-    private void assignMode() {
-        // Get probabilities
-        // Assign mode based on probabilities
+    private void assignMode(double[] probabilities) {
+        // Check randomizable concurrent function from TripDistributor class
     }
 }

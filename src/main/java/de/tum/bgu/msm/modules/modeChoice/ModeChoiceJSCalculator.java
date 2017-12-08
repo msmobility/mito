@@ -42,4 +42,31 @@ public class ModeChoiceJSCalculator extends JavaScriptCalculator<double[]>{
                 travelTimeByMode,
                 travelDistance);
     }
+
+    public double[] calculateHBOProbabilities(MitoHousehold household, MitoPerson person, MitoTrip trip, Map<String,Double> travelTimeByMode, double travelDistance){
+        return super.calculate("calculateHBOProbabilities",
+                household,
+                person,
+                trip,
+                travelTimeByMode,
+                travelDistance);
+    }
+
+    public double[] calculateNHBWProbabilities(MitoHousehold household, MitoPerson person, MitoTrip trip, Map<String,Double> travelTimeByMode, double travelDistance){
+        return super.calculate("calculateNHBWProbabilities",
+                household,
+                person,
+                trip,
+                travelTimeByMode,
+                travelDistance);
+    }
+
+    public double[] calculateNHBOProbabilities(MitoHousehold household, MitoPerson person, MitoTrip trip, Map<String,Double> travelTimeByMode, double travelDistance){
+        return super.calculate("calculateNHBOProbabilities",
+                household,
+                person,
+                trip,
+                travelTimeByMode,
+                travelDistance);
+    }
 }
