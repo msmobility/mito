@@ -42,6 +42,10 @@ public class Resources {
         return ResourceUtil.getBooleanProperty(resources, key);
     }
 
+    public synchronized  boolean getBoolean(String key, boolean defaultValue) {
+        return ResourceUtil.getBooleanProperty(resources, key, defaultValue);
+    }
+
     public synchronized double getDouble(String key) {
         return ResourceUtil.getDoubleProperty(resources, key);
     }
