@@ -12,7 +12,6 @@ import java.util.ResourceBundle;
  * Created on Feb 12, 2017 in Munich, Germany
  *
  */
-
 class MitoMuc {
 
     private static final Logger logger = Logger.getLogger(MitoMuc.class);
@@ -26,8 +25,7 @@ class MitoMuc {
 
     private void run (ResourceBundle resources) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = new MitoModel(resources, Implementation.MUNICH);
-        model.initializeStandAlone();
+        MitoModel model = MitoModel.standAloneModel(resources, Implementation.MUNICH);
         model.runModel();
     }
 }

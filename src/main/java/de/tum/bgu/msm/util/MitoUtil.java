@@ -24,7 +24,10 @@ import java.util.*;
  * Created on Sep 18, 2016 in Munich, Germany
  */
 
-public class MitoUtil {
+public final class MitoUtil {
+
+    private MitoUtil() {
+    }
 
     private static final Logger logger = Logger.getLogger(MitoUtil.class);
     private static Random rand;
@@ -32,13 +35,8 @@ public class MitoUtil {
 
 
     public static void initializeRandomNumber() {
-        // initialize random number generator
         int seed = Resources.INSTANCE.getInt(Properties.RANDOM_SEED);
-        if (seed == -1) {
-            rand = new Random();
-        } else {
-            rand = new Random(seed);
-        }
+        rand = new Random(seed);
     }
 
 
@@ -49,7 +47,6 @@ public class MitoUtil {
     public static float getRandomFloat() {
         return rand.nextFloat();
     }
-
 
     public static String getBaseDirectory() {
         return baseDirectory;
@@ -94,7 +91,6 @@ public class MitoUtil {
         return ind;
     }
 
-
     public static Integer getSum(Integer[] array) {
         Integer sm = 0;
         for (Integer value : array) {
@@ -136,7 +132,6 @@ public class MitoUtil {
 
 
     private static double getSum(double[] array) {
-        // return sum of all elements in array
         double sum = 0;
         for (double val : array) {
             sum += val;
@@ -167,8 +162,6 @@ public class MitoUtil {
     }
 
 
-
-
     static public String customFormat(String pattern, double value) {
         // function copied from: http://docs.oracle.com/javase/tutorial/java/data/numberformat.html
         // 123456.789 ###,###.###  123,456.789 The pound sign (#) denotes a digit, the comma is a placeholder for the grouping separator, and the period is a placeholder for the decimal separator.
@@ -197,7 +190,6 @@ public class MitoUtil {
     }
 
     public static int select(float[] probabilities, Random random) {
-        // select item based on probabilities (for zero-based double array)
         double selPos = getSum(probabilities) * random.nextDouble();
         double sum = 0;
         for (int i = 0; i < probabilities.length; i++) {

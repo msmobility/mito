@@ -53,7 +53,7 @@ public abstract class JavaScriptCalculator<T> {
         }
     }
 
-    protected T calculate(String function, Object... args) {
+    protected final T calculate(String function, Object... args) {
         try {
             return (T) invocable.invokeFunction(function, args);
         } catch (ScriptException e) {
