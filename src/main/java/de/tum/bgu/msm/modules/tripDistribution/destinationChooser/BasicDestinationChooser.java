@@ -34,6 +34,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     private final Map<Integer, Double> densityByDeviation = new HashMap<>();
 
     public BasicDestinationChooser(Purpose purpose, EnumMap<Purpose, Matrix> baseProbabilities, DataSet dataSet) {
+        super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.travelTimes = dataSet.getTravelTimes("car");
         this.purpose = purpose;

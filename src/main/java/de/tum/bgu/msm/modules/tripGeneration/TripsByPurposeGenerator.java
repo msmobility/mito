@@ -29,6 +29,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
     private final HashMap<String, Integer[]> tripsByHhType = new HashMap<>();
 
     public TripsByPurposeGenerator(DataSet dataSet, Purpose purpose) {
+        super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
         householdTypeManager = new HouseholdTypeManager(purpose);
