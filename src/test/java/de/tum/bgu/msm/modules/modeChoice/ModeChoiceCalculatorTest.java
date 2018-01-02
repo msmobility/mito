@@ -31,7 +31,7 @@ public class ModeChoiceCalculatorTest {
 
     @Test
     public void test() {
-        Zone origin = new Zone(1, 100, null);
+        MitoZone origin = new MitoZone(1, 100, null);
         origin.setDistanceToNearestTransitStop(0.5f);
         //origin.setAreaTypeNHBOModeChoice(AreaTypeForModeChoice.NHBO_urban);
         MitoHousehold hh = new MitoHousehold(1, 30000, 1, null);

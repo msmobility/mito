@@ -23,8 +23,8 @@ public final class NonHomeBasedDestinationChooser extends BasicDestinationChoose
     }
 
     @Override
-    protected Zone findOrigin(MitoHousehold household, MitoTrip trip) {
-        List<Zone> possibleBaseZones = new ArrayList<>();
+    protected MitoZone findOrigin(MitoHousehold household, MitoTrip trip) {
+        List<MitoZone> possibleBaseZones = new ArrayList<>();
         for (Purpose purpose : priorPurposes) {
             for (MitoTrip priorTrip : household.getTripsForPurpose(purpose)) {
                 if (priorTrip.getPerson().equals(trip.getPerson())) {
@@ -33,11 +33,11 @@ public final class NonHomeBasedDestinationChooser extends BasicDestinationChoose
             }
         }
         if (!possibleBaseZones.isEmpty()) {
-            Zone zone = MitoUtil.select(random, possibleBaseZones);
+            MitoZone zone = MitoUtil.select(random, possibleBaseZones);
             return zone;
         }
         if (trip.getPerson().getOccupation() == relatedOccupation && trip.getPerson().getOccupationZone() != null) {
-            Zone zone = trip.getPerson().getOccupationZone();
+            MitoZone zone = trip.getPerson().getOccupationZone();
             return zone;
         }
 
@@ -46,9 +46,9 @@ public final class NonHomeBasedDestinationChooser extends BasicDestinationChoose
     }
 
     @Override
-    protected Zone findDestination(MitoTrip trip) {
-        destinationProbabilities = baseProbabilities.get(purpose).getRow(trip.getTripOrigin().getZoneId()).getValues()[0];
-        adjustDestinationProbabilities(trip.getTripOrigin().getZoneId());
+    protected MitoZone findDestination(MitoTrip trip) {
+        destinationProbabilities = baseProbabilities.get(purpose).getValues()[baseProbabilities.get(purpose).getInternalRowNumber(trip.getTripOrigin().getZoneId())];
+//        adjustDestinationProbabilities(trip.getTripOrigin().getZoneId());
         return super.findDestination(trip);
     }
 
@@ -57,11 +57,11 @@ public final class NonHomeBasedDestinationChooser extends BasicDestinationChoose
         return;
     }
 
-    private Zone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
+    private MitoZone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
         TripDistribution.COMPLETELY_RANDOM_NHB_TRIPS.incrementAndGet();
-        final float[] originProbabilities = baseProbabilities.get(priorPurpose).getRow(household.getHomeZone().getZoneId()).copyValues1D();
+        final float[] originProbabilities = baseProbabilities.get(priorPurpose).getValues()[baseProbabilities.get(purpose).getInternalRowNumber(household.getHomeZone().getZoneId())];
         final int destination = baseProbabilities.get(purpose).getExternalNumber(MitoUtil.select(originProbabilities, random));
-        Zone zone = dataSet.getZones().get(destination);
+        MitoZone zone = dataSet.getZones().get(destination);
         return zone;
     }
 }

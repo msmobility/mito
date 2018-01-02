@@ -59,7 +59,7 @@ public class JobReader extends CSVReader {
                         + id + " in job file. Ignoring job.");
                 return;
             }
-            Zone zone = dataSet.getZones().get(zoneId);
+            MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone == null) {
                 logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
                 return;

@@ -9,7 +9,6 @@ import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -24,8 +23,8 @@ public class InitializeFeedModelTest {
     @Before
     public void setupTest() {
 
-        Map<Integer, Zone> zones = new HashMap<>();
-        zones.put(1, new Zone(1, 10, AreaType.RURAL));
+        Map<Integer, MitoZone> zones = new HashMap<>();
+        zones.put(1, new MitoZone(1, 10, AreaType.RURAL));
 
         Map<Integer, MitoHousehold> households = new HashMap<>();
         MitoHousehold household = new MitoHousehold(1, 1, 1, zones.get(1));

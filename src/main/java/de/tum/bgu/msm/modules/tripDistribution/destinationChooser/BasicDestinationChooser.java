@@ -51,7 +51,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
             if (isValid(household)) {
                 updateBaseDestinationProbabilities(household);
                 updateBudgets(household);
-                updateAdjustedDestinationProbabilities(household);
+//                updateAdjustedDestinationProbabilities(household);
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(findOrigin(household, trip));
                     trip.setTripDestination(findDestination(trip));
@@ -77,7 +77,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     private void updateBaseDestinationProbabilities(MitoHousehold household) {
-        destinationProbabilities = baseProbabilities.get(purpose).getRow(household.getHomeZone().getZoneId()).getValues()[0];
+        destinationProbabilities = baseProbabilities.get(purpose).getValues()[baseProbabilities.get(purpose).getInternalRowNumber(household.getHomeZone().getZoneId())];
     }
 
     protected void updateBudgets(MitoHousehold household) {
@@ -86,20 +86,22 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
         adjustedBudget = (hhBudgetPerTrip * ratio) / 100;
     }
 
-    protected Zone findOrigin(MitoHousehold household, MitoTrip trip) {
+    protected MitoZone findOrigin(MitoHousehold household, MitoTrip trip) {
         return household.getHomeZone();
     }
 
-    protected Zone findDestination(MitoTrip trip) {
+    protected MitoZone findDestination(MitoTrip trip) {
         final int destination = baseProbabilities.get(purpose).getExternalNumber(MitoUtil.select(destinationProbabilities, random));
         return dataSet.getZones().get(destination);
     }
 
     void adjustDestinationProbabilities(int origin) {
+        float[] tempCopy = new float[destinationProbabilities.length];
         for (int i = 0; i < destinationProbabilities.length; i++) {
             int deviation = (int) ((travelTimes.getTravelTime(origin, baseProbabilities.get(purpose).getExternalNumber(i)) / adjustedBudget));
-            destinationProbabilities[i] = destinationProbabilities[i] * (float) getDensity(deviation);
+            tempCopy[i] = destinationProbabilities[i] * (float) getDensity(deviation);
         }
+        destinationProbabilities = tempCopy;
     }
 
     private double getDensity(int deviation) {

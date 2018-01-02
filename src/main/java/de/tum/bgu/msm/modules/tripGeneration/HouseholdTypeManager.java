@@ -110,7 +110,7 @@ public class HouseholdTypeManager {
         if (hh.getHomeZone() != null) {
             areaType = hh.getHomeZone().getAreaType().ordinal()+1;
         } else {
-            logger.info("Home Zone for Household  " + hh.getHhId() + " is null!");
+            logger.info("Home MitoZone for Household  " + hh.getHhId() + " is null!");
         }
         return determineHouseholdType(hh.getHhSize(), MitoUtil.getNumberOfWorkersForHousehold(hh),
                 incCategory, hh.getAutos(), areaType);

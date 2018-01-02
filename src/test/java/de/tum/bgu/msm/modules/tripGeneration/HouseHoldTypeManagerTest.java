@@ -16,13 +16,13 @@ import java.util.ResourceBundle;
  */
 public class HouseHoldTypeManagerTest {
 
-    private Zone zone;
+    private MitoZone zone;
 
     @Before
     public void setupTest() {
         ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
         Resources.initializeResources(bundle, Implementation.MUNICH);
-        zone = new Zone(1, 10, AreaType.RURAL);
+        zone = new MitoZone(1, 10, AreaType.RURAL);
     }
 
     @Test

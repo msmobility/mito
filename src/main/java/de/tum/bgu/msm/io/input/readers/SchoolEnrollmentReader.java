@@ -24,7 +24,7 @@ public class SchoolEnrollmentReader extends CSVReader {
 
     @Override
     protected void processHeader(String[] header) {
-        zoneIndex = MitoUtil.findPositionInArray("Zone", header);
+        zoneIndex = MitoUtil.findPositionInArray("MitoZone", header);
         enrolmentIndex = MitoUtil.findPositionInArray("Enrolment", header);
     }
 

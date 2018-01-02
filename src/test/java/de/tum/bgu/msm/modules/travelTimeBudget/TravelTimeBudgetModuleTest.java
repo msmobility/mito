@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 public class TravelTimeBudgetModuleTest {
 
     private DataSet dataSet;
-    private Zone dummyZone;
+    private MitoZone dummyZone;
 
     @Before
     public void setup() {
@@ -121,7 +121,7 @@ public class TravelTimeBudgetModuleTest {
     }
 
     private void addZone() {
-        dummyZone = new Zone(1, 10, AreaType.URBAN);
+        dummyZone = new MitoZone(1, 10, AreaType.URBAN);
         dataSet.addZone(dummyZone);
     }
 

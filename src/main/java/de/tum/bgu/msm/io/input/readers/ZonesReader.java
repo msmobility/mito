@@ -2,7 +2,7 @@ package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.AreaType;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -36,7 +36,7 @@ public class ZonesReader extends CSVReader {
         float size = Float.parseFloat(record[sizeIndex]);
         int region = Integer.parseInt(record[areaTypeIndex]);
         AreaType areaType = AreaType.valueOf(region);
-        Zone zone = new Zone(zoneId, size, areaType);
+        MitoZone zone = new MitoZone(zoneId, size, areaType);
         dataSet.addZone(zone);
     }
 }

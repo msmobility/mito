@@ -19,7 +19,7 @@ public class MitoPerson {
     private final Gender gender;
     private final Occupation occupation;
     private int workplace;
-    private Zone occupationZone;
+    private MitoZone occupationZone;
     private final int age;
     private final boolean driversLicense;
 
@@ -38,7 +38,7 @@ public class MitoPerson {
         return workplace;
     }
 
-    public void setOccupationZone(Zone occupationZone) {
+    public void setOccupationZone(MitoZone occupationZone) {
         this.occupationZone = occupationZone;
     }
 
@@ -46,7 +46,7 @@ public class MitoPerson {
         return occupation;
     }
 
-    public Zone getOccupationZone() {
+    public MitoZone getOccupationZone() {
         return occupationZone;
     }
 

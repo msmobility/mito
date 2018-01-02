@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataSet {
@@ -22,7 +21,7 @@ public class DataSet {
 
     private TravelSurvey<? extends SurveyRecord> survey;
 
-    private final Map<Integer, Zone> zones= new LinkedHashMap<>();
+    private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> trips = new ConcurrentHashMap<>();
@@ -57,7 +56,7 @@ public class DataSet {
         return Collections.unmodifiableMap(persons);
     }
 
-    public Map<Integer, Zone> getZones() {
+    public Map<Integer, MitoZone> getZones() {
         return Collections.unmodifiableMap(zones);
     }
 
@@ -69,14 +68,14 @@ public class DataSet {
         return trips;
     }
 
-    public void addZone(final Zone zone) {
-        Zone test = this.zones.get(zone.getZoneId());
+    public void addZone(final MitoZone zone) {
+        MitoZone test = this.zones.get(zone.getZoneId());
         if(test != null) {
             if(test.equals(zone)) {
-                logger.warn("Zone " + zone.getZoneId() + " was already added to data set.");
+                logger.warn("MitoZone " + zone.getZoneId() + " was already added to data set.");
                 return;
             }
-            throw new IllegalArgumentException("Zone id " + zone.getZoneId() + " already exists!");
+            throw new IllegalArgumentException("MitoZone id " + zone.getZoneId() + " already exists!");
         }
         zones.put(zone.getZoneId(), zone);
     }

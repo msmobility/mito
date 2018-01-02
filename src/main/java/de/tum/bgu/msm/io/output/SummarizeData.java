@@ -1,15 +1,15 @@
 package de.tum.bgu.msm.io.output;
 
+import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
-import de.tum.bgu.msm.util.charts.histogram.Histogram;
+import de.tum.bgu.msm.util.charts.Histogram;
+import de.tum.bgu.msm.util.charts.ScatterPlot;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Methods to summarize model results
@@ -23,8 +23,6 @@ public class SummarizeData {
 
 
     public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet) {
-        //write out files with synthetic population and the number of trips
-
         logger.info("  Writing household file");
         String filehh = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + Resources.INSTANCE.getString(Properties.HOUSEHOLDS) + "_t.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
@@ -70,13 +68,22 @@ public class SummarizeData {
     }
 
 
-    private static void writeHistogram(DataSet dataSet, Purpose purpose) {
+    private static void writeCharts(DataSet dataSet, Purpose purpose) {
         List<Double> travelTimes = new ArrayList<>();
         List<Double> travelDistances = new ArrayList<>();
+        Map<Integer, List<Double>> distancesByZone = new HashMap<>();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                travelDistances.add(dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+                travelDistances.add(travelDistance);
+                if(distancesByZone.containsKey(trip.getTripOrigin().getZoneId())){
+                    distancesByZone.get(trip.getTripOrigin().getZoneId()).add(travelDistance);
+                } else {
+                    List<Double> values = new ArrayList<>();
+                    values.add(travelDistance);
+                    distancesByZone.put(trip.getTripOrigin().getZoneId(), values);
+                }
             }
         }
 
@@ -93,13 +100,26 @@ public class SummarizeData {
             travelDistancesArray[i] = value / 1000.;
             i++;
         }
-        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 1, 80);
-        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 100, 1, 100);
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 1, 80);
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 100, 1, 100);
+
+        Map<Double, Double> averageDistancesByZone = new HashMap<>();
+        for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
+            averageDistancesByZone.put(Double.valueOf(entry.getKey()), Stats.meanOf(entry.getValue()));
+        }
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/averageZoneDistanceTable"+purpose+".csv", false);
+        pw.println("id,avTripDistance");
+        for(Map.Entry<Double, Double> entry: averageDistancesByZone.entrySet()) {
+            pw.println(entry.getKey().intValue()+","+entry.getValue());
+        }
+        pw.close();
+        ScatterPlot.createScatterPlot(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/averageZoneDistancePlot"+purpose, averageDistancesByZone, "Average Trip Distances by MitoZone", "MitoZone Id", "Average Trip Distance");
+
     }
 
     public static void writeHistograms(DataSet dataSet) {
         for(Purpose purpose: Purpose.values()) {
-            writeHistogram(dataSet, purpose);
+            writeCharts(dataSet, purpose);
         }
     }
 }

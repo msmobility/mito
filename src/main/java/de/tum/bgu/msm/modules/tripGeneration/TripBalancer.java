@@ -1,12 +1,9 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import org.apache.log4j.Logger;
-
-import java.util.EnumMap;
-import java.util.Map;
 
 public class TripBalancer {
 
@@ -39,7 +36,7 @@ public class TripBalancer {
     }
 
     private void adjustAttractions(double ratio) {
-        for (Zone zone : dataSet.getZones().values()) {
+        for (MitoZone zone : dataSet.getZones().values()) {
             for (Purpose purpose : Purpose.values()) {
                 double oldValue = zone.getTripAttractionRate(purpose);
                 zone.setTripAttractionRate(purpose, oldValue * ratio);

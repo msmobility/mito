@@ -3,8 +3,8 @@ package de.tum.bgu.msm.modules.tripDistribution;
 import com.google.common.math.LongMath;
 import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.util.concurrent.ConcurrentFunction;
 import org.apache.log4j.Logger;
@@ -19,7 +19,7 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
 
     private final DestinationUtilityJSCalculator calculator;
     private final Purpose purpose;
-    private final Map<Integer, Zone> zones;
+    private final Map<Integer, MitoZone> zones;
     private final TravelTimes travelTimes;
     private final Map<Purpose, Matrix> utilityMatrices;
 
@@ -44,12 +44,13 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
             i++;
         }
         utilityMatrix.setExternalNumbers(numbering);
-        for (Zone origin : zones.values()) {
-            for (Zone destination : zones.values()) {
-                final float utility = (float) getUtility(destination, travelTimes.getTravelTime(origin.getZoneId(), destination.getZoneId()));
-                if (Double.isInfinite(utility)) {
-                    throw new RuntimeException("Infinite utility calculated! Please check calculation!" +
-                            " Origin: " + origin + " | Destination: " + destination +
+        for (MitoZone origin : zones.values()) {
+            for (MitoZone destination : zones.values()) {
+                final double travelTime = travelTimes.getTravelTime(origin.getZoneId(), destination.getZoneId());
+                final float utility = (float) getUtility(destination, travelTime);
+                if (Double.isInfinite(utility) || Double.isNaN(utility)) {
+                    throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
+                            " Origin: " + origin + " | Destination: " + destination + " | Travel Time: " + travelTime +
                             " | Purpose: " + purpose);
                 }
                 utilityMatrix.setValueAt(origin.getZoneId(), destination.getZoneId(), utility);
@@ -63,7 +64,7 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
         logger.info("Utility matrix for purpose " + purpose + " done.");
     }
 
-    private double getUtility(Zone destination, double travelTimeFromTo) {
+    private double getUtility(MitoZone destination, double travelTimeFromTo) {
         switch (purpose) {
             case HBW:
                 return calculator.calculateHbwUtility(destination, travelTimeFromTo);

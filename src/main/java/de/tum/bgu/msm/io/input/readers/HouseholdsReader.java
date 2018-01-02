@@ -2,7 +2,7 @@ package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -43,7 +43,7 @@ public class HouseholdsReader extends CSVReader {
         int id = Integer.parseInt(record[posId]);
         int taz = Integer.parseInt(record[posTaz]);
         int autos = Integer.parseInt(record[posAutos]);
-        Zone zone = dataSet.getZones().get(taz);
+        MitoZone zone = dataSet.getZones().get(taz);
         if (zone == null) {
             logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
             return;

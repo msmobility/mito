@@ -1,11 +1,9 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import com.google.common.collect.Multiset;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.data.jobTypes.Category;
-import de.tum.bgu.msm.data.jobTypes.JobType;
 import org.apache.log4j.Logger;
 
 public class AttractionCalculator {
@@ -22,7 +20,7 @@ public class AttractionCalculator {
 
     public void run() {
         logger.info("  Calculating trip attractions");
-        for (Zone zone : dataSet.getZones().values()) {
+        for (MitoZone zone : dataSet.getZones().values()) {
 
             for (Purpose purpose : Purpose.values()) {
                 float tripAttraction = 0;

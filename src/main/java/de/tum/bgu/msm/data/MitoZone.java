@@ -11,7 +11,7 @@ import java.util.EnumMap;
 /**
  * Created by Nico on 7/7/2017.
  */
-public class Zone {
+public class MitoZone {
 
     private final int zoneId;
     private final AreaType areaType;
@@ -28,7 +28,7 @@ public class Zone {
 
     private float distanceToNearestTransitStop;
 
-    public Zone(int id, float size, AreaType areaType) {
+    public MitoZone(int id, float size, AreaType areaType) {
         this.zoneId = id;
         this.size = size;
         this.areaType = areaType;
@@ -120,6 +120,6 @@ public class Zone {
 
     @Override
     public String toString() {
-        return "[Zone " + zoneId + "]";
+        return "[MitoZone " + zoneId + "]";
     }
 }

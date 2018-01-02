@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.util.charts.histogram;
+package de.tum.bgu.msm.util.charts;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
@@ -20,9 +20,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class Histogram {
+public final class Histogram {
 
     private final static Logger logger = Logger.getLogger(Histogram.class);
+
+    private Histogram() {
+
+    }
 
     public static void createFrequencyHistogram(String path, double[] values, String title, String xAxisLabel, String yAxisLabel, int bins, int minXValue, int maxXValue) {
         logger.info("Creating histogram \"" + title + "\"...");

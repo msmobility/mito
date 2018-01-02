@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 public class TravelTimeBudgetCalculatorTest {
 
     private DataSet dataSet;
-    private Zone dummyZone;
+    private MitoZone dummyZone;
     private TravelTimeBudgetJSCalculator calculator;
 
     @Before
@@ -170,7 +170,7 @@ public class TravelTimeBudgetCalculatorTest {
     }
 
     private void addZone() {
-        dummyZone = new Zone(1, 1, AreaType.URBAN);
+        dummyZone = new MitoZone(1, 1, AreaType.URBAN);
         dataSet.addZone(dummyZone);
     }
 }

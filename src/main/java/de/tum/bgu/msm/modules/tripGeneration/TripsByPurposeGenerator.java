@@ -142,7 +142,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
     }
 
     private MitoTrip createTrip(MitoHousehold hh) {
-        Zone tripOrigin = hh.getHomeZone();
+        MitoZone tripOrigin = hh.getHomeZone();
         boolean dropThisTrip = reduceTripGenAtStudyAreaBorder(tripOrigin);
         if (dropThisTrip) {
             DROPPED_TRIPS_AT_BORDER_COUNTER.incrementAndGet();
@@ -151,7 +151,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         return new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
     }
 
-    private boolean reduceTripGenAtStudyAreaBorder(Zone tripOrigin) {
+    private boolean reduceTripGenAtStudyAreaBorder(MitoZone tripOrigin) {
         if (dropAtBorder) {
             float damper = dataSet.getZones().get(tripOrigin.getZoneId()).getReductionAtBorderDamper();
             return random.nextFloat() < damper;

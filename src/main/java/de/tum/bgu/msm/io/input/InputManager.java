@@ -34,11 +34,11 @@ public class InputManager {
         new SchoolEnrollmentReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
         new TravelSurveyReader(dataSet).read();
-        new ModeChoiceInputReader(dataSet).read();
+       // new ModeChoiceInputReader(dataSet).read();
     }
 
     public void readFromFeed(InputFeed feed) {
-        for(Zone zone: feed.zones.values()) {
+        for(MitoZone zone: feed.zones.values()) {
             dataSet.addZone(zone);
         }
         for(Map.Entry<String, TravelTimes> travelTimes: feed.travelTimes.entrySet())  {

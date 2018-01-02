@@ -18,14 +18,14 @@ public class MitoHousehold {
     private final int hhId;
     private int income;
     private final int autos;
-    private final Zone homeZone;
+    private final MitoZone homeZone;
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
 
     private final Map<Integer, MitoPerson> persons  = new HashMap<>();
 
-    public MitoHousehold(int id, int income, int autos, Zone homeZone) {
+    public MitoHousehold(int id, int income, int autos, MitoZone homeZone) {
         this.hhId = id;
         this.income = income;
         this.autos = autos;
@@ -52,7 +52,7 @@ public class MitoHousehold {
         return autos;
     }
 
-    public Zone getHomeZone() {
+    public MitoZone getHomeZone() {
         return homeZone;
     }
 

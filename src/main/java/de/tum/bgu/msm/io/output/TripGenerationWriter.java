@@ -28,8 +28,8 @@ public class TripGenerationWriter {
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
         String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet);
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
-        pwProd.print("Zone");
-        pwAttr.print("Zone");
+        pwProd.print("MitoZone");
+        pwAttr.print("MitoZone");
         for (Purpose purpose: Purpose.values()) {
             pwProd.print("," + purpose + "P");
             pwAttr.print("," + purpose + "A");

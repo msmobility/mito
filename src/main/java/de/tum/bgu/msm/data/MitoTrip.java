@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import java.io.Serializable;
-
 /**
  * Holds trip objects for the Microsimulation Transport Orchestrator (MITO)
  * @author Rolf Moeckel
@@ -14,8 +12,8 @@ public class MitoTrip {
     private final int tripId;
     private final Purpose tripPurpose;
 
-    private Zone tripOrigin;
-    private Zone tripDestination;
+    private MitoZone tripOrigin;
+    private MitoZone tripDestination;
 
     private MitoPerson person;
 
@@ -28,11 +26,11 @@ public class MitoTrip {
         return tripId;
     }
 
-    public Zone getTripOrigin() {
+    public MitoZone getTripOrigin() {
         return tripOrigin;
     }
 
-    public void setTripOrigin(Zone origin) {
+    public void setTripOrigin(MitoZone origin) {
         this.tripOrigin = origin;
     }
 
@@ -40,11 +38,11 @@ public class MitoTrip {
         return tripPurpose;
     }
 
-    public Zone getTripDestination() {
+    public MitoZone getTripDestination() {
         return this.tripDestination;
     }
 
-    public void setTripDestination(Zone destination) {
+    public void setTripDestination(MitoZone destination) {
         this.tripDestination = destination;
     }
 

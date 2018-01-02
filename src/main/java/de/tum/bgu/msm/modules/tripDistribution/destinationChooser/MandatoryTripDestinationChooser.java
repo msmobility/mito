@@ -16,7 +16,7 @@ public final class MandatoryTripDestinationChooser extends BasicDestinationChoos
     }
 
     @Override
-    protected Zone findDestination(MitoTrip trip) {
+    protected MitoZone findDestination(MitoTrip trip) {
         if (isFixedByOccupation(trip)) {
             return trip.getPerson().getOccupationZone();
         }
