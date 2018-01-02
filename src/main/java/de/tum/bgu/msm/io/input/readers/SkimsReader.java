@@ -61,8 +61,10 @@ public class SkimsReader extends OMXReader {
     }
 
     private void readTravelDistanceForModeChoice(){
-        Matrix distanceSkim = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.TRAVEL_DISTANCE_SKIM),"mat1", "lookup1");
-        dataSet.setTravelDistances(new MatrixTravelDistances(distanceSkim));
+        Matrix distanceSkimAuto = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"mat1", "lookup1");
+        dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
+        Matrix distanceSkimNMT = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"mat1", "lookup1");
+        dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
 
 
