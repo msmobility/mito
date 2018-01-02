@@ -18,7 +18,7 @@ public class ModeChoiceCalculatorTest {
 
     private ModeChoiceJSCalculator calculator;
 
-    private final double[] reference = new double[]{0.584061072,0.273145755,0.08932696,0.023002169,0.009248449,0.017134754,0.00408084};
+    private final double[] reference = new double[]{0.584058743,0.273147679,0.08932714,0.023002269,0.009248519,0.017134802,0.00408085};
 
     @Before
     public void setup() {
@@ -33,11 +33,11 @@ public class ModeChoiceCalculatorTest {
     public void test() {
         Zone origin = new Zone(1, 100, null);
         origin.setDistanceToNearestTransitStop(0.5f);
-        //origin.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_mediumSizedCity);
+        //origin.setAreaTypeNHBOModeChoice(AreaTypeForModeChoice.NHBO_urban);
         MitoHousehold hh = new MitoHousehold(1, 30000, 1, null);
         MitoPerson pp = new MitoPerson(1, Occupation.STUDENT, 1, 20, Gender.FEMALE, true);
         hh.addPerson(pp);
-        MitoTrip trip = new MitoTrip(1, Purpose.HBE);
+        MitoTrip trip = new MitoTrip(1, Purpose.HBS);
         trip.setTripOrigin(origin);
 
         Map<String, Double> travelTimeByMode = new HashMap<>();
@@ -47,7 +47,7 @@ public class ModeChoiceCalculatorTest {
         travelTimeByMode.put("tramMetro", 25.);
         travelTimeByMode.put("train", 40.);
         //for(int i= 0; i< 1000000; i ++) {
-            double[] result = calculator.calculateHBSProbabilities(hh, pp, trip, travelTimeByMode, 5.);
+            double[] result = calculator.calculateProbabilities(hh, pp, trip, travelTimeByMode, 5.,5.);
         //}
         for(int i = 0; i < result.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);

@@ -30,7 +30,8 @@ public class Properties {
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";
     public static final String TRAIN_TRAVEL_TIME_SKIM = "train.travelTime";
-    public static final String TRAVEL_DISTANCE_SKIM = "auto.travelDistance";
+    public static final String AUTO_TRAVEL_DISTANCE_SKIM = "auto.travelDistance";
+    public static final String NMT_TRAVEL_DISTANCE_SKIM = "nmt.travelDistance";
     public static final String AREA_TYPES_AND_TRANSIT_DISTANCE = "areaTypes.distToTransit";
 
     public static final String CREATE_DESTINATION_CHOICE_HISTOGRAMS = "create.destination.choice.histograms";

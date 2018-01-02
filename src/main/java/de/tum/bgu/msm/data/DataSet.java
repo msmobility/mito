@@ -17,7 +17,8 @@ public class DataSet {
     private static final Logger logger = Logger.getLogger(DataSet.class);
 
     private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
-    private TravelDistances travelDistances;
+    private TravelDistances travelDistancesAuto;
+    private TravelDistances travelDistancesNMT;
 
     private TravelSurvey<? extends SurveyRecord> survey;
 
@@ -34,9 +35,11 @@ public class DataSet {
         this.survey = survey;
     }
 
-    public TravelDistances getTravelDistances(){return this.travelDistances;}
+    public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
+    public TravelDistances getTravelDistancesNMT(){return this.travelDistancesNMT;}
 
-    public void setTravelDistances(TravelDistances travelDistances){this.travelDistances = travelDistances;}
+    public void setTravelDistancesAuto(TravelDistances travelDistancesAuto){this.travelDistancesAuto = travelDistancesAuto;}
+    public void setTravelDistancesNMT(TravelDistances travelDistancesNMT){this.travelDistancesNMT = travelDistancesNMT;}
 
     public Map<String, TravelTimes> getTravelTimes() {
         return Collections.unmodifiableMap(travelTimes);
