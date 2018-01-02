@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class SimpleRunTest {
+public class InitializeFeedModelTest {
 
     private MitoModel model;
 
@@ -54,6 +54,5 @@ public class SimpleRunTest {
         Assert.assertEquals(2, model.getTravelDemand().getPersons().size());
         Assert.assertNotNull(model.getTravelDemand().getSurvey());
         Assert.assertEquals(1., model.getTravelDemand().getTravelTimes("car").getTravelTime(1, 1), 0.);
-        model.runModel();
     }
 }

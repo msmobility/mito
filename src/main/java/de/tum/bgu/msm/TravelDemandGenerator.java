@@ -33,6 +33,10 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet);
         tg.run();
+        if(dataSet.getTrips().isEmpty()){
+            logger.warn("No trips created. End of program.");
+            return;
+        }
         logger.info("Running Module: Travel Time Budget Calculation");
         TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
         ttb.run();

@@ -68,6 +68,6 @@ public class ModeChoice extends Module {
     }
 
     private void assignMode(double[] probabilities) {
-        // Check randomizable concurrent function from TripDistributor class
+
     }
 }

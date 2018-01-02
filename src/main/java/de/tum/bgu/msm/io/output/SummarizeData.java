@@ -76,7 +76,7 @@ public class SummarizeData {
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                travelDistances.add(dataSet.getTravelDistances().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                travelDistances.add(dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
             }
         }
 
