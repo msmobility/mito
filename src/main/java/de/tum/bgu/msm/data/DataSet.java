@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataSet {
 
@@ -23,7 +25,7 @@ public class DataSet {
     private final Map<Integer, Zone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
-    private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
+    private final Map<Integer, MitoTrip> trips = new ConcurrentHashMap<>();
 
     public TravelSurvey<? extends SurveyRecord> getSurvey() {
         return this.survey;
@@ -64,7 +66,7 @@ public class DataSet {
     }
 
     public Map<Integer, MitoTrip> getTrips() {
-        return Collections.unmodifiableMap(trips);
+        return trips;
     }
 
     public void addZone(final Zone zone) {
@@ -101,10 +103,6 @@ public class DataSet {
             throw new IllegalArgumentException("Person id " + person.getId() + " already exists!");
         }
         persons.put(person.getId(), person);
-    }
-
-    public synchronized void addTrip(final MitoTrip trip) {
-        trips.put(trip.getTripId(), trip);
     }
 
     public synchronized void removeTrip(final int tripId) {

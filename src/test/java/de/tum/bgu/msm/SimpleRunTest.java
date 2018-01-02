@@ -23,13 +23,6 @@ public class SimpleRunTest {
 
     @Before
     public void setupTest() {
-        ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        model = new MitoModel(bundle, Implementation.MUNICH);
-        model.setBaseDirectory("./testInput/");
-    }
-
-    @Test
-    public final void fedInitialization() {
 
         Map<Integer, Zone> zones = new HashMap<>();
         zones.put(1, new Zone(1, 10, AreaType.RURAL));
@@ -47,12 +40,15 @@ public class SimpleRunTest {
         Map<String, TravelTimes> map = new LinkedHashMap<>();
         map.put("car", new MatrixTravelTimes(new IdentityMatrix(1)));
         map.put("pt", new MatrixTravelTimes(new IdentityMatrix(1)));
+
+        ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
+        MitoUtil.setBaseDirectory("./testInput/");
         InputFeed feed = new InputFeed(zones, map, households);
-        model.feedData(feed);
-        testSetInput();
+        model = MitoModel.createModelWithInitialFeed(bundle, Implementation.MUNICH, feed);
     }
 
-    private void testSetInput() {
+    @Test
+    public void testInput() {
         Assert.assertEquals(1, model.getTravelDemand().getZones().size());
         Assert.assertEquals(1, model.getTravelDemand().getHouseholds().size());
         Assert.assertEquals(2, model.getTravelDemand().getPersons().size());

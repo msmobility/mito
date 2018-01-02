@@ -8,8 +8,8 @@ public abstract class RandomizableConcurrentFunction implements ConcurrentFuncti
 
     protected final Random random;
 
-    protected RandomizableConcurrentFunction() {
-        this.random = new Random(MitoUtil.getRandomObject().nextLong());
+    protected RandomizableConcurrentFunction(long randomSeed) {
+        this.random = new Random(randomSeed);
     }
 
     @Override

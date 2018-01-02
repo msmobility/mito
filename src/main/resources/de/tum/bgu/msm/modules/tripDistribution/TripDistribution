@@ -2,22 +2,25 @@ travelTimeParamHbs = -0.009;
 impedanceParamHbs = 12.4;
 attractionParamHbs = 0.5;
 
+travelTimeParamHbo = -0.014;
+impedanceParamHbo = 10.3;
+attractionParamHbo = 1.3;
+
+travelTimeParamHbw = -0.011;
+impedanceParamHbw = 0.5;
+attractionParamHbw = 10;
+
 
 var calculateHBW = function (travelTime, totalEmployees) {
-    intercept = 0.3;
-    travelTimeParam = -0.01;
-    impedanceParam = 0.01;
-    attractionParam = 0.1;
-
-    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
+    impedanceImpact = impedanceParamHbw * Math.exp(travelTimeParamHbw * travelTime);
 
     if(totalEmployees == 0) {
         attraction = 0;
     } else {
         attraction = Math.log(totalEmployees);
     }
-    attractionImpact = attraction * attractionParam;
-    return Math.exp(intercept + impedanceImpact + attractionImpact);
+    attractionImpact = attraction * attractionParamHbw;
+    return Math.exp(impedanceImpact + attractionImpact);
 }
 
 var calculateHBE = function (travelTime, schoolEnrollment) {
@@ -48,13 +51,7 @@ var calculateHBS  = function (travelTime, retailEmployees) {
 }
 
 var calculateHBO = function (travelTime, households, adminEmployees, serviceEmployees) {
-    intercept = 0.3;
-    travelTimeParam = -0.01;
-    impedanceParam = 0.01;
-    attractionParam = 0.1;
-
-    impedanceImpact = impedanceParam * Math.exp(travelTimeParam * travelTime);
-
+    impedanceImpact = impedanceParamHbo * Math.exp(travelTimeParamHbo * travelTime);
     attraction = 0;
     if(households > 0) {
         attraction += Math.log(households);
@@ -65,8 +62,8 @@ var calculateHBO = function (travelTime, households, adminEmployees, serviceEmpl
     if(serviceEmployees > 0) {
         attraction += Math.log(serviceEmployees);
     }
-    attractionImpact = attraction * attractionParam;
-    return Math.exp(intercept + impedanceImpact + attractionImpact);
+    attractionImpact = attraction * attractionParamHbo;
+    return Math.exp(impedanceImpact + attractionImpact);
 }
 
 var calculateNHBW = function (travelTime, households, adminEmployees, serviceEmployees, retailEmployees) {

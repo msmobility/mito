@@ -38,7 +38,7 @@ public class MitoUtilsTest {
 
         MitoUtil.scaleMapTo(source, 100);
 
-        assertEquals((double) 100., (double) source.get(4), 0.);
+        assertEquals( 100., source.get(4), 0.);
 
     }
 

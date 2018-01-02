@@ -7,7 +7,6 @@ public class Properties {
     public static final String REMOVE_TRIPS_AT_BORDER = "reduce.trips.at.outer.border";
 
     public static final String AUTO_PEAK_SKIM = "auto.peak.sov.skim";
-    public static final String EMPLOYMENT = "employment.forecast";
     public static final String JOBS = "job.file.ascii";
     public static final String HOUSEHOLDS = "household.file.ascii";
     public static final String PERSONS = "person.file.ascii";
@@ -25,9 +24,6 @@ public class Properties {
 
     public static final String BASE_DIRECTORY = "base.directory";
 
-    public static final String ACCESSIBILITY_ALPHA = "accessibility.alpha";
-    public static final String ACCESSIBILITY_BETA = "accessibility.beta";
-
     public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
 
     public static final String AUTO_TRAVEL_TIME_SKIM = "auto.travelTime";
@@ -38,5 +34,5 @@ public class Properties {
     public static final String NMT_TRAVEL_DISTANCE_SKIM = "nmt.travelDistance";
     public static final String AREA_TYPES_AND_TRANSIT_DISTANCE = "areaTypes.distToTransit";
 
-
+    public static final String CREATE_DESTINATION_CHOICE_HISTOGRAMS = "create.destination.choice.histograms";
 }

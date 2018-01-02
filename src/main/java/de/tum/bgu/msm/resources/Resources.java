@@ -24,7 +24,6 @@ public class Resources {
 
     public static void initializeResources(ResourceBundle resources, Implementation implementation) {
         INSTANCE = new Resources(resources, implementation);
-        implementation = implementation;
     }
 
     public synchronized int getInt(String key) {
@@ -41,6 +40,10 @@ public class Resources {
 
     public synchronized  boolean getBoolean(String key) {
         return ResourceUtil.getBooleanProperty(resources, key);
+    }
+
+    public synchronized  boolean getBoolean(String key, boolean defaultValue) {
+        return ResourceUtil.getBooleanProperty(resources, key, defaultValue);
     }
 
     public synchronized double getDouble(String key) {

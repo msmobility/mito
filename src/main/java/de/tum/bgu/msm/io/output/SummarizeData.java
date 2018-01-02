@@ -71,19 +71,30 @@ public class SummarizeData {
 
 
     private static void writeHistogram(DataSet dataSet, Purpose purpose) {
-        List<Double> trips = new ArrayList<>();
+        List<Double> travelTimes = new ArrayList<>();
+        List<Double> travelDistances = new ArrayList<>();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
-                trips.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                travelDistances.add(dataSet.getTravelDistances().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
             }
         }
-        double[] travelTimesArray = new double[trips.size()];
+
+        double[] travelTimesArray = new double[travelTimes.size()];
         int i = 0;
-        for (Double value : trips) {
+        for (Double value : travelTimes) {
             travelTimesArray[i] = value;
             i++;
         }
+
+        double[] travelDistancesArray = new double[travelTimes.size()];
+        i= 0;
+        for(Double value: travelDistances) {
+            travelDistancesArray[i] = value / 1000.;
+            i++;
+        }
         Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 1, 80);
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 100, 1, 100);
     }
 
     public static void writeHistograms(DataSet dataSet) {

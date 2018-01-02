@@ -17,10 +17,10 @@ public class MitoHousehold {
 
     private final int hhId;
     private int income;
-    private int autos;
-    private Zone homeZone;
+    private final int autos;
+    private final Zone homeZone;
 
-    private final EnumMap<Purpose, ArrayList<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
 
     private final Map<Integer, MitoPerson> persons  = new HashMap<>();
@@ -44,8 +44,8 @@ public class MitoHousehold {
         return income;
     }
 
-    public void setIncome(int inc) {
-        income = inc;
+    public void addIncome(int inc) {
+        income += inc;
     }
 
     public int getAutos() {
@@ -72,18 +72,8 @@ public class MitoHousehold {
         this.persons.put(person.getId(), person);
     }
 
-    public void removePerson(Integer personId) {
-        this.persons.remove(personId);
-    }
-
-    public synchronized void addTrip(MitoTrip trip) {
-        if(tripsByPurpose.containsKey(trip.getTripPurpose())) {
-            tripsByPurpose.get(trip.getTripPurpose()).add(trip);
-        } else {
-            ArrayList<MitoTrip> trips = new ArrayList<>();
-            trips.add(trip);
-            tripsByPurpose.put(trip.getTripPurpose(), trips);
-        }
+    public synchronized void setTripsByPurpose(List<MitoTrip> trips, Purpose purpose) {
+            tripsByPurpose.put(purpose, trips);
     }
 
     public List<MitoTrip> getTripsForPurpose(Purpose purpose) {

@@ -18,7 +18,6 @@ public class ConcurrentFunctionExecutor {
     }
 
     public void execute() {
-        // Multi-threading code
         Function1<ConcurrentFunction, Void> concurrentFunction = function -> {
             function.execute();
             return null;

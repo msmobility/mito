@@ -4,6 +4,7 @@ import com.pb.common.matrix.Matrix;
 import com.pb.common.util.ResourceUtil;
 import de.tum.bgu.msm.data.Gender;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -14,10 +15,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Utilities for the Transport in Microsimulation Orchestrator (TIMO)
@@ -26,7 +24,10 @@ import java.util.ResourceBundle;
  * Created on Sep 18, 2016 in Munich, Germany
  */
 
-public class MitoUtil {
+public final class MitoUtil {
+
+    private MitoUtil() {
+    }
 
     private static final Logger logger = Logger.getLogger(MitoUtil.class);
     private static Random rand;
@@ -34,13 +35,8 @@ public class MitoUtil {
 
 
     public static void initializeRandomNumber() {
-        // initialize random number generator
         int seed = Resources.INSTANCE.getInt(Properties.RANDOM_SEED);
-        if (seed == -1) {
-            rand = new Random();
-        } else {
-            rand = new Random(seed);
-        }
+        rand = new Random(seed);
     }
 
 
@@ -51,7 +47,6 @@ public class MitoUtil {
     public static float getRandomFloat() {
         return rand.nextFloat();
     }
-
 
     public static String getBaseDirectory() {
         return baseDirectory;
@@ -96,7 +91,6 @@ public class MitoUtil {
         return ind;
     }
 
-
     public static Integer getSum(Integer[] array) {
         Integer sm = 0;
         for (Integer value : array) {
@@ -138,7 +132,6 @@ public class MitoUtil {
 
 
     private static double getSum(double[] array) {
-        // return sum of all elements in array
         double sum = 0;
         for (double val : array) {
             sum += val;
@@ -169,8 +162,6 @@ public class MitoUtil {
     }
 
 
-
-
     static public String customFormat(String pattern, double value) {
         // function copied from: http://docs.oracle.com/javase/tutorial/java/data/numberformat.html
         // 123456.789 ###,###.###  123,456.789 The pound sign (#) denotes a digit, the comma is a placeholder for the grouping separator, and the period is a placeholder for the decimal separator.
@@ -199,7 +190,6 @@ public class MitoUtil {
     }
 
     public static int select(float[] probabilities, Random random) {
-        // select item based on probabilities (for zero-based double array)
         double selPos = getSum(probabilities) * random.nextDouble();
         double sum = 0;
         for (int i = 0; i < probabilities.length; i++) {
@@ -237,6 +227,21 @@ public class MitoUtil {
         throw new RuntimeException("Error selecting item from weighted probabilities");
     }
 
+    public static <T> T select(T... objects) {
+        return objects[rand.nextInt(objects.length)];
+    }
+
+    public static <T> T select(Random rand, T... objects) {
+        return objects[rand.nextInt(objects.length)];
+    }
+
+    public static <T> T select(List<T> objects) {
+        return objects.get(rand.nextInt(objects.size()));
+    }
+
+    public static <T> T select(Random rand, List<T> objects) {
+        return objects.get(rand.nextInt(objects.size()));
+    }
 
     public static int[] createIndexArray(int[] array) {
         // create indexArray for array
@@ -318,11 +323,10 @@ public class MitoUtil {
 
     public static Matrix convertOmxToMatrix(OmxMatrix omxMatrix, OmxLookup lookup) {
 
-        OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
+        final OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
         final int[] intLookup = (int[]) lookup.getLookup();
-        String name = omxMatrix.getName();
-        int[] dimensions = omxMatrix.getShape();
-        Matrix mat = new Matrix(name, name, dimensions[0], dimensions[1]);
+        final int[] dimensions = omxMatrix.getShape();
+        final Matrix mat = new Matrix(dimensions[0], dimensions[1]);
         if (type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             float[][] fArray = (float[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
@@ -377,11 +381,11 @@ public class MitoUtil {
     }
 
     public static int getLicenseHoldersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.hasDriversLicense()).count();
+        return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
     }
 
     public static Random getRandomObject() {
         return rand;
     }
+
 }
