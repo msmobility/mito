@@ -18,12 +18,14 @@ public class MandatoryBudgetCalculator implements ConcurrentFunction{
     private final Purpose purpose;
     private final Occupation occupation;
     private final TravelTimes travelTimes;
+    private final double timeOfDay;
     private int ignored = 0;
 
-    public MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose purpose, TravelTimes travelTimes) {
+    public MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose purpose, TravelTimes travelTimes, double timeOfDay) {
         this.households = households;
         this.purpose = purpose;
         this.travelTimes = travelTimes;
+        this.timeOfDay = timeOfDay;
         if(purpose == Purpose.HBW) {
             occupation = Occupation.WORKER;
         } else if(purpose == Purpose.HBE) {
@@ -44,7 +46,7 @@ public class MandatoryBudgetCalculator implements ConcurrentFunction{
                         ignored++;
                         continue;
                     }
-                    budget += travelTimes.getTravelTime(household.getHomeZone().getZoneId(), person.getOccupationZone().getZoneId());
+                    budget += travelTimes.getTravelTime(household.getHomeZone().getZoneId(), person.getOccupationZone().getZoneId(), timeOfDay);
                 }
             }
             household.setTravelTimeBudgetByPurpose(purpose, budget);

@@ -72,7 +72,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), dataSet.getPeakHour());
         idealBudgetSum += hhBudgetPerTrip;
     }
 
@@ -98,7 +98,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     void adjustDestinationProbabilities(int origin) {
         float[] tempCopy = new float[destinationProbabilities.length];
         for (int i = 0; i < destinationProbabilities.length; i++) {
-            int deviation = (int) ((travelTimes.getTravelTime(origin, baseProbabilities.get(purpose).getExternalNumber(i)) / adjustedBudget));
+            int deviation = (int) ((travelTimes.getTravelTime(origin, baseProbabilities.get(purpose).getExternalNumber(i), dataSet.getPeakHour()) / adjustedBudget));
             tempCopy[i] = destinationProbabilities[i] * (float) getDensity(deviation);
         }
         destinationProbabilities = tempCopy;

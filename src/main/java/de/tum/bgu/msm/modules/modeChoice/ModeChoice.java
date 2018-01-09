@@ -45,21 +45,18 @@ public class ModeChoice extends Module {
         ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
 
         for (Purpose purpose : Purpose.values()){
-            executor.addFunction(new ConcurrentFunction() {
-                @Override
-                public void execute() {
-                    final Map<String,Double> travelTimeByMode = new HashMap<>(NUMBER_OF_MOTORIZED_MODES);
-                    for (MitoHousehold household : dataSet.getHouseholds().values()){
-                        for (MitoTrip trip : household.getTripsForPurpose(purpose)){
-                            travelTimeByMode.put("autoD",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                            travelTimeByMode.put("autoP",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                            travelTimeByMode.put("bus",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                            travelTimeByMode.put("tramMetro",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                            travelTimeByMode.put("train",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
-                            final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
-                            final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
-                            modeChoiceProbabilities.put(purpose, trip.getTripId(),calculator.calculateProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT));
-                        }
+            executor.addFunction(() -> {
+                final Map<String,Double> travelTimeByMode = new HashMap<>(NUMBER_OF_MOTORIZED_MODES);
+                for (MitoHousehold household : dataSet.getHouseholds().values()){
+                    for (MitoTrip trip : household.getTripsForPurpose(purpose)){
+                        travelTimeByMode.put("autoD",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), dataSet.getPeakHour()));
+                        travelTimeByMode.put("autoP",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(),dataSet.getPeakHour()));
+                        travelTimeByMode.put("bus",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), dataSet.getPeakHour()));
+                        travelTimeByMode.put("tramMetro",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), dataSet.getPeakHour()));
+                        travelTimeByMode.put("train",dataSet.getTravelTimes("auto").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(),dataSet.getPeakHour()));
+                        final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+                        final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+                        modeChoiceProbabilities.put(purpose, trip.getTripId(),calculator.calculateProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT));
                     }
                 }
             });

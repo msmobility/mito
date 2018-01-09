@@ -27,7 +27,7 @@ public class TravelTimeBudgetModuleTest {
         Resources.initializeResources(bundle, Implementation.MUNICH);
 
         dataSet = new DataSet();
-        TravelTimes travelTimes = (origin, destination) -> 20;
+        TravelTimes travelTimes = (origin, destination, time) -> 20;
         dataSet.addTravelTimeForMode("car", travelTimes);
         dataSet.addTravelTimeForMode("pt", travelTimes);
         addZone();

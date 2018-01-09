@@ -25,7 +25,7 @@ public final class BorderDampersReader extends CSVReader {
 
     @Override
     protected void processHeader(String[] header) {
-        zoneIndex = MitoUtil.findPositionInArray("MitoZone", header);
+        zoneIndex = MitoUtil.findPositionInArray("Zone", header);
         damperIndex = MitoUtil.findPositionInArray("damper", header);
     }
 

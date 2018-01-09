@@ -22,12 +22,15 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
     private final Map<Integer, MitoZone> zones;
     private final TravelTimes travelTimes;
     private final Map<Purpose, Matrix> utilityMatrices;
+    private final double timeOfDay;
 
-    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet, Map<Purpose, Matrix> utilityMatrices) {
+    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet, Map<Purpose, Matrix> utilityMatrices, double timeOfDay) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelTimes = dataSet.getTravelTimes("car");
         this.utilityMatrices = utilityMatrices;
+        this.timeOfDay = timeOfDay;
+
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
         calculator = new DestinationUtilityJSCalculator(reader);
     }
@@ -46,7 +49,7 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
         utilityMatrix.setExternalNumbers(numbering);
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
-                final double travelTime = travelTimes.getTravelTime(origin.getZoneId(), destination.getZoneId());
+                final double travelTime = travelTimes.getTravelTime(origin.getZoneId(), destination.getZoneId(), timeOfDay);
                 final float utility = (float) getUtility(destination, travelTime);
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +

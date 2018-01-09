@@ -21,6 +21,8 @@ public class DataSet {
 
     private TravelSurvey<? extends SurveyRecord> survey;
 
+    private double peakHour = Double.NaN;
+
     private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
@@ -106,5 +108,13 @@ public class DataSet {
 
     public synchronized void removeTrip(final int tripId) {
         trips.remove(tripId);
+    }
+
+    public double getPeakHour() {
+        return peakHour;
+    }
+
+    public void setPeakHour(double peakHour) {
+        this.peakHour = peakHour;
     }
 }

@@ -74,7 +74,7 @@ public class SummarizeData {
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
-                travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()));
+                travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), dataSet.getPeakHour()));
                 double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
                 travelDistances.add(travelDistance);
                 if(distancesByZone.containsKey(trip.getTripOrigin().getZoneId())){

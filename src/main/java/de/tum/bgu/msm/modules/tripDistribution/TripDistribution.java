@@ -69,7 +69,7 @@ public final class TripDistribution extends Module {
     public void buildMatrices() {
         ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
         for (Purpose purpose : Purpose.values()) {
-            executor.addFunction(new DestinationUtilityByPurposeGenerator(purpose, dataSet, utilityMatrices));
+            executor.addFunction(new DestinationUtilityByPurposeGenerator(purpose, dataSet, utilityMatrices, dataSet.getPeakHour()));
         }
         executor.execute();
     }

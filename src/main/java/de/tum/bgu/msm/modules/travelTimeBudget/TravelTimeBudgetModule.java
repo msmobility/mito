@@ -45,8 +45,8 @@ public class TravelTimeBudgetModule extends Module {
         for(Purpose purpose: discretionaryPurposes) {
             executor.addFunction(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values()));
         }
-        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes("car")));
-        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes("car")));
+        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
+        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
         executor.execute();
         logger.info("  Adjusting travel time budgets.");
         adjustDiscretionaryPurposeBudgets();
