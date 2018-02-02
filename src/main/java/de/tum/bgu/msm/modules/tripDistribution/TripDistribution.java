@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.collect.ImmutableList;
-import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.data.Purpose;
@@ -27,7 +27,7 @@ public final class TripDistribution extends Module {
     public final static AtomicInteger RANDOM_OCCUPATION_DESTINATION_TRIPS = new AtomicInteger(0);
     public final static AtomicInteger COMPLETELY_RANDOM_NHB_TRIPS = new AtomicInteger(0);
 
-    private final EnumMap<Purpose, Matrix> utilityMatrices = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, DoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
 
     private final static Logger logger = Logger.getLogger(TripDistribution.class);
 

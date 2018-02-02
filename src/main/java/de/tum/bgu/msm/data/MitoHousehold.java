@@ -11,7 +11,7 @@ import java.util.*;
  *
  */
 
-public class MitoHousehold {
+public class MitoHousehold implements Id {
 
     private static final Logger logger = Logger.getLogger(MitoHousehold.class);
 
@@ -32,7 +32,8 @@ public class MitoHousehold {
         this.homeZone = homeZone;
     }
 
-    public int getHhId() {
+    @Override
+    public int getId() {
         return hhId;
     }
 
@@ -64,9 +65,9 @@ public class MitoHousehold {
         MitoPerson test = this.persons.get(person.getId());
         if(test!= null) {
             if(test.equals(person)) {
-                logger.warn("Person " + person.getId() + " was already added to household " + this.getHhId());
+                logger.warn("Person " + person.getId() + " was already added to household " + this.getId());
             } else {
-                throw new IllegalArgumentException("Person id " + person.getId() + " already exists in household " + this.getHhId());
+                throw new IllegalArgumentException("Person id " + person.getId() + " already exists in household " + this.getId());
             }
         }
         this.persons.put(person.getId(), person);

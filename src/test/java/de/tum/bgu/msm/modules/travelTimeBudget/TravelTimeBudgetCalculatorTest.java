@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
+import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.*;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -8,6 +9,7 @@ import org.junit.Test;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ResourceBundle;
 
@@ -21,8 +23,11 @@ public class TravelTimeBudgetCalculatorTest {
 
     @Before
     public void setup() {
-        ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.initializeResources(bundle, Implementation.MUNICH);
+        try {
+            Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try {
             Reader reader = new FileReader(Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_JS));

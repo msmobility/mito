@@ -7,7 +7,7 @@ package de.tum.bgu.msm.data;
  *
  */
 
-public class MitoTrip {
+public class MitoTrip implements Id{
 
     private final int tripId;
     private final Purpose tripPurpose;
@@ -22,7 +22,8 @@ public class MitoTrip {
         this.tripPurpose = tripPurpose;
     }
 
-    public int getTripId() {
+    @Override
+    public int getId() {
         return tripId;
     }
 

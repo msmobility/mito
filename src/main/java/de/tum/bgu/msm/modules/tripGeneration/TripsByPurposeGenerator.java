@@ -52,9 +52,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         tripsByHH.forEach((hh, trips) -> {
             hh.setTripsByPurpose(trips, purpose);
             trips.forEach(trip -> {
-                if(dataSet.getTrips().putIfAbsent(trip.getTripId(), trip) != null) {
-                    throw new RuntimeException("Trip with id " + trip.getTripId() + " was already added to data set!");
-                }
+                dataSet.addTrip(trip);
             });
         });
     }
@@ -68,7 +66,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
     private void generateTripsForHousehold(MitoHousehold hh) {
         HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
         if (hhType == null) {
-            logger.error("Could not create trips for Household " + hh.getHhId() + " with Purpose " + purpose + ": No Household Type applicable");
+            logger.error("Could not create trips for Household " + hh.getId() + " with Purpose " + purpose + ": No Household Type applicable");
             return;
         }
         String token = hhType.getId() + "_" + purpose;
@@ -153,7 +151,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
     private boolean reduceTripGenAtStudyAreaBorder(MitoZone tripOrigin) {
         if (dropAtBorder) {
-            float damper = dataSet.getZones().get(tripOrigin.getZoneId()).getReductionAtBorderDamper();
+            float damper = dataSet.getZones().get(tripOrigin.getId()).getReductionAtBorderDamper();
             return random.nextFloat() < damper;
         }
         return false;

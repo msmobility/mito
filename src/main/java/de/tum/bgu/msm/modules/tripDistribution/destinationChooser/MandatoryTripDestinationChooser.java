@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
-import com.pb.common.matrix.Matrix;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 
@@ -10,7 +10,7 @@ public final class MandatoryTripDestinationChooser extends BasicDestinationChoos
 
     private final Occupation occupation;
 
-    public MandatoryTripDestinationChooser(Purpose purpose, Occupation occupation, EnumMap<Purpose, Matrix> baseProbabilities, DataSet dataSet) {
+    public MandatoryTripDestinationChooser(Purpose purpose, Occupation occupation, EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(purpose, baseProbabilities, dataSet);
         this.occupation = occupation;
     }

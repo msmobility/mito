@@ -6,16 +6,13 @@ import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataSet {
 
-    private static final Logger logger = Logger.getLogger(DataSet.class);
-
     private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
+
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
 
@@ -23,10 +20,11 @@ public class DataSet {
 
     private double peakHour = Double.NaN;
 
-    private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
-    private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
-    private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
-    private final Map<Integer, MitoTrip> trips = new ConcurrentHashMap<>();
+    private final NavigableMap<Integer, MitoZone> zones= new TreeMap<>();
+    private final NavigableMap<Integer, MitoHousehold> households = new TreeMap<>();
+    private final NavigableMap<Integer, MitoPerson> persons = new TreeMap<>();
+    private final NavigableMap<Integer, MitoTrip> trips = new TreeMap<>();
+
 
     public TravelSurvey<? extends SurveyRecord> getSurvey() {
         return this.survey;
@@ -37,9 +35,11 @@ public class DataSet {
     }
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
+
     public TravelDistances getTravelDistancesNMT(){return this.travelDistancesNMT;}
 
     public void setTravelDistancesAuto(TravelDistances travelDistancesAuto){this.travelDistancesAuto = travelDistancesAuto;}
+
     public void setTravelDistancesNMT(TravelDistances travelDistancesNMT){this.travelDistancesNMT = travelDistancesNMT;}
 
     public Map<String, TravelTimes> getTravelTimes() {
@@ -54,56 +54,60 @@ public class DataSet {
         return this.travelTimes.put(mode, travelTimes);
     }
 
-    public Map<Integer, MitoPerson> getPersons() {
-        return Collections.unmodifiableMap(persons);
+    public NavigableMap<Integer, MitoPerson> getPersons() {
+        return Collections.unmodifiableNavigableMap(persons);
     }
 
-    public Map<Integer, MitoZone> getZones() {
-        return Collections.unmodifiableMap(zones);
+    public NavigableMap<Integer, MitoZone> getZones() {
+        return Collections.unmodifiableNavigableMap(zones);
     }
 
-    public Map<Integer, MitoHousehold> getHouseholds() {
-        return Collections.unmodifiableMap(households);
+    public NavigableMap<Integer, MitoHousehold> getHouseholds() {
+        return Collections.unmodifiableNavigableMap(households);
     }
 
-    public Map<Integer, MitoTrip> getTrips() {
-        return trips;
+    public NavigableMap<Integer, MitoTrip> getTrips() {
+        return Collections.unmodifiableNavigableMap(trips);
+    }
+
+    public void addTrip(final MitoTrip trip) {
+        MitoTrip test;
+        synchronized (trips) {
+            test = trips.putIfAbsent(trip.getId(), trip);
+        }
+        if(test != null) {
+            throw new IllegalArgumentException("MitoTrip id " + trip.getId() + " already exists!");
+        }
     }
 
     public void addZone(final MitoZone zone) {
-        MitoZone test = this.zones.get(zone.getZoneId());
-        if(test != null) {
-            if(test.equals(zone)) {
-                logger.warn("MitoZone " + zone.getZoneId() + " was already added to data set.");
-                return;
-            }
-            throw new IllegalArgumentException("MitoZone id " + zone.getZoneId() + " already exists!");
+        MitoZone test;
+        synchronized (zones) {
+            test = zones.putIfAbsent(zone.getId(), zone);
         }
-        zones.put(zone.getZoneId(), zone);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoZone id " + zone.getId() + " already exists!");
+        }
     }
 
-    public synchronized void addHousehold(final MitoHousehold household) {
-        MitoHousehold test = this.households.get(household.getHhId());
-        if(test != null) {
-            if(test.equals(household)) {
-                logger.warn("Household " + household.getHhId() + " was already added to data set.");
-                return;
-            }
-            throw new IllegalArgumentException("Household id " + household.getHhId() + " already exists!");
+    public void addHousehold(final MitoHousehold household) {
+        MitoHousehold test;
+        synchronized (households) {
+            test = households.putIfAbsent(household.getId(), household);
         }
-        households.put(household.getHhId(), household);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoHousehold id " + household.getId() + " already exists!");
+        }
     }
 
-    public synchronized void addPerson(final MitoPerson person) {
-        MitoPerson test = this.persons.get(person.getId());
-        if(test != null) {
-            if(test.equals(person)) {
-                logger.warn("Person " + person.getId() + " was already added to data set.");
-                return;
-            }
-            throw new IllegalArgumentException("Person id " + person.getId() + " already exists!");
+    public void addPerson(final MitoPerson person) {
+        MitoPerson test;
+        synchronized (trips) {
+            test = persons.putIfAbsent(person.getId(), person);
         }
-        persons.put(person.getId(), person);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoPerson id " + person.getId() + " already exists!");
+        }
     }
 
     public synchronized void removeTrip(final int tripId) {
@@ -116,5 +120,42 @@ public class DataSet {
 
     public void setPeakHour(double peakHour) {
         this.peakHour = peakHour;
+    }
+
+    public static int getFemalesForHousehold(MitoHousehold household) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getGender().equals(Gender.FEMALE)).count();
+    }
+
+    public static int getChildrenForHousehold(MitoHousehold household) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getAge() < 18).count();
+    }
+
+    public static int getYoungAdultsForHousehold(MitoHousehold household) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getAge() >= 18 && person.getAge() <= 25).count();
+
+    }
+
+    public static int getRetireesForHousehold(MitoHousehold household) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getAge() > 65).count();
+    }
+
+    public static int getNumberOfWorkersForHousehold(MitoHousehold household) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getOccupation() == Occupation.WORKER).count();
+
+    }
+
+    public static int getStudentsForHousehold(MitoHousehold household) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getOccupation() == Occupation.STUDENT).count();
+
+    }
+
+    public static int getLicenseHoldersForHousehold(MitoHousehold household) {
+        return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
     }
 }

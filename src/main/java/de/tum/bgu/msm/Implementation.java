@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.resources;
+package de.tum.bgu.msm;
 
 public enum Implementation {
     MUNICH,

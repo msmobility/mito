@@ -1,16 +1,8 @@
 package de.tum.bgu.msm.util;
 
-import com.pb.common.matrix.Matrix;
-import com.pb.common.util.ResourceUtil;
-import de.tum.bgu.msm.data.Gender;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Occupation;
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import omx.OmxLookup;
-import omx.OmxMatrix;
-import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -20,7 +12,7 @@ import java.util.*;
 /**
  * Utilities for the Transport in Microsimulation Orchestrator (TIMO)
  *
- * @author Rolf Moeckel
+ * @author Rolf Moeckel / Nico Kühnel
  * Created on Sep 18, 2016 in Munich, Germany
  */
 
@@ -39,13 +31,8 @@ public final class MitoUtil {
         rand = new Random(seed);
     }
 
-
     public static void initializeRandomNumber(Random randSetting) {
         rand = randSetting;
-    }
-
-    public static float getRandomFloat() {
-        return rand.nextFloat();
     }
 
     public static String getBaseDirectory() {
@@ -59,12 +46,6 @@ public final class MitoUtil {
     public static float rounder(float value, int digits) {
         // rounds value to digits behind the decimal point
         return Math.round(value * Math.pow(10, digits) + 0.5) / (float) Math.pow(10, digits);
-    }
-
-    public static ResourceBundle createResourceBundle(String fileName) {
-        // read properties file and return as ResourceBundle
-        File propFile = new File(fileName);
-        return ResourceUtil.getPropertyBundle(propFile);
     }
 
     private static int getHighestVal(int[] array) {
@@ -107,30 +88,6 @@ public final class MitoUtil {
         return sm;
     }
 
-    public static int getSum(int[][] array) {
-        // return array of two-dimensional int array
-        int sm = 0;
-        for (int[] anArray : array) {
-            for (int i = 0; i < array[0].length; i++) {
-                sm += anArray[i];
-            }
-        }
-        return sm;
-    }
-
-
-    public static float getSum(float[][] array) {
-        // return array of two-dimensional int array
-        int sm = 0;
-        for (float[] anArray : array) {
-            for (int i = 0; i < array[0].length; i++) {
-                sm += anArray[i];
-            }
-        }
-        return sm;
-    }
-
-
     private static double getSum(double[] array) {
         double sum = 0;
         for (double val : array) {
@@ -139,19 +96,6 @@ public final class MitoUtil {
         return sum;
     }
 
-
-    public static float getSum(float[][][] array) {
-        // return array of three-dimensional double array
-        float sm = 0;
-        for (float[][] anArray : array) {
-            for (int i = 0; i < array[0][0].length; i++) {
-                for (int j = 0; j < array[0].length; j++) {
-                    sm += anArray[i][j];
-                }
-            }
-        }
-        return sm;
-    }
 
     private static double getSum(Collection<Double> values) {
         double sm = 0;
@@ -170,10 +114,6 @@ public final class MitoUtil {
         // 12345.67   $###,###.### $12,345.67  The first character in the pattern is the dollar sign ($). Note that it immediately precedes the leftmost digit in the formatted output.
         DecimalFormat myFormatter = new DecimalFormat(pattern);
         return myFormatter.format(value);
-    }
-
-    public static int select(double[] probabilities) {
-        return select(probabilities, rand);
     }
 
     public static int select(double[] probabilities, Random random) {
@@ -227,9 +167,7 @@ public final class MitoUtil {
         throw new RuntimeException("Error selecting item from weighted probabilities");
     }
 
-    public static <T> T select(T... objects) {
-        return objects[rand.nextInt(objects.length)];
-    }
+
 
     public static <T> T select(Random rand, T... objects) {
         return objects[rand.nextInt(objects.length)];
@@ -320,72 +258,7 @@ public final class MitoUtil {
         }
     }
 
-
-    public static Matrix convertOmxToMatrix(OmxMatrix omxMatrix, OmxLookup lookup) {
-
-        final OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
-        final int[] intLookup = (int[]) lookup.getLookup();
-        final int[] dimensions = omxMatrix.getShape();
-        final Matrix mat = new Matrix(dimensions[0], dimensions[1]);
-        if (type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
-            float[][] fArray = (float[][]) omxMatrix.getData();
-            for (int i = 0; i < dimensions[0]; i++) {
-                for (int j = 0; j < dimensions[1]; j++) {
-                    mat.setValueAt(intLookup[i], intLookup[j], fArray[i][j]);
-                }
-            }
-        } else if (type.equals(OmxHdf5Datatype.OmxJavaType.DOUBLE)) {
-            double[][] dArray = (double[][]) omxMatrix.getData();
-            for (int i = 0; i < dimensions[0]; i++) {
-                for (int j = 0; j < dimensions[1]; j++) {
-                    mat.setValueAt(i + 1, j + 1, (float) dArray[i][j]);
-                }
-            }
-        } else {
-            throw new RuntimeException("OMX Matrix type " + type.toString() + " not yet implemented");
-        }
-        return mat;
-    }
-
-    public static int getFemalesForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getGender().equals(Gender.FEMALE)).count();
-    }
-
-    public static int getChildrenForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getAge() < 18).count();
-    }
-
-    public static int getYoungAdultsForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getAge() >= 18 && person.getAge() <= 25).count();
-
-    }
-
-    public static int getRetireesForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getAge() > 65).count();
-    }
-
-    public static int getNumberOfWorkersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getOccupation() == Occupation.WORKER).count();
-
-    }
-
-    public static int getStudentsForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getOccupation() == Occupation.STUDENT).count();
-
-    }
-
-    public static int getLicenseHoldersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
-    }
-
     public static Random getRandomObject() {
         return rand;
     }
-
 }

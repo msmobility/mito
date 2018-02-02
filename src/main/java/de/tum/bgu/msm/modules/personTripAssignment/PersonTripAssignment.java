@@ -10,9 +10,7 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class PersonTripAssignment extends Module {
@@ -38,7 +36,7 @@ public class PersonTripAssignment extends Module {
                     } else {
                         logger.warn("Removing " + trip + " since no person could be assigned.");
                         iterator.remove();
-                        dataSet.removeTrip(trip.getTripId());
+                        dataSet.removeTrip(trip.getId());
                     }
                 }
             }

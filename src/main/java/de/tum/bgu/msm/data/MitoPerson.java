@@ -11,7 +11,7 @@ import java.util.*;
  *
  */
 
-public class MitoPerson {
+public class MitoPerson implements Id{
 
     private static final Logger logger = Logger.getLogger(MitoPerson.class);
 
@@ -50,6 +50,7 @@ public class MitoPerson {
         return occupationZone;
     }
 
+    @Override
     public int getId() {
         return this.id;
     }
@@ -71,14 +72,14 @@ public class MitoPerson {
     }
 
     public void addTrip(MitoTrip trip) {
-        MitoTrip test = this.trips.get(trip.getTripId());
+        MitoTrip test = this.trips.get(trip.getId());
         if(test != null) {
             if(test.equals(trip)) {
-                logger.warn("Trip " + trip.getTripId() + "already exists in person " + this.getId());
+                logger.warn("Trip " + trip.getId() + "already exists in person " + this.getId());
             } else {
-                throw new IllegalArgumentException("Trip id " + trip.getTripId() + " already exists in person " + this.getId());
+                throw new IllegalArgumentException("Trip id " + trip.getId() + " already exists in person " + this.getId());
             }
         }
-        this.trips.put(trip.getTripId(), trip);
+        this.trips.put(trip.getId(), trip);
     }
 }

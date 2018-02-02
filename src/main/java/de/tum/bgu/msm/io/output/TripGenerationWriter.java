@@ -48,8 +48,8 @@ public class TripGenerationWriter {
         for (MitoTrip trip: dataSet.getTrips().values()) {
             if(trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 Purpose purpose = trip.getTripPurpose();
-                int number = tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).get(purpose);
-                tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).replace(purpose, (number + 1));
+                int number = tripProdByZoneAndPurp.get(trip.getTripOrigin().getId()).get(purpose);
+                tripProdByZoneAndPurp.get(trip.getTripOrigin().getId()).replace(purpose, (number + 1));
             }
         }
 

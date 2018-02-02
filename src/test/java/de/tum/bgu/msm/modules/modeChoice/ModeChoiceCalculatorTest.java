@@ -1,13 +1,14 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.resources.Implementation;
+import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
@@ -22,8 +23,11 @@ public class ModeChoiceCalculatorTest {
 
     @Before
     public void setup() {
-        ResourceBundle bundle = MitoUtil.createResourceBundle("./testInput/test.properties");
-        Resources.initializeResources(bundle, Implementation.MUNICH);
+        try {
+            Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoice"));
         calculator = new ModeChoiceJSCalculator(reader);

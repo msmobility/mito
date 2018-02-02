@@ -1,9 +1,9 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 /**
@@ -17,15 +17,8 @@ class MitoMuc {
     private static final Logger logger = Logger.getLogger(MitoMuc.class);
 
     public static void main(String[] args) {
-        MitoMuc mito = new MitoMuc();
-        ResourceBundle rb = MitoUtil.createResourceBundle(args[0]);
-        MitoUtil.setBaseDirectory(rb.getString("base.directory"));
-        mito.run(rb);
-    }
-
-    private void run (ResourceBundle resources) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = MitoModel.standAloneModel(resources, Implementation.MUNICH);
+        MitoModel model = MitoModel.standAloneModel(args[0], Implementation.MUNICH);
         model.runModel();
     }
 }

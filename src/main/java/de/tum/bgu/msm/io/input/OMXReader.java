@@ -1,8 +1,9 @@
 package de.tum.bgu.msm.io.input;
 
-import com.pb.common.matrix.Matrix;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.colt.matrix.tfloat.FloatMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
 
 /**
@@ -14,9 +15,15 @@ public abstract class OMXReader extends AbstractInputReader{
         super(dataSet);
     }
 
-    protected Matrix readAndConvertToMatrix(String fileName, String matrixName, String lookupName) {
+    protected FloatMatrix2D readAndConvertToFloatMatrix(String fileName, String matrixName, String lookupName) {
         OmxFile omx = new OmxFile(fileName);
         omx.openReadOnly();
-        return MitoUtil.convertOmxToMatrix(omx.getMatrix(matrixName), omx.getLookup(lookupName));
+        return Matrices.convertOmxToFloatMatrix2D(omx.getMatrix(matrixName), omx.getLookup(lookupName));
+    }
+
+    protected DoubleMatrix2D readAndConvertToDoubleMatrix(String fileName, String matrixName, String lookupName) {
+        OmxFile omx = new OmxFile(fileName);
+        omx.openReadOnly();
+        return Matrices.convertOmxToDoubleMatrix2D(omx.getMatrix(matrixName), omx.getLookup(lookupName));
     }
 }

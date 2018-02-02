@@ -50,10 +50,10 @@ public class InputManager {
 
     private void setHouseholdsFromFeed(Map<Integer, MitoHousehold> households) {
         for (MitoHousehold household : households.values()) {
-            if (dataSet.getZones().containsKey(household.getHomeZone().getZoneId())) {
-                dataSet.getZones().get(household.getHomeZone().getZoneId()).addHousehold();
+            if (dataSet.getZones().containsKey(household.getHomeZone().getId())) {
+                dataSet.getZones().get(household.getHomeZone().getId()).addHousehold();
             } else {
-                throw new RuntimeException("Fed household " + household.getHhId() + " refers to non-existing home zone "
+                throw new RuntimeException("Fed household " + household.getId() + " refers to non-existing home zone "
                         + household.getHomeZone());
             }
             dataSet.addHousehold(household);
