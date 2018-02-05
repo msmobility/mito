@@ -41,8 +41,7 @@ public class SkimsReader extends OMXReader {
 
     private void readAutoSkimForModeChoice(){
         Matrix timeSkimAuto = super.readAndConvertToMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_TIME_SKIM),"mat1", "lookup1");
-        dataSet.addTravelTimeForMode("autoD", new MatrixTravelTimes(timeSkimAuto));
-        dataSet.addTravelTimeForMode("autoP", new MatrixTravelTimes(timeSkimAuto));
+        dataSet.addTravelTimeForMode("auto", new MatrixTravelTimes(timeSkimAuto));
     }
 
     private void readBusSkimForModeChoice(){
