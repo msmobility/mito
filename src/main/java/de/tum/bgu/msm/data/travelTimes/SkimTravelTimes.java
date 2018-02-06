@@ -1,11 +1,11 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import cern.colt.matrix.tfloat.FloatMatrix2D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 
-public class MatrixTravelTimes implements TravelTimes {
-    private final FloatMatrix2D matrix;
+public class SkimTravelTimes implements TravelTimes {
+    private final DoubleMatrix2D matrix;
 
-    public MatrixTravelTimes(FloatMatrix2D matrix) {
+    public SkimTravelTimes(DoubleMatrix2D matrix) {
         this.matrix = matrix;
     }
 
@@ -13,6 +13,10 @@ public class MatrixTravelTimes implements TravelTimes {
     public double getTravelTime(int origin, int destination, double timeOfDay_s) {
         // Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
         // different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
-        return matrix.get(origin, destination);
+        return matrix.getQuick(origin, destination);
+    }
+
+    public DoubleMatrix2D getPeakTravelTimeMatrix() {
+        return matrix;
     }
 }
