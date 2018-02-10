@@ -64,7 +64,7 @@ public class Matrices {
             double[][] dArray = (double[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
-                    matrix.set(i, j, dArray[i][j]);
+                    matrix.set(i+1, j+1, dArray[i][j]);
                 }
             }
         } else if(type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
