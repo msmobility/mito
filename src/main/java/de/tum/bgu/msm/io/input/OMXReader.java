@@ -15,9 +15,9 @@ public abstract class OMXReader extends AbstractInputReader{
         super(dataSet);
     }
 
-    protected DoubleMatrix2D readAndConvertToDoubleMatrix(String fileName, String matrixName, String lookupName) {
+    protected DoubleMatrix2D readAndConvertToDoubleMatrix(String fileName, String matrixName) {
         OmxFile omx = new OmxFile(fileName);
         omx.openReadOnly();
-        return Matrices.convertOmxToDoubleMatrix2D(omx.getMatrix(matrixName), omx.getLookup(lookupName));
+        return Matrices.convertOmxToDoubleMatrix2D(omx.getMatrix(matrixName));
     }
 }

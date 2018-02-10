@@ -52,12 +52,11 @@ public class Matrices {
         return new SparseDoubleMatrix2D(rowMax+1, colMax+1);
     }
 
-    public static DoubleMatrix2D convertOmxToDoubleMatrix2D(OmxMatrix omxMatrix, OmxLookup lookup) {
+    public static DoubleMatrix2D convertOmxToDoubleMatrix2D(OmxMatrix omxMatrix) {
         final OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
         if(!type.equals(OmxHdf5Datatype.OmxJavaType.DOUBLE) && !type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             throw new IllegalArgumentException("Provided omx matrix is not a double or float matrix but is of type: " + type.name());
         }
-        final int[] intLookup = (int[]) lookup.getLookup();
         final int[] dimensions = omxMatrix.getShape();
         final DoubleMatrix2D matrix = new DenseDoubleMatrix2D(dimensions[0]+1, dimensions[1]+1);
 
@@ -65,14 +64,14 @@ public class Matrices {
             double[][] dArray = (double[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
-                    matrix.set(intLookup[i], intLookup[j], dArray[i][j]);
+                    matrix.set(i, j, dArray[i][j]);
                 }
             }
         } else if(type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             float[][] fArray = (float[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
-                    matrix.set(intLookup[i], intLookup[j], fArray[i][j]);
+                    matrix.set(i, j, fArray[i][j]);
                 }
             }
         }
