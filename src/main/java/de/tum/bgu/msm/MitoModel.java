@@ -3,11 +3,12 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.InputFeed;
 import de.tum.bgu.msm.io.input.InputManager;
-import de.tum.bgu.msm.resources.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -39,27 +40,27 @@ public final class MitoModel {
     private final InputManager manager;
     private final DataSet dataSet;
 
-    private MitoModel(ResourceBundle resources, Implementation implementation) {
+    private MitoModel(String propertiesFile, Implementation implementation) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
-        Resources.initializeResources(resources, implementation);
+        try {
+            Resources.initializeResources(propertiesFile, implementation);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel standAloneModel(ResourceBundle resources, Implementation implementation) {
+    public static MitoModel standAloneModel(String propertiesFile, Implementation implementation) {
         logger.info(" Creating standalone version of MITO ");
-        MitoModel model = new MitoModel(resources, implementation);
+        MitoModel model = new MitoModel(propertiesFile, implementation);
         model.manager.readAsStandAlone();
         model.manager.readAdditionalData();
         return model;
     }
 
-    public static MitoModel createEmptyModel(ResourceBundle resources, Implementation implementation) {
-        return new MitoModel(resources, implementation);
-    }
-
-    public static MitoModel createModelWithInitialFeed(ResourceBundle resources, Implementation implementation, InputFeed feed) {
-        MitoModel model = new MitoModel(resources, implementation);
+    public static MitoModel createModelWithInitialFeed(String propertiesFile, Implementation implementation, InputFeed feed) {
+        MitoModel model = new MitoModel(propertiesFile, implementation);
         model.manager.readFromFeed(feed);
         model.manager.readAdditionalData();
         return model;
@@ -89,7 +90,7 @@ public final class MitoModel {
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
-    public DataSet getTravelDemand() {
+    public DataSet getData() {
         return dataSet;
     }
 

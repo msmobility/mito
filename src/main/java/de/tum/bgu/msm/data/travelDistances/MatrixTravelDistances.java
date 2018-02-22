@@ -1,17 +1,17 @@
 package de.tum.bgu.msm.data.travelDistances;
 
-import com.pb.common.matrix.Matrix;
+import cern.colt.matrix.tfloat.FloatMatrix2D;
 
 public class MatrixTravelDistances implements TravelDistances{
 
-    private final Matrix matrix;
+    private final FloatMatrix2D matrix;
 
-    public MatrixTravelDistances(Matrix matrix) {
+    public MatrixTravelDistances(FloatMatrix2D matrix) {
         this.matrix = matrix;
     }
 
     @Override
     public double getTravelDistance(int origin, int destination) {
-        return matrix.getValueAt(origin, destination);
+        return matrix.get(origin, destination);
     }
 }

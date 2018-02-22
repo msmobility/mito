@@ -1,11 +1,11 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
+import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -110,9 +110,9 @@ public class HouseholdTypeManager {
         if (hh.getHomeZone() != null) {
             areaType = hh.getHomeZone().getAreaType().ordinal()+1;
         } else {
-            logger.info("Home MitoZone for Household  " + hh.getHhId() + " is null!");
+            logger.info("Home MitoZone for Household  " + hh.getId() + " is null!");
         }
-        return determineHouseholdType(hh.getHhSize(), MitoUtil.getNumberOfWorkersForHousehold(hh),
+        return determineHouseholdType(hh.getHhSize(), DataSet.getNumberOfWorkersForHousehold(hh),
                 incCategory, hh.getAutos(), areaType);
     }
 

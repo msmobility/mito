@@ -8,12 +8,12 @@ import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Gender;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.resources.Implementation;
+import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.io.IOException;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -47,20 +47,21 @@ public class PersonTripAssignmentTest {
         MitoTrip tripNHBO = new MitoTrip(6, Purpose.NHBO);
         household.setTripsByPurpose(Lists.newArrayList(tripNHBO), Purpose.NHBO);
 
-        dataSet.getTrips().put(tripHBW.getTripId(), tripHBW);
-        dataSet.getTrips().put(tripHBE.getTripId(), tripHBE);
-        dataSet.getTrips().put(tripHBS.getTripId(), tripHBS);
-        dataSet.getTrips().put(tripHBO.getTripId(), tripHBO);
-        dataSet.getTrips().put(tripNHBW.getTripId(), tripNHBW);
-        dataSet.getTrips().put(tripNHBO.getTripId(), tripNHBO);
+        dataSet.addTrip(tripHBW);
+        dataSet.addTrip(tripHBE);
+        dataSet.addTrip(tripHBS);
+        dataSet.addTrip(tripHBO);
+        dataSet.addTrip(tripNHBW);
+        dataSet.addTrip(tripNHBO);
 
         PersonTripAssignment assignment = new PersonTripAssignment(dataSet);
         assignment.run();
     }
 
     @Test
-    public void testAssignment() {
-        Resources.initializeResources(null, Implementation.MUNICH);
+    public void testAssignment() throws IOException {
+        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+
         Resources.INSTANCE.setTripAssignmentFactory(new SimpleTripAssignmentFactory());
         setupAndRun();
         for (MitoTrip trip : dataSet.getTrips().values()) {
@@ -74,8 +75,8 @@ public class PersonTripAssignmentTest {
     }
 
     @Test
-    public void testFailedAssignment() {
-        Resources.initializeResources(null, Implementation.MUNICH);
+    public void testFailedAssignment() throws IOException {
+        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
         Resources.INSTANCE.setTripAssignmentFactory(() -> (household, trip) -> null);
         setupAndRun();
         for (MitoHousehold household : dataSet.getHouseholds().values()) {

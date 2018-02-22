@@ -377,8 +377,8 @@ tripLengthWalk_HBS = -1.46;
 
 var calculateHBSProbabilities = function(hh, person, trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT){
 
-var mitoUtil = Java.type('de.tum.bgu.msm.util.MitoUtil');
-hhChildren = mitoUtil.getChildrenForHousehold(hh);
+var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
+hhChildren = dataSet.getChildrenForHousehold(hh);
 
 timeAutoD = travelTimeByMode.get("autoD");
 timeAutoP =  travelTimeByMode.get("autoP");

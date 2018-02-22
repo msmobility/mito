@@ -75,16 +75,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>common-base</groupId>
-			<artifactId>common-base</artifactId>
-			<version>0.0.3</version>
-		</dependency>
   		<dependency>
   			<groupId>sawdust</groupId>
   			<artifactId>sawdust</artifactId>
   			<version>1</version>
   		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.parallelcolt</groupId>
+			<artifactId>parallelcolt</artifactId>
+			<version>LATEST</version>
+		</dependency>
   		<dependency>
   			<groupId>omx</groupId>
   			<artifactId>omx</artifactId>

@@ -28,7 +28,7 @@ public class SummarizeData {
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
         pwh.println("id,zone,hhSize,autos,trips,workTrips");
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-            pwh.print(hh.getHhId());
+            pwh.print(hh.getId());
             pwh.print(",");
             pwh.print(hh.getHomeZone());
             pwh.print(",");
@@ -54,7 +54,7 @@ public class SummarizeData {
             for (MitoPerson pp : hh.getPersons().values()) {
                     pwp.print(pp.getId());
                     pwp.print(",");
-                    pwp.print(hh.getHhId());
+                    pwp.print(hh.getId());
                     pwp.print(",");
                     pwp.print(hh.getHhSize());
                     pwp.print(",");
@@ -74,15 +74,15 @@ public class SummarizeData {
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
-                travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), dataSet.getPeakHour()));
-                double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+                travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
+                double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
                 travelDistances.add(travelDistance);
-                if(distancesByZone.containsKey(trip.getTripOrigin().getZoneId())){
-                    distancesByZone.get(trip.getTripOrigin().getZoneId()).add(travelDistance);
+                if(distancesByZone.containsKey(trip.getTripOrigin().getId())){
+                    distancesByZone.get(trip.getTripOrigin().getId()).add(travelDistance);
                 } else {
                     List<Double> values = new ArrayList<>();
                     values.add(travelDistance);
-                    distancesByZone.put(trip.getTripOrigin().getZoneId(), values);
+                    distancesByZone.put(trip.getTripOrigin().getId(), values);
                 }
             }
         }

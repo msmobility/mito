@@ -4,7 +4,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.jobTypes.maryland.MarylandJobType;
 import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import de.tum.bgu.msm.io.input.CSVReader;
-import de.tum.bgu.msm.resources.Implementation;
+import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;

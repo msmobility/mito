@@ -46,7 +46,7 @@ public class MandatoryBudgetCalculator implements ConcurrentFunction{
                         ignored++;
                         continue;
                     }
-                    budget += travelTimes.getTravelTime(household.getHomeZone().getZoneId(), person.getOccupationZone().getZoneId(), timeOfDay);
+                    budget += travelTimes.getTravelTime(household.getHomeZone().getId(), person.getOccupationZone().getId(), timeOfDay);
                 }
             }
             household.setTravelTimeBudgetByPurpose(purpose, budget);

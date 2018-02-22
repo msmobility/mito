@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
-import com.pb.common.matrix.Matrix;
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -16,7 +17,7 @@ public final class NonHomeBasedDestinationChooser extends BasicDestinationChoose
 
     public NonHomeBasedDestinationChooser(Purpose purpose, List<Purpose> priorPurposes,
                                           Occupation relatedOccupation, EnumMap<Purpose,
-            Matrix> baseProbabilities, DataSet dataSet) {
+            DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(purpose, baseProbabilities, dataSet);
         this.priorPurposes = priorPurposes;
         this.relatedOccupation = relatedOccupation;
@@ -47,8 +48,8 @@ public final class NonHomeBasedDestinationChooser extends BasicDestinationChoose
 
     @Override
     protected MitoZone findDestination(MitoTrip trip) {
-        destinationProbabilities = baseProbabilities.get(purpose).getValues()[baseProbabilities.get(purpose).getInternalRowNumber(trip.getTripOrigin().getZoneId())];
-//        adjustDestinationProbabilities(trip.getTripOrigin().getZoneId());
+        destinationProbabilities = baseProbabilities.get(purpose).viewRow(trip.getTripOrigin().getId()).copy();
+//        adjustDestinationProbabilities(trip.getTripOrigin().getId());
         return super.findDestination(trip);
     }
 
@@ -59,8 +60,8 @@ public final class NonHomeBasedDestinationChooser extends BasicDestinationChoose
 
     private MitoZone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
         TripDistribution.COMPLETELY_RANDOM_NHB_TRIPS.incrementAndGet();
-        final float[] originProbabilities = baseProbabilities.get(priorPurpose).getValues()[baseProbabilities.get(purpose).getInternalRowNumber(household.getHomeZone().getZoneId())];
-        final int destination = baseProbabilities.get(purpose).getExternalNumber(MitoUtil.select(originProbabilities, random));
+        final DoubleMatrix1D originProbabilities = baseProbabilities.get(priorPurpose).viewRow(household.getHomeZone().getId());
+        final int destination = MitoUtil.select(originProbabilities.toArray(), random);
         MitoZone zone = dataSet.getZones().get(destination);
         return zone;
     }

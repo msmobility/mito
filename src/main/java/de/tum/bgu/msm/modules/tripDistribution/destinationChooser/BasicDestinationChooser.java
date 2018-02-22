@@ -1,7 +1,8 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.math.LongMath;
-import com.pb.common.matrix.Matrix;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
@@ -19,10 +20,10 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     private final static Logger logger = Logger.getLogger(BasicDestinationChooser.class);
 
     protected final Purpose purpose;
-    protected final EnumMap<Purpose, Matrix> baseProbabilities;
+    protected final EnumMap<Purpose, DoubleMatrix2D> baseProbabilities;
     protected final TravelTimes travelTimes;
     protected final DataSet dataSet;
-    protected float[] destinationProbabilities;
+    protected DoubleMatrix1D destinationProbabilities;
 
     private double ratio = 1;
     private double idealBudgetSum = 0;
@@ -33,7 +34,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     private final NormalDistribution distribution = new NormalDistribution(100, 50);
     private final Map<Integer, Double> densityByDeviation = new HashMap<>();
 
-    public BasicDestinationChooser(Purpose purpose, EnumMap<Purpose, Matrix> baseProbabilities, DataSet dataSet) {
+    public BasicDestinationChooser(Purpose purpose, EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.travelTimes = dataSet.getTravelTimes("car");
@@ -64,7 +65,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     protected void updateAdjustedDestinationProbabilities(MitoHousehold household){
-        adjustDestinationProbabilities(household.getHomeZone().getZoneId());
+        adjustDestinationProbabilities(household.getHomeZone().getId());
     }
 
     protected boolean isValid(MitoHousehold household) {
@@ -72,12 +73,12 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), dataSet.getPeakHour());
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
         idealBudgetSum += hhBudgetPerTrip;
     }
 
     private void updateBaseDestinationProbabilities(MitoHousehold household) {
-        destinationProbabilities = baseProbabilities.get(purpose).getValues()[baseProbabilities.get(purpose).getInternalRowNumber(household.getHomeZone().getZoneId())];
+        destinationProbabilities = baseProbabilities.get(purpose).viewRow(household.getHomeZone().getId()).copy();
     }
 
     protected void updateBudgets(MitoHousehold household) {
@@ -91,17 +92,15 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     protected MitoZone findDestination(MitoTrip trip) {
-        final int destination = baseProbabilities.get(purpose).getExternalNumber(MitoUtil.select(destinationProbabilities, random));
+        final int destination = (MitoUtil.select(destinationProbabilities.toArray(), random));
         return dataSet.getZones().get(destination);
     }
 
     void adjustDestinationProbabilities(int origin) {
-        float[] tempCopy = new float[destinationProbabilities.length];
-        for (int i = 0; i < destinationProbabilities.length; i++) {
-            int deviation = (int) ((travelTimes.getTravelTime(origin, baseProbabilities.get(purpose).getExternalNumber(i), dataSet.getPeakHour()) / adjustedBudget));
-            tempCopy[i] = destinationProbabilities[i] * (float) getDensity(deviation);
+        for (int i = 0; i < destinationProbabilities.size(); i++) {
+            final int deviation = (int) ((travelTimes.getTravelTime(origin, i, dataSet.getPeakHour()) / adjustedBudget));
+            destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * deviation);
         }
-        destinationProbabilities = tempCopy;
     }
 
     private double getDensity(int deviation) {

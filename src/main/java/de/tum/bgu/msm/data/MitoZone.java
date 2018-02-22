@@ -11,7 +11,7 @@ import java.util.EnumMap;
 /**
  * Created by Nico on 7/7/2017.
  */
-public class MitoZone {
+public class MitoZone implements Id{
 
     private final int zoneId;
     private final AreaType areaType;
@@ -46,7 +46,8 @@ public class MitoZone {
 
     public void setDistanceToNearestTransitStop(float distanceToNearestTransitStop) {this.distanceToNearestTransitStop = distanceToNearestTransitStop;}
 
-    public int getZoneId() {
+    @Override
+    public int getId() {
         return this.zoneId;
     }
 
