@@ -17,6 +17,8 @@ public class MitoTrip implements Id{
 
     private MitoPerson person;
 
+    private Mode tripMode;
+
     public MitoTrip(int tripId, Purpose tripPurpose) {
         this.tripId = tripId;
         this.tripPurpose = tripPurpose;
@@ -54,6 +56,10 @@ public class MitoTrip implements Id{
     public void setPerson(MitoPerson person) {
         this.person = person;
     }
+
+    public Mode getTripMode() { return tripMode; }
+
+    public void setTripMode(Mode tripMode) { this.tripMode = tripMode; }
 
     @Override
     public String toString() {

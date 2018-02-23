@@ -26,7 +26,7 @@ public class MitoZone implements Id{
     private AreaTypeForModeChoice areaTypeHBWModeChoice;
     private AreaTypeForModeChoice areaTypeNHBOmodeChoice;
 
-    private float distanceToNearestTransitStop;
+    private float distanceToNearestRailStop;
 
     public MitoZone(int id, float size, AreaType areaType) {
         this.zoneId = id;
@@ -42,9 +42,9 @@ public class MitoZone implements Id{
 
     public void setAreaTypeNHBOModeChoice(AreaTypeForModeChoice areaTypeNHBOModeChoice){this.areaTypeNHBOmodeChoice = areaTypeNHBOModeChoice;}
 
-    public float getDistanceToNearestTransitStop() {return distanceToNearestTransitStop;}
+    public float getDistanceToNearestRailStop() {return distanceToNearestRailStop;}
 
-    public void setDistanceToNearestTransitStop(float distanceToNearestTransitStop) {this.distanceToNearestTransitStop = distanceToNearestTransitStop;}
+    public void setDistanceToNearestRailStop(float distanceToNearestRailStop) {this.distanceToNearestRailStop = distanceToNearestRailStop;}
 
     @Override
     public int getId() {
