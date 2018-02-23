@@ -1,8 +1,8 @@
 package de.tum.bgu.msm;
 
-import cern.colt.matrix.tfloat.FloatFactory2D;
+import cern.colt.matrix.tdouble.DoubleFactory2D;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
+import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.InputFeed;
 import org.junit.Assert;
@@ -32,8 +32,8 @@ public class InitializeFeedModelTest {
         household.addPerson(person2);
 
         Map<String, TravelTimes> map = new LinkedHashMap<>();
-        map.put("car", new MatrixTravelTimes(FloatFactory2D.dense.identity(2)));
-        map.put("pt", new MatrixTravelTimes(FloatFactory2D.dense.identity(2)));
+        map.put("car", new SkimTravelTimes(DoubleFactory2D.dense.identity(2)));
+        map.put("pt", new SkimTravelTimes(DoubleFactory2D.dense.identity(2)));
 
         InputFeed feed = new InputFeed(zones, map, households);
         model = MitoModel.createModelWithInitialFeed("./testInput/test.properties", Implementation.MUNICH, feed);

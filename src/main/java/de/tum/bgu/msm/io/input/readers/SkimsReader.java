@@ -1,9 +1,9 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import cern.colt.matrix.tfloat.FloatMatrix2D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
-import de.tum.bgu.msm.data.travelTimes.MatrixTravelTimes;
+import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.OMXReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -29,36 +29,34 @@ public class SkimsReader extends OMXReader {
     }
 
     private void readHighwaySkims() {
-        FloatMatrix2D timeSkimAutos = super.readAndConvertToFloatMatrix(Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "mat1", "lookup1");
-        dataSet.addTravelTimeForMode("car", new MatrixTravelTimes(timeSkimAutos));
+        DoubleMatrix2D timeSkimAutos = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "mat1");
+        dataSet.addTravelTimeForMode("car", new SkimTravelTimes(timeSkimAutos));
     }
 
     private void readTransitSkims() {
-        FloatMatrix2D timeSkimTransit = super.readAndConvertToFloatMatrix(Resources.INSTANCE.getString(Properties.TRANSIT_PEAK_SKIM), "CheapJrnyTime", "lookup1");
-        dataSet.addTravelTimeForMode("pt", new MatrixTravelTimes(timeSkimTransit));
+        DoubleMatrix2D timeSkimTransit = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.TRANSIT_PEAK_SKIM), "CheapJrnyTime");
+        dataSet.addTravelTimeForMode("pt", new SkimTravelTimes(timeSkimTransit));
     }
 
-        private void readBusSkimForModeChoice(){
-        FloatMatrix2D timeSkimBus = super.readAndConvertToFloatMatrix(Resources.INSTANCE.getString(Properties.BUS_TRAVEL_TIME_SKIM),"mat1", "lookup1");
-        dataSet.addTravelTimeForMode("bus", new MatrixTravelTimes(timeSkimBus));
+    private void readBusSkimForModeChoice(){
+        DoubleMatrix2D timeSkimBus = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.BUS_TRAVEL_TIME_SKIM),"mat1");
+        dataSet.addTravelTimeForMode("bus", new SkimTravelTimes(timeSkimBus));
     }
 
     private void readTramMetroSkimForModeChoice(){
-        FloatMatrix2D timeSkimTramMetro = super.readAndConvertToFloatMatrix(Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM),"mat1", "lookup1");
-        dataSet.addTravelTimeForMode("tramMetro", new MatrixTravelTimes(timeSkimTramMetro));
+        DoubleMatrix2D timeSkimTramMetro = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM),"mat1");
+        dataSet.addTravelTimeForMode("tramMetro", new SkimTravelTimes(timeSkimTramMetro));
     }
 
     private void readTrainSkimForModeChoice(){
-        FloatMatrix2D timeSkimTrain = super.readAndConvertToFloatMatrix(Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM),"mat1", "lookup1");
-        dataSet.addTravelTimeForMode("train", new MatrixTravelTimes(timeSkimTrain));
+        DoubleMatrix2D timeSkimTrain = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM),"mat1");
+        dataSet.addTravelTimeForMode("train", new SkimTravelTimes(timeSkimTrain));
     }
 
     private void readTravelDistanceForModeChoice(){
-        FloatMatrix2D distanceSkimAuto = super.readAndConvertToFloatMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"mat1", "lookup1");
+        DoubleMatrix2D distanceSkimAuto = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"mat1");
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
-        FloatMatrix2D distanceSkimNMT = super.readAndConvertToFloatMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"mat1", "lookup1");
+        DoubleMatrix2D distanceSkimNMT = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"mat1");
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
-
-
 }
