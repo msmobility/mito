@@ -22,7 +22,6 @@ public class SkimsReader extends OMXReader {
         logger.info("  Reading skims");
         readHighwaySkims();
         readTransitSkims();
-        readAutoSkimForModeChoice();
         readBusSkimForModeChoice();
         readTrainSkimForModeChoice();
         readTramMetroSkimForModeChoice();
@@ -37,12 +36,6 @@ public class SkimsReader extends OMXReader {
     private void readTransitSkims() {
         DoubleMatrix2D timeSkimTransit = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.TRANSIT_PEAK_SKIM), "CheapJrnyTime");
         dataSet.addTravelTimeForMode("pt", new SkimTravelTimes(timeSkimTransit));
-    }
-
-    private void readAutoSkimForModeChoice(){
-        DoubleMatrix2D timeSkimAuto = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_TIME_SKIM),"mat1");
-        dataSet.addTravelTimeForMode("autoD", new SkimTravelTimes(timeSkimAuto));
-        dataSet.addTravelTimeForMode("autoP", new SkimTravelTimes(timeSkimAuto));
     }
 
     private void readBusSkimForModeChoice(){

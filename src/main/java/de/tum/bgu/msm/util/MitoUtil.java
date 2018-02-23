@@ -129,6 +129,19 @@ public final class MitoUtil {
         return probabilities.length - 1;
     }
 
+    public static int select(double[] probabilities) {
+        // select item based on probabilities (for zero-based double array)
+        double selPos = getSum(probabilities) * rand.nextDouble();
+        double sum = 0;
+        for (int i = 0; i < probabilities.length; i++) {
+            sum += probabilities[i];
+            if (sum > selPos) {
+                return i;
+            }
+        }
+        return probabilities.length - 1;
+    }
+
     public static int select(float[] probabilities, Random random) {
         double selPos = getSum(probabilities) * random.nextDouble();
         double sum = 0;
