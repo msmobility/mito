@@ -56,8 +56,9 @@ public final class TripDistribution extends Module {
 
         logger.info("Distributed: " + DISTRIBUTED_TRIPS_COUNTER + ", failed: " + FAILED_TRIPS_COUNTER);
         if(RANDOM_OCCUPATION_DESTINATION_TRIPS.get() > 0) {
-            logger.info("There have been " + RANDOM_OCCUPATION_DESTINATION_TRIPS.get() + " HBW or HBE trips not done by a worker or student. " +
-                  "Picked a destination by random utility instead.");
+            logger.info("There have been " + RANDOM_OCCUPATION_DESTINATION_TRIPS.get() +
+                    " HBW or HBE trips not done by a worker or student or missing occupation zone. " +
+                    "Picked a destination by random utility instead.");
         }
         if(COMPLETELY_RANDOM_NHB_TRIPS.get() > 0) {
             logger.info("There have been " + COMPLETELY_RANDOM_NHB_TRIPS + " NHBO or NHBW trips" +
@@ -69,7 +70,7 @@ public final class TripDistribution extends Module {
     public void buildMatrices() {
         ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
         for (Purpose purpose : Purpose.values()) {
-            executor.addFunction(new DestinationUtilityByPurposeGenerator(purpose, dataSet, utilityMatrices, dataSet.getPeakHour()));
+            executor.addFunction(new DestinationUtilityByPurposeGenerator(purpose, dataSet, utilityMatrices));
         }
         executor.execute();
     }

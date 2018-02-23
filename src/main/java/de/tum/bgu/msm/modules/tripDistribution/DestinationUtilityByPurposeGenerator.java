@@ -5,9 +5,9 @@ import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.util.matrices.Matrices;
+import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.util.concurrent.ConcurrentFunction;
+import de.tum.bgu.msm.util.matrices.Matrices;
 import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
@@ -22,16 +22,14 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
     private final DestinationUtilityJSCalculator calculator;
     private final Purpose purpose;
     private final NavigableMap<Integer, MitoZone> zones;
-    private final TravelTimes travelTimes;
+    private final TravelDistances travelDistances;
     private final Map<Purpose, DoubleMatrix2D> utilityMatrices;
-    private final double timeOfDay;
 
-    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet, Map<Purpose, DoubleMatrix2D> utilityMatrices, double timeOfDay) {
+    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet, Map<Purpose, DoubleMatrix2D> utilityMatrices) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
-        this.travelTimes = dataSet.getTravelTimes("car");
+        this.travelDistances = dataSet.getTravelDistancesAuto();
         this.utilityMatrices = utilityMatrices;
-        this.timeOfDay = timeOfDay;
 
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
         calculator = new DestinationUtilityJSCalculator(reader);
@@ -45,7 +43,7 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
 
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
-                final double travelTime = travelTimes.getTravelTime(origin.getId(), destination.getId(), timeOfDay);
+                final double travelTime = travelDistances.getTravelDistance(origin.getId(), destination.getId());
                 final double utility = getUtility(destination, travelTime);
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
@@ -63,20 +61,20 @@ public class DestinationUtilityByPurposeGenerator implements ConcurrentFunction 
         logger.info("Utility matrix for purpose " + purpose + " done.");
     }
 
-    private double getUtility(MitoZone destination, double travelTimeFromTo) {
+    private double getUtility(MitoZone destination, double travelDistance) {
         switch (purpose) {
             case HBW:
-                return calculator.calculateHbwUtility(destination, travelTimeFromTo);
+                return calculator.calculateHbwUtility(destination, travelDistance);
             case HBE:
-                return calculator.calculateHbeUtility(destination, travelTimeFromTo);
+                return calculator.calculateHbeUtility(destination, travelDistance);
             case HBS:
-                return calculator.calculateHbsUtility(destination, travelTimeFromTo);
+                return calculator.calculateHbsUtility(destination, travelDistance);
             case HBO:
-                return calculator.calculateHboUtility(destination, travelTimeFromTo);
+                return calculator.calculateHboUtility(destination, travelDistance);
             case NHBW:
-                return calculator.calculateNhbwUtility(destination, travelTimeFromTo);
+                return calculator.calculateNhbwUtility(destination, travelDistance);
             case NHBO:
-                return calculator.calculateNhboUtility(destination, travelTimeFromTo);
+                return calculator.calculateNhboUtility(destination, travelDistance);
             default:
                 throw new IllegalStateException();
         }

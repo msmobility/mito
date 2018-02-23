@@ -1,30 +1,30 @@
-travelTimeParamHbs = -0.009;
-impedanceParamHbs = 12.8;
-attractionParamHbs = 0.5;
+travelDistanceParamHbs = -0.0000235;
+impedanceParamHbs = 18.4;
+attractionParamHbs = 0.55;
 
-travelTimeParamHbo = -0.014;
+travelDistanceParamHbo = -0.000014;
 impedanceParamHbo = 10.3;
 attractionParamHbo = 1.3;
 
-travelTimeParamHbw = -0.011;
+travelDistanceParamHbw = -0.000011;
 impedanceParamHbw = 9;
 attractionParamHbw = 1.2;
 
-travelTimeParamHbe = -0.01;
+travelDistanceParamHbe = -0.00001;
 impedanceParamHbe = 9;
 attractionParamHbe = 0.9;
 
-travelTimeParamNhbw = -0.02;
+travelDistanceParamNhbw = -0.00002;
 impedanceParamNhbw = 11.3;
 attractionParamNhbw = 0.7;
 
-travelTimeParamNhbo = -0.02;
+travelDistanceParamNhbo = -0.00002;
 impedanceParamNhbo = 11.5;
 attractionParamNhbo = 0.6;
 
 
-var calculateHBW = function (travelTime, totalEmployees) {
-    impedanceImpact = impedanceParamHbw * Math.exp(travelTimeParamHbw * travelTime);
+var calculateHBW = function (travelDistance, totalEmployees) {
+    impedanceImpact = impedanceParamHbw * Math.exp(travelDistanceParamHbw * travelDistance);
 
     if(totalEmployees == 0) {
         attraction = 0;
@@ -35,8 +35,8 @@ var calculateHBW = function (travelTime, totalEmployees) {
     return Math.exp(impedanceImpact + attractionImpact);
 }
 
-var calculateHBE = function (travelTime, schoolEnrollment) {
-    impedanceImpact = impedanceParamHbe * Math.exp(travelTimeParamHbe * travelTime);
+var calculateHBE = function (travelDistance, schoolEnrollment) {
+    impedanceImpact = impedanceParamHbe * Math.exp(travelDistanceParamHbe * travelDistance);
 
     if(schoolEnrollment == 0) {
         attraction = 0;
@@ -48,8 +48,8 @@ var calculateHBE = function (travelTime, schoolEnrollment) {
     return Math.exp(impedanceImpact + attractionImpact);
 }
 
-var calculateHBS  = function (travelTime, retailEmployees) {
-    impedanceImpact = impedanceParamHbs * Math.exp(travelTimeParamHbs * travelTime);
+var calculateHBS  = function (travelDistance, retailEmployees) {
+    impedanceImpact = impedanceParamHbs * Math.exp(travelDistanceParamHbs * travelDistance);
     if(retailEmployees == 0) {
         attractionImpact = 0;
     } else {
@@ -58,8 +58,8 @@ var calculateHBS  = function (travelTime, retailEmployees) {
     return Math.exp(impedanceImpact + attractionImpact);
 }
 
-var calculateHBO = function (travelTime, households, adminEmployees, serviceEmployees) {
-    impedanceImpact = impedanceParamHbo * Math.exp(travelTimeParamHbo * travelTime);
+var calculateHBO = function (travelDistance, households, adminEmployees, serviceEmployees) {
+    impedanceImpact = impedanceParamHbo * Math.exp(travelDistanceParamHbo * travelDistance);
     attraction = 0;
     if(households > 0) {
         attraction += Math.log(households);
@@ -74,8 +74,8 @@ var calculateHBO = function (travelTime, households, adminEmployees, serviceEmpl
     return Math.exp(impedanceImpact + attractionImpact);
 }
 
-var calculateNHBW = function (travelTime, households, adminEmployees, serviceEmployees, retailEmployees) {
-    impedanceImpact = impedanceParamNhbw * Math.exp(travelTimeParamNhbw * travelTime);
+var calculateNHBW = function (travelDistance, households, adminEmployees, serviceEmployees, retailEmployees) {
+    impedanceImpact = impedanceParamNhbw * Math.exp(travelDistanceParamNhbw * travelDistance);
 
     attraction = 0;
     if(households > 0) {
@@ -94,8 +94,8 @@ var calculateNHBW = function (travelTime, households, adminEmployees, serviceEmp
     return Math.exp(impedanceImpact + attractionImpact);
 }
 
-var calculateNHBO = function (travelTime, households, adminEmployees, serviceEmployees, retailEmployees) {
-    impedanceImpact = impedanceParamNhbo * Math.exp(travelTimeParamNhbo * travelTime);
+var calculateNHBO = function (travelDistance, households, adminEmployees, serviceEmployees, retailEmployees) {
+    impedanceImpact = impedanceParamNhbo * Math.exp(travelDistanceParamNhbo * travelDistance);
 
     attraction = 0;
     if(households > 0) {

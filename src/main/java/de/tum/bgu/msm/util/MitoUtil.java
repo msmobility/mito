@@ -1,13 +1,15 @@
 package de.tum.bgu.msm.util;
 
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Utilities for the Transport in Microsimulation Orchestrator (TIMO)

@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.io.output;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -72,11 +74,13 @@ public class SummarizeData {
         List<Double> travelTimes = new ArrayList<>();
         List<Double> travelDistances = new ArrayList<>();
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
+        Multiset<MitoZone> tripsByZone = HashMultiset.create();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
                 double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
                 travelDistances.add(travelDistance);
+                tripsByZone.add(trip.getTripOrigin());
                 if(distancesByZone.containsKey(trip.getTripOrigin().getId())){
                     distancesByZone.get(trip.getTripOrigin().getId()).add(travelDistance);
                 } else {
@@ -107,6 +111,12 @@ public class SummarizeData {
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
             averageDistancesByZone.put(Double.valueOf(entry.getKey()), Stats.meanOf(entry.getValue()));
         }
+        PrintWriter pw1 = MitoUtil.openFileForSequentialWriting(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/tripsByZone"+purpose+".csv", false);
+        pw1.println("id,number_trips");
+        for(MitoZone zone: dataSet.getZones().values()) {
+            pw1.println(zone.getId()+","+tripsByZone.count(zone));
+        }
+        pw1.close();
         PrintWriter pw = MitoUtil.openFileForSequentialWriting(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/averageZoneDistanceTable"+purpose+".csv", false);
         pw.println("id,avTripDistance");
         for(Map.Entry<Double, Double> entry: averageDistancesByZone.entrySet()) {
