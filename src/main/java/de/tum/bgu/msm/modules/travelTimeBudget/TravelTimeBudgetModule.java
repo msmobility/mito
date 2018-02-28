@@ -2,16 +2,18 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
+import de.tum.bgu.msm.modules.Module;
 import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Runs calculation of travel time budget for the Microsimulation Transport Orchestrator (MITO)
@@ -41,13 +43,19 @@ public class TravelTimeBudgetModule extends Module {
 
     private void calculateTravelTimeBudgets() {
         logger.info("  Started microscopic travel time budget calculation.");
-        ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
+        final ExecutorService service = Executors.newFixedThreadPool(Purpose.values().length);
+        List<Callable<Void>> tasks = new ArrayList();
         for(Purpose purpose: discretionaryPurposes) {
-            executor.addFunction(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values()));
+            tasks.add(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values()));
         }
-        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
-        executor.addFunction(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
-        executor.execute();
+        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
+        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
+        try {
+            service.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         logger.info("  Adjusting travel time budgets.");
         adjustDiscretionaryPurposeBudgets();
         logger.info("  Finished microscopic travel time budget calculation.");

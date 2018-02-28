@@ -18,8 +18,6 @@ import java.util.*;
  * Author: Ana Moreno, Munich
  * Created on 11/07/2017.
  */
-
-
 public class SummarizeData {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SummarizeData.class);
 
@@ -67,6 +65,43 @@ public class SummarizeData {
                 }
             }
         pwp.close();
+    }
+
+    public static void writeOutTrips(DataSet dataSet) {
+        logger.info("  Writing trips file");
+        String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/trips.csv";
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
+        pwh.println("id,origin,destination,purpose,person,distance,mode");
+        for (MitoTrip trip : dataSet.getTrips().values()) {
+            pwh.print(trip.getId());
+            pwh.print(",");
+            MitoZone origin = trip.getTripOrigin();
+            String originId = "null";
+            if(origin != null) {
+                originId = String.valueOf(origin.getId());
+            }
+            pwh.print(originId);
+            pwh.print(",");
+            MitoZone destination = trip.getTripDestination();
+            String destinationId = "null";
+            if(destination != null) {
+                destinationId = String.valueOf(destination.getId());
+            }
+            pwh.print(destinationId);
+            pwh.print(",");
+            pwh.print(trip.getTripPurpose());
+            pwh.print(",");
+            pwh.print(trip.getPerson().getId());
+            pwh.print(",");
+            if(origin != null && destination != null) {
+                pwh.print(dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId()));
+            } else {
+                pwh.print("NA");
+            }
+            pwh.print(",");
+            pwh.println(trip.getTripMode());
+        }
+        pwh.close();
     }
 
 

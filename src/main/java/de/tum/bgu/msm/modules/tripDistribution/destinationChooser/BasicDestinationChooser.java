@@ -15,7 +15,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BasicDestinationChooser extends RandomizableConcurrentFunction {
+public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void> {
 
     private final static Logger logger = Logger.getLogger(BasicDestinationChooser.class);
 
@@ -43,7 +43,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     @Override
-    public void execute() {
+    public Void call() throws Exception {
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
@@ -56,13 +56,17 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(findOrigin(household, trip));
                     trip.setTripDestination(findDestination(trip));
-                    postProcessTrip(trip);
-                    TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+                    if(trip != null) {
+                        postProcessTrip(trip);
+                        TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+                    }
                 }
             }
             counter++;
         }
+        return null;
     }
+
 
     protected void updateAdjustedDestinationProbabilities(MitoHousehold household){
         adjustDestinationProbabilities(household.getHomeZone().getId());
@@ -92,7 +96,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     protected MitoZone findDestination(MitoTrip trip) {
-        final int destination = (MitoUtil.select(destinationProbabilities.toArray(), random));
+        final int destination = (MitoUtil.select(destinationProbabilities.toArray(), random, destinationProbabilities.zSum()));
         return dataSet.getZones().get(destination);
     }
 

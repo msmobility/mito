@@ -1,14 +1,8 @@
 package de.tum.bgu.msm.modules.personTripAssignment;
 
 import com.google.common.collect.Lists;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Gender;
-import de.tum.bgu.msm.data.Occupation;
-import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.Implementation;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Test;
@@ -16,7 +10,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class PersonTripAssignmentTest {
 
@@ -62,7 +57,6 @@ public class PersonTripAssignmentTest {
     public void testAssignment() throws IOException {
         Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
 
-        Resources.INSTANCE.setTripAssignmentFactory(new SimpleTripAssignmentFactory());
         setupAndRun();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             assertNotNull("No Person set for trip " + trip, trip.getPerson());
@@ -70,18 +64,6 @@ public class PersonTripAssignmentTest {
                 assertEquals(Occupation.WORKER, trip.getPerson().getOccupation());
             } else if (trip.getTripPurpose().equals(Purpose.HBE)) {
                 assertEquals(Occupation.STUDENT, trip.getPerson().getOccupation());
-            }
-        }
-    }
-
-    @Test
-    public void testFailedAssignment() throws IOException {
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
-        Resources.INSTANCE.setTripAssignmentFactory(() -> (household, trip) -> null);
-        setupAndRun();
-        for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            for(Purpose purpose: Purpose.values()) {
-                assertTrue(household.getTripsForPurpose(purpose).isEmpty());
             }
         }
     }

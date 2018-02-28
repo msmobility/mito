@@ -1,8 +1,6 @@
 package de.tum.bgu.msm.resources;
 
 import de.tum.bgu.msm.Implementation;
-import de.tum.bgu.msm.modules.personTripAssignment.DefaultTripAssignmentFactory;
-import de.tum.bgu.msm.modules.personTripAssignment.TripAssignmentFactory;
 import de.tum.bgu.msm.util.MitoUtil;
 
 import java.io.FileInputStream;
@@ -18,7 +16,6 @@ public class Resources {
 
     private final Properties properties;
     public final Implementation implementation;
-    private TripAssignmentFactory tripAssignmentFactory = new DefaultTripAssignmentFactory();
 
     private Resources(Properties properties, Implementation implementation) {
         this.properties = properties;
@@ -55,13 +52,5 @@ public class Resources {
         } else {
             return defaultValue;
         }
-    }
-
-    public TripAssignmentFactory getTripAssignmentFactory() {
-        return tripAssignmentFactory;
-    }
-
-    public void setTripAssignmentFactory(TripAssignmentFactory tripAssignmentFactory) {
-        this.tripAssignmentFactory = tripAssignmentFactory;
     }
 }

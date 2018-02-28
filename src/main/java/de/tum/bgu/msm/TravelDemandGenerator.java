@@ -52,6 +52,7 @@ public class TravelDemandGenerator {
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
+        SummarizeData.writeOutTrips(dataSet);
         if(Resources.INSTANCE.getBoolean(Properties.CREATE_DESTINATION_CHOICE_HISTOGRAMS, true)){
             SummarizeData.writeHistograms(dataSet);
         }

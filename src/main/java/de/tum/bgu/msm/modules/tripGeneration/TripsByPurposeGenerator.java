@@ -7,9 +7,13 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
+import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.DROPPED_TRIPS_AT_BORDER_COUNTER;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
@@ -36,7 +40,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
     }
 
     @Override
-    public void execute() {
+    public Object call() throws Exception {
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         defineTripFrequenciesForHouseHoldTypes();
         logger.info("Created trip frequency distributions for " + purpose);
@@ -49,13 +53,9 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
             generateTripsForHousehold(hh);
             counter++;
         }
-        tripsByHH.forEach((hh, trips) -> {
-            hh.setTripsByPurpose(trips, purpose);
-            trips.forEach(trip -> {
-                dataSet.addTrip(trip);
-            });
-        });
+        return new Pair(purpose, tripsByHH);
     }
+
 
     private void defineTripFrequenciesForHouseHoldTypes() {
         householdTypeManager.createHouseHoldTypeDefinitions();

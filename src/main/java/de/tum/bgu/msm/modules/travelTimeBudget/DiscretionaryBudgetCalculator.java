@@ -2,13 +2,13 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.util.concurrent.ConcurrentFunction;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
-public class DiscretionaryBudgetCalculator implements ConcurrentFunction {
+public class DiscretionaryBudgetCalculator implements Callable<Void> {
 
     private final Purpose purpose;
     private final Collection<MitoHousehold> households;
@@ -22,10 +22,11 @@ public class DiscretionaryBudgetCalculator implements ConcurrentFunction {
     }
 
     @Override
-    public void execute() {
+    public Void call() {
         households.forEach(hh -> {
             double budget = travelTimeCalc.calculateBudget(hh, purpose.name());
             hh.setTravelTimeBudgetByPurpose(purpose, budget);
         });
+        return null;
     }
 }
