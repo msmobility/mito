@@ -1,12 +1,19 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.util.MitoUtil;
-import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
+import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
+import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.tum.bgu.msm.data.Purpose.*;
@@ -35,11 +42,20 @@ public class RawTripGenerator {
     }
 
     private void generateByPurposeMultiThreaded() {
-        ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
+        final ConcurrentExecutor<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        List<Callable<Pair<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
         for(Purpose purpose: PURPOSES) {
-            executor.addFunction(new TripsByPurposeGenerator(dataSet, purpose));
+            tasks.add(new TripsByPurposeGenerator(dataSet, purpose));
         }
-        executor.execute();
+        final List<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
+        for(Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
+            final Purpose purpose = result.getKey();
+            final Map<MitoHousehold, List<MitoTrip>> tripsByHouseholds = result.getValue();
+            for(Map.Entry<MitoHousehold, List<MitoTrip>> tripsByHousehold: tripsByHouseholds.entrySet()) {
+                tripsByHousehold.getKey().setTripsByPurpose(tripsByHousehold.getValue(), purpose);
+                dataSet.addTrips(tripsByHousehold.getValue());
+            }
+        }
     }
 
     private void logTripGeneration() {

@@ -1,41 +1,36 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import cern.colt.matrix.io.MatrixVectorWriter;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.util.concurrent.ConcurrentFunction;
 import de.tum.bgu.msm.util.matrices.Matrices;
+import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-public class ModeChoiceByPurpose implements ConcurrentFunction {
+public class ModeChoiceByPurpose implements Callable<Pair<Purpose, DoubleMatrix2D>> {
 
     private static final Logger LOGGER = Logger.getLogger(ModeChoiceByPurpose.class);
-
 
     private final DataSet dataSet;
     private final Purpose purpose;
     private final ModeChoiceJSCalculator calculator;
     private final DoubleMatrix2D probabilities;
-    private final Map<Purpose, DoubleMatrix2D> modeChoiceProbabilitiesByPurpose;
 
-    public ModeChoiceByPurpose(DataSet dataSet, Purpose purpose, Map<Purpose, DoubleMatrix2D> modeChoiceProbabilitiesByPurpose ) {
+    public ModeChoiceByPurpose(DataSet dataSet, Purpose purpose) {
         this.dataSet = dataSet;
         this.purpose = purpose;
-        this.modeChoiceProbabilitiesByPurpose = modeChoiceProbabilitiesByPurpose;
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoice"));
         calculator = new ModeChoiceJSCalculator(reader);
         probabilities = Matrices.doubleMatrix2DSparse(dataSet.getTrips().values(), Mode.valuesAsList());
     }
 
     @Override
-    public void execute() {
+    public Pair<Purpose, DoubleMatrix2D> call() throws Exception {
         final Map<String,Double> travelTimeByMode = new HashMap<>();
         int countTripsSkipped = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()){
@@ -69,6 +64,6 @@ public class ModeChoiceByPurpose implements ConcurrentFunction {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        modeChoiceProbabilitiesByPurpose.put(purpose, probabilities);
+        return new Pair(purpose, probabilities);
     }
 }

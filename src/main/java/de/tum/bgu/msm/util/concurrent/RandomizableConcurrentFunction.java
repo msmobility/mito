@@ -1,17 +1,13 @@
 package de.tum.bgu.msm.util.concurrent;
 
-import de.tum.bgu.msm.util.MitoUtil;
-
 import java.util.Random;
+import java.util.concurrent.Callable;
 
-public abstract class RandomizableConcurrentFunction implements ConcurrentFunction {
+public abstract class RandomizableConcurrentFunction<T> implements Callable<T>{
 
     protected final Random random;
 
     protected RandomizableConcurrentFunction(long randomSeed) {
         this.random = new Random(randomSeed);
     }
-
-    @Override
-    public abstract void execute();
 }

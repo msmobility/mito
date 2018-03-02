@@ -5,12 +5,12 @@ import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.util.concurrent.ConcurrentFunction;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 
-public class MandatoryBudgetCalculator implements ConcurrentFunction{
+public class MandatoryBudgetCalculator implements Callable<Void>{
 
     private static final Logger logger = Logger.getLogger(TravelTimeBudgetModule.class);
 
@@ -36,7 +36,7 @@ public class MandatoryBudgetCalculator implements ConcurrentFunction{
     }
 
     @Override
-    public void execute() {
+    public Void call() throws Exception {
         for(MitoHousehold household: households) {
             double budget = 0;
             for (MitoPerson person : household.getPersons().values()) {
@@ -55,5 +55,6 @@ public class MandatoryBudgetCalculator implements ConcurrentFunction{
             logger.warn("There have been " + ignored + " " + occupation + " that were ignored in the " + purpose + " travel time budgets"
                     + " because they had no workzone assigned.");
         }
+        return null;
     }
 }

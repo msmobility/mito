@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.io.output;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -16,8 +18,6 @@ import java.util.*;
  * Author: Ana Moreno, Munich
  * Created on 11/07/2017.
  */
-
-
 public class SummarizeData {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SummarizeData.class);
 
@@ -67,16 +67,55 @@ public class SummarizeData {
         pwp.close();
     }
 
+    public static void writeOutTrips(DataSet dataSet) {
+        logger.info("  Writing trips file");
+        String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/trips.csv";
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
+        pwh.println("id,origin,destination,purpose,person,distance,mode");
+        for (MitoTrip trip : dataSet.getTrips().values()) {
+            pwh.print(trip.getId());
+            pwh.print(",");
+            MitoZone origin = trip.getTripOrigin();
+            String originId = "null";
+            if(origin != null) {
+                originId = String.valueOf(origin.getId());
+            }
+            pwh.print(originId);
+            pwh.print(",");
+            MitoZone destination = trip.getTripDestination();
+            String destinationId = "null";
+            if(destination != null) {
+                destinationId = String.valueOf(destination.getId());
+            }
+            pwh.print(destinationId);
+            pwh.print(",");
+            pwh.print(trip.getTripPurpose());
+            pwh.print(",");
+            pwh.print(trip.getPerson().getId());
+            pwh.print(",");
+            if(origin != null && destination != null) {
+                pwh.print(dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId()));
+            } else {
+                pwh.print("NA");
+            }
+            pwh.print(",");
+            pwh.println(trip.getTripMode());
+        }
+        pwh.close();
+    }
+
 
     private static void writeCharts(DataSet dataSet, Purpose purpose) {
         List<Double> travelTimes = new ArrayList<>();
         List<Double> travelDistances = new ArrayList<>();
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
+        Multiset<MitoZone> tripsByZone = HashMultiset.create();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
                 double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
                 travelDistances.add(travelDistance);
+                tripsByZone.add(trip.getTripOrigin());
                 if(distancesByZone.containsKey(trip.getTripOrigin().getId())){
                     distancesByZone.get(trip.getTripOrigin().getId()).add(travelDistance);
                 } else {
@@ -107,6 +146,12 @@ public class SummarizeData {
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
             averageDistancesByZone.put(Double.valueOf(entry.getKey()), Stats.meanOf(entry.getValue()));
         }
+        PrintWriter pw1 = MitoUtil.openFileForSequentialWriting(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/tripsByZone"+purpose+".csv", false);
+        pw1.println("id,number_trips");
+        for(MitoZone zone: dataSet.getZones().values()) {
+            pw1.println(zone.getId()+","+tripsByZone.count(zone));
+        }
+        pw1.close();
         PrintWriter pw = MitoUtil.openFileForSequentialWriting(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/averageZoneDistanceTable"+purpose+".csv", false);
         pw.println("id,avTripDistance");
         for(Map.Entry<Double, Double> entry: averageDistancesByZone.entrySet()) {

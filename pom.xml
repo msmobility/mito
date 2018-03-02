@@ -1,33 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.msmobility</groupId>
-	<artifactId>mito</artifactId>
-	<name>MITO</name>
-	<version>master-SNAPSHOT</version>
-	<description>Microscopic Transportation Orchestrator</description>
-	<url>mito.zone</url>
-	<inceptionYear>2015</inceptionYear>
-	<licenses>
-		<license>
-			<name>GNU General Public License</name>
-			<url>${basedir}/LICENSE</url>
-		</license>
-	</licenses>
-	<scm>
-		<url>https://github.com/msmobility/mito</url>
-		<connection>scm:git:git://github.com/msmobility/mito.git</connection>
-		<developerConnection>scm:git:git@github.com:msmobility/mito.git</developerConnection>
-	</scm>
-	<repositories>
-		<repository>
-			<id>bintray-msmobility-maven</id>
-			<name>bintray</name>
-			<url>http://dl.bintray.com/msmobility/maven</url>
-		</repository>
-	</repositories>
-	<build>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.msmobility</groupId>
+    <artifactId>mito</artifactId>
+    <name>MITO</name>
+    <version>master-SNAPSHOT</version>
+    <description>Microscopic Transportation Orchestrator</description>
+    <url>mito.zone</url>
+    <inceptionYear>2015</inceptionYear>
+    <licenses>
+        <license>
+            <name>GNU General Public License</name>
+            <url>${basedir}/LICENSE</url>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/msmobility/mito</url>
+        <connection>scm:git:git://github.com/msmobility/mito.git</connection>
+        <developerConnection>scm:git:git@github.com:msmobility/mito.git</developerConnection>
+    </scm>
+    <repositories>
+        <repository>
+            <id>bintray-msmobility-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/msmobility/maven</url>
+        </repository>
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net repository</name>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+        <repository>
+            <id>osgeo</id>
+            <name>Open Source Geospatial Foundation Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>boundless</id>
+            <name>Boundless Maven Repository</name>
+            <url>http://repo.boundlessgeo.com/main</url>
+        </repository>
+    </repositories>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -51,68 +70,63 @@
             </plugin>
         </plugins>
     </build>
-	<dependencies>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.mail</groupId>
-					<artifactId>mail</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-  		<dependency>
-  			<groupId>sawdust</groupId>
-  			<artifactId>sawdust</artifactId>
-  			<version>1</version>
-  		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.parallelcolt</groupId>
-			<artifactId>parallelcolt</artifactId>
-			<version>LATEST</version>
-		</dependency>
-  		<dependency>
-  			<groupId>omx</groupId>
-  			<artifactId>omx</artifactId>
-  			<version>2</version>
-  		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.2</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>23.2-jre</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jfree</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0.14</version>
-		</dependency>
-	</dependencies>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.15</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jdmk</groupId>
+                    <artifactId>jmxtools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jmx</groupId>
+                    <artifactId>jmxri</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.parallelcolt</groupId>
+            <artifactId>parallelcolt</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>omx</groupId>
+            <artifactId>omx</artifactId>
+            <version>2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.2-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.14</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>

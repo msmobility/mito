@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.util;
 
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -116,9 +115,27 @@ public final class MitoUtil {
         return myFormatter.format(value);
     }
 
-    public static int select(double[] probabilities, Random random) {
+    public static int select(List<Double> probabilities, Random random) {
         // select item based on probabilities (for zero-based double array)
         double selPos = getSum(probabilities) * random.nextDouble();
+        double sum = 0;
+        for (ListIterator<Double> it = probabilities.listIterator(); it.hasNext();) {
+            sum += it.next();
+            if (sum > selPos) {
+                return it.previousIndex();
+            }
+        }
+        return -1;
+    }
+
+    public static int select(double[] probabilities, Random random) {
+        // select item based on probabilities (for zero-based double array)
+        return select(probabilities, random, getSum(probabilities));
+    }
+
+    public static int select(double[] probabilities, Random random, double probabilitySum) {
+        // select item based on probabilities (for zero-based double array)
+        double selPos =probabilitySum * random.nextDouble();
         double sum = 0;
         for (int i = 0; i < probabilities.length; i++) {
             sum += probabilities[i];

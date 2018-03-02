@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import cern.colt.matrix.io.MatrixVectorWriter;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
@@ -8,13 +7,15 @@ import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.util.MitoUtil;
-import de.tum.bgu.msm.util.concurrent.ConcurrentFunctionExecutor;
+import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
+import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 public class ModeChoice extends Module {
 
@@ -22,7 +23,6 @@ public class ModeChoice extends Module {
 
     private final Map<Purpose, DoubleMatrix2D> modeChoiceProbabilitiesByPurpose = new EnumMap<>(Purpose.class);
     private DoubleMatrix2D result;
-
 
     public ModeChoice(DataSet dataSet) {
         super(dataSet);
@@ -38,11 +38,14 @@ public class ModeChoice extends Module {
     }
 
     private void calculateProbabilitiesByPurpose() {
-        ConcurrentFunctionExecutor executor = new ConcurrentFunctionExecutor();
+        List<Callable<Pair<Purpose, DoubleMatrix2D>>> tasks = new ArrayList<>();
         for (Purpose purpose : Purpose.values()){
-            executor.addFunction(new ModeChoiceByPurpose(dataSet, purpose, modeChoiceProbabilitiesByPurpose));
+            tasks.add(new ModeChoiceByPurpose(dataSet, purpose));
         }
-        executor.execute();
+        List<Pair<Purpose, DoubleMatrix2D>> results = ConcurrentExecutor.runTasks(tasks);
+        for(Pair<Purpose, DoubleMatrix2D> result: results) {
+            modeChoiceProbabilitiesByPurpose.put(result.getKey(), result.getValue());
+        }
     }
 
     private void aggregateProbabilitiesToOneMatrix() {
@@ -70,7 +73,7 @@ public class ModeChoice extends Module {
     }
 
     private void chooseTripMode(DoubleMatrix2D result) {
-        dataSet.getTrips().entrySet().parallelStream().forEach(i -> {
+        dataSet.getTrips().entrySet().stream().forEach(i -> {
             final double[] probabilities = result.viewRow(i.getKey()).toArray();
             //logger.info("Mode choice probabilities: " + result.viewRow(i.getKey()).toString());
             i.getValue().setTripMode(Mode.valueOf(MitoUtil.select(probabilities)));
