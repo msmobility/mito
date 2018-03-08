@@ -71,7 +71,7 @@ public class SummarizeData {
         logger.info("  Writing trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,destination,purpose,person,distance,mode");
+        pwh.println("id,origin,destination,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -94,7 +94,20 @@ public class SummarizeData {
             pwh.print(trip.getPerson().getId());
             pwh.print(",");
             if(origin != null && destination != null) {
-                pwh.print(dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId()));
+                double distance = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId());
+                pwh.print(distance);
+                pwh.print(",");
+                double time_auto = dataSet.getTravelTimes("car").getTravelTime(origin.getId(), destination.getId(), 0);
+                pwh.print(time_auto);
+                pwh.print(",");
+                double time_bus = dataSet.getTravelTimes("bus").getTravelTime(origin.getId(), destination.getId(), 0);
+                pwh.print(time_bus);
+                pwh.print(",");
+                double time_train = dataSet.getTravelTimes("train").getTravelTime(origin.getId(), destination.getId(), 0);
+                pwh.print(time_train);
+                pwh.print(",");
+                double time_tram_metro = dataSet.getTravelTimes("tramMetro").getTravelTime(origin.getId(), destination.getId(), 0);
+                pwh.print(time_tram_metro);
             } else {
                 pwh.print("NA");
             }

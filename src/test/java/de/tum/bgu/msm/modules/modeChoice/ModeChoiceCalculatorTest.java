@@ -1,9 +1,8 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.Implementation;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public class ModeChoiceCalculatorTest {
 
@@ -38,7 +36,7 @@ public class ModeChoiceCalculatorTest {
         MitoZone origin = new MitoZone(1, 100, null);
         origin.setDistanceToNearestRailStop(0.5f);
         //origin.setAreaTypeNHBOModeChoice(AreaTypeForModeChoice.NHBO_urban);
-        MitoHousehold hh = new MitoHousehold(1, 30000, 1, null);
+        MitoHousehold hh = new MitoHousehold(1, 20000, 1, null);
         MitoPerson pp = new MitoPerson(1, Occupation.STUDENT, 1, 20, Gender.FEMALE, true);
         hh.addPerson(pp);
         MitoTrip trip = new MitoTrip(1, Purpose.HBS);

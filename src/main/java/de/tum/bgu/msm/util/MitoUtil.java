@@ -87,7 +87,7 @@ public final class MitoUtil {
         return sm;
     }
 
-    private static double getSum(double[] array) {
+    public static double getSum(double[] array) {
         double sum = 0;
         for (double val : array) {
             sum += val;
@@ -146,17 +146,21 @@ public final class MitoUtil {
         return probabilities.length - 1;
     }
 
-    public static int select(double[] probabilities) {
-        // select item based on probabilities (for zero-based double array)
-        double selPos = getSum(probabilities) * rand.nextDouble();
-        double sum = 0;
+    public static int select(double[] probabilities, double sum) {
+        double selPos = sum * rand.nextDouble();
+        double tempSum = 0;
         for (int i = 0; i < probabilities.length; i++) {
-            sum += probabilities[i];
-            if (sum > selPos) {
+            tempSum += probabilities[i];
+            if (tempSum > selPos) {
                 return i;
             }
         }
         return probabilities.length - 1;
+    }
+
+    public static int select(double[] probabilities) {
+        // select item based on probabilities (for zero-based double array)
+        return select(probabilities, getSum(probabilities));
     }
 
     public static int select(float[] probabilities, Random random) {
@@ -291,4 +295,6 @@ public final class MitoUtil {
     public static Random getRandomObject() {
         return rand;
     }
+
+
 }
