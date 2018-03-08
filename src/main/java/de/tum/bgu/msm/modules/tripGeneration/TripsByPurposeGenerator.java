@@ -47,11 +47,13 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
         long counter = 0;
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-            if (LongMath.isPowerOfTwo(counter)) {
-                logger.info(counter + " households done for purpose " + purpose + ".");
+            if(random.nextDouble() > 0.9) {
+                if (LongMath.isPowerOfTwo(counter)) {
+                    logger.info(counter + " households done for purpose " + purpose + ".");
+                }
+                generateTripsForHousehold(hh);
+                counter++;
             }
-            generateTripsForHousehold(hh);
-            counter++;
         }
         return new Pair(purpose, tripsByHH);
     }

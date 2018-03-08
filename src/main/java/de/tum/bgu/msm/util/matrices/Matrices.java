@@ -16,7 +16,6 @@ import cern.colt.matrix.tfloat.impl.SparseFloatMatrix1D;
 import cern.colt.matrix.tfloat.impl.SparseFloatMatrix2D;
 import de.tum.bgu.msm.data.Id;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import omx.OmxLookup;
 import omx.OmxMatrix;
 import omx.hdf5.OmxHdf5Datatype;
 
@@ -71,7 +70,7 @@ public class Matrices {
             float[][] fArray = (float[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
-                    matrix.set(i, j, fArray[i][j]);
+                    matrix.set(i+1, j+1, fArray[i][j]);
                 }
             }
         }

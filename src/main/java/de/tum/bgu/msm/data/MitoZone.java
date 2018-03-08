@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
-import org.apache.log4j.Logger;
 
 import java.util.EnumMap;
 
@@ -44,6 +43,10 @@ public class MitoZone implements Id{
 
     public float getDistanceToNearestRailStop() {return distanceToNearestRailStop;}
 
+    /**
+     * Sets distance to nearest rail stop
+     * @param distanceToNearestRailStop distance in km
+     */
     public void setDistanceToNearestRailStop(float distanceToNearestRailStop) {this.distanceToNearestRailStop = distanceToNearestRailStop;}
 
     @Override

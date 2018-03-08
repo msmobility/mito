@@ -21,8 +21,8 @@ public class ModeChoice extends Module {
 
     private final static Logger logger = Logger.getLogger(ModeChoice.class);
 
-    private final Map<Purpose, DoubleMatrix2D> modeChoiceProbabilitiesByPurpose = new EnumMap<>(Purpose.class);
-    private DoubleMatrix2D result;
+    final Map<Purpose, DoubleMatrix2D> modeChoiceProbabilitiesByPurpose = new EnumMap<>(Purpose.class);
+    DoubleMatrix2D result;
 
     public ModeChoice(DataSet dataSet) {
         super(dataSet);
@@ -33,11 +33,11 @@ public class ModeChoice extends Module {
         logger.info(" Calculating mode choice probabilities for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro, 7. Walk ");
         calculateProbabilitiesByPurpose();
         aggregateProbabilitiesToOneMatrix();
-        chooseTripMode(result);
+        chooseTripModes();
         printModeShares();
     }
 
-    private void calculateProbabilitiesByPurpose() {
+    void calculateProbabilitiesByPurpose() {
         List<Callable<Pair<Purpose, DoubleMatrix2D>>> tasks = new ArrayList<>();
         for (Purpose purpose : Purpose.values()){
             tasks.add(new ModeChoiceByPurpose(dataSet, purpose));
@@ -48,7 +48,7 @@ public class ModeChoice extends Module {
         }
     }
 
-    private void aggregateProbabilitiesToOneMatrix() {
+    void aggregateProbabilitiesToOneMatrix() {
 
         // output bicycle probabilities and check if there are any zeroes
 
@@ -72,12 +72,20 @@ public class ModeChoice extends Module {
 //        }
     }
 
-    private void chooseTripMode(DoubleMatrix2D result) {
-        dataSet.getTrips().entrySet().stream().forEach(i -> {
-            final double[] probabilities = result.viewRow(i.getKey()).toArray();
-            //logger.info("Mode choice probabilities: " + result.viewRow(i.getKey()).toString());
-            i.getValue().setTripMode(Mode.valueOf(MitoUtil.select(probabilities)));
-        });
+    private void chooseTripModes() {
+        dataSet.getTrips().entrySet().stream().forEach(i ->
+                i.getValue().setTripMode(chooseTripMode(i.getKey())));
+    }
+
+    Mode chooseTripMode(int key) {
+        final double[] probabilities = result.viewRow(key).toArray();
+        double sum = MitoUtil.getSum(probabilities);
+        //logger.info("Mode choice probabilities: " + result.viewRow(i.getKey()).toString());
+        if(sum > 0) {
+            return Mode.valueOf(MitoUtil.select(probabilities, sum));
+        } else {
+            return null;
+        }
     }
 
     private void printModeShares(){
@@ -91,6 +99,10 @@ public class ModeChoice extends Module {
         float tripsWithNoMode = 0;
 
         for(MitoTrip trip : dataSet.getTrips().values()){
+            if(trip.getTripMode() == null) {
+                tripsWithNoMode++;
+                continue;
+            }
             switch (trip.getTripMode()){
                 case autoDriver:
                     tripsAutoDriver++;
@@ -114,8 +126,7 @@ public class ModeChoice extends Module {
                     tripsWalk++;
                     break;
                 default:
-                    tripsWithNoMode++;
-                    //logger.info("Mode was not assigned to trip "+trip.getId());
+                    break;
             }
         }
         float totalTrips = tripsAutoDriver + tripsAutoPassenger + tripsBicycle + tripsBus + tripsTrain + tripsTramOrMetro + tripsWalk;

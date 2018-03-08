@@ -20,6 +20,8 @@ public class ModeChoiceByPurpose implements Callable<Pair<Purpose, DoubleMatrix2
     private final Purpose purpose;
     private final ModeChoiceJSCalculator calculator;
     private final DoubleMatrix2D probabilities;
+    private int countTripsSkipped;
+    private final Map<String, Double> travelTimeByMode = new HashMap<>();
 
     public ModeChoiceByPurpose(DataSet dataSet, Purpose purpose) {
         this.dataSet = dataSet;
@@ -31,23 +33,13 @@ public class ModeChoiceByPurpose implements Callable<Pair<Purpose, DoubleMatrix2
 
     @Override
     public Pair<Purpose, DoubleMatrix2D> call() throws Exception {
-        final Map<String,Double> travelTimeByMode = new HashMap<>();
-        int countTripsSkipped = 0;
+        countTripsSkipped = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()){
             for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                if(trip.getTripOrigin() == null || trip.getTripDestination() == null) {
-                    countTripsSkipped++;
-                    continue;
+                double[] probabilitiesArray = calculateTripProbabilities(household, trip);
+                if(probabilitiesArray != null) {
+                    probabilities.viewRow(trip.getId()).assign(probabilitiesArray);
                 }
-                travelTimeByMode.put("autoD", dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
-                travelTimeByMode.put("autoP", dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
-                travelTimeByMode.put("bus", dataSet.getTravelTimes("bus").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
-                travelTimeByMode.put("tramMetro", dataSet.getTravelTimes("tramMetro").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
-                travelTimeByMode.put("train", dataSet.getTravelTimes("train").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
-                final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / 1000.;
-                final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / 1000.;
-                final double[] probabilitiesArray = calculator.calculateProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT);
-                probabilities.viewRow(trip.getId()).assign(probabilitiesArray);
             }
         }
         LOGGER.info(countTripsSkipped + " trips skipped for " + purpose);
@@ -65,5 +57,32 @@ public class ModeChoiceByPurpose implements Callable<Pair<Purpose, DoubleMatrix2
 //            e.printStackTrace();
 //        }
         return new Pair(purpose, probabilities);
+    }
+
+    double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
+        if(trip.getTripOrigin() == null || trip.getTripDestination() == null) {
+            countTripsSkipped++;
+            return null;
+        }
+        travelTimeByMode.put("autoD", dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
+        travelTimeByMode.put("autoP",dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
+        double busTime =  dataSet.getTravelTimes("bus").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
+        double trainTime = dataSet.getTravelTimes("train").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
+        double tramMetroTime = dataSet.getTravelTimes("tramMetro").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
+        if(busTime < 0) {
+            busTime = 1000;
+        }
+        if(trainTime < 0) {
+            trainTime = 1000;
+        }
+        if(tramMetroTime < 0) {
+            tramMetroTime = 1000;
+        }
+        travelTimeByMode.put("bus", busTime);
+        travelTimeByMode.put("tramMetro", trainTime);
+        travelTimeByMode.put("train", tramMetroTime);
+        final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / 1000.;
+        final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / 1000.;
+        return calculator.calculateProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT);
     }
 }

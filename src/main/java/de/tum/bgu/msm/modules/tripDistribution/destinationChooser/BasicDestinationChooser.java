@@ -96,7 +96,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
     }
 
     protected MitoZone findDestination(MitoTrip trip) {
-        final int destination = (MitoUtil.select(destinationProbabilities.toArray(), random, destinationProbabilities.zSum()));
+        final int destination = MitoUtil.select(destinationProbabilities.toArray(), random, destinationProbabilities.zSum());
         return dataSet.getZones().get(destination);
     }
 

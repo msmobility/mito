@@ -1,5 +1,5 @@
-travelDistanceParamHbs = -0.0000235;
-impedanceParamHbs = 18.4;
+travelDistanceParamHbs = -0.000015;
+impedanceParamHbs = 28.8;
 attractionParamHbs = 0.55;
 
 travelDistanceParamHbo = -0.000021;
