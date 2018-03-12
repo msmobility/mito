@@ -2,6 +2,7 @@ package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.output.SummarizeData;
+import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
@@ -49,6 +50,8 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
+
+        SummarizeDataToVisualize.summarizeSpatially(dataSet);
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);

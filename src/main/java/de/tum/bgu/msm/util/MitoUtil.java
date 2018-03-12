@@ -276,4 +276,13 @@ public final class MitoUtil {
     public static Random getRandomObject() {
         return rand;
     }
+
+    public static void createDirectoryIfNotExistingYet (String directory) {
+        File file = new File (directory);
+        if (!file.exists()) {
+            logger.info("   Creating Directory: "+directory);
+            boolean outputDirectorySuccessfullyCreated = file.mkdir();
+            if (!outputDirectorySuccessfullyCreated) logger.error("Could not create scenarios directory " + directory);
+        }
+    }
 }

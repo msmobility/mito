@@ -34,4 +34,6 @@ public class Properties {
     public static final String AREA_TYPES_AND_RAIL_DISTANCE = "areaTypes.distToRailStop";
 
     public static final String CREATE_DESTINATION_CHOICE_HISTOGRAMS = "create.destination.choice.histograms";
+
+    public static final String SPATIAL_RESULT_FILE_NAME = "spatial.result.file.name";
 }
