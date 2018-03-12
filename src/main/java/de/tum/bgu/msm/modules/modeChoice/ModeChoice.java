@@ -73,7 +73,7 @@ public class ModeChoice extends Module {
     }
 
     private void chooseTripModes() {
-        dataSet.getTrips().entrySet().stream().forEach(i ->
+        dataSet.getTrips().entrySet().forEach(i ->
                 i.getValue().setTripMode(chooseTripMode(i.getKey())));
     }
 

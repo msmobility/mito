@@ -1,16 +1,13 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.Implementation;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Created by Nico on 26/07/2017.
@@ -21,11 +18,8 @@ public class HouseHoldTypeManagerTest {
 
     @Before
     public void setupTest() {
-        try {
-            Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+
         zone = new MitoZone(1, 10, AreaType.RURAL);
     }
 

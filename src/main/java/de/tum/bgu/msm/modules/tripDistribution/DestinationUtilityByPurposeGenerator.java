@@ -53,7 +53,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
             }
         }
         logger.info("Utility matrix for purpose " + purpose + " done.");
-        return new Pair(purpose, utilityMatrix);
+        return new Pair<>(purpose, utilityMatrix);
     }
 
     private double getUtility(MitoZone destination, double travelDistance) {

@@ -26,18 +26,14 @@ public final class MandatoryTripDestinationChooser extends BasicDestinationChoos
 
     @Override
     protected void updateBudgets(MitoHousehold household) {
-        return;
     }
 
     @Override
     protected void updateAdjustedDestinationProbabilities(MitoHousehold household){
-        return;
     }
 
     @Override
-    void postProcessTrip(MitoTrip trip) {
-        return;
-    }
+    void postProcessTrip(MitoTrip trip) {}
 
     @Override
     protected boolean isValid(MitoHousehold household) {
