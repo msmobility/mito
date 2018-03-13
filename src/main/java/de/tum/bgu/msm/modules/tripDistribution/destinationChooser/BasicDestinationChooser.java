@@ -56,10 +56,8 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(findOrigin(household, trip));
                     trip.setTripDestination(findDestination(trip));
-                    if(trip != null) {
-                        postProcessTrip(trip);
-                        TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
-                    }
+                    postProcessTrip(trip);
+                    TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
                 }
             }
             counter++;

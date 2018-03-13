@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
@@ -21,11 +20,8 @@ public class ModeChoiceCalculatorTest {
 
     @Before
     public void setup() {
-        try {
-            Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
 
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoice"));
         calculator = new ModeChoiceJSCalculator(reader);

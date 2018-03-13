@@ -2,12 +2,15 @@ package de.tum.bgu.msm.io.output;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
+import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
 
 import java.io.PrintWriter;
@@ -19,11 +22,11 @@ import java.util.*;
  * Created on 11/07/2017.
  */
 public class SummarizeData {
-    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(SummarizeData.class);
+    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(SummarizeData.class);
 
 
     public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet) {
-        logger.info("  Writing household file");
+        LOGGER.info("  Writing household file");
         String filehh = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + Resources.INSTANCE.getString(Properties.HOUSEHOLDS) + "_t.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
         pwh.println("id,zone,hhSize,autos,trips,workTrips");
@@ -46,7 +49,7 @@ public class SummarizeData {
         }
         pwh.close();
 
-        logger.info("  Writing person file");
+        LOGGER.info("  Writing person file");
         String filepp = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + Resources.INSTANCE.getString(Properties.PERSONS) + "_t.csv";
         PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp, false);
         pwp.println("id,hhID,hhSize,hhTrips,avTrips");
@@ -58,7 +61,7 @@ public class SummarizeData {
                     pwp.print(",");
                     pwp.print(hh.getHhSize());
                     pwp.print(",");
-                    long hhTrips = Arrays.asList(Purpose.values()).stream().flatMap(purpose -> hh.getTripsForPurpose(purpose).stream()).count();
+                    long hhTrips = Arrays.stream(Purpose.values()).mapToLong(purpose -> hh.getTripsForPurpose(purpose).size()).sum();
                     pwp.print(hhTrips);
                     pwp.print(",");
                     pwp.println(hhTrips / hh.getHhSize());
@@ -68,7 +71,7 @@ public class SummarizeData {
     }
 
     public static void writeOutTrips(DataSet dataSet) {
-        logger.info("  Writing trips file");
+        LOGGER.info("  Writing trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
         pwh.println("id,origin,destination,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode");
@@ -123,6 +126,7 @@ public class SummarizeData {
         List<Double> travelDistances = new ArrayList<>();
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
         Multiset<MitoZone> tripsByZone = HashMultiset.create();
+        SortedMultiset<Mode> modes = TreeMultiset.create();
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
@@ -136,6 +140,7 @@ public class SummarizeData {
                     values.add(travelDistance);
                     distancesByZone.put(trip.getTripOrigin().getId(), values);
                 }
+                modes.add(trip.getTripMode());
             }
         }
 
@@ -154,6 +159,8 @@ public class SummarizeData {
         }
         Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 1, 80);
         Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 100, 1, 100);
+
+        PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
 
         Map<Double, Double> averageDistancesByZone = new HashMap<>();
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
@@ -175,7 +182,7 @@ public class SummarizeData {
 
     }
 
-    public static void writeHistograms(DataSet dataSet) {
+    public static void writeCharts(DataSet dataSet) {
         for(Purpose purpose: Purpose.values()) {
             writeCharts(dataSet, purpose);
         }

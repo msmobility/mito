@@ -56,9 +56,7 @@ public abstract class JavaScriptCalculator<T> {
     protected final T calculate(String function, Object... args) {
         try {
             return (T) invocable.invokeFunction(function, args);
-        } catch (ScriptException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
+        } catch (ScriptException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

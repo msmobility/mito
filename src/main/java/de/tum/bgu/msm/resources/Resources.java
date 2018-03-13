@@ -22,12 +22,16 @@ public class Resources {
         this.implementation = implementation;
     }
 
-    public static void initializeResources(String fileName, Implementation implementation) throws IOException {
-        FileInputStream in = new FileInputStream(fileName);
-        Properties properties = new Properties();
-        properties.load(in);
-        MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
-        INSTANCE = new Resources(properties, implementation);
+    public static void initializeResources(String fileName, Implementation implementation) {
+        try (FileInputStream in = new FileInputStream(fileName)){
+            Properties properties = new Properties();
+            properties.load(in);
+            MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
+            INSTANCE = new Resources(properties, implementation);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
     }
 
     public synchronized int getInt(String key) {
