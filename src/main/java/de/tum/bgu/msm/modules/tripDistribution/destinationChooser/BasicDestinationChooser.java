@@ -75,7 +75,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
     }
 
     void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour(),1./60.);
         idealBudgetSum += hhBudgetPerTrip;
     }
 
@@ -100,7 +100,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
 
     void adjustDestinationProbabilities(int origin) {
         for (int i = 0; i < destinationProbabilities.size(); i++) {
-            final int deviation = (int) ((travelTimes.getTravelTime(origin, i, dataSet.getPeakHour()) / adjustedBudget));
+            final int deviation = (int) ((travelTimes.getTravelTime(origin, i, dataSet.getPeakHour(),1./60.) / adjustedBudget));
             destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * deviation);
         }
     }

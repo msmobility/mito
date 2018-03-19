@@ -46,7 +46,7 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
                         ignored++;
                         continue;
                     }
-                    budget += travelTimes.getTravelTime(household.getHomeZone().getId(), person.getOccupationZone().getId(), timeOfDay);
+                    budget += travelTimes.getTravelTime(household.getHomeZone().getId(), person.getOccupationZone().getId(), timeOfDay,1./60.);
                 }
             }
             household.setTravelTimeBudgetByPurpose(purpose, budget);
