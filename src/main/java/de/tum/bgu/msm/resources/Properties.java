@@ -36,4 +36,6 @@ public class Properties {
     public static final String CREATE_DESTINATION_CHOICE_HISTOGRAMS = "create.destination.choice.histograms";
 
     public static final String TIME_OF_DAY_DISTRIBUTIONS = "time.of.day.distribution.file";
+
+    public static final String TRIP_SCALING_FACTOR = "trip.scaling.factor";
 }
