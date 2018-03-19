@@ -112,7 +112,7 @@ public class SummarizeData {
                 double time_tram_metro = dataSet.getTravelTimes("tramMetro").getTravelTime(origin.getId(), destination.getId(), 0);
                 pwh.print(time_tram_metro);
             } else {
-                pwh.print("NA");
+                pwh.print("NA,NA,NA,NA,NA");
             }
             pwh.print(",");
             pwh.print(trip.getTripMode());
