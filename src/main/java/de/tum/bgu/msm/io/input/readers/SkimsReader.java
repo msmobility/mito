@@ -29,7 +29,7 @@ public class SkimsReader extends AbstractOmxReader {
     }
 
     private void readHighwaySkims() {
-        DoubleMatrix2D timeSkimAutos = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "mat1");
+        DoubleMatrix2D timeSkimAutos = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "timeByTime");
         dataSet.addTravelTimeForMode("car", new SkimTravelTimes(timeSkimAutos));
     }
 
@@ -54,9 +54,9 @@ public class SkimsReader extends AbstractOmxReader {
     }
 
     private void readTravelDistanceForModeChoice(){
-        DoubleMatrix2D distanceSkimAuto = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"td8");
+        DoubleMatrix2D distanceSkimAuto = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"distanceByTime");
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
-        DoubleMatrix2D distanceSkimNMT = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"td8");
+        DoubleMatrix2D distanceSkimNMT = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance");
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
 }

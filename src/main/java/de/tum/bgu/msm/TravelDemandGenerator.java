@@ -5,6 +5,7 @@ import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
+import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
@@ -49,6 +50,9 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
+        logger.info("Running time of day choice");
+        TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
+        timeOfDayChoice.run();
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);

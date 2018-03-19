@@ -19,6 +19,9 @@ public class MitoTrip implements Id{
 
     private Mode tripMode;
 
+    private int departureInMinutes;
+    private int departureInMinutesReturnTrip = -1;
+
     public MitoTrip(int tripId, Purpose tripPurpose) {
         this.tripId = tripId;
         this.tripPurpose = tripPurpose;
@@ -60,6 +63,22 @@ public class MitoTrip implements Id{
     public Mode getTripMode() { return tripMode; }
 
     public void setTripMode(Mode tripMode) { this.tripMode = tripMode; }
+
+    public void setDepartureInMinutes(int departureInMinutes) {
+        this.departureInMinutes = departureInMinutes;
+    }
+
+    public void setDepartureInMinutesReturnTrip(int departureInMinutesReturnTrip) {
+        this.departureInMinutesReturnTrip = departureInMinutesReturnTrip;
+    }
+
+    public int getDepartureInMinutes() {
+        return departureInMinutes;
+    }
+
+    public int getDepartureInMinutesReturnTrip() {
+        return departureInMinutesReturnTrip;
+    }
 
     @Override
     public String toString() {

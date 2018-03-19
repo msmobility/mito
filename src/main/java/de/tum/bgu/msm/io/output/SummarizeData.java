@@ -74,7 +74,7 @@ public class SummarizeData {
         LOGGER.info("  Writing trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,destination,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode");
+        pwh.println("id,origin,destination,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -115,7 +115,18 @@ public class SummarizeData {
                 pwh.print("NA");
             }
             pwh.print(",");
-            pwh.println(trip.getTripMode());
+            pwh.print(trip.getTripMode());
+            pwh.print(",");
+            pwh.print(trip.getDepartureInMinutes());
+            int departureOfReturnTrip = trip.getDepartureInMinutesReturnTrip();
+            if (departureOfReturnTrip != -1){
+                pwh.print(",");
+                pwh.println(departureOfReturnTrip);
+            } else {
+                pwh.print(",");
+                pwh.println("NA");
+            }
+
         }
         pwh.close();
     }
