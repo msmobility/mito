@@ -42,7 +42,12 @@ public class TimeOfDayChoice extends Module {
         dataSet.getTrips().values().forEach(trip -> {
                     try {
                         int arrivalInMinutes = chooseDepartureTime(trip);
-                        trip.setDepartureInMinutes(arrivalInMinutes - (int) estimateTravelTimeForDeparture(trip, arrivalInMinutes));
+                        arrivalInMinutes = arrivalInMinutes - (int) estimateTravelTimeForDeparture(trip, arrivalInMinutes);
+                        //if departure is before midnight
+                        if (arrivalInMinutes < 0) {
+                            arrivalInMinutes = arrivalInMinutes + 24 * 60;
+                        }
+                        trip.setDepartureInMinutes(arrivalInMinutes );
                         if (isHomeBased(trip)) {
                             trip.setDepartureInMinutesReturnTrip(chooseDepartureTimeForReturnTrip(trip, arrivalInMinutes));
                         }
@@ -70,6 +75,7 @@ public class TimeOfDayChoice extends Module {
 
     int chooseDepartureTimeForReturnTrip(MitoTrip mitoTrip, int arrivalTime) {
 
+        //if departure is after midnight
         int duration = MitoUtil.select(durationMinuteCumProvByPurpose.viewColumn(mitoTrip.getTripPurpose().ordinal()).toArray(), MitoUtil.getRandomObject());
         if (arrivalTime + duration > 24 * 60) {
             return arrivalTime + duration - 24 * 60;
