@@ -36,8 +36,13 @@ public final class MandatoryTripDestinationChooser extends BasicDestinationChoos
     void postProcessTrip(MitoTrip trip) {}
 
     @Override
-    protected boolean isValid(MitoHousehold household) {
+    protected boolean hasTripsForPurpose(MitoHousehold household) {
         return !household.getTripsForPurpose(purpose).isEmpty();
+    }
+
+    @Override
+    protected boolean hasBudgetForPurpose(MitoHousehold household) {
+        return true;
     }
 
     private boolean isFixedByOccupation(MitoTrip trip) {
