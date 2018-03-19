@@ -52,16 +52,24 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
-        logger.info("Running time of day choice");
-        TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
-        timeOfDayChoice.run();
-        logger.info("Running trip scaling");
-        TripScaling tripScaling = new TripScaling(dataSet);
-        tripScaling.run();
-        logger.info("Running traffic assignment in MATsim");
-        TrafficAssignment trafficAssignment = new TrafficAssignment(dataSet);
-        trafficAssignment.run();
-
+        boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE);
+        if (runTimeOfDayChoice) {
+            logger.info("Running time of day choice");
+            TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
+            timeOfDayChoice.run();
+        }
+        boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE);
+        if (runTimeOfDayChoice && runScaling) {
+            logger.info("Running trip scaling");
+            TripScaling tripScaling = new TripScaling(dataSet);
+            tripScaling.run();
+        }
+        boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE);
+        if (runTimeOfDayChoice && runScaling && runAssignment) {
+            logger.info("Running traffic assignment in MATsim");
+            TrafficAssignment trafficAssignment = new TrafficAssignment(dataSet);
+            trafficAssignment.run();
+        }
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
         SummarizeData.writeOutTrips(dataSet);
