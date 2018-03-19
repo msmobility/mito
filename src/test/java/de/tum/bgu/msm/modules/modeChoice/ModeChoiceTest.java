@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,23 +36,9 @@ public class ModeChoiceTest {
     }
 
     @Test
-    public void testModeChoiceByPurpose() throws Exception {
-        ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoiceByPurpose(dataSet, Purpose.HBW);
-        double[] resultArray = modeChoiceByPurpose.calculateTripProbabilities(household1, trip1);
-        DoubleMatrix2D resultMatrix = modeChoiceByPurpose.call().getValue();
-        Assert.assertNotNull(resultMatrix);
-    }
-
-    @Test
     public void testModeChoice() throws Exception {
         ModeChoice modeChoice = new ModeChoice(dataSet);
-        modeChoice.calculateProbabilitiesByPurpose();
-        Assert.assertNotNull(modeChoice.modeChoiceProbabilitiesByPurpose);
-        modeChoice.aggregateProbabilitiesToOneMatrix();
-        Assert.assertNotNull(modeChoice.result);
-        Mode mode1 = modeChoice.chooseTripMode(1);
-        Mode mode2 = modeChoice.chooseTripMode(2);
-        Assert.assertNotNull(mode1);
+        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, false);
     }
 
 
