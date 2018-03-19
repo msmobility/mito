@@ -34,6 +34,7 @@ public abstract class JavaScriptCalculator<T> {
                 scriptBuilder.append(line).append("\n");
                 line = bufferedReader.readLine();
             }
+            bufferedReader.close();
         } catch (IOException e) {
             logger.fatal("Error in reading script!", e);
         }

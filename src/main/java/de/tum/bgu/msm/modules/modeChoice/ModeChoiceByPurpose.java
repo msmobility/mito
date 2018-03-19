@@ -81,8 +81,9 @@ public class ModeChoiceByPurpose implements Callable<Pair<Purpose, DoubleMatrix2
         travelTimeByMode.put("bus", busTime);
         travelTimeByMode.put("tramMetro", trainTime);
         travelTimeByMode.put("train", tramMetroTime);
-        final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / 1000.;
-        final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / 1000.;
+
+        final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
+        final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
         return calculator.calculateProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT);
     }
 }

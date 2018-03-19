@@ -49,15 +49,19 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
             if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for Purpose " + purpose);
             }
-            if (isValid(household)) {
-                updateBaseDestinationProbabilities(household);
-                updateBudgets(household);
-//                updateAdjustedDestinationProbabilities(household);
-                for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                    trip.setTripOrigin(findOrigin(household, trip));
-                    trip.setTripDestination(findDestination(trip));
-                    postProcessTrip(trip);
-                    TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+            if (hasTripsForPurpose(household)) {
+                if(hasBudgetForPurpose(household)) {
+                    updateBaseDestinationProbabilities(household);
+//                  updateBudgets(household);
+//                  updateAdjustedDestinationProbabilities(household);
+                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        trip.setTripOrigin(findOrigin(household, trip));
+                        trip.setTripDestination(findDestination(trip));
+                        postProcessTrip(trip);
+                        TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+                    }
+                } else {
+                    TripDistribution.FAILED_TRIPS_COUNTER.incrementAndGet();
                 }
             }
             counter++;
@@ -70,8 +74,12 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
         adjustDestinationProbabilities(household.getHomeZone().getId());
     }
 
-    protected boolean isValid(MitoHousehold household) {
-        return !household.getTripsForPurpose(purpose).isEmpty() && household.getTravelTimeBudgetForPurpose(purpose) > 0.;
+    protected boolean hasTripsForPurpose(MitoHousehold household) {
+        return !household.getTripsForPurpose(purpose).isEmpty();
+    }
+
+    protected boolean hasBudgetForPurpose(MitoHousehold household) {
+        return household.getTravelTimeBudgetForPurpose(purpose) > 0.;
     }
 
     void postProcessTrip(MitoTrip trip) {

@@ -151,7 +151,9 @@ public class SummarizeData {
                     values.add(travelDistance);
                     distancesByZone.put(trip.getTripOrigin().getId(), values);
                 }
-                modes.add(trip.getTripMode());
+                if(trip.getTripMode() != null) {
+                    modes.add(trip.getTripMode());
+                }
             }
         }
 
@@ -165,11 +167,11 @@ public class SummarizeData {
         double[] travelDistancesArray = new double[travelTimes.size()];
         i= 0;
         for(Double value: travelDistances) {
-            travelDistancesArray[i] = value / 1000.;
+            travelDistancesArray[i] = value;
             i++;
         }
-        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 1, 80);
-        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 100, 1, 100);
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 0, 80);
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 400, 0, 100);
 
         PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/output/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
 

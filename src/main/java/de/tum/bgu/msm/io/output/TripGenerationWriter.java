@@ -3,8 +3,8 @@ package de.tum.bgu.msm.io.output;
 import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -24,9 +24,9 @@ public class TripGenerationWriter {
     public static void writeTripsByPurposeAndZone(DataSet dataSet) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet);
+        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT));
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet);
+        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT));
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
@@ -74,7 +74,7 @@ public class TripGenerationWriter {
                 + " aggregate trips balanced against attractions.");
     }
 
-    private static String generateOutputFileName (String fileName, DataSet dataSet) {
+    private static String generateOutputFileName (String fileName) {
         if (MitoModel.getScenarioName() != null) {
             File dir = new File("scenOutput/" + MitoModel.getScenarioName() + "/tripGeneration");
             if(!dir.exists()){
