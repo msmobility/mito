@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.timeOfDay;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Mode;
@@ -21,6 +22,8 @@ public class TimeOfDayChoice extends Module {
 
     private double speedWalk = 5 / 3.6;
     private double speedBicycle = 13 / 3.6;
+
+    private long counter = 0;
 
     public TimeOfDayChoice(DataSet dataSet) {
         super(dataSet);
@@ -43,9 +46,8 @@ public class TimeOfDayChoice extends Module {
 
 
     void chooseDepartureTimes() {
-
         dataSet.getTrips().values().forEach(trip -> {
-                    try {
+                try {
                         int arrivalInMinutes = chooseDepartureTime(trip);
                         arrivalInMinutes = arrivalInMinutes - (int) estimateTravelTimeForDeparture(trip, arrivalInMinutes);
                         //if departure is before midnight
@@ -53,25 +55,21 @@ public class TimeOfDayChoice extends Module {
                             arrivalInMinutes = arrivalInMinutes + 24 * 60;
                         }
                         trip.setDepartureInMinutes(arrivalInMinutes);
-                        if (isHomeBased(trip)) {
+                        if (trip.isHomeBased()) {
                             trip.setDepartureInMinutesReturnTrip(chooseDepartureTimeForReturnTrip(trip, arrivalInMinutes));
                         }
 
                     } catch (Exception e) {
-
+                }
+                    counter++;
+                    if (LongMath.isPowerOfTwo(counter)){
+                        logger.info(counter + " times of day assigned");
                     }
-
                 }
         );
     }
 
-    private boolean isHomeBased(MitoTrip trip) {
-        if (trip.getTripPurpose().equals(Purpose.NHBW) || trip.getTripPurpose().equals(Purpose.NHBO)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+
 
 
     int chooseDepartureTime(MitoTrip mitoTrip) {

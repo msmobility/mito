@@ -7,6 +7,7 @@ import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
+import de.tum.bgu.msm.modules.trafficAssignment.TrafficAssignment;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
@@ -57,6 +58,9 @@ public class TravelDemandGenerator {
         logger.info("Running trip scaling");
         TripScaling tripScaling = new TripScaling(dataSet);
         tripScaling.run();
+        logger.info("Running traffic assignment in MATsim");
+        TrafficAssignment trafficAssignment = new TrafficAssignment(dataSet);
+        trafficAssignment.run();
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);

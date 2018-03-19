@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.data;
 
+import org.matsim.api.core.v01.population.Person;
+
 /**
  * Holds trip objects for the Microsimulation Transport Orchestrator (MITO)
  * @author Rolf Moeckel
@@ -21,6 +23,8 @@ public class MitoTrip implements Id{
 
     private int departureInMinutes;
     private int departureInMinutesReturnTrip = -1;
+
+    private Person matsimPerson;
 
     public MitoTrip(int tripId, Purpose tripPurpose) {
         this.tripId = tripId;
@@ -78,6 +82,26 @@ public class MitoTrip implements Id{
 
     public int getDepartureInMinutesReturnTrip() {
         return departureInMinutesReturnTrip;
+    }
+
+    public int getTripId() {
+        return tripId;
+    }
+
+    public Person getMatsimPerson() {
+        return matsimPerson;
+    }
+
+    public void setMatsimPerson(Person matsimPerson) {
+        this.matsimPerson = matsimPerson;
+    }
+
+    public boolean isHomeBased() {
+        if (this.getTripPurpose().equals(Purpose.NHBW) || this.getTripPurpose().equals(Purpose.NHBO)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override

@@ -38,4 +38,10 @@ public class Properties {
     public static final String TIME_OF_DAY_DISTRIBUTIONS = "time.of.day.distribution.file";
 
     public static final String TRIP_SCALING_FACTOR = "trip.scaling.factor";
+
+    public static final String MATSIM_NETWORK_FILE = "matsim.network";
+    public static final String MATSIM_ITERATIONS = "matsim.iterations";
+    public static final String ZONE_SHAPEFILE = "zone.shapefile";
+    public static final String ZONE_SHAPEFILE_CRS = "zone.shapefile.crs";
+    public static final String ZONE_SHAPEFILE_ID_FIELD  = "zone.shapefile.id.field";
 }
