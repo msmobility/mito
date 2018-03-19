@@ -27,11 +27,11 @@ public class ModeChoiceTest {
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);
         dataSet.setTravelDistancesNMT((origin, destination) -> 1000);
-        dataSet.addTravelTimeForMode("car", (origin, destination, timeOfDay_s, factor) -> 10);
-        dataSet.addTravelTimeForMode("autoP", (origin, destination, timeOfDay_s, factor) -> 10);
-        dataSet.addTravelTimeForMode("bus", (origin, destination, timeOfDay_s, factor) -> 10);
-        dataSet.addTravelTimeForMode("tramMetro", (origin, destination, timeOfDay_s, factor) -> 10);
-        dataSet.addTravelTimeForMode("train", (origin, destination, timeOfDay_s, factor) -> 10);
+        dataSet.addTravelTimeForMode("car", (origin, destination, timeOfDay_s) -> 10);
+        dataSet.addTravelTimeForMode("autoP", (origin, destination, timeOfDay_s) -> 10);
+        dataSet.addTravelTimeForMode("bus", (origin, destination, timeOfDay_s) -> 10);
+        dataSet.addTravelTimeForMode("tramMetro", (origin, destination, timeOfDay_s) -> 10);
+        dataSet.addTravelTimeForMode("train", (origin, destination, timeOfDay_s) -> 10);
         fillDataSet();
     }
 
