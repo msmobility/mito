@@ -3,6 +3,7 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
@@ -53,6 +54,9 @@ public class TravelDemandGenerator {
         logger.info("Running time of day choice");
         TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
         timeOfDayChoice.run();
+        logger.info("Running trip scaling");
+        TripScaling tripScaling = new TripScaling(dataSet);
+        tripScaling.run();
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);

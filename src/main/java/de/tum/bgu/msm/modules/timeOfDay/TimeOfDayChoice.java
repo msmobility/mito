@@ -8,17 +8,19 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.readers.TimeOfDayDistributionsReader;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.apache.log4j.Logger;
 
 
 public class TimeOfDayChoice extends Module {
 
+
+    private static final Logger logger = Logger.getLogger(TimeOfDayChoice.class);
+
     private DoubleMatrix2D arrivalMinuteCumProbByPurpose;
     private DoubleMatrix2D durationMinuteCumProvByPurpose;
 
-
     private double speedWalk = 5 / 3.6;
     private double speedBicycle = 13 / 3.6;
-
 
     public TimeOfDayChoice(DataSet dataSet) {
         super(dataSet);
@@ -28,6 +30,8 @@ public class TimeOfDayChoice extends Module {
     public void run() {
         loadProbabilities();
         chooseDepartureTimes();
+        logger.info("Time of day choice completed");
+
     }
 
     void loadProbabilities() {
@@ -39,6 +43,7 @@ public class TimeOfDayChoice extends Module {
 
 
     void chooseDepartureTimes() {
+
         dataSet.getTrips().values().forEach(trip -> {
                     try {
                         int arrivalInMinutes = chooseDepartureTime(trip);
@@ -47,7 +52,7 @@ public class TimeOfDayChoice extends Module {
                         if (arrivalInMinutes < 0) {
                             arrivalInMinutes = arrivalInMinutes + 24 * 60;
                         }
-                        trip.setDepartureInMinutes(arrivalInMinutes );
+                        trip.setDepartureInMinutes(arrivalInMinutes);
                         if (isHomeBased(trip)) {
                             trip.setDepartureInMinutesReturnTrip(chooseDepartureTimeForReturnTrip(trip, arrivalInMinutes));
                         }
