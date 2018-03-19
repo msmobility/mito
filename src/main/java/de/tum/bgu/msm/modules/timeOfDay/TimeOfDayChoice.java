@@ -93,9 +93,9 @@ public class TimeOfDayChoice extends Module {
         if (trip.getTripMode().equals(Mode.walk)) {
             return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / speedWalk;
         } else if (trip.getTripMode().equals(Mode.bicycle)) {
-            return dataSet.getTravelTimes(trip.getTripMode().toString()).getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), arrivalInMinutes * 60) / speedBicycle;
+            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / speedBicycle;
         } else {
-            return dataSet.getTravelTimes(trip.getTripMode().toString()).getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), arrivalInMinutes * 60);
+            return dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), arrivalInMinutes * 60);
         }
     }
 
