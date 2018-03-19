@@ -39,11 +39,17 @@ public class TrafficAssignment extends Module {
         matsimConfig.controler().setRunId(runId);
         matsimConfig.controler().setOutputDirectory(outputDirectory + "output/");
         matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
+
         matsimConfig.qsim().setNumberOfThreads(16);
         matsimConfig.global().setNumberOfThreads(16);
         matsimConfig.parallelEventHandling().setNumberOfThreads(16);
         matsimConfig.qsim().setUsingThreadpool(false);
+
         matsimConfig.controler().setLastIteration(Resources.INSTANCE.getInt(Properties.MATSIM_ITERATIONS));
+
+        matsimConfig.qsim().setStuckTime(10);
+        matsimConfig.qsim().setFlowCapFactor(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+        matsimConfig.qsim().setFlowCapFactor(Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)),0.75));
     }
 
     private void createPopulation() {
