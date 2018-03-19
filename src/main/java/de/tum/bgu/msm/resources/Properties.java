@@ -33,5 +33,7 @@ public class Properties {
     public static final String NMT_TRAVEL_DISTANCE_SKIM = "nmt.travelDistance";
     public static final String AREA_TYPES_AND_RAIL_DISTANCE = "areaTypes.distToRailStop";
 
+    public static final String AUTONOMOUS_VEHICLE_CHOICE = "include.AVchoice";
+
     public static final String CREATE_DESTINATION_CHOICE_HISTOGRAMS = "create.destination.choice.histograms";
 }

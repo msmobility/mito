@@ -3,6 +3,8 @@ nestingCoefficient = 0.25;
 fuelCostEurosPerKm = 0.07;
 transitFareEurosPerKm = 0.12;
 
+sharedAVCostEurosPerKm = 1.20;
+
 VOT1500_HBW_HBE_autoD = 4.63;
 VOT5600_HBW_HBE_autoD = 8.94;
 VOT7000_HBW_HBE_autoD = 12.15;
@@ -13,6 +15,13 @@ VOT1500_HBW_HBE_transit = 8.94;
 VOT5600_HBW_HBE_transit = 17.30;
 VOT7000_HBW_HBE_transit = 23.50;
 
+VOT1500_HBW_HBE_privateAV = 3.47;
+VOT5600_HBW_HBE_privateAV = 6.71;
+VOT7000_HBW_HBE_privateAV = 9.11;
+VOT1500_HBW_HBE_sharedAV = 7.98;
+VOT5600_HBW_HBE_sharedAV = 15.43;
+VOT7000_HBW_HBE_sharedAV = 20.97;
+
 VOT1500_other_autoD = 3.26;
 VOT5600_other_autoD = 6.30;
 VOT7000_other_autoD = 8.56;
@@ -22,6 +31,13 @@ VOT7000_other_autoP = 11.30;
 VOT1500_other_transit = 5.06;
 VOT5600_other_transit = 9.78;
 VOT7000_other_transit = 13.29;
+
+VOT1500_other_privateAV = 2.45;
+VOT5600_other_privateAV = 4.73;
+VOT7000_other_privateAV = 6.42;
+VOT1500_other_sharedAV = 4.68;
+VOT5600_other_sharedAV = 9.05;
+VOT7000_other_sharedAV = 12.30;
 
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
@@ -56,23 +72,23 @@ distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
 areaType = trip.getTripOrigin().getAreaTypeHBWModeChoice();
 
 if(income/12 <= 1500){
-gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD
-gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP
-gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
-gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
-gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
+gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD;
+gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP;
+gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
+gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
+gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
 } else if (income/12 > 1500 && income/12 <= 5600){
-gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoD
-gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoP
-gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
-gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
-gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
+gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoD;
+gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoP;
+gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
+gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
+gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
 } else if (income/12 > 5600){
-gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoD
-gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoP
-gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit
-gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit
-gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit
+gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoD;
+gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoP;
+gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit;
+gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit;
+gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit;
 }
 
 utilityAutoD        = interceptHBW[0] + ageHBW[0]*age + maleHBW[0]*(gender.name().equals("MALE")) + 
@@ -127,15 +143,47 @@ utilityWalk         = interceptHBW[6] + ageHBW[6]*age + maleHBW[6]*(gender.name(
 logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
 logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
 
-probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-probabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
-probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+baseProbabilityAutoNest = (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityTransitNest = (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+if(income/12 <= 1500){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
+} else if (income/12 > 1500 && income/12 <= 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
+} else if (income/12 > 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_HBW_HBE_sharedAV; // change in VOT and cost
+}
+
+// Numerator of Auto and Transit probabilities (exp of utilities)
+relativeExpOfAutoNestUtility = baseProbabilityAutoNest * Math.pow((1 + Math.exp(generalizedCostHBW[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)) / (1 + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)), nestingCoefficient);
+relativeExpOfTransitNestUtility = baseProbabilityTransitNest * Math.pow((1 + Math.exp(generalizedCostHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)) / (1 + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)), nestingCoefficient);
+// Denominator (sum of exp of utilities)
+sumOfRelativeExpOfUtilities = relativeExpOfAutoNestUtility + relativeExpOfTransitNestUtility + 1 - baseProbabilityAutoNest - baseProbabilityTransitNest;
+// Individual probabilities
+probabilityAutoNest = relativeExpOfAutoNestUtility / sumOfRelativeExpOfUtilities;
+probabilityPrivateAV = probabilityAutoNest * Math.exp(generalizedCostHBW[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) / (1 + Math.exp((generalizedCostHBW[0]*(gcPrivateAV-gcAutoD))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoD = probabilityAutoNest / (1 + Math.exp(generalizedCostHBW[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoP = probabilityAutoNest / (1 + Math.exp(generalizedCostHBW[1]*(gcPrivateAV-gcAutoP)/nestingCoefficient) + Math.exp((utilityAutoD-utilityAutoP)/nestingCoefficient));
+probabilityTransitNest = relativeExpOfTransitNestUtility / sumOfRelativeExpOfUtilities;
+probabilitySharedAV = probabilityTransitNest * Math.exp(generalizedCostHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) / (1 + Math.exp(generalizedCostHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityBus = probabilityTransitNest / (1 + Math.exp(generalizedCostHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityTrain = probabilityTransitNest / (1 + Math.exp(generalizedCostHBW[4]*(gcSharedAV-gcTrain)/nestingCoefficient) + Math.exp((utilityBus-utilityTrain)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityTrain)/nestingCoefficient));
+probabilityTramMetro = probabilityTransitNest / (1 + Math.exp(generalizedCostHBW[5]*(gcSharedAV-gcTramMetro)/nestingCoefficient) + Math.exp((utilityBus-utilityTramMetro)/nestingCoefficient) + Math.exp((utilityTrain-utilityTramMetro)/nestingCoefficient));
+probabilityBicycle = baseProbabilityBicycle / sumOfRelativeExpOfUtilities;
+probabilityWalk = baseProbabilityWalk / sumOfRelativeExpOfUtilities;
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV], "double[]");
 
 }
 
@@ -216,7 +264,47 @@ probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(util
 probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
 probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+baseProbabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+baseProbabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+baseProbabilityAutoNest = (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityTransitNest = (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+if(income/12 <= 1500){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
+} else if (income/12 > 1500 && income/12 <= 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
+} else if (income/12 > 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_HBW_HBE_sharedAV; // change in VOT and cost
+}
+
+// Numerator of Auto and Transit probabilities (exp of utilities)
+relativeExpOfAutoNestUtility = baseProbabilityAutoNest * Math.pow((1 + Math.exp(generalizedCostHBE[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)) / (1 + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)), nestingCoefficient);
+relativeExpOfTransitNestUtility = baseProbabilityTransitNest * Math.pow((1 + Math.exp(generalizedCostHBE[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)) / (1 + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)), nestingCoefficient);
+// Denominator (sum of exp of utilities)
+sumOfRelativeExpOfUtilities = relativeExpOfAutoNestUtility + relativeExpOfTransitNestUtility + 1 - baseProbabilityAutoNest - baseProbabilityTransitNest;
+// Individual probabilities
+probabilityAutoNest = relativeExpOfAutoNestUtility / sumOfRelativeExpOfUtilities;
+probabilityPrivateAV = probabilityAutoNest * Math.exp(generalizedCostHBE[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) / (1 + Math.exp((generalizedCostHBE[0]*(gcPrivateAV-gcAutoD))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoD = probabilityAutoNest / (1 + Math.exp(generalizedCostHBE[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoP = probabilityAutoNest / (1 + Math.exp(generalizedCostHBE[1]*(gcPrivateAV-gcAutoP)/nestingCoefficient) + Math.exp((utilityAutoD-utilityAutoP)/nestingCoefficient));
+probabilityTransitNest = relativeExpOfTransitNestUtility / sumOfRelativeExpOfUtilities;
+probabilitySharedAV = probabilityTransitNest * Math.exp(generalizedCostHBE[3]*(gcSharedAV-gcBus)/nestingCoefficient) / (1 + Math.exp(generalizedCostHBE[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityBus = probabilityTransitNest / (1 + Math.exp(generalizedCostHBE[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityTrain = probabilityTransitNest / (1 + Math.exp(generalizedCostHBE[4]*(gcSharedAV-gcTrain)/nestingCoefficient) + Math.exp((utilityBus-utilityTrain)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityTrain)/nestingCoefficient));
+probabilityTramMetro = probabilityTransitNest / (1 + Math.exp(generalizedCostHBE[5]*(gcSharedAV-gcTramMetro)/nestingCoefficient) + Math.exp((utilityBus-utilityTramMetro)/nestingCoefficient) + Math.exp((utilityTrain-utilityTramMetro)/nestingCoefficient));
+probabilityBicycle = baseProbabilityBicycle / sumOfRelativeExpOfUtilities;
+probabilityWalk = baseProbabilityWalk / sumOfRelativeExpOfUtilities;
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV], "double[]");
 
 }
 
@@ -308,7 +396,39 @@ probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(util
 probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
 probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+baseProbabilityAutoNest = (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityTransitNest = (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+if(income/12 <= 1500){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 1500 && income/12 <= 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
+}
+
+// Numerator of Auto and Transit probabilities (exp of utilities)
+relativeExpOfAutoNestUtility = baseProbabilityAutoNest * Math.pow((1 + Math.exp(generalizedCostHBS_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)) / (1 + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)), nestingCoefficient);
+relativeExpOfTransitNestUtility = baseProbabilityTransitNest * Math.pow((1 + Math.exp(generalizedCostHBS_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)) / (1 + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)), nestingCoefficient);
+// Denominator (sum of exp of utilities)
+sumOfRelativeExpOfUtilities = relativeExpOfAutoNestUtility + relativeExpOfTransitNestUtility + 1 - baseProbabilityAutoNest - baseProbabilityTransitNest;
+// Individual probabilities
+probabilityAutoNest = relativeExpOfAutoNestUtility / sumOfRelativeExpOfUtilities;
+probabilityPrivateAV = probabilityAutoNest * Math.exp(generalizedCostHBS_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2))/nestingCoefficient) / (1 + Math.exp(generalizedCostHBS_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoD = probabilityAutoNest / (1 + Math.exp(generalizedCostHBS_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoP = probabilityAutoNest / (1 + Math.exp(generalizedCostHBS_Sq[1]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoP,2))/nestingCoefficient) + Math.exp((utilityAutoD-utilityAutoP)/nestingCoefficient));
+probabilityTransitNest = relativeExpOfTransitNestUtility / sumOfRelativeExpOfUtilities;
+probabilitySharedAV = probabilityTransitNest * Math.exp(generalizedCostHBS_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) / (1 + Math.exp(generalizedCostHBS_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityBus = probabilityTransitNest / (1 + Math.exp(generalizedCostHBS_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityTrain = probabilityTransitNest / (1 + Math.exp(generalizedCostHBS_Sq[4]*(Math.pow(gcSharedAV,2)-Math.pow(gcTrain,2))/nestingCoefficient) + Math.exp((utilityBus-utilityTrain)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityTrain)/nestingCoefficient));
+probabilityTramMetro = probabilityTransitNest / (1 + Math.exp(generalizedCostHBS_Sq[5]*(Math.pow(gcSharedAV,2)-Math.pow(gcTramMetro,2))/nestingCoefficient) + Math.exp((utilityBus-utilityTramMetro)/nestingCoefficient) + Math.exp((utilityTrain-utilityTramMetro)/nestingCoefficient));
+probabilityBicycle = baseProbabilityBicycle / sumOfRelativeExpOfUtilities;
+probabilityWalk = baseProbabilityWalk / sumOfRelativeExpOfUtilities;
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV], "double[]");
 
 }
 
@@ -398,7 +518,39 @@ probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(util
 probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
 probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+baseProbabilityAutoNest = (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityTransitNest = (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+if(income/12 <= 1500){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 1500 && income/12 <= 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
+}
+
+// Numerator of Auto and Transit probabilities (exp of utilities)
+relativeExpOfAutoNestUtility = baseProbabilityAutoNest * Math.pow((1 + Math.exp(generalizedCostHBO[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)) / (1 + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)), nestingCoefficient);
+relativeExpOfTransitNestUtility = baseProbabilityTransitNest * Math.pow((1 + Math.exp(generalizedCostHBO[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)) / (1 + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)), nestingCoefficient);
+// Denominator (sum of exp of utilities)
+sumOfRelativeExpOfUtilities = relativeExpOfAutoNestUtility + relativeExpOfTransitNestUtility + 1 - baseProbabilityAutoNest - baseProbabilityTransitNest;
+// Individual probabilities
+probabilityAutoNest = relativeExpOfAutoNestUtility / sumOfRelativeExpOfUtilities;
+probabilityPrivateAV = probabilityAutoNest * Math.exp(generalizedCostHBO[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) / (1 + Math.exp((generalizedCostHBO[0]*(gcPrivateAV-gcAutoD))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoD = probabilityAutoNest / (1 + Math.exp(generalizedCostHBO[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoP = probabilityAutoNest / (1 + Math.exp(generalizedCostHBO[1]*(gcPrivateAV-gcAutoP)/nestingCoefficient) + Math.exp((utilityAutoD-utilityAutoP)/nestingCoefficient));
+probabilityTransitNest = relativeExpOfTransitNestUtility / sumOfRelativeExpOfUtilities;
+probabilitySharedAV = probabilityTransitNest * Math.exp(generalizedCostHBO[3]*(gcSharedAV-gcBus)/nestingCoefficient) / (1 + Math.exp(generalizedCostHBO[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityBus = probabilityTransitNest / (1 + Math.exp(generalizedCostHBO[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityTrain = probabilityTransitNest / (1 + Math.exp(generalizedCostHBO[4]*(gcSharedAV-gcTrain)/nestingCoefficient) + Math.exp((utilityBus-utilityTrain)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityTrain)/nestingCoefficient));
+probabilityTramMetro = probabilityTransitNest / (1 + Math.exp(generalizedCostHBO[5]*(gcSharedAV-gcTramMetro)/nestingCoefficient) + Math.exp((utilityBus-utilityTramMetro)/nestingCoefficient) + Math.exp((utilityTrain-utilityTramMetro)/nestingCoefficient));
+probabilityBicycle = baseProbabilityBicycle / sumOfRelativeExpOfUtilities;
+probabilityWalk = baseProbabilityWalk / sumOfRelativeExpOfUtilities;
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV], "double[]");
 
 }
 
@@ -479,7 +631,39 @@ probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(util
 probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
 probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+baseProbabilityAutoNest = (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityTransitNest = (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+if(income/12 <= 1500){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 1500 && income/12 <= 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
+}
+
+// Numerator of Auto and Transit probabilities (exp of utilities)
+relativeExpOfAutoNestUtility = baseProbabilityAutoNest * Math.pow((1 + Math.exp(generalizedCostNHBW[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)) / (1 + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)), nestingCoefficient);
+relativeExpOfTransitNestUtility = baseProbabilityTransitNest * Math.pow((1 + Math.exp(generalizedCostNHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)) / (1 + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)), nestingCoefficient);
+// Denominator (sum of exp of utilities)
+sumOfRelativeExpOfUtilities = relativeExpOfAutoNestUtility + relativeExpOfTransitNestUtility + 1 - baseProbabilityAutoNest - baseProbabilityTransitNest;
+// Individual probabilities
+probabilityAutoNest = relativeExpOfAutoNestUtility / sumOfRelativeExpOfUtilities;
+probabilityPrivateAV = probabilityAutoNest * Math.exp(generalizedCostNHBW[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) / (1 + Math.exp((generalizedCostNHBW[0]*(gcPrivateAV-gcAutoD))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoD = probabilityAutoNest / (1 + Math.exp(generalizedCostNHBW[0]*(gcPrivateAV-gcAutoD)/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoP = probabilityAutoNest / (1 + Math.exp(generalizedCostNHBW[1]*(gcPrivateAV-gcAutoP)/nestingCoefficient) + Math.exp((utilityAutoD-utilityAutoP)/nestingCoefficient));
+probabilityTransitNest = relativeExpOfTransitNestUtility / sumOfRelativeExpOfUtilities;
+probabilitySharedAV = probabilityTransitNest * Math.exp(generalizedCostNHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) / (1 + Math.exp(generalizedCostNHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityBus = probabilityTransitNest / (1 + Math.exp(generalizedCostNHBW[3]*(gcSharedAV-gcBus)/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityTrain = probabilityTransitNest / (1 + Math.exp(generalizedCostNHBW[4]*(gcSharedAV-gcTrain)/nestingCoefficient) + Math.exp((utilityBus-utilityTrain)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityTrain)/nestingCoefficient));
+probabilityTramMetro = probabilityTransitNest / (1 + Math.exp(generalizedCostNHBW[5]*(gcSharedAV-gcTramMetro)/nestingCoefficient) + Math.exp((utilityBus-utilityTramMetro)/nestingCoefficient) + Math.exp((utilityTrain-utilityTramMetro)/nestingCoefficient));
+probabilityBicycle = baseProbabilityBicycle / sumOfRelativeExpOfUtilities;
+probabilityWalk = baseProbabilityWalk / sumOfRelativeExpOfUtilities;
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV], "double[]");
 
 }
 
@@ -576,6 +760,38 @@ probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(util
 probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
 probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+baseProbabilityAutoNest = (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+baseProbabilityTransitNest = (Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+if(income/12 <= 1500){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 1500 && income/12 <= 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
+} else if (income/12 > 5600){
+gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
+gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
+}
+
+// Numerator of Auto and Transit probabilities (exp of utilities)
+relativeExpOfAutoNestUtility = baseProbabilityAutoNest * Math.pow((1 + Math.exp(generalizedCostNHBO_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)) / (1 + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient)), nestingCoefficient);
+relativeExpOfTransitNestUtility = baseProbabilityTransitNest * Math.pow((1 + Math.exp(generalizedCostNHBO_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)) / (1 + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient)), nestingCoefficient);
+// Denominator (sum of exp of utilities)
+sumOfRelativeExpOfUtilities = relativeExpOfAutoNestUtility + relativeExpOfTransitNestUtility + 1 - baseProbabilityAutoNest - baseProbabilityTransitNest;
+// Individual probabilities
+probabilityAutoNest = relativeExpOfAutoNestUtility / sumOfRelativeExpOfUtilities;
+probabilityPrivateAV = probabilityAutoNest * Math.exp(generalizedCostNHBO_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2))/nestingCoefficient) / (1 + Math.exp((generalizedCostNHBO_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2)))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoD = probabilityAutoNest / (1 + Math.exp(generalizedCostNHBO_Sq[0]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoD,2))/nestingCoefficient) + Math.exp((utilityAutoP-utilityAutoD)/nestingCoefficient));
+probabilityAutoP = probabilityAutoNest / (1 + Math.exp(generalizedCostNHBO_Sq[1]*(Math.pow(gcPrivateAV,2)-Math.pow(gcAutoP,2))/nestingCoefficient) + Math.exp((utilityAutoD-utilityAutoP)/nestingCoefficient));
+probabilityTransitNest = relativeExpOfTransitNestUtility / sumOfRelativeExpOfUtilities;
+probabilitySharedAV = probabilityTransitNest * Math.exp(generalizedCostNHBO_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) / (1 + Math.exp(generalizedCostNHBO_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityBus = probabilityTransitNest / (1 + Math.exp(generalizedCostNHBO_Sq[3]*(Math.pow(gcSharedAV,2)-Math.pow(gcBus,2))/nestingCoefficient) + Math.exp((utilityTrain-utilityBus)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityBus)/nestingCoefficient));
+probabilityTrain = probabilityTransitNest / (1 + Math.exp(generalizedCostNHBO_Sq[4]*(Math.pow(gcSharedAV,2)-Math.pow(gcTrain,2))/nestingCoefficient) + Math.exp((utilityBus-utilityTrain)/nestingCoefficient) + Math.exp((utilityTramMetro-utilityTrain)/nestingCoefficient));
+probabilityTramMetro = probabilityTransitNest / (1 + Math.exp(generalizedCostNHBO_Sq[5]*(Math.pow(gcSharedAV,2)-Math.pow(gcTramMetro,2))/nestingCoefficient) + Math.exp((utilityBus-utilityTramMetro)/nestingCoefficient) + Math.exp((utilityTrain-utilityTramMetro)/nestingCoefficient));
+probabilityBicycle = baseProbabilityBicycle / sumOfRelativeExpOfUtilities;
+probabilityWalk = baseProbabilityWalk / sumOfRelativeExpOfUtilities;
+
+return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV], "double[]");
 
 }
