@@ -3,8 +3,11 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
+import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
+import de.tum.bgu.msm.modules.trafficAssignment.TrafficAssignment;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
@@ -49,7 +52,24 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
-
+        boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
+        if (runTimeOfDayChoice) {
+            logger.info("Running time of day choice");
+            TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
+            timeOfDayChoice.run();
+        }
+        boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
+        if (runTimeOfDayChoice && runScaling) {
+            logger.info("Running trip scaling");
+            TripScaling tripScaling = new TripScaling(dataSet);
+            tripScaling.run();
+        }
+        boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
+        if (runTimeOfDayChoice && runScaling && runAssignment) {
+            logger.info("Running traffic assignment in MATsim");
+            TrafficAssignment trafficAssignment = new TrafficAssignment(dataSet);
+            trafficAssignment.run();
+        }
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
         SummarizeData.writeOutTrips(dataSet);
