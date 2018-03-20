@@ -49,6 +49,10 @@
             <id>matsim</id>
             <url>http://dl.bintray.com/matsim/matsim</url>
         </repository>
+        <repository>
+            <id>ojo-snapshots</id>
+            <url>http://oss.jfrog.org/libs-snapshot</url>
+        </repository>
     </repositories>
     <build>
         <plugins>
@@ -72,20 +76,6 @@
                     </compilerArguments>
                 </configuration>
             </plugin>
-
-            <plugin>  <!-- plugin to generate sources, which are used when deploying via jitpack.  kai, nov'16 -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
     <dependencies>
