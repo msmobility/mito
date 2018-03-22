@@ -66,7 +66,7 @@ public class PersonTripAssignment extends Module {
     private void assignHBW(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
         for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation() == WORKER) {
-                final long previousTrips = person.getTrips().values().stream().filter(trip -> trip.getTripPurpose() == HBW).count();
+                final long previousTrips = person.getTrips().stream().filter(trip -> trip.getTripPurpose() == HBW).count();
                 probabilitiesByPerson.put(person, Math.pow(10, -previousTrips));
             }
         }
@@ -85,7 +85,7 @@ public class PersonTripAssignment extends Module {
     private void assignHBE(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
         for (MitoPerson person : household.getPersons().values()) {
             if (person.getOccupation() == STUDENT) {
-                long previousTrips = person.getTrips().values().stream().filter(trip -> trip.getTripPurpose() == HBE).count();
+                long previousTrips = person.getTrips().stream().filter(trip -> trip.getTripPurpose() == HBE).count();
                 double probability = Math.pow(10, -previousTrips);
                 probabilitiesByPerson.put(person, probability);
             }

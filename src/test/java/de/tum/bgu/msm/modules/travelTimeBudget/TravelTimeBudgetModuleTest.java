@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
+import com.google.common.collect.Lists;
 import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
@@ -7,6 +8,8 @@ import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
 import org.junit.Test;
 
+import static de.tum.bgu.msm.data.Purpose.HBE;
+import static de.tum.bgu.msm.data.Purpose.HBW;
 import static org.junit.Assert.assertEquals;
 
 public class TravelTimeBudgetModuleTest {
@@ -34,8 +37,8 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testEmptyHousehold() {
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
-        assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
-        assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
+        assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(HBW), 0.001);
+        assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(HBE), 0.001);
         assertEquals(18.809, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
         assertEquals(10.397, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
         assertEquals(9.704, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
@@ -51,8 +54,8 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testPoorRetireesHousehold() {
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
-        assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
-        assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
+        assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(HBW), 0.001);
+        assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(HBE), 0.001);
         assertEquals(29.036, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
         assertEquals(14.150, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
         assertEquals(12.588, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
@@ -68,8 +71,8 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testPoorBigFamilyHousehold() {
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
-        assertEquals(60.0, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
-        assertEquals(40, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
+        assertEquals(60.0, poorBigFamily.getTravelTimeBudgetForPurpose(HBW), 0.001);
+        assertEquals(40, poorBigFamily.getTravelTimeBudgetForPurpose(HBE), 0.001);
         assertEquals(12.148, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
         assertEquals(4.252, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
         assertEquals(6.034, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
@@ -85,8 +88,8 @@ public class TravelTimeBudgetModuleTest {
     @Test
     public void testRichBigFamilyHousehold() {
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
-        assertEquals(60.0, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBW), 0.001);
-        assertEquals(40, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBE), 0.001);
+        assertEquals(60.0, richBigFamily.getTravelTimeBudgetForPurpose(HBW), 0.001);
+        assertEquals(40, richBigFamily.getTravelTimeBudgetForPurpose(HBE), 0.001);
         assertEquals(12.381, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
         assertEquals(3.750, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
         assertEquals(7.365, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
@@ -127,14 +130,24 @@ public class TravelTimeBudgetModuleTest {
 
         MitoPerson worker31 = new MitoPerson(31, Occupation.WORKER, 1, 45, Gender.MALE, true);
         worker31.setOccupationZone(dummyZone);
+        MitoTrip trip31 = new MitoTrip(31, HBW);
+        worker31.addTrip(trip31);
         MitoPerson worker32 = new MitoPerson(32, Occupation.WORKER, 1, 45, Gender.FEMALE, true);
         worker32.setOccupationZone(dummyZone);
+        MitoTrip trip32 = new MitoTrip(32, HBW);
+        worker32.addTrip(trip32);
         MitoPerson worker33 = new MitoPerson(33, Occupation.WORKER, 1, 20, Gender.MALE, false);
         worker33.setOccupationZone(dummyZone);
+        MitoTrip trip33 = new MitoTrip(33, HBW);
+        worker31.addTrip(trip33);
         MitoPerson child34 = new MitoPerson(34, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
         child34.setOccupationZone(dummyZone);
+        MitoTrip trip34 = new MitoTrip(34, HBE);
+        worker31.addTrip(trip34);
         MitoPerson child35 = new MitoPerson(35, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
         child35.setOccupationZone(dummyZone);
+        MitoTrip trip35 = new MitoTrip(35, HBE);
+        worker31.addTrip(trip35);
 
         dataSet.getHouseholds().get(3).addPerson(worker31);
         dataSet.getHouseholds().get(3).addPerson(worker32);
@@ -144,14 +157,30 @@ public class TravelTimeBudgetModuleTest {
 
         MitoPerson worker41 = new MitoPerson(41, Occupation.WORKER, 1, 45, Gender.MALE, true);
         worker41.setOccupationZone(dummyZone);
+        MitoTrip trip41 = new MitoTrip(1, HBW);
+        worker41.addTrip(trip41);
         MitoPerson worker42 = new MitoPerson(42, Occupation.WORKER, 1, 45, Gender.FEMALE, true);
         worker42.setOccupationZone(dummyZone);
+        MitoTrip trip42 = new MitoTrip(2, HBW);
+        worker42.addTrip(trip42);
         MitoPerson worker43 = new MitoPerson(43, Occupation.WORKER, 1, 20, Gender.MALE, false);
         worker43.setOccupationZone(dummyZone);
+        MitoTrip trip43 = new MitoTrip(3, HBW);
+        worker43.addTrip(trip43);
         MitoPerson child44 = new MitoPerson(44, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
         child44.setOccupationZone(dummyZone);
+        MitoTrip trip44 = new MitoTrip(4, HBE);
+        child44.addTrip(trip44);
         MitoPerson child45 = new MitoPerson(45, Occupation.STUDENT, -1, 10, Gender.FEMALE, false);
         child45.setOccupationZone(dummyZone);
+        MitoTrip trip45 = new MitoTrip(5, HBE);
+        child45.addTrip(trip45);
+
+        dataSet.getHouseholds().get(3).setTripsByPurpose(Lists.newArrayList(trip31, trip32, trip33), HBW);
+        dataSet.getHouseholds().get(4).setTripsByPurpose(Lists.newArrayList(trip41, trip42, trip43), HBW);
+
+        dataSet.getHouseholds().get(3).setTripsByPurpose(Lists.newArrayList(trip34, trip35), HBE);
+        dataSet.getHouseholds().get(4).setTripsByPurpose(Lists.newArrayList(trip44, trip45), HBE);
 
         dataSet.getHouseholds().get(4).addPerson(worker41);
         dataSet.getHouseholds().get(4).addPerson(worker42);

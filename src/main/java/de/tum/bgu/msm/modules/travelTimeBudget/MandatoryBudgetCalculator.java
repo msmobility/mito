@@ -24,7 +24,7 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
     private final double timeOfDay;
     private int defaultBudgeted = 0;
 
-    public MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose purpose, TravelTimes travelTimes, double timeOfDay) {
+    MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose purpose, TravelTimes travelTimes, double timeOfDay) {
         this.households = households;
         this.purpose = purpose;
         this.defaultBudget = Resources.INSTANCE.getDouble(Properties.DEFAULT_BUDGET + purpose, 30.);
