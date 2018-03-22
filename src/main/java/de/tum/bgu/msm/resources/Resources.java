@@ -57,4 +57,8 @@ public class Resources {
             return defaultValue;
         }
     }
+
+    public synchronized double getDouble(String key) {
+        return Double.parseDouble(properties.getProperty(key));
+    }
 }
