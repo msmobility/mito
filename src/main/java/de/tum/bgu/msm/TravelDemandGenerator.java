@@ -40,12 +40,12 @@ public class TravelDemandGenerator {
             logger.warn("No trips created. End of program.");
             return;
         }
-        logger.info("Running Module: Travel Time Budget Calculation");
-        TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
-        ttb.run();
         logger.info("Running Module: Person to Trip Assignment");
         PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
         personTripAssignment.run();
+        logger.info("Running Module: Travel Time Budget Calculation");
+        TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
+        ttb.run();
         logger.info("Running Module: Microscopic Trip Distribution");
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
