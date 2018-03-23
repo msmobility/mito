@@ -36,4 +36,18 @@ public class Properties {
     public static final String AUTONOMOUS_VEHICLE_CHOICE = "include.AVchoice";
 
     public static final String CREATE_DESTINATION_CHOICE_HISTOGRAMS = "create.destination.choice.histograms";
+
+    public static final String RUN_TIME_OF_DAY_CHOICE = "run.time.of.day.choice";
+    public static final String TIME_OF_DAY_DISTRIBUTIONS = "time.of.day.distribution.file";
+
+    public static final String RUN_TRIP_SCALING = "run.trip.scaling";
+    public static final String TRIP_SCALING_FACTOR = "trip.scaling.factor";
+
+    public static final String RUN_TRAFFIC_ASSIGNMENT = "run.traffic.assignment";
+    public static final String MATSIM_NETWORK_FILE = "matsim.network";
+    public static final String MATSIM_ITERATIONS = "matsim.iterations";
+    public static final String ZONE_SHAPEFILE = "zone.shapefile";
+    public static final String ZONE_SHAPEFILE_CRS = "zone.shapefile.crs";
+    public static final String ZONE_SHAPEFILE_ID_FIELD  = "zone.shapefile.id.field";
+    public static final String DEFAULT_BUDGET = "default.buget.";
 }

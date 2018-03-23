@@ -27,6 +27,8 @@ public class DataSet {
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
+    private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
+
     public TravelSurvey<? extends SurveyRecord> getSurvey() {
         return this.survey;
     }
@@ -71,6 +73,10 @@ public class DataSet {
         return Collections.unmodifiableMap(trips);
     }
 
+    public Map<Integer, MitoTrip> getTripSubsample() {
+        return Collections.unmodifiableMap(tripSubsample);
+    }
+
     public void addTrip(final MitoTrip trip) {
         MitoTrip test = trips.putIfAbsent(trip.getId(), trip);
         if(test != null) {
@@ -81,6 +87,13 @@ public class DataSet {
     public void addTrips(final Collection<MitoTrip> addedTrips) {
         for(MitoTrip trip: addedTrips) {
             addTrip(trip);
+        }
+    }
+
+    public void addTripToSubsample(final MitoTrip trip) {
+        MitoTrip test = tripSubsample.putIfAbsent(trip.getId(), trip);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoTrip id " + trip.getId() + " already exists!");
         }
     }
 
