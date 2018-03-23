@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Resources;
@@ -10,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
 
@@ -29,43 +32,40 @@ public class ModeChoice extends Module{
         printModeShares();
     }
 
-    private void modeChoiceByPurpose(){
+    private void modeChoiceByPurpose() {
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        for (Purpose purpose: Purpose.values()){
+        for (Purpose purpose : Purpose.values()) {
             executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, includeAV));
         }
         executor.execute();
-//        for (Purpose purpose: Purpose.values()){
-//            new ModeChoiceByPurpose(purpose, dataSet, includeAV);
-//        }
     }
 
     private void printModeShares(){
-        float[] tripsByMode = new float[Mode.values().length];
-        float tripsWithNoMode = 0;
-        for(MitoTrip trip : dataSet.getTrips().values()){
-            if(trip.getTripMode() == null) {
-                tripsWithNoMode++;
-                continue;
-            }
-            for(int i=0; i<Mode.values().length; i++){
-                if(trip.getTripMode().equals(Mode.valueOf(i))){
-                    tripsByMode[i]++;
+
+        //filter valid trips by purpose
+        Map<Purpose, List<MitoTrip>> tripsByPurpose = dataSet.getTrips().values().stream()
+                .filter(trip -> trip.getTripMode()!= null)
+                .collect(Collectors.groupingBy(trip -> trip.getTripPurpose()));
+
+
+        tripsByPurpose.forEach((purpose, trips) -> {
+            final long totalTrips = trips.size();
+            trips.parallelStream()
+                    //group number of trips by mode
+                    .collect(Collectors.groupingBy( trip -> trip.getTripMode(), Collectors.counting()))
+                    //calculate and add share to data set table
+                    .forEach( (mode, count) ->
+                    dataSet.addModeShareForPurpose(purpose, mode, (double) count / totalTrips));
+        });
+
+        for (Purpose purpose : Purpose.values()) {
+            logger.info("#################################################");
+            logger.info("Mode shares for purpose " + purpose + ":");
+            for (Mode mode : Mode.values()) {
+                Double share = dataSet.getModeShareForPurpose(purpose, mode);
+                if (share != null) {
+                    logger.info(mode + " = " + share * 100 + "%");
                 }
-            }
-        }
-        float totalTrips = 0;
-        for(int i=0; i<tripsByMode.length; i++){
-            totalTrips += tripsByMode[i];
-        }
-        logger.info("Mode could not be assigned to " + tripsWithNoMode + " trips");
-        if(includeAV){
-            for(int i=0; i<tripsByMode.length; i++){
-                logger.info(Mode.valueOf(i) + " share = " + tripsByMode[i]*100/totalTrips + "%");
-            }
-        } else {
-            for(int i=0; i<tripsByMode.length-2; i++){
-                logger.info(Mode.valueOf(i) + " share = " + tripsByMode[i]*100/totalTrips + "%");
             }
         }
     }

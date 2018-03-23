@@ -138,6 +138,12 @@ public class SummarizeData {
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
         Multiset<MitoZone> tripsByZone = HashMultiset.create();
         SortedMultiset<Mode> modes = TreeMultiset.create();
+        for (Mode mode: Mode.values()){
+            Double share = dataSet.getModeShareForPurpose(purpose, mode);
+            if (share != null) {
+                modes.add(mode, (int) (dataSet.getModeShareForPurpose(purpose, mode) * 100));
+            }
+        }
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
@@ -150,9 +156,6 @@ public class SummarizeData {
                     List<Double> values = new ArrayList<>();
                     values.add(travelDistance);
                     distancesByZone.put(trip.getTripOrigin().getId(), values);
-                }
-                if(trip.getTripMode() != null) {
-                    modes.add(trip.getTripMode());
                 }
             }
         }
