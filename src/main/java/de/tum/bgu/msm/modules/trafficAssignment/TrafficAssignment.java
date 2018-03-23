@@ -12,6 +12,8 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import java.io.File;
+
 public class TrafficAssignment extends Module {
 
     private Config matsimConfig;
