@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import static de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator.ExplanatoryVariable;

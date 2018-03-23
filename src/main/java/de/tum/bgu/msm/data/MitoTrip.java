@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.data;
 
+import java.util.List;
+
 /**
  * Holds trip objects for the Microsimulation Transport Orchestrator (MITO)
  * @author Rolf Moeckel
