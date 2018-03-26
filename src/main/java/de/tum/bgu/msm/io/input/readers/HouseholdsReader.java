@@ -45,7 +45,7 @@ public class HouseholdsReader extends CSVReader {
         int autos = Integer.parseInt(record[posAutos]);
         MitoZone zone = dataSet.getZones().get(taz);
         if (zone == null) {
-            logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
+//            logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
             return;
         }
         dataSet.addHousehold(new MitoHousehold(id, 0, autos, zone));

@@ -16,7 +16,7 @@ import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
- * Generates travel demand for the Transport in Microsimulation Orchestrator (TIMO)
+ * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  *

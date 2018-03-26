@@ -9,8 +9,8 @@ public class HouseholdType {
     private final int sizeH;
     private final int workersL;
     private final int workersH;
-    private final int incomeL;
-    private final int incomeH;
+    private final int economicStatusL;
+    private final int economicStatusH;
     private final int autosL;
     private final int autosH;
     private final int regionL;
@@ -19,14 +19,14 @@ public class HouseholdType {
 
     private int numberOfRecords = 0;
 
-    public HouseholdType(int id, int sizeL, int sizeH, int workersL, int workersH, int incomeL, int incomeH, int autosL, int autosH, int regionL, int regionH) {
+    public HouseholdType(int id, int sizeL, int sizeH, int workersL, int workersH, int economicStatusL, int economicStatusH, int autosL, int autosH, int regionL, int regionH) {
         this.id = id;
         this.sizeL = sizeL;
         this.sizeH = sizeH;
         this.workersL = workersL;
         this.workersH = workersH;
-        this.incomeL = incomeL;
-        this.incomeH = incomeH;
+        this.economicStatusL = economicStatusL;
+        this.economicStatusH = economicStatusH;
         this.autosL = autosL;
         this.autosH = autosH;
         this.regionL = regionL;
@@ -41,8 +41,8 @@ public class HouseholdType {
         return this.id;
     }
 
-    public boolean applies(int size, int workers, int income, int autos, int region) {
-        if (appliesInSize(size) && appliesInWorkers(workers) && appliesInIncome(income) && appliesInAutos(autos) && appliesInRegion(region)) {
+    public boolean applies(int size, int workers, int economicStatus, int autos, int region) {
+        if (appliesInSize(size) && appliesInWorkers(workers) && appliesInEconomicStatus(economicStatus) && appliesInAutos(autos) && appliesInRegion(region)) {
             numberOfRecords++;
             return true;
         } else {
@@ -59,8 +59,8 @@ public class HouseholdType {
                 && autos <= autosH;
     }
 
-    private boolean appliesInIncome(int income) {
-        return income >= incomeL && income <= incomeH;
+    private boolean appliesInEconomicStatus(int economicStatus) {
+        return economicStatus >= economicStatusL && economicStatus <= economicStatusH;
     }
 
     private boolean appliesInWorkers(int workers) {

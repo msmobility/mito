@@ -2,10 +2,13 @@ package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
+import de.tum.bgu.msm.io.input.InputManager;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -23,37 +26,48 @@ public class HouseholdTypeManager {
     private final Purpose purpose;
 
     final List<HouseholdType> householdTypes = new ArrayList<>();
+    final int[] tripFrequencies;
 
     public HouseholdTypeManager(Purpose purpose) {
         this.purpose = purpose;
+        this.tripFrequencies = readTripFrequencies();
     }
+
+
+    private int[] readTripFrequencies() {
+        String fileName = Resources.INSTANCE.getString(purpose + ".trip.frequencies");
+        // todo: read trip frequencies!!!
+        return new int[]{0,1};
+    }
+
 
     public void createHouseHoldTypeDefinitions() {
         String[] householdDefinitionToken = Resources.INSTANCE.getArray("hh.type." + purpose);
-        String sizeToken = householdDefinitionToken[2];
+        // householdDefinitionToken[0] has only the number of household types defined for this purpose, which is not needed by the model
+        String sizeToken = householdDefinitionToken[1];
         String[] sizePortions = sizeToken.split("\\.");
-        String workerToken = householdDefinitionToken[3];
+        String workerToken = householdDefinitionToken[2];
         String[] workerPortions = workerToken.split("\\.");
-        String incomeToken = householdDefinitionToken[4];
-        String[] incomePortions = incomeToken.split("\\.");
-        String autoToken = householdDefinitionToken[5];
+        String incomeToken = householdDefinitionToken[3];
+        String[] economicStatusPortions = incomeToken.split("\\.");
+        String autoToken = householdDefinitionToken[4];
         String[] autoPortions = autoToken.split("\\.");
-        String regionToken = householdDefinitionToken[6];
+        String regionToken = householdDefinitionToken[5];
         String[] regionPortions = regionToken.split("\\.");
 
         createHouseholdTypes(sizePortions, workerPortions,
-                incomePortions, autoPortions, regionPortions);
+                economicStatusPortions, autoPortions, regionPortions);
     }
 
     private void createHouseholdTypes(String[] sizePortions, String[] workerPortions,
-                                      String[] incomePortions, String[] autoPortions, String[] regionPortions) {
+                                      String[] economicStatusPortions, String[] autoPortions, String[] regionPortions) {
         int id = 0;
         for (String sizeToken : sizePortions) {
             String[] sizeParts = sizeToken.split("-");
             for (String workerToken : workerPortions) {
                 String[] workerParts = workerToken.split("-");
-                for (String incomeToken : incomePortions) {
-                    String[] incomeParts = incomeToken.split("-");
+                for (String economicStatusToken : economicStatusPortions) {
+                    String[] economicStatusParts = economicStatusToken.split("-");
                     for (String autoToken : autoPortions) {
                         String[] autoParts = autoToken.split("-");
                         for (String regionToken : regionPortions) {
@@ -62,15 +76,15 @@ public class HouseholdTypeManager {
                             final int sizeH = Integer.parseInt(sizeParts[1]);
                             final int workersL = Integer.parseInt(workerParts[0]) - 1;
                             final int workersH = Integer.parseInt(workerParts[1]) - 1;
-                            final int incomeL = Integer.parseInt(incomeParts[0]);
-                            final int incomeH = Integer.parseInt(incomeParts[1]);
+                            final int economicStatusL = Integer.parseInt(economicStatusParts[0]);
+                            final int economicStatusH = Integer.parseInt(economicStatusParts[1]);
                             final int autosL = Integer.parseInt(autoParts[0]) - 1;
                             final int autosH = Integer.parseInt(autoParts[1]) - 1;
                             final int regionL = Integer.parseInt(regionParts[0]);
                             final int regionH = Integer.parseInt(regionParts[1]);
 
                             householdTypes.add(new HouseholdType(id, sizeL, sizeH, workersL, workersH,
-                                    incomeL, incomeH, autosL, autosH, regionL,
+                                    economicStatusL, economicStatusH, autosL, autosH, regionL,
                                     regionH));
                             id++;
                         }
@@ -104,8 +118,11 @@ public class HouseholdTypeManager {
         return householdTypeBySample;
     }
 
+
     public HouseholdType determineHouseholdType(MitoHousehold hh) {
-        int incCategory = translateIncomeIntoCategory(hh.getIncome());
+        int hhEconomicStatus = convertIncomeIntoEconomicStatus(hh);
+        System.out.println(hh.getIncome() + " " + hhEconomicStatus);
+        System.exit(0);
         int areaType = -1;
         if (hh.getHomeZone() != null) {
             areaType = hh.getHomeZone().getAreaType().ordinal()+1;
@@ -113,10 +130,45 @@ public class HouseholdTypeManager {
             logger.info("Home MitoZone for Household  " + hh.getId() + " is null!");
         }
         return determineHouseholdType(hh.getHhSize(), DataSet.getNumberOfWorkersForHousehold(hh),
-                incCategory, hh.getAutos(), areaType);
+                hhEconomicStatus, hh.getAutos(), areaType);
     }
 
-    private HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhInc, int hhVeh, int hhReg) {
+
+    private int convertIncomeIntoEconomicStatus(MitoHousehold hh) {
+        int countAdults = (int) hh.getPersons().values().stream().filter(person ->
+                person.getAge() > 14).count();
+        int countChildren = (int) hh.getPersons().values().stream().filter(person ->
+                person.getAge() <= 14).count();
+        // Mobilität in Deutschland 2008, Variablenaufbereitung Haushaltsdatensatz: In Anlehnung an die neue Berechnungsskala der OECD gingen bei der Berechnung Kinder bis zu 14 Jahren mit dem Faktor 0,3 ein. Von den Personen ab 15 Jahren im Haushalt wurde eine Person mit dem Faktor 1, alle weiteren Personen ab 15 Jahren mit dem Faktor 0,5 gewichtet.
+        float weightedHhSize = Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f);
+        String incomeCategory = getMidIncomeCategory(hh.getIncome());
+        return InputManager.getEconomicStatus().get(weightedHhSize+"_"+incomeCategory);
+    }
+
+
+    private String getMidIncomeCategory(int income) {
+
+        final String[] incomeBrackets = {"Inc0-500","Inc500-900","Inc900-1500","Inc1500-2000","Inc2000-2600",
+                "Inc2600-3000","Inc3000-3600","Inc3600-4000","Inc4000-4600","Inc4600-5000","Inc5000-5600",
+                "Inc5600-6000","Inc6000-6600","Inc6600-7000","Inc7000+"};
+
+        for (String incomeBracket : incomeBrackets) {
+            String shortIncomeBrackets = incomeBracket.substring(3);
+            try{
+                String[] incomeBounds = shortIncomeBrackets.split(",");
+                if (income >= Integer.parseInt(incomeBounds[0]) && income < Integer.parseInt(incomeBrackets[1])) {
+                return incomeBracket;
+                }
+            } catch (Exception e) {
+                if (income >= 7000) return incomeBrackets[incomeBrackets.length-1];
+            }
+        }
+        logger.error("Unrecognized income: " + income);
+        return null;
+    }
+
+
+    private HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhEconStatus, int hhVeh, int hhReg) {
 
         hhSze = Math.min(hhSze, 7);
         hhWrk = Math.min(hhWrk, 4);
@@ -137,11 +189,11 @@ public class HouseholdTypeManager {
         }
 
         for (HouseholdType type : householdTypes) {
-            if (type.applies(hhSze, hhWrk, hhInc, hhAut, hhReg)) {
+            if (type.applies(hhSze, hhWrk, hhEconStatus, hhAut, hhReg)) {
                 return type;
             }
         }
-        logger.error("Could not define household type: " + hhSze + " " + hhWrk + " " + hhInc + " " + hhVeh + " " + hhReg);
+        logger.error("Could not define household type: " + hhSze + " " + hhWrk + " " + hhEconStatus + " " + hhVeh + " " + hhReg);
         return null;
     }
 

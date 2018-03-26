@@ -51,7 +51,7 @@ public class JobReader extends CSVReader {
         if (worker > 0) {
             MitoPerson pp = dataSet.getPersons().get(worker);
             if(pp == null) {
-                logger.warn(String.format("Job %d refers to non-existing person %d! Ignoring it.", id, worker));
+//                logger.warn(String.format("Job %d refers to non-existing person %d! Ignoring it.", id, worker));
                 return;
             }
             if (pp.getWorkplace() != id) {
@@ -61,7 +61,7 @@ public class JobReader extends CSVReader {
             }
             MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone == null) {
-                logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
+//                logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
                 return;
             }
             if(Resources.INSTANCE.implementation == Implementation.MUNICH) {

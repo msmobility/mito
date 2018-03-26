@@ -59,8 +59,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
 
     private void defineTripFrequenciesForHouseHoldTypes() {
         householdTypeManager.createHouseHoldTypeDefinitions();
-        Map<Integer, HouseholdType> householdTypeBySampleId = householdTypeManager.assignHouseholdTypeOfEachSurveyRecord(dataSet.getSurvey());
-        collectTripFrequencyDistribution(householdTypeBySampleId);
+
     }
 
     private void generateTripsForHousehold(MitoHousehold hh) {

@@ -7,6 +7,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class InputManager {
@@ -14,6 +15,7 @@ public class InputManager {
     private static final Logger logger = Logger.getLogger(InputManager.class);
 
     private final DataSet dataSet;
+    private static HashMap<String, Integer> economicStatus;
 
     public InputManager(DataSet dataSet) {
         this.dataSet = dataSet;
@@ -34,7 +36,9 @@ public class InputManager {
         new SchoolEnrollmentReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
         new TravelSurveyReader(dataSet).read();
-        new ModeChoiceInputReader(dataSet).read();
+//        new ModeChoiceInputReader(dataSet).read();
+        economicStatus = new HashMap<>();
+        new EconomicStatusReader(dataSet).read();
     }
 
     public void readFromFeed(InputFeed feed) {
@@ -61,5 +65,14 @@ public class InputManager {
                 dataSet.addPerson(person);
             }
         }
+    }
+
+
+    public static HashMap<String, Integer> getEconomicStatus() {
+        return economicStatus;
+    }
+
+    public static void setEconomicStatus (HashMap<String, Integer> calculatedEconomicStatus) {
+        economicStatus = calculatedEconomicStatus;
     }
 }

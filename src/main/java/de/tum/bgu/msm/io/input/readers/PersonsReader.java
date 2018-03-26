@@ -65,7 +65,7 @@ public class PersonsReader extends CSVReader {
         if(dataSet.getHouseholds().containsKey(hhid)) {
             hh = dataSet.getHouseholds().get(hhid);
         } else {
-            logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
+//            logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
             return;
         }
         int age = Integer.parseInt(record[posAge]);

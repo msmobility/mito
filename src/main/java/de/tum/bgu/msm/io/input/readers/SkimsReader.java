@@ -20,11 +20,11 @@ public class SkimsReader extends AbstractOmxReader {
     @Override
     public void read() {
         logger.info("  Reading skims");
-        readHighwaySkims();
-        readBusSkimForModeChoice();
-        readTrainSkimForModeChoice();
-        readTramMetroSkimForModeChoice();
-        readTravelDistanceForModeChoice();
+//        readHighwaySkims();
+//        readBusSkimForModeChoice();
+//        readTrainSkimForModeChoice();
+//        readTramMetroSkimForModeChoice();
+//        readTravelDistanceForModeChoice();
     }
 
     private void readHighwaySkims() {

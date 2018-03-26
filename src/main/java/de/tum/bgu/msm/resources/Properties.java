@@ -12,6 +12,7 @@ public class Properties {
     public static final String PERSONS = "person.file.ascii";
     public static final String REDUCTION_NEAR_BORDER_DAMPERS = "reduction.near.outer.border";
     public static final String SCHOOL_ENROLLMENT = "school.enrollment.data";
+    public static final String ECONOMIC_STATUS = "economic.factor.definition";
     public static final String TRANSIT_PEAK_SKIM = "transit.peak.travelTime";
     public static final String ZONES = "zonal.data.file";
 
