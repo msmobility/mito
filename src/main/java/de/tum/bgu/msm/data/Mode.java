@@ -43,8 +43,4 @@ public enum Mode implements Id {
                 throw new RuntimeException("Mode for code " + code + "not specified.");
         }
     }
-
-    public static Collection<Mode> valuesAsList(){
-        return Arrays.asList(values());
-    }
 }

@@ -1,14 +1,13 @@
 package de.tum.bgu.msm.data;
 
+import com.google.common.collect.ArrayTable;
+import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DataSet {
 
@@ -25,6 +24,8 @@ public class DataSet {
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
+    private final Table<Purpose, Mode, Double> modeSharesByPurpose
+            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
     private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
@@ -165,5 +166,13 @@ public class DataSet {
 
     public static int getLicenseHoldersForHousehold(MitoHousehold household) {
         return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
+    }
+
+    public void addModeShareForPurpose(Purpose purpose, Mode mode, Double share){
+        modeSharesByPurpose.put(purpose, mode, share);
+    }
+
+    public Double getModeShareForPurpose(Purpose purpose, Mode mode){
+        return modeSharesByPurpose.get(purpose, mode);
     }
 }
