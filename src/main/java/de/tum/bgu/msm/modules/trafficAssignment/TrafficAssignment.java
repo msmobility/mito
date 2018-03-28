@@ -63,8 +63,8 @@ public class TrafficAssignment extends Module {
         matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(matsimConfig);
         matsimScenario.setPopulation(population);
 
-        PopulationWriter populationWriter = new PopulationWriter(population);
-        populationWriter.write(outputDirectory + "population.xml");
+//        PopulationWriter populationWriter = new PopulationWriter(population);
+//        populationWriter.write(outputDirectory + "population.xml");
     }
 
     private void runMatsim() {
