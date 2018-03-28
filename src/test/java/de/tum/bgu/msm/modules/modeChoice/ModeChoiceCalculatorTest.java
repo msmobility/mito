@@ -16,21 +16,21 @@ public class ModeChoiceCalculatorTest {
 
     private ModeChoiceJSCalculator calculator;
 
-    private final double[] reference = new double[]{0.35258741,0.21025060,0.07781168,0.01532404,0.00755559,0.01247863,0.00364841,0.35258208,0.01560092};
+    private final double[] reference = new double[]{0.585260323,0.273709615,0.08747526,0.023052124,0.009195227,0.017205939,0.00410151};
 
     @Before
     public void setup() {
 
         Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
 
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV"));
+        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoice"));
         calculator = new ModeChoiceJSCalculator(reader);
     }
 
     @Test
     public void test() {
         MitoZone origin = new MitoZone(1, 100, null);
-        origin.setDistanceToNearestRailStop(0.5f);
+        origin.setDistanceToNearestTransitStop(0.5f);
         //origin.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_mediumSizedCity);
         MitoHousehold hh = new MitoHousehold(1, 20000, 1, null);
         MitoPerson pp = new MitoPerson(1, Occupation.STUDENT, 1, 20, Gender.FEMALE, true);

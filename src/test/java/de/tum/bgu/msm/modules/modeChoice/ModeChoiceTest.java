@@ -1,10 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.util.MitoUtil;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +44,7 @@ public class ModeChoiceTest {
         MitoPerson person1 = new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true);
         trip1.setPerson(person1);
         MitoZone zone1 = new MitoZone(1, 100, AreaType.URBAN);
-        zone1.setDistanceToNearestRailStop(0.5f);
+        zone1.setDistanceToNearestTransitStop(0.5f);
         zone1.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_coreCity);
         trip1.setTripOrigin(zone1);
         MitoZone zone2 = new MitoZone(2, 100, AreaType.URBAN);
@@ -67,7 +64,7 @@ public class ModeChoiceTest {
         MitoPerson person2 = new MitoPerson(2, Occupation.WORKER, -1, 30, Gender.MALE, true);
         trip2.setPerson(person2);
         MitoZone zone3 = new MitoZone(3, 100, AreaType.URBAN);
-        zone3.setDistanceToNearestRailStop(0.5f);
+        zone3.setDistanceToNearestTransitStop(0.5f);
         zone3.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_coreCity);
         trip2.setTripOrigin(zone3);
         MitoZone zone4 = new MitoZone(4, 100, AreaType.URBAN);
