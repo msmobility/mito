@@ -33,6 +33,12 @@ public abstract class CSVReader extends AbstractInputReader{
             }
         } catch (IOException e) {
             logger.error("Error parsing record number " + numberOfRecords + ": " + e.getMessage(), e);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         logger.info("Read " + numberOfRecords + " records.");
     }

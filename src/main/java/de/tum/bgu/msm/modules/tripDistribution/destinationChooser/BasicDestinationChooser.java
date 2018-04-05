@@ -15,7 +15,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BasicDestinationChooser extends RandomizableConcurrentFunction {
+public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void> {
 
     private final static Logger logger = Logger.getLogger(BasicDestinationChooser.class);
 
@@ -43,33 +43,43 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     @Override
-    public void execute() {
+    public Void call() throws Exception {
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for Purpose " + purpose);
             }
-            if (isValid(household)) {
-                updateBaseDestinationProbabilities(household);
-                updateBudgets(household);
-//                updateAdjustedDestinationProbabilities(household);
-                for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                    trip.setTripOrigin(findOrigin(household, trip));
-                    trip.setTripDestination(findDestination(trip));
-                    postProcessTrip(trip);
-                    TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+            if (hasTripsForPurpose(household)) {
+                if(hasBudgetForPurpose(household)) {
+                    updateBaseDestinationProbabilities(household);
+//                  updateBudgets(household);
+//                  updateAdjustedDestinationProbabilities(household);
+                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        trip.setTripOrigin(findOrigin(household, trip));
+                        trip.setTripDestination(findDestination(trip));
+                        postProcessTrip(trip);
+                        TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+                    }
+                } else {
+                    TripDistribution.FAILED_TRIPS_COUNTER.incrementAndGet();
                 }
             }
             counter++;
         }
+        return null;
     }
+
 
     protected void updateAdjustedDestinationProbabilities(MitoHousehold household){
         adjustDestinationProbabilities(household.getHomeZone().getId());
     }
 
-    protected boolean isValid(MitoHousehold household) {
-        return !household.getTripsForPurpose(purpose).isEmpty() && household.getTravelTimeBudgetForPurpose(purpose) > 0.;
+    protected boolean hasTripsForPurpose(MitoHousehold household) {
+        return !household.getTripsForPurpose(purpose).isEmpty();
+    }
+
+    protected boolean hasBudgetForPurpose(MitoHousehold household) {
+        return household.getTravelTimeBudgetForPurpose(purpose) > 0.;
     }
 
     void postProcessTrip(MitoTrip trip) {
@@ -92,7 +102,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction {
     }
 
     protected MitoZone findDestination(MitoTrip trip) {
-        final int destination = (MitoUtil.select(destinationProbabilities.toArray(), random));
+        final int destination = MitoUtil.select(destinationProbabilities.toArray(), random, destinationProbabilities.zSum());
         return dataSet.getZones().get(destination);
     }
 

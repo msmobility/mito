@@ -10,7 +10,9 @@ public enum Mode implements Id {
     bus,
     train,
     tramOrMetro,
-    walk;
+    walk,
+    privateAV,
+    sharedAV;
 
     @Override
     public int getId(){
@@ -33,12 +35,12 @@ public enum Mode implements Id {
                 return tramOrMetro;
             case 6:
                 return walk;
+            case 7:
+                return privateAV;
+            case 8:
+                return sharedAV;
             default:
                 throw new RuntimeException("Mode for code " + code + "not specified.");
         }
-    }
-
-    public static Collection<Mode> valuesAsList(){
-        return Arrays.asList(values());
     }
 }

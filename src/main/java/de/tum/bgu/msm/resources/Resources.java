@@ -1,8 +1,6 @@
 package de.tum.bgu.msm.resources;
 
 import de.tum.bgu.msm.Implementation;
-import de.tum.bgu.msm.modules.personTripAssignment.DefaultTripAssignmentFactory;
-import de.tum.bgu.msm.modules.personTripAssignment.TripAssignmentFactory;
 import de.tum.bgu.msm.util.MitoUtil;
 
 import java.io.FileInputStream;
@@ -18,19 +16,22 @@ public class Resources {
 
     private final Properties properties;
     public final Implementation implementation;
-    private TripAssignmentFactory tripAssignmentFactory = new DefaultTripAssignmentFactory();
 
     private Resources(Properties properties, Implementation implementation) {
         this.properties = properties;
         this.implementation = implementation;
     }
 
-    public static void initializeResources(String fileName, Implementation implementation) throws IOException {
-        FileInputStream in = new FileInputStream(fileName);
-        Properties properties = new Properties();
-        properties.load(in);
-        MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
-        INSTANCE = new Resources(properties, implementation);
+    public static void initializeResources(String fileName, Implementation implementation) {
+        try (FileInputStream in = new FileInputStream(fileName)){
+            Properties properties = new Properties();
+            properties.load(in);
+            MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
+            INSTANCE = new Resources(properties, implementation);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
     }
 
     public synchronized int getInt(String key) {
@@ -57,11 +58,8 @@ public class Resources {
         }
     }
 
-    public TripAssignmentFactory getTripAssignmentFactory() {
-        return tripAssignmentFactory;
-    }
-
-    public void setTripAssignmentFactory(TripAssignmentFactory tripAssignmentFactory) {
-        this.tripAssignmentFactory = tripAssignmentFactory;
+    public synchronized double getDouble(String key, double defaultValue) {
+        String value = properties.getProperty(key);
+        return value != null ? Double.parseDouble(value) : defaultValue;
     }
 }

@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
-import org.apache.log4j.Logger;
 
 import java.util.EnumMap;
 
@@ -20,7 +19,7 @@ public class MitoZone implements Id{
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
 
-    private final EnumMap<Purpose, Double> tripAttractionRates = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, Double> tripAttraction = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
 
     private AreaTypeForModeChoice areaTypeHBWModeChoice;
@@ -44,6 +43,10 @@ public class MitoZone implements Id{
 
     public float getDistanceToNearestRailStop() {return distanceToNearestRailStop;}
 
+    /**
+     * Sets distance to nearest rail stop
+     * @param distanceToNearestRailStop distance in km
+     */
     public void setDistanceToNearestRailStop(float distanceToNearestRailStop) {this.distanceToNearestRailStop = distanceToNearestRailStop;}
 
     @Override
@@ -95,12 +98,12 @@ public class MitoZone implements Id{
         return this.employeesByType.size();
     }
 
-    public void setTripAttractionRate(Purpose purpose, double tripAttractionRate) {
-        this.tripAttractionRates.put(purpose, tripAttractionRate);
+    public void setTripAttraction(Purpose purpose, double tripAttractionRate) {
+        this.tripAttraction.put(purpose, tripAttractionRate);
     }
 
-    public double getTripAttractionRate(Purpose purpose) {
-        Double rate = this.tripAttractionRates.get(purpose);
+    public double getTripAttraction(Purpose purpose) {
+        Double rate = this.tripAttraction.get(purpose);
         if (rate == null) {
             throw new RuntimeException("No trip attraction rate set for zone " + zoneId + ". Please make sure to only call " +
                     "this method after trip generation module!");

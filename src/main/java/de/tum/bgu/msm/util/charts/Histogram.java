@@ -31,7 +31,7 @@ public final class Histogram {
     public static void createFrequencyHistogram(String path, double[] values, String title, String xAxisLabel, String yAxisLabel, int bins, int minXValue, int maxXValue) {
         logger.info("Creating histogram \"" + title + "\"...");
         HistogramDataset dataset = new HistogramDataset();
-        dataset.setType(HistogramType.FREQUENCY);
+        dataset.setType(HistogramType.RELATIVE_FREQUENCY);
         double sum = 0;
         for(double value: values) {
             sum += value;

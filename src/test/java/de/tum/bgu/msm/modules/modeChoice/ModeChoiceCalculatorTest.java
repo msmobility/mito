@@ -1,35 +1,29 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.Implementation;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public class ModeChoiceCalculatorTest {
 
     private ModeChoiceJSCalculator calculator;
 
-    private final double[] reference = new double[]{0.584058743,0.273147679,0.08932714,0.023002269,0.009248519,0.017134802,0.00408085};
+    private final double[] reference = new double[]{0.35258741,0.21025060,0.07781168,0.01532404,0.00755559,0.01247863,0.00364841,0.35258208,0.01560092};
 
     @Before
     public void setup() {
-        try {
-            Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoice"));
+        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+
+        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV"));
         calculator = new ModeChoiceJSCalculator(reader);
     }
 
@@ -37,8 +31,8 @@ public class ModeChoiceCalculatorTest {
     public void test() {
         MitoZone origin = new MitoZone(1, 100, null);
         origin.setDistanceToNearestRailStop(0.5f);
-        //origin.setAreaTypeNHBOModeChoice(AreaTypeForModeChoice.NHBO_urban);
-        MitoHousehold hh = new MitoHousehold(1, 30000, 1, null);
+        //origin.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_mediumSizedCity);
+        MitoHousehold hh = new MitoHousehold(1, 20000, 1, null);
         MitoPerson pp = new MitoPerson(1, Occupation.STUDENT, 1, 20, Gender.FEMALE, true);
         hh.addPerson(pp);
         MitoTrip trip = new MitoTrip(1, Purpose.HBS);

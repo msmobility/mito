@@ -16,7 +16,6 @@ import cern.colt.matrix.tfloat.impl.SparseFloatMatrix1D;
 import cern.colt.matrix.tfloat.impl.SparseFloatMatrix2D;
 import de.tum.bgu.msm.data.Id;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import omx.OmxLookup;
 import omx.OmxMatrix;
 import omx.hdf5.OmxHdf5Datatype;
 
@@ -52,7 +51,7 @@ public class Matrices {
         return new SparseDoubleMatrix2D(rowMax+1, colMax+1);
     }
 
-    public static DoubleMatrix2D convertOmxToDoubleMatrix2D(OmxMatrix omxMatrix) {
+    public static DoubleMatrix2D convertOmxToDoubleMatrix2D(OmxMatrix omxMatrix, double factor) {
         final OmxHdf5Datatype.OmxJavaType type = omxMatrix.getOmxJavaType();
         if(!type.equals(OmxHdf5Datatype.OmxJavaType.DOUBLE) && !type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             throw new IllegalArgumentException("Provided omx matrix is not a double or float matrix but is of type: " + type.name());
@@ -64,14 +63,14 @@ public class Matrices {
             double[][] dArray = (double[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
-                    matrix.set(i+1, j+1, dArray[i][j]);
+                    matrix.set(i+1, j+1, dArray[i][j] * factor);
                 }
             }
         } else if(type.equals(OmxHdf5Datatype.OmxJavaType.FLOAT)) {
             float[][] fArray = (float[][]) omxMatrix.getData();
             for (int i = 0; i < dimensions[0]; i++) {
                 for (int j = 0; j < dimensions[1]; j++) {
-                    matrix.set(i, j, fArray[i][j]);
+                    matrix.set(i+1, j+1, fArray[i][j] * factor);
                 }
             }
         }

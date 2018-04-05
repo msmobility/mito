@@ -7,10 +7,7 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.util.Properties;
 import java.util.Random;
-import java.util.ResourceBundle;
 
 /**
  * Implements the Microsimulation Transport Orchestrator (MITO)
@@ -43,11 +40,7 @@ public final class MitoModel {
     private MitoModel(String propertiesFile, Implementation implementation) {
         this.dataSet = new DataSet();
         this.manager = new InputManager(dataSet);
-        try {
-            Resources.initializeResources(propertiesFile, implementation);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Resources.initializeResources(propertiesFile, implementation);
         MitoUtil.initializeRandomNumber();
     }
 

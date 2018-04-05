@@ -6,10 +6,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Utilities for the Transport in Microsimulation Orchestrator (TIMO)
@@ -90,7 +87,7 @@ public final class MitoUtil {
         return sm;
     }
 
-    private static double getSum(double[] array) {
+    public static double getSum(double[] array) {
         double sum = 0;
         for (double val : array) {
             sum += val;
@@ -118,9 +115,27 @@ public final class MitoUtil {
         return myFormatter.format(value);
     }
 
-    public static int select(double[] probabilities, Random random) {
+    public static int select(List<Double> probabilities, Random random) {
         // select item based on probabilities (for zero-based double array)
         double selPos = getSum(probabilities) * random.nextDouble();
+        double sum = 0;
+        for (ListIterator<Double> it = probabilities.listIterator(); it.hasNext();) {
+            sum += it.next();
+            if (sum > selPos) {
+                return it.previousIndex();
+            }
+        }
+        return -1;
+    }
+
+    public static int select(double[] probabilities, Random random) {
+        // select item based on probabilities (for zero-based double array)
+        return select(probabilities, random, getSum(probabilities));
+    }
+
+    public static int select(double[] probabilities, Random random, double probabilitySum) {
+        // select item based on probabilities (for zero-based double array)
+        double selPos =probabilitySum * random.nextDouble();
         double sum = 0;
         for (int i = 0; i < probabilities.length; i++) {
             sum += probabilities[i];
@@ -131,17 +146,21 @@ public final class MitoUtil {
         return probabilities.length - 1;
     }
 
-    public static int select(double[] probabilities) {
-        // select item based on probabilities (for zero-based double array)
-        double selPos = getSum(probabilities) * rand.nextDouble();
-        double sum = 0;
+    public static int select(double[] probabilities, double sum) {
+        double selPos = sum * rand.nextDouble();
+        double tempSum = 0;
         for (int i = 0; i < probabilities.length; i++) {
-            sum += probabilities[i];
-            if (sum > selPos) {
+            tempSum += probabilities[i];
+            if (tempSum > selPos) {
                 return i;
             }
         }
         return probabilities.length - 1;
+    }
+
+    public static int select(double[] probabilities) {
+        // select item based on probabilities (for zero-based double array)
+        return select(probabilities, getSum(probabilities));
     }
 
     public static int select(float[] probabilities, Random random) {

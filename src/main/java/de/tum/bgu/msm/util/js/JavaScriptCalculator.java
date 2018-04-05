@@ -34,6 +34,7 @@ public abstract class JavaScriptCalculator<T> {
                 scriptBuilder.append(line).append("\n");
                 line = bufferedReader.readLine();
             }
+            bufferedReader.close();
         } catch (IOException e) {
             logger.fatal("Error in reading script!", e);
         }
@@ -56,9 +57,7 @@ public abstract class JavaScriptCalculator<T> {
     protected final T calculate(String function, Object... args) {
         try {
             return (T) invocable.invokeFunction(function, args);
-        } catch (ScriptException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
+        } catch (ScriptException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

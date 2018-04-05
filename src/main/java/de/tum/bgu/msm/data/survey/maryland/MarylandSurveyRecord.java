@@ -1,13 +1,13 @@
 package de.tum.bgu.msm.data.survey.maryland;
 
-import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.survey.SurveyRecord;
 
 import java.util.EnumMap;
 
 public class MarylandSurveyRecord implements SurveyRecord {
 
-    private final EnumMap<Purpose, Integer> tripsByPurpose = new EnumMap<Purpose, Integer>(Purpose.class);
+    private final EnumMap<Purpose, Integer> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final int id;
     private final int householdSize;
     private final int workers;
