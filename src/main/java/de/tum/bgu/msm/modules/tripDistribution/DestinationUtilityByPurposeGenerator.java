@@ -43,7 +43,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination + " | Distance: "
                             + travelDistances.getTravelDistance(origin.getId(), destination.getId()) +
-                            " | Purpose: " + purpose);
+                            " | Purpose: " + purpose + " | attraction rate: " + destination.getTripAttraction(purpose));
                 }
                 utilityMatrix.setQuick(origin.getId(), destination.getId(), utility);
                 if (LongMath.isPowerOfTwo(counter)) {
