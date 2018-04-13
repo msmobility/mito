@@ -27,7 +27,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
     DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
-        this.travelDistances = dataSet.getTravelDistancesAuto();
+        this.travelDistances = dataSet.getTravelDistancesNMT();
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
         calculator = new DestinationUtilityJSCalculator(reader);
     }

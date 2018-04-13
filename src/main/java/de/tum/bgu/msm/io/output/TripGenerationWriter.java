@@ -3,6 +3,7 @@ package de.tum.bgu.msm.io.output;
 import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -56,14 +57,15 @@ public class TripGenerationWriter {
         int totalTrips = 0;
         pwProd.println();
         pwAttr.println();
-        for (int zoneId: dataSet.getZones().keySet()) {
+        for (MitoZone zone: dataSet.getZones().values()) {
+            final int zoneId = zone.getId();
             pwProd.print(zoneId);
             pwAttr.print(zoneId);
             for (Purpose purpose: Purpose.values()) {
                 int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(purpose);
                 totalTrips += tripProdTmp;
                 pwProd.print("," + tripProdTmp);
-                pwAttr.print("," + tripProdTmp);
+                pwAttr.print("," + zone.getTripAttraction(purpose));
             }
             pwProd.println();
             pwAttr.println();
