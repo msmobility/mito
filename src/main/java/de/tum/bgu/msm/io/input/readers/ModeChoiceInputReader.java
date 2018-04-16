@@ -10,7 +10,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 
 public class ModeChoiceInputReader extends CSVReader {
 
-    private int railDistIndex;
+    private int transitDistIndex;
     private int zoneIndex;
     private int areaTypeHBWIndex;
     private int areaTypeNHBOIndex;
@@ -22,7 +22,7 @@ public class ModeChoiceInputReader extends CSVReader {
     @Override
     protected void processHeader(String[] header) {
         zoneIndex = MitoUtil.findPositionInArray("zoneID", header);
-        railDistIndex = MitoUtil.findPositionInArray("distToRailStop", header);
+        transitDistIndex = MitoUtil.findPositionInArray("distToTransit", header);
         areaTypeHBWIndex = MitoUtil.findPositionInArray("areaTypeHBW", header);
         areaTypeNHBOIndex = MitoUtil.findPositionInArray("areaTypeNHBO", header);
     }
@@ -30,17 +30,17 @@ public class ModeChoiceInputReader extends CSVReader {
     @Override
     protected void processRecord(String[] record) {
         int zoneID = Integer.parseInt(record[zoneIndex]);
-        float distToRailStop = Float.parseFloat(record[railDistIndex]);
+        float distToTransit = Float.parseFloat(record[transitDistIndex]);
         AreaTypeForModeChoice areaTypeHBW = AreaTypeForModeChoice.valueOf(Integer.parseInt(record[areaTypeHBWIndex]));
         AreaTypeForModeChoice areaTypeNHBO = AreaTypeForModeChoice.valueOf(Integer.parseInt(record[areaTypeNHBOIndex]));
         MitoZone zone = dataSet.getZones().get(zoneID);
-        zone.setDistanceToNearestRailStop(distToRailStop);
+        zone.setDistanceToNearestTransitStop(distToTransit);
         zone.setAreaTypeHBWModeChoice(areaTypeHBW);
         zone.setAreaTypeNHBOModeChoice(areaTypeNHBO);
     }
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.AREA_TYPES_AND_RAIL_DISTANCE),",");
+        super.read(Resources.INSTANCE.getString(Properties.AREA_TYPES_AND_TRANSIT_DISTANCE),",");
     }
 }
