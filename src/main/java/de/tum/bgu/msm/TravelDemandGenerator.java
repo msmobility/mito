@@ -55,6 +55,8 @@ public class TravelDemandGenerator {
         modeChoice.run();
 
         SummarizeDataToVisualize.summarizeSpatially(dataSet);
+        SummarizeDataToVisualize.summarizeNonSpatially(dataSet);
+
         boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
         if (runTimeOfDayChoice) {
             logger.info("Running time of day choice");

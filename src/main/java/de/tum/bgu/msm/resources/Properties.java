@@ -52,4 +52,5 @@ public class Properties {
     public static final String DEFAULT_BUDGET = "default.buget.";
 
     public static final String SPATIAL_RESULT_FILE_NAME = "spatial.result.file.name";
+    public static final String RESULT_FILE_NAME = "result.file.name";
 }
