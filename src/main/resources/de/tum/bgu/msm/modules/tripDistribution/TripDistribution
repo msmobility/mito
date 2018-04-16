@@ -2,111 +2,46 @@ travelDistanceParamHbs = -0.09;
 impedanceParamHbs = 12.35;
 
 travelDistanceParamHbo = -0.1;
-impedanceParamHbo = 11.70;
+impedanceParamHbo = 11.25;
 
 travelDistanceParamHbw = -0.09;
-impedanceParamHbw = 12.2;
+impedanceParamHbw = 11.0;
 
 travelDistanceParamHbe = -0.09;
-impedanceParamHbe = 12.2;
+impedanceParamHbe = 22.2;
 
 travelDistanceParamNhbw = -0.09;
-impedanceParamNhbw = 11.297;
+impedanceParamNhbw = 10.5;
 
 travelDistanceParamNhbo = -0.09;
-impedanceParamNhbo = 10.927;
+impedanceParamNhbo = 10.2
 
-
-var calculateHBW = function (travelDistance, totalEmployees) {
+var calculateHBW = function (travelDistance, attraction) {
     impedance = impedanceParamHbw * Math.exp(travelDistanceParamHbw * travelDistance);
-    attraction = 0;
-    if(totalEmployees > 0) {
-        attraction = Math.log(totalEmployees);
-    }
-    return Math.exp(impedance + attraction);
+    return Math.exp(impedance + Math.log(attraction));
 }
 
-var calculateHBE = function (travelDistance, schoolEnrollment) {
+var calculateHBE = function (travelDistance, attraction) {
     impedance = impedanceParamHbe * Math.exp(travelDistanceParamHbe * travelDistance);
-    attraction = 0;
-    if(schoolEnrollment > 0) {
-        attraction = Math.log(schoolEnrollment);
-    }
-    return Math.exp(impedance + attraction);
+    return Math.exp(impedance + Math.log(attraction));
 }
 
-var calculateHBS  = function (travelDistance, retailEmployees) {
+var calculateHBS  = function (travelDistance, attraction) {
     impedance = impedanceParamHbs * Math.exp(travelDistanceParamHbs * travelDistance);
-    attraction = 0;
-    if(retailEmployees > 0) {
-        attraction = Math.log(retailEmployees);
-    }
-    return Math.exp(impedance + attraction);
+    return Math.exp(impedance + Math.log(attraction));
 }
 
-var calculateHBO = function (travelDistance, households, adminEmployees, serviceEmployees) {
+var calculateHBO = function (travelDistance, attraction) {
     impedance = impedanceParamHbo * Math.exp(travelDistanceParamHbo * travelDistance);
-    attraction = 0;
-    if(households > 0) {
-        attraction += Math.log(households);
-    }
-    if(adminEmployees > 0) {
-        attraction += Math.log(adminEmployees);
-    }
-    if(serviceEmployees > 0) {
-        attraction += Math.log(serviceEmployees);
-    }
-    return Math.exp(impedance + attraction);
+    return Math.exp(impedance + Math.log(attraction));
 }
 
-var calculateNHBW = function (travelDistance, households, adminEmployees, serviceEmployees, retailEmployees) {
+var calculateNHBW = function (travelDistance, attraction) {
     impedance = impedanceParamNhbw * Math.exp(travelDistanceParamNhbw * travelDistance);
-
-    attraction = 0;
-    if(households > 0) {
-        attraction += Math.log(households);
-    }
-    if(retailEmployees > 0) {
-        attraction += Math.log(retailEmployees);
-    }
-    if(serviceEmployees > 0) {
-        attraction += Math.log(serviceEmployees);
-    }
-    if(adminEmployees > 0) {
-        attraction += Math.log(adminEmployees);
-    }
-    return Math.exp(impedance + attraction);
+    return Math.exp(impedance + Math.log(attraction));
 }
 
-var calculateNHBO = function (travelDistance, households, adminEmployees, serviceEmployees, retailEmployees) {
+var calculateNHBO = function (travelDistance, attraction) {
     impedance = impedanceParamNhbo * Math.exp(travelDistanceParamNhbo * travelDistance);
-
-    attraction = 0;
-    if(households > 0) {
-        attraction += Math.log(households);
-    }
-    if(retailEmployees > 0) {
-        attraction += Math.log(retailEmployees);
-    }
-    if(serviceEmployees > 0) {
-        attraction += Math.log(serviceEmployees);
-    }
-    if(adminEmployees > 0) {
-        attraction += Math.log(adminEmployees);
-    }
-    return Math.exp(impedance + attraction);
-}
-
-function log() {
-    logVal = 0;
-    logger.debug("\n_______________________________________________" +
-    "\nCalculating Utility: base zone " + baseZone + " | target zone " + targetZone + " | purpose " + purpose +
-    "\nUtility              = " + (logVal+= intercept) +
-    "\n***" +
-    "\nImpedance        = " + impedance +
-    "\nUtility              = " + (logVal+= impedance) +
-    "\n***" +
-    "\nAttraction Impact    = " + attraction +
-    "\nUtility              = " + (logVal+=attraction) +
-    "\n_______________________________________________");
+    return Math.exp(impedance + Math.log(attraction));
 }

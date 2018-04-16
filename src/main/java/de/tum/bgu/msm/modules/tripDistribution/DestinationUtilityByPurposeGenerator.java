@@ -27,7 +27,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
     DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
-        this.travelDistances = dataSet.getTravelDistancesAuto();
+        this.travelDistances = dataSet.getTravelDistancesNMT();
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
         calculator = new DestinationUtilityJSCalculator(reader);
     }
@@ -43,7 +43,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination + " | Distance: "
                             + travelDistances.getTravelDistance(origin.getId(), destination.getId()) +
-                            " | Purpose: " + purpose);
+                            " | Purpose: " + purpose + " | attraction rate: " + destination.getTripAttraction(purpose));
                 }
                 utilityMatrix.setQuick(origin.getId(), destination.getId(), utility);
                 if (LongMath.isPowerOfTwo(counter)) {
