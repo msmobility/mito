@@ -1,15 +1,13 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.input.CSVReader;
-import de.tum.bgu.msm.data.Gender;
-import de.tum.bgu.msm.data.Occupation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 public class PersonsReader extends CSVReader {
@@ -24,6 +22,7 @@ public class PersonsReader extends CSVReader {
     private int posWorkplace = -1;
     private int posLicence = -1;
     private int posIncome = -1;
+    private int posSchool = -1;
 
     public PersonsReader(DataSet dataSet) {
         super(dataSet);
@@ -47,43 +46,54 @@ public class PersonsReader extends CSVReader {
 
     @Override
     public void processHeader(String[] header) {
-        posId = MitoUtil.findPositionInArray("id", header);
-        posHhId = MitoUtil.findPositionInArray("hhid", header);
-        posAge = MitoUtil.findPositionInArray("age", header);
-        posSex = MitoUtil.findPositionInArray("gender", header);
-        posOccupation = MitoUtil.findPositionInArray("occupation", header);
-        posWorkplace = MitoUtil.findPositionInArray("workplace", header);
-        posLicence = MitoUtil.findPositionInArray("driversLicense", header);
-        posIncome = MitoUtil.findPositionInArray("income", header);
+        List<String> headerList = Arrays.asList(header);
+        posId = headerList.indexOf("id");
+        posHhId = headerList.indexOf("hhid");
+        posAge = headerList.indexOf("age");
+        posSex = headerList.indexOf("gender");
+        posOccupation = headerList.indexOf("occupation");
+        posWorkplace = headerList.indexOf("workplace");
+        posLicence = headerList.indexOf("driversLicense");
+        posIncome = headerList.indexOf("income");
+        posSchool = headerList.indexOf("schoolTAZ");
     }
 
     @Override
     public void processRecord(String[] record) {
-        int id = Integer.parseInt(record[posId]);
-        int hhid = Integer.parseInt(record[posHhId]);
-        MitoHousehold hh;
-        if(dataSet.getHouseholds().containsKey(hhid)) {
-            hh = dataSet.getHouseholds().get(hhid);
-        } else {
+
+        final int id = Integer.parseInt(record[posId]);
+        final int hhid = Integer.parseInt(record[posHhId]);
+
+        if(!dataSet.getHouseholds().containsKey(hhid)) {
             logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
             return;
         }
-        int age = Integer.parseInt(record[posAge]);
+        MitoHousehold hh = dataSet.getHouseholds().get(hhid);
 
-        int genderCode = Integer.parseInt(record[posSex]);
+        final int age = Integer.parseInt(record[posAge]);
+
+        final int genderCode = Integer.parseInt(record[posSex]);
         Gender gender = Gender.valueOf(genderCode);
 
-        int occupationCode = Integer.parseInt(record[posOccupation]);
+        final int occupationCode = Integer.parseInt(record[posOccupation]);
         Occupation occupation = Occupation.valueOf(occupationCode);
-        int workplace = Integer.parseInt(record[posWorkplace]);
 
-        boolean driversLicense = false;
-        if (Integer.parseInt(record[posLicence]) == 1) {
-            driversLicense = true;
-        }
+        final int workplace = Integer.parseInt(record[posWorkplace]);
+
+        final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
+
         int income = Integer.parseInt(record[posIncome]);
         hh.addIncome(income);
+
         MitoPerson pp = new MitoPerson(id, occupation, workplace, age, gender, driversLicense);
+        if(occupation == Occupation.STUDENT) {
+            final int schoolZone = Integer.parseInt(record[posSchool]);
+            if(dataSet.getZones().containsKey(schoolZone)) {
+                pp.setOccupationZone(dataSet.getZones().get(schoolZone));
+            } else {
+                logger.warn("Person " + id + " declared as student does not have a school TAZ!");
+            }
+        }
         hh.addPerson(pp);
         dataSet.addPerson(pp);
     }
