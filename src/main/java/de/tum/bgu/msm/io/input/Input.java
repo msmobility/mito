@@ -1,6 +1,10 @@
 package de.tum.bgu.msm.io.input;
 
-import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.data.MitoZone;
+import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -9,17 +13,18 @@ import org.apache.log4j.Logger;
 
 import java.util.Map;
 
-public class InputManager {
+public class Input {
 
-    private static final Logger logger = Logger.getLogger(InputManager.class);
+    private static final Logger logger = Logger.getLogger(Input.class);
 
     private final DataSet dataSet;
 
-    public InputManager(DataSet dataSet) {
+    public Input(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 
     public void readAsStandAlone() {
+        dataSet.setTravelTimes(new SkimTravelTimes());
         new ZonesReader(dataSet).read();
         if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
@@ -41,12 +46,9 @@ public class InputManager {
         for(MitoZone zone: feed.zones.values()) {
             dataSet.addZone(zone);
         }
-        for(Map.Entry<String, TravelTimes> travelTimes: feed.travelTimes.entrySet())  {
-            dataSet.addTravelTimeForMode(travelTimes.getKey(), travelTimes.getValue());
-        }
+        dataSet.setTravelTimes(feed.travelTimes);
         setHouseholdsFromFeed(feed.households);
     }
-
 
     private void setHouseholdsFromFeed(Map<Integer, MitoHousehold> households) {
         for (MitoHousehold household : households.values()) {
@@ -60,6 +62,19 @@ public class InputManager {
             for(MitoPerson person: household.getPersons().values()) {
                 dataSet.addPerson(person);
             }
+        }
+    }
+
+    public final static class InputFeed {
+
+        private final Map<Integer, MitoZone> zones;
+        private final TravelTimes travelTimes;
+        private final Map<Integer, MitoHousehold> households;
+
+        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, Map<Integer, MitoHousehold> households) {
+            this.zones = zones;
+            this.travelTimes = travelTimes;
+            this.households = households;
         }
     }
 }

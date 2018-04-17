@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ModeChoiceCalculatorTest {
 
@@ -20,32 +18,33 @@ public class ModeChoiceCalculatorTest {
 
     @Before
     public void setup() {
-
         Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
-
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV"));
         calculator = new ModeChoiceJSCalculator(reader);
     }
 
     @Test
     public void test() {
-        MitoZone origin = new MitoZone(1, 100, null);
-        origin.setDistanceToNearestRailStop(0.5f);
+        MitoZone zone = new MitoZone(1, 100, null);
+        zone.setDistanceToNearestRailStop(0.5f);
         //origin.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_mediumSizedCity);
         MitoHousehold hh = new MitoHousehold(1, 20000, 1, null);
         MitoPerson pp = new MitoPerson(1, Occupation.STUDENT, 1, 20, Gender.FEMALE, true);
         hh.addPerson(pp);
         MitoTrip trip = new MitoTrip(1, Purpose.HBS);
-        trip.setTripOrigin(origin);
+        trip.setTripOrigin(zone);
+        trip.setTripDestination(zone);
 
-        Map<String, Double> travelTimeByMode = new HashMap<>();
-        travelTimeByMode.put("autoD", 15.);
-        travelTimeByMode.put("autoP", 15.);
-        travelTimeByMode.put("bus", 30.);
-        travelTimeByMode.put("tramMetro", 25.);
-        travelTimeByMode.put("train", 40.);
         //for(int i= 0; i< 1000000; i ++) {
-            double[] result = calculator.calculateProbabilities(hh, pp, trip, travelTimeByMode, 5.,5.);
+            double[] result = calculator.calculateProbabilities(hh, pp, trip, (origin1, destination, timeOfDay_s, mode) -> {
+                switch(mode) {
+                    case "car": return 15.;
+                    case "bus": return 30.;
+                    case "tramMetro": return 25;
+                    case "train": return 40.;
+                    default: return 0;
+                }
+            }, 5., 5., 0);
         //}
         for(int i = 0; i < result.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
