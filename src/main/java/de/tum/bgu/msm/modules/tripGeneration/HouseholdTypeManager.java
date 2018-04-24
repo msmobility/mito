@@ -2,13 +2,11 @@ package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.io.input.InputManager;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -120,7 +118,8 @@ public class HouseholdTypeManager {
 
 
     public HouseholdType determineHouseholdType(MitoHousehold hh) {
-        int hhEconomicStatus = convertIncomeIntoEconomicStatus(hh);
+        //todo: this needs not to be calculated here anymore, because economic status has become a household attribute
+        int hhEconomicStatus = getEconomicStatus(hh);
         System.out.println(hh.getIncome() + " " + hhEconomicStatus);
         System.exit(0);
         int areaType = -1;
@@ -134,7 +133,7 @@ public class HouseholdTypeManager {
     }
 
 
-    private int convertIncomeIntoEconomicStatus(MitoHousehold hh) {
+    private int getEconomicStatus(MitoHousehold hh) {
         int countAdults = (int) hh.getPersons().values().stream().filter(person ->
                 person.getAge() > 14).count();
         int countChildren = (int) hh.getPersons().values().stream().filter(person ->
