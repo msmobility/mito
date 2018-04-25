@@ -121,7 +121,7 @@ public class Input {
             String shortIncomeBrackets = incomeBracket.substring(3);
             try{
                 String[] incomeBounds = shortIncomeBrackets.split("-");
-                if (income >= Integer.parseInt(incomeBounds[0]) && income < Integer.parseInt(incomeBrackets[1])) {
+                if (income >= Integer.parseInt(incomeBounds[0]) && income < Integer.parseInt(incomeBounds[1])) {
                     return incomeBracket;
                 }
             } catch (Exception e) {
