@@ -10,6 +10,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.TransportMode;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
     public BasicDestinationChooser(Purpose purpose, EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
-        this.travelTimes = dataSet.getTravelTimes("car");
+        this.travelTimes = dataSet.getTravelTimes();
         this.purpose = purpose;
         this.baseProbabilities = baseProbabilities;
     }
@@ -83,7 +84,8 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
     }
 
     void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(),
+                dataSet.getPeakHour(), TransportMode.car);
         idealBudgetSum += hhBudgetPerTrip;
     }
 
@@ -108,7 +110,7 @@ public class BasicDestinationChooser extends RandomizableConcurrentFunction<Void
 
     void adjustDestinationProbabilities(int origin) {
         for (int i = 0; i < destinationProbabilities.size(); i++) {
-            final int deviation = (int) ((travelTimes.getTravelTime(origin, i, dataSet.getPeakHour()) / adjustedBudget));
+            final int deviation = (int) (travelTimes.getTravelTime(origin, i, dataSet.getPeakHour(), "car") / adjustedBudget);
             destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * deviation);
         }
     }

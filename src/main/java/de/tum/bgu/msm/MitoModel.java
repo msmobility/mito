@@ -1,8 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.input.InputFeed;
-import de.tum.bgu.msm.io.input.InputManager;
+import de.tum.bgu.msm.io.input.Input;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -34,12 +33,12 @@ public final class MitoModel {
     private static final Logger logger = Logger.getLogger(MitoModel.class);
     private static String scenarioName;
 
-    private final InputManager manager;
+    private final Input manager;
     private final DataSet dataSet;
 
     private MitoModel(String propertiesFile, Implementation implementation) {
         this.dataSet = new DataSet();
-        this.manager = new InputManager(dataSet);
+        this.manager = new Input(dataSet);
         Resources.initializeResources(propertiesFile, implementation);
         MitoUtil.initializeRandomNumber();
     }
@@ -52,14 +51,14 @@ public final class MitoModel {
         return model;
     }
 
-    public static MitoModel createModelWithInitialFeed(String propertiesFile, Implementation implementation, InputFeed feed) {
+    public static MitoModel createModelWithInitialFeed(String propertiesFile, Implementation implementation, Input.InputFeed feed) {
         MitoModel model = new MitoModel(propertiesFile, implementation);
         model.manager.readFromFeed(feed);
         model.manager.readAdditionalData();
         return model;
     }
 
-    public void feedData(InputFeed feed) {
+    public void feedData(Input.InputFeed feed) {
         manager.readFromFeed(feed);
     }
 

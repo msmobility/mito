@@ -11,7 +11,7 @@ import java.util.*;
 
 public class DataSet {
 
-    private final Map<String, TravelTimes> travelTimes = new LinkedHashMap<>();
+    private TravelTimes travelTimes;
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
@@ -24,6 +24,7 @@ public class DataSet {
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
+
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
@@ -45,16 +46,12 @@ public class DataSet {
 
     public void setTravelDistancesNMT(TravelDistances travelDistancesNMT){this.travelDistancesNMT = travelDistancesNMT;}
 
-    public Map<String, TravelTimes> getTravelTimes() {
-        return Collections.unmodifiableMap(travelTimes);
+    public TravelTimes getTravelTimes() {
+        return this.travelTimes;
     }
 
-    public TravelTimes getTravelTimes(String mode) {
-        return this.travelTimes.get(mode);
-    }
-
-    public TravelTimes addTravelTimeForMode(String mode, TravelTimes travelTimes) {
-        return this.travelTimes.put(mode, travelTimes);
+    public TravelTimes setTravelTimes(TravelTimes travelTimes) {
+        return this.travelTimes = travelTimes;
     }
 
     public Map<Integer, MitoPerson> getPersons() {

@@ -100,16 +100,16 @@ public class SummarizeData {
                 double distance = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId());
                 pwh.print(distance);
                 pwh.print(",");
-                double time_auto = dataSet.getTravelTimes("car").getTravelTime(origin.getId(), destination.getId(), 0);
+                double time_auto = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "car");
                 pwh.print(time_auto);
                 pwh.print(",");
-                double time_bus = dataSet.getTravelTimes("bus").getTravelTime(origin.getId(), destination.getId(), 0);
+                double time_bus = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "bus");
                 pwh.print(time_bus);
                 pwh.print(",");
-                double time_train = dataSet.getTravelTimes("train").getTravelTime(origin.getId(), destination.getId(), 0);
+                double time_train = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "train");
                 pwh.print(time_train);
                 pwh.print(",");
-                double time_tram_metro = dataSet.getTravelTimes("tramMetro").getTravelTime(origin.getId(), destination.getId(), 0);
+                double time_tram_metro = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "tramMetro");
                 pwh.print(time_tram_metro);
             } else {
                 pwh.print("NA,NA,NA,NA,NA");
@@ -146,7 +146,7 @@ public class SummarizeData {
         }
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
-                travelTimes.add(dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
+                travelTimes.add(dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour(), "car"));
                 double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
                 travelDistances.add(travelDistance);
                 tripsByZone.add(trip.getTripOrigin());

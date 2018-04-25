@@ -15,6 +15,7 @@ public class Properties {
     public static final String ECONOMIC_STATUS = "economic.factor.definition";
     public static final String TRANSIT_PEAK_SKIM = "transit.peak.travelTime";
     public static final String ZONES = "zonal.data.file";
+    public static final String ECONOMIC_STATUS = "economic.status.definition";
 
     public static final String TRAVEL_SURVEY_HOUSEHOLDS = "household.travel.survey.hh";
     public static final String TRAVEL_SURVEY_TRIPS = "household.travel.survey.trips";
@@ -50,5 +51,5 @@ public class Properties {
     public static final String ZONE_SHAPEFILE = "zone.shapefile";
     public static final String ZONE_SHAPEFILE_CRS = "zone.shapefile.crs";
     public static final String ZONE_SHAPEFILE_ID_FIELD  = "zone.shapefile.id.field";
-    public static final String DEFAULT_BUDGET = "default.buget.";
+    public static final String DEFAULT_BUDGET = "default.budget.";
 }

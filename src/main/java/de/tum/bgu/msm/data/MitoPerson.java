@@ -23,7 +23,7 @@ public class MitoPerson implements Id{
     private final int age;
     private final boolean driversLicense;
 
-    private Map<Integer,MitoTrip> trips = new HashMap<>();
+    private Set<MitoTrip> trips = new LinkedHashSet<>();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
         this.id = id;
@@ -67,19 +67,14 @@ public class MitoPerson implements Id{
         return driversLicense;
     }
 
-    public Map<Integer, MitoTrip> getTrips() {
-        return Collections.unmodifiableMap(this.trips);
+    public Set<MitoTrip> getTrips() {
+        return Collections.unmodifiableSet(this.trips);
     }
 
     public void addTrip(MitoTrip trip) {
-        MitoTrip test = this.trips.get(trip.getId());
-        if(test != null) {
-            if(test.equals(trip)) {
-                logger.warn("Trip " + trip.getId() + "already exists in person " + this.getId());
-            } else {
-                throw new IllegalArgumentException("Trip id " + trip.getId() + " already exists in person " + this.getId());
-            }
+        this.trips.add(trip);
+        if(trip.getPerson() != this) {
+            trip.setPerson(this);
         }
-        this.trips.put(trip.getId(), trip);
     }
 }

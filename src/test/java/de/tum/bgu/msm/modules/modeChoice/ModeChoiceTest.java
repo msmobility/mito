@@ -1,10 +1,9 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,15 +22,12 @@ public class ModeChoiceTest {
     @Before
     public void setupTest() {
         MitoUtil.initializeRandomNumber(new Random(42));
+        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
 
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);
         dataSet.setTravelDistancesNMT((origin, destination) -> 1000);
-        dataSet.addTravelTimeForMode("car", (origin, destination, timeOfDay_s) -> 10);
-        dataSet.addTravelTimeForMode("autoP", (origin, destination, timeOfDay_s) -> 10);
-        dataSet.addTravelTimeForMode("bus", (origin, destination, timeOfDay_s) -> 10);
-        dataSet.addTravelTimeForMode("tramMetro", (origin, destination, timeOfDay_s) -> 10);
-        dataSet.addTravelTimeForMode("train", (origin, destination, timeOfDay_s) -> 10);
+        dataSet.setTravelTimes((origin, destination, timeOfDay_s, mode) -> 10.);
         fillDataSet();
     }
 

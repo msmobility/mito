@@ -5,7 +5,6 @@ import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Mode;
-import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.readers.TimeOfDayDistributionsReader;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -94,7 +93,7 @@ public class TimeOfDayChoice extends Module {
             return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / speedBicycle;
         } else {
             //both transit and car use here travel times by car
-            return dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), arrivalInMinutes * 60);
+            return dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), arrivalInMinutes * 60, "car");
         }
     }
 

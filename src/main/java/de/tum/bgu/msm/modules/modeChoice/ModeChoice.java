@@ -1,8 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import com.google.common.collect.SortedMultiset;
-import com.google.common.collect.TreeMultiset;
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -11,12 +10,13 @@ import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
 
-public class ModeChoice extends Module{
+public class ModeChoice extends Module {
 
     private final static Logger logger = Logger.getLogger(ModeChoice.class);
     private final boolean includeAV = Resources.INSTANCE.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
@@ -40,11 +40,11 @@ public class ModeChoice extends Module{
         executor.execute();
     }
 
-    private void printModeShares(){
+    private void printModeShares() {
 
         //filter valid trips by purpose
         Map<Purpose, List<MitoTrip>> tripsByPurpose = dataSet.getTrips().values().stream()
-                .filter(trip -> trip.getTripMode()!= null)
+                .filter(trip -> trip.getTripMode() != null)
                 .collect(Collectors.groupingBy(trip -> trip.getTripPurpose()));
 
 
@@ -52,10 +52,10 @@ public class ModeChoice extends Module{
             final long totalTrips = trips.size();
             trips.parallelStream()
                     //group number of trips by mode
-                    .collect(Collectors.groupingBy( trip -> trip.getTripMode(), Collectors.counting()))
+                    .collect(Collectors.groupingBy(trip -> trip.getTripMode(), Collectors.counting()))
                     //calculate and add share to data set table
-                    .forEach( (mode, count) ->
-                    dataSet.addModeShareForPurpose(purpose, mode, (double) count / totalTrips));
+                    .forEach((mode, count) ->
+                            dataSet.addModeShareForPurpose(purpose, mode, (double) count / totalTrips));
         });
 
         for (Purpose purpose : Purpose.values()) {
@@ -70,30 +70,33 @@ public class ModeChoice extends Module{
         }
     }
 
-    static class ModeChoiceByPurpose extends RandomizableConcurrentFunction<Void>{
+    static class ModeChoiceByPurpose extends RandomizableConcurrentFunction<Void> {
 
         private final Purpose purpose;
         private final DataSet dataSet;
-        private final Map<String, Double> travelTimeByMode = new HashMap<>();
         private final ModeChoiceJSCalculator calculator;
+        private final TravelTimes travelTimes;
         private int countTripsSkipped;
 
         ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, boolean includeAV) {
             super(MitoUtil.getRandomObject().nextLong());
             this.purpose = purpose;
             this.dataSet = dataSet;
-            if(includeAV){ // if true
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV")));
+            this.travelTimes = dataSet.getTravelTimes();
+            if (includeAV) {
+                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                        .getResourceAsStream("ModeChoiceAV")));
             } else {
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass().getResourceAsStream("ModeChoice")));
+                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                        .getResourceAsStream("ModeChoice")));
             }
         }
 
         @Override
         public Void call() {
             countTripsSkipped = 0;
-            for (MitoHousehold household: dataSet.getHouseholds().values()){
-                for (MitoTrip trip : household.getTripsForPurpose(purpose)){
+            for (MitoHousehold household : dataSet.getHouseholds().values()) {
+                for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     chooseMode(trip, calculateTripProbabilities(household, trip));
                 }
             }
@@ -101,39 +104,25 @@ public class ModeChoice extends Module{
             return null;
         }
 
-         double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
-             if(trip.getTripOrigin() == null || trip.getTripDestination() == null) {
-                 countTripsSkipped++;
-                 return null;
-             }
-             travelTimeByMode.put("autoD", dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
-             travelTimeByMode.put("autoP",dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour()));
-             double busTime =  dataSet.getTravelTimes("bus").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
-             double trainTime = dataSet.getTravelTimes("train").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
-             double tramMetroTime = dataSet.getTravelTimes("tramMetro").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
-             if(busTime < 0) {
-                 busTime = 1000;
-             }
-             if(trainTime < 0) {
-                 trainTime = 1000;
-             }
-             if(tramMetroTime < 0) {
-                 tramMetroTime = 1000;
-             }
-             travelTimeByMode.put("bus", busTime);
-             travelTimeByMode.put("tramMetro", trainTime);
-             travelTimeByMode.put("train", tramMetroTime);
-             final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
-             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
-             return calculator.calculateProbabilities(household, trip.getPerson(), trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT);
-         }
+        double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
+            if (trip.getTripOrigin() == null || trip.getTripDestination() == null) {
+                countTripsSkipped++;
+                return null;
+            }
+            final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(),
+                    trip.getTripDestination().getId());
+            final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(),
+                    trip.getTripDestination().getId());
+            return calculator.calculateProbabilities(household, trip.getPerson(), trip, travelTimes, travelDistanceAuto,
+                    travelDistanceNMT, dataSet.getPeakHour());
+        }
 
-        private void chooseMode(MitoTrip trip, double[] probabilities){
-            if(probabilities==null){
+        private void chooseMode(MitoTrip trip, double[] probabilities) {
+            if (probabilities == null) {
                 return;
             }
             double sum = MitoUtil.getSum(probabilities);
-            if(sum > 0) {
+            if (sum > 0) {
                 trip.setTripMode(Mode.valueOf(MitoUtil.select(probabilities, random, sum)));
             } else {
                 logger.error("Negative probabilities for trip " + trip.getId());

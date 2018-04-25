@@ -12,6 +12,8 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import java.io.File;
+
 public class TrafficAssignment extends Module {
 
     private Config matsimConfig;
@@ -61,8 +63,8 @@ public class TrafficAssignment extends Module {
         matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(matsimConfig);
         matsimScenario.setPopulation(population);
 
-        PopulationWriter populationWriter = new PopulationWriter(population);
-        populationWriter.write(outputDirectory + "population.xml");
+//        PopulationWriter populationWriter = new PopulationWriter(population);
+//        populationWriter.write(outputDirectory + "population.xml");
     }
 
     private void runMatsim() {

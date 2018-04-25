@@ -8,6 +8,7 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.TransportMode;
 
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -24,7 +25,7 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
     private final double timeOfDay;
     private int defaultBudgeted = 0;
 
-    public MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose purpose, TravelTimes travelTimes, double timeOfDay) {
+    MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose purpose, TravelTimes travelTimes, double timeOfDay) {
         this.households = households;
         this.purpose = purpose;
         this.defaultBudget = Resources.INSTANCE.getDouble(Properties.DEFAULT_BUDGET + purpose, 30.);
@@ -45,7 +46,8 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
             double budget = 0;
             for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                 if (specifiedByOccupation(trip)) {
-                    budget += travelTimes.getTravelTime(household.getHomeZone().getId(), trip.getPerson().getOccupationZone().getId(), timeOfDay);
+                    budget += travelTimes.getTravelTime(household.getHomeZone().getId(),
+                            trip.getPerson().getOccupationZone().getId(), timeOfDay, TransportMode.car);
                 } else {
                     budget += defaultBudget;
                     defaultBudgeted ++;
@@ -65,5 +67,4 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
     private boolean specifiedByOccupation(MitoTrip trip) {
         return trip.getPerson().getOccupation().equals(occupation) && trip.getPerson().getOccupationZone() != null;
     }
-
 }
