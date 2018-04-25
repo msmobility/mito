@@ -8,13 +8,14 @@ import de.tum.bgu.msm.util.MitoUtil;
 //import jdk.internal.util.xml.impl.Input;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
+import java.util.Map;
 
 
-    public class EconomicStatusReader extends CSVReader {
+public class EconomicStatusReader extends CSVReader {
 
 
         private static final Logger logger = Logger.getLogger(EconomicStatusReader.class);
+        private final Map<String, Integer> economicStatusDefinition;
         private int hhSizeFactorIndex;
         private int inc0_500Index;
         private int inc500_900Index;
@@ -32,8 +33,9 @@ import java.util.HashMap;
         private int inc6600_7000Index;
         private int inc7000plusIndex;
 
-        public EconomicStatusReader(DataSet dataSet) {
+        public EconomicStatusReader(DataSet dataSet, Map<String, Integer> economicStatusDefinition) {
             super(dataSet);
+            this.economicStatusDefinition = economicStatusDefinition;
         }
 
         @Override
@@ -64,38 +66,36 @@ import java.util.HashMap;
         @Override
         protected void processRecord(String[] record) {
             float hhSizeFactor = Float.parseFloat(record[hhSizeFactorIndex]);
-            int inc0_500     = Integer.parseInt(record[inc0_500Index    ]);
-            int inc500_900   = Integer.parseInt(record[inc500_900Index  ]);
-            int inc900_1500  = Integer.parseInt(record[inc900_1500Index ]);
-            int inc1500_2000 = Integer.parseInt(record[inc1500_2000Index]);
-            int inc2000_2600 = Integer.parseInt(record[inc2000_2600Index]);
-            int inc2600_3000 = Integer.parseInt(record[inc2600_3000Index]);
-            int inc3000_3600 = Integer.parseInt(record[inc3000_3600Index]);
-            int inc3600_4000 = Integer.parseInt(record[inc3600_4000Index]);
-            int inc4000_4600 = Integer.parseInt(record[inc4000_4600Index]);
-            int inc4600_5000 = Integer.parseInt(record[inc4600_5000Index]);
-            int inc5000_5600 = Integer.parseInt(record[inc5000_5600Index]);
-            int inc5600_6000 = Integer.parseInt(record[inc5600_6000Index]);
-            int inc6000_6600 = Integer.parseInt(record[inc6000_6600Index]);
-            int inc6600_7000 = Integer.parseInt(record[inc6600_7000Index]);
-            int inc7000plus  = Integer.parseInt(record[inc7000plusIndex ]);
-            HashMap<String, Integer> economicStatus = Input.getEconomicStatus();
-            economicStatus.put(hhSizeFactor+"_Inc0_500", inc0_500);
-            economicStatus.put(hhSizeFactor+"_Inc500_900", inc500_900);
-            economicStatus.put(hhSizeFactor+"_Inc900_1500", inc900_1500);
-            economicStatus.put(hhSizeFactor+"_Inc1500_2000", inc1500_2000);
-            economicStatus.put(hhSizeFactor+"_Inc2000_2600", inc2000_2600);
-            economicStatus.put(hhSizeFactor+"_Inc2600_3000", inc2600_3000);
-            economicStatus.put(hhSizeFactor+"_Inc3000_3600", inc3000_3600);
-            economicStatus.put(hhSizeFactor+"_Inc3600_4000", inc3600_4000);
-            economicStatus.put(hhSizeFactor+"_Inc4000_4600", inc4000_4600);
-            economicStatus.put(hhSizeFactor+"_Inc4600_5000", inc4600_5000);
-            economicStatus.put(hhSizeFactor+"_Inc5000_5600", inc5000_5600);
-            economicStatus.put(hhSizeFactor+"_Inc5600_6000", inc5600_6000);
-            economicStatus.put(hhSizeFactor+"_Inc6000_6600", inc6000_6600);
-            economicStatus.put(hhSizeFactor+"_Inc6600_7000", inc6600_7000);
-            economicStatus.put(hhSizeFactor+"_Inc7000plus", inc7000plus);
-            Input.setEconomicStatus(economicStatus);
+            int codeInc0_500     = Integer.parseInt(record[inc0_500Index    ]);
+            int codeInc500_900   = Integer.parseInt(record[inc500_900Index  ]);
+            int codeInc900_1500  = Integer.parseInt(record[inc900_1500Index ]);
+            int codeInc1500_2000 = Integer.parseInt(record[inc1500_2000Index]);
+            int codeInc2000_2600 = Integer.parseInt(record[inc2000_2600Index]);
+            int codeInc2600_3000 = Integer.parseInt(record[inc2600_3000Index]);
+            int codeInc3000_3600 = Integer.parseInt(record[inc3000_3600Index]);
+            int codeInc3600_4000 = Integer.parseInt(record[inc3600_4000Index]);
+            int codeInc4000_4600 = Integer.parseInt(record[inc4000_4600Index]);
+            int codeInc4600_5000 = Integer.parseInt(record[inc4600_5000Index]);
+            int codeInc5000_5600 = Integer.parseInt(record[inc5000_5600Index]);
+            int codeInc5600_6000 = Integer.parseInt(record[inc5600_6000Index]);
+            int codeInc6000_6600 = Integer.parseInt(record[inc6000_6600Index]);
+            int codeInc6600_7000 = Integer.parseInt(record[inc6600_7000Index]);
+            int codeInc7000plus  = Integer.parseInt(record[inc7000plusIndex ]);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc0_500",     codeInc0_500);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc500_900",   codeInc500_900);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc900_1500",  codeInc900_1500);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc1500_2000", codeInc1500_2000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc2000_2600", codeInc2000_2600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc2600_3000", codeInc2600_3000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc3000_3600", codeInc3000_3600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc3600_4000", codeInc3600_4000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc4000_4600", codeInc4000_4600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc4600_5000", codeInc4600_5000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc5000_5600", codeInc5000_5600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc5600_6000", codeInc5600_6000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc6000_6600", codeInc6000_6600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc6600_7000", codeInc6600_7000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc7000plus",  codeInc7000plus);
         }
     }
 

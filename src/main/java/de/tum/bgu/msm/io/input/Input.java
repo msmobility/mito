@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.io.input;
 
+import com.google.common.collect.Range;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -19,7 +20,7 @@ public class Input {
     private static final Logger logger = Logger.getLogger(Input.class);
 
     private final DataSet dataSet;
-    private static HashMap<String, Integer> economicStatus;
+    private HashMap<String, Integer> economicStatusDefinition;
 
 
     public Input(DataSet dataSet) {
@@ -43,8 +44,9 @@ public class Input {
         new TripAttractionRatesReader(dataSet).read();
         new TravelSurveyReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
-        economicStatus = new HashMap<>();
-        new EconomicStatusReader(dataSet).read();
+        economicStatusDefinition = new HashMap<>();
+        new EconomicStatusReader(dataSet, economicStatusDefinition).read();
+        assignEconomicStatusToAllHouseholds();
     }
 
     public void readFromFeed(InputFeed feed) {
@@ -83,15 +85,7 @@ public class Input {
         }
     }
 
-    public static HashMap<String, Integer> getEconomicStatus() {
-        return economicStatus;
-    }
-
-    public static void setEconomicStatus (HashMap<String, Integer> calculatedEconomicStatus) {
-        economicStatus = calculatedEconomicStatus;
-    }
-
-    public void assignEconomicStatusToAllHouseholds() {
+    private void assignEconomicStatusToAllHouseholds() {
         for (MitoHousehold hh: dataSet.getHouseholds().values()) {
             hh.setEconomicStatus(getEconomicStatus(hh));
         }
@@ -113,7 +107,7 @@ public class Input {
         // Mobilität in Deutschland 2008, Variablenaufbereitung Haushaltsdatensatz: In Anlehnung an die neue Berechnungsskala der OECD gingen bei der Berechnung Kinder bis zu 14 Jahren mit dem Faktor 0,3 ein. Von den Personen ab 15 Jahren im Haushalt wurde eine Person mit dem Faktor 1, alle weiteren Personen ab 15 Jahren mit dem Faktor 0,5 gewichtet.
         float weightedHhSize = Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f);
         String incomeCategory = getMidIncomeCategory(hh.getIncome());
-        return economicStatus.get(weightedHhSize+"_"+incomeCategory);
+        return economicStatusDefinition.get(weightedHhSize+"_"+incomeCategory);
     }
 
 
@@ -126,7 +120,7 @@ public class Input {
         for (String incomeBracket : incomeBrackets) {
             String shortIncomeBrackets = incomeBracket.substring(3);
             try{
-                String[] incomeBounds = shortIncomeBrackets.split(",");
+                String[] incomeBounds = shortIncomeBrackets.split("-");
                 if (income >= Integer.parseInt(incomeBounds[0]) && income < Integer.parseInt(incomeBrackets[1])) {
                     return incomeBracket;
                 }
