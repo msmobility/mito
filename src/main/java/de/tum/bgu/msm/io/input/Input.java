@@ -11,6 +11,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Input {
@@ -18,6 +19,8 @@ public class Input {
     private static final Logger logger = Logger.getLogger(Input.class);
 
     private final DataSet dataSet;
+    private static HashMap<String, Integer> economicStatus;
+
 
     public Input(DataSet dataSet) {
         this.dataSet = dataSet;
@@ -40,6 +43,8 @@ public class Input {
         new TripAttractionRatesReader(dataSet).read();
         new TravelSurveyReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
+        economicStatus = new HashMap<>();
+        new EconomicStatusReader(dataSet).read();
     }
 
     public void readFromFeed(InputFeed feed) {
@@ -77,4 +82,60 @@ public class Input {
             this.households = households;
         }
     }
+
+    public static HashMap<String, Integer> getEconomicStatus() {
+        return economicStatus;
+    }
+
+    public static void setEconomicStatus (HashMap<String, Integer> calculatedEconomicStatus) {
+        economicStatus = calculatedEconomicStatus;
+    }
+
+    public void assignEconomicStatusToAllHouseholds() {
+        for (MitoHousehold hh: dataSet.getHouseholds().values()) {
+            hh.setEconomicStatus(getEconomicStatus(hh));
+        }
+    }
+
+    private int getEconomicStatus(MitoHousehold hh) {
+        /*
+        Defined as:
+            1: Sehr niedrig
+            2: Niedrig
+            3: Mittel
+            4: Hoch
+            5: Sehr hoch
+         */
+        int countAdults = (int) hh.getPersons().values().stream().filter(person ->
+                person.getAge() > 14).count();
+        int countChildren = (int) hh.getPersons().values().stream().filter(person ->
+                person.getAge() <= 14).count();
+        // Mobilität in Deutschland 2008, Variablenaufbereitung Haushaltsdatensatz: In Anlehnung an die neue Berechnungsskala der OECD gingen bei der Berechnung Kinder bis zu 14 Jahren mit dem Faktor 0,3 ein. Von den Personen ab 15 Jahren im Haushalt wurde eine Person mit dem Faktor 1, alle weiteren Personen ab 15 Jahren mit dem Faktor 0,5 gewichtet.
+        float weightedHhSize = Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f);
+        String incomeCategory = getMidIncomeCategory(hh.getIncome());
+        return economicStatus.get(weightedHhSize+"_"+incomeCategory);
+    }
+
+
+    private String getMidIncomeCategory(int income) {
+
+        final String[] incomeBrackets = {"Inc0-500","Inc500-900","Inc900-1500","Inc1500-2000","Inc2000-2600",
+                "Inc2600-3000","Inc3000-3600","Inc3600-4000","Inc4000-4600","Inc4600-5000","Inc5000-5600",
+                "Inc5600-6000","Inc6000-6600","Inc6600-7000","Inc7000+"};
+
+        for (String incomeBracket : incomeBrackets) {
+            String shortIncomeBrackets = incomeBracket.substring(3);
+            try{
+                String[] incomeBounds = shortIncomeBrackets.split(",");
+                if (income >= Integer.parseInt(incomeBounds[0]) && income < Integer.parseInt(incomeBrackets[1])) {
+                    return incomeBracket;
+                }
+            } catch (Exception e) {
+                if (income >= 7000) return incomeBrackets[incomeBrackets.length-1];
+            }
+        }
+        logger.error("Unrecognized income: " + income);
+        return null;
+    }
+
 }

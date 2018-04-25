@@ -17,6 +17,7 @@ public class MitoHousehold implements Id {
 
     private final int hhId;
     private int income;
+    private int economicStatus;
     private final int autos;
     private final MitoZone homeZone;
 
@@ -91,5 +92,13 @@ public class MitoHousehold implements Id {
 
     public double getTravelTimeBudgetForPurpose(Purpose purpose) {
         return travelTimeBudgetByPurpose.get(purpose) == null ? 0. : travelTimeBudgetByPurpose.get(purpose) ;
+    }
+
+    public int getEconomicStatus() {
+        return economicStatus;
+    }
+
+    public void setEconomicStatus(int economicStatus) {
+        this.economicStatus = economicStatus;
     }
 }

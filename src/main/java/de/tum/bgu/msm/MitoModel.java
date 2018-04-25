@@ -48,6 +48,7 @@ public final class MitoModel {
         MitoModel model = new MitoModel(propertiesFile, implementation);
         model.manager.readAsStandAlone();
         model.manager.readAdditionalData();
+        model.manager.assignEconomicStatusToAllHouseholds();
         return model;
     }
 
@@ -55,6 +56,7 @@ public final class MitoModel {
         MitoModel model = new MitoModel(propertiesFile, implementation);
         model.manager.readFromFeed(feed);
         model.manager.readAdditionalData();
+        model.manager.assignEconomicStatusToAllHouseholds();
         return model;
     }
 
