@@ -10,6 +10,7 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -105,7 +106,7 @@ public class Input {
         int countChildren = (int) hh.getPersons().values().stream().filter(person ->
                 person.getAge() <= 14).count();
         // Mobilität in Deutschland 2008, Variablenaufbereitung Haushaltsdatensatz: In Anlehnung an die neue Berechnungsskala der OECD gingen bei der Berechnung Kinder bis zu 14 Jahren mit dem Faktor 0,3 ein. Von den Personen ab 15 Jahren im Haushalt wurde eine Person mit dem Faktor 1, alle weiteren Personen ab 15 Jahren mit dem Faktor 0,5 gewichtet.
-        float weightedHhSize = Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f);
+        float weightedHhSize = Math.min(3.5f, MitoUtil.rounder(1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f, 1));
         String incomeCategory = getMidIncomeCategory(hh.getIncome());
         return economicStatusDefinition.get(weightedHhSize+"_"+incomeCategory);
     }
