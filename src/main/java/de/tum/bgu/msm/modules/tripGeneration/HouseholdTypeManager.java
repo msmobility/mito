@@ -5,7 +5,6 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
-import de.tum.bgu.msm.io.input.InputManager;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
@@ -118,10 +117,7 @@ public class HouseholdTypeManager {
 
 
     public HouseholdType determineHouseholdType(MitoHousehold hh) {
-        //todo: this needs not to be calculated here anymore, because economic status has become a household attribute
-        int hhEconomicStatus = getEconomicStatus(hh);
-        System.out.println(hh.getIncome() + " " + hhEconomicStatus);
-        System.exit(0);
+
         int areaType = -1;
         if (hh.getHomeZone() != null) {
             areaType = hh.getHomeZone().getAreaType().ordinal()+1;
@@ -129,43 +125,8 @@ public class HouseholdTypeManager {
             logger.info("Home MitoZone for Household  " + hh.getId() + " is null!");
         }
         return determineHouseholdType(hh.getHhSize(), DataSet.getNumberOfWorkersForHousehold(hh),
-                hhEconomicStatus, hh.getAutos(), areaType);
+                hh.getEconomicStatus(), hh.getAutos(), areaType);
     }
-
-
-    private int getEconomicStatus(MitoHousehold hh) {
-        int countAdults = (int) hh.getPersons().values().stream().filter(person ->
-                person.getAge() > 14).count();
-        int countChildren = (int) hh.getPersons().values().stream().filter(person ->
-                person.getAge() <= 14).count();
-        // Mobilität in Deutschland 2008, Variablenaufbereitung Haushaltsdatensatz: In Anlehnung an die neue Berechnungsskala der OECD gingen bei der Berechnung Kinder bis zu 14 Jahren mit dem Faktor 0,3 ein. Von den Personen ab 15 Jahren im Haushalt wurde eine Person mit dem Faktor 1, alle weiteren Personen ab 15 Jahren mit dem Faktor 0,5 gewichtet.
-        float weightedHhSize = Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f);
-        String incomeCategory = getMidIncomeCategory(hh.getIncome());
-        return InputManager.getEconomicStatus().get(weightedHhSize+"_"+incomeCategory);
-    }
-
-
-    private String getMidIncomeCategory(int income) {
-
-        final String[] incomeBrackets = {"Inc0-500","Inc500-900","Inc900-1500","Inc1500-2000","Inc2000-2600",
-                "Inc2600-3000","Inc3000-3600","Inc3600-4000","Inc4000-4600","Inc4600-5000","Inc5000-5600",
-                "Inc5600-6000","Inc6000-6600","Inc6600-7000","Inc7000+"};
-
-        for (String incomeBracket : incomeBrackets) {
-            String shortIncomeBrackets = incomeBracket.substring(3);
-            try{
-                String[] incomeBounds = shortIncomeBrackets.split(",");
-                if (income >= Integer.parseInt(incomeBounds[0]) && income < Integer.parseInt(incomeBrackets[1])) {
-                return incomeBracket;
-                }
-            } catch (Exception e) {
-                if (income >= 7000) return incomeBrackets[incomeBrackets.length-1];
-            }
-        }
-        logger.error("Unrecognized income: " + income);
-        return null;
-    }
-
 
     private HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhEconStatus, int hhVeh, int hhReg) {
 

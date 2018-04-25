@@ -15,7 +15,6 @@ public class Properties {
     public static final String ECONOMIC_STATUS = "economic.factor.definition";
     public static final String TRANSIT_PEAK_SKIM = "transit.peak.travelTime";
     public static final String ZONES = "zonal.data.file";
-    public static final String ECONOMIC_STATUS = "economic.status.definition";
 
     public static final String TRAVEL_SURVEY_HOUSEHOLDS = "household.travel.survey.hh";
     public static final String TRAVEL_SURVEY_TRIPS = "household.travel.survey.trips";
