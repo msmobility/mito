@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.io.input;
 
-import com.google.common.collect.Range;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
@@ -43,7 +42,6 @@ public class Input {
     public void readAdditionalData() {
         new SchoolEnrollmentReader(dataSet).read();
         new TripAttractionRatesReader(dataSet).read();
-//        new TravelSurveyReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         economicStatusDefinition = new HashMap<>();
         new EconomicStatusReader(dataSet, economicStatusDefinition).read();
