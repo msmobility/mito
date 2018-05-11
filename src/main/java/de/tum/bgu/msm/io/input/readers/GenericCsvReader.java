@@ -68,6 +68,10 @@ public final class GenericCsvReader extends CSVReader {
             this.table.put(row, column, s);
         }
 
+        public boolean containsColumn(String column) {
+            return header.contains(column);
+        }
+
         /**
          * returns the value at given row and column indexes as a string.
          * @param row the row index
@@ -86,6 +90,11 @@ public final class GenericCsvReader extends CSVReader {
          * @throws NumberFormatException if the String cannot be parsed
          */
         public int getInt(int row, int column) throws NumberFormatException {
+            return Integer.parseInt(table.get(row, column));
+        }
+
+        public int getInt(int row, String columnAsString) throws NumberFormatException {
+            int column = getColumnIndexOf(columnAsString);
             return Integer.parseInt(table.get(row, column));
         }
 
