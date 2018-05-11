@@ -28,7 +28,7 @@ public class HouseHoldTypeManagerTest {
         HouseholdTypeManager manager = new HouseholdTypeManager(Purpose.HBW);
         manager.createHouseHoldTypeDefinitions();
         List<HouseholdType> types = manager.householdTypes;
-        Assert.assertEquals(24, types.size());
+        Assert.assertEquals(20, types.size());
         for(HouseholdType type: types) {
             Assert.assertEquals(0, type.getNumberOfRecords());
         }
