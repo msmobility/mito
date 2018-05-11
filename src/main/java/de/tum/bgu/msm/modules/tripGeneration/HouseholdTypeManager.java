@@ -5,6 +5,9 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.data.survey.TravelSurvey;
+import de.tum.bgu.msm.io.input.readers.GenericCsvReader;
+import de.tum.bgu.msm.io.input.readers.GenericCsvReader.GenericCsvTable;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
@@ -21,24 +24,76 @@ public class HouseholdTypeManager {
     private static final Logger logger = Logger.getLogger(HouseholdTypeManager.class);
 
     private final Purpose purpose;
+    private final HashMap<HouseholdType, Integer[]> tripFrequency;
 
     final List<HouseholdType> householdTypes = new ArrayList<>();
-    final int[] tripFrequencies;
 
     public HouseholdTypeManager(Purpose purpose) {
         this.purpose = purpose;
-        this.tripFrequencies = readTripFrequencies();
+        createHouseHoldTypeDefinitions();
+        tripFrequency = readTripFrequencies();
+    }
+
+    public Integer[] getTripFrequenciesForHouseholdType(HouseholdType ht) {
+        return tripFrequency.get(ht);
+    }
+
+    private HashMap<HouseholdType, Integer[]> readTripFrequencies() {
+        // todo: should this not read the token from the class Properties.java?
+        String fileName = Resources.INSTANCE.getString(purpose + ".trip.frequencies");
+        GenericCsvReader csvReader = new GenericCsvReader(fileName);
+        csvReader.read();
+        GenericCsvTable dataTable = csvReader.getTable();
+        HashMap<HouseholdType, Integer[]> tripFrequency = new HashMap<>();
+
+        for (HouseholdType ht: householdTypes) {
+            ArrayList<Integer> tripFrequencyThisHousehold = new ArrayList<>();
+            boolean foundThisHhType = false;
+            for (int row = 0; row < dataTable.getRowCount(); row++) {
+                String purp = dataTable.getString(row, dataTable.getColumnIndexOf("typePurpose"));
+                if (!purp.equals(purpose.toString())) {
+                    logger.error("File " + fileName + " contains trip purpose " + purp +
+                            ", which is different from expected purpose " + purpose);
+                    System.exit(1);
+                }
+
+                if (ht.hasTheseAttributes(dataTable.getInt(row, "hhSize_L"),
+                        dataTable.getInt(row, "hhSize_H"),
+                        dataTable.getInt(row, "workers_L"),
+                        dataTable.getInt(row, "workers_H"),
+                        dataTable.getInt(row, "econStatus_L"),
+                        dataTable.getInt(row, "econStatus_H"),
+                        dataTable.getInt(row, "autos_L"),
+                        dataTable.getInt(row, "autos_H"),
+                        dataTable.getInt(row, "region_L"),
+                        dataTable.getInt(row, "region_H"))) {
+                    foundThisHhType = true;
+                    for (int trips = 0; trips < 100; trips++) {
+                        String columnName = "trips_" + trips;
+                        if (dataTable.containsColumn(columnName)) {
+                            tripFrequencyThisHousehold.add(dataTable.getInt(row, columnName));
+                        }
+                    }
+                    tripFrequency.put(ht, getIntegerArrayFromArrayList(tripFrequencyThisHousehold));
+                }
+            }
+            if (!foundThisHhType) {
+                logger.error("Could not find household type " + ht.getId() + " in file " + fileName);
+            }
+        }
+        return tripFrequency;
     }
 
 
-    private int[] readTripFrequencies() {
-        String fileName = Resources.INSTANCE.getString(purpose + ".trip.frequencies");
-        // todo: read trip frequencies!!!
-        return new int[]{0,1};
+    private Integer[] getIntegerArrayFromArrayList (ArrayList<Integer> list) {
+        Integer[] integerArray = new Integer[list.size()];
+        for (int i = 0; i < list.size(); i++) integerArray[i] = list.get(i);
+        return integerArray;
     }
 
 
     public void createHouseHoldTypeDefinitions() {
+        // todo: should this not read the token from the class Properties.java?
         String[] householdDefinitionToken = Resources.INSTANCE.getArray("hh.type." + purpose);
         // householdDefinitionToken[0] has only the number of household types defined for this purpose, which is not needed by the model
         String sizeToken = householdDefinitionToken[1];
@@ -71,12 +126,12 @@ public class HouseholdTypeManager {
                             String[] regionParts = regionToken.split("-");
                             final int sizeL = Integer.parseInt(sizeParts[0]);
                             final int sizeH = Integer.parseInt(sizeParts[1]);
-                            final int workersL = Integer.parseInt(workerParts[0]) - 1;
-                            final int workersH = Integer.parseInt(workerParts[1]) - 1;
+                            final int workersL = Integer.parseInt(workerParts[0]);
+                            final int workersH = Integer.parseInt(workerParts[1]);
                             final int economicStatusL = Integer.parseInt(economicStatusParts[0]);
                             final int economicStatusH = Integer.parseInt(economicStatusParts[1]);
-                            final int autosL = Integer.parseInt(autoParts[0]) - 1;
-                            final int autosH = Integer.parseInt(autoParts[1]) - 1;
+                            final int autosL = Integer.parseInt(autoParts[0]);
+                            final int autosH = Integer.parseInt(autoParts[1]);
                             final int regionL = Integer.parseInt(regionParts[0]);
                             final int regionH = Integer.parseInt(regionParts[1]);
 
@@ -91,7 +146,7 @@ public class HouseholdTypeManager {
         }
     }
 
-    public Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord(TravelSurvey<? extends SurveyRecord> survey) {
+/*    public Map<Integer, HouseholdType> assignHouseholdTypeOfEachSurveyRecord(TravelSurvey<? extends SurveyRecord> survey) {
         // Count number of household records per predefined type
 
         Map<Integer, HouseholdType> householdTypeBySample = new HashMap<>();
@@ -113,7 +168,7 @@ public class HouseholdTypeManager {
         // analyze if every household type has a sufficient number of records
         cancelOutInsufficientRecords(householdTypeBySample);
         return householdTypeBySample;
-    }
+    }*/
 
 
     public HouseholdType determineHouseholdType(MitoHousehold hh) {
@@ -130,26 +185,12 @@ public class HouseholdTypeManager {
 
     private HouseholdType determineHouseholdType(int hhSze, int hhWrk, int hhEconStatus, int hhVeh, int hhReg) {
 
-        hhSze = Math.min(hhSze, 7);
+        hhSze = Math.min(hhSze, 8);
         hhWrk = Math.min(hhWrk, 4);
-
-        int hhAut;
-        String autoDef = selectAutoMode();
-
-        if ("autos".equalsIgnoreCase(autoDef)) {
-            hhAut = Math.min(hhVeh, 3);
-        } else {
-            if (hhVeh < hhWrk) {
-                hhAut = 0;        // fewer autos than workers
-            } else if (hhVeh == hhWrk) {
-                hhAut = 1;  // equal number of autos and workers
-            } else {
-                hhAut = 2;                      // more autos than workers
-            }
-        }
+        hhVeh = Math.min(hhVeh, 3);
 
         for (HouseholdType type : householdTypes) {
-            if (type.applies(hhSze, hhWrk, hhEconStatus, hhAut, hhReg)) {
+            if (type.applies(hhSze, hhWrk, hhEconStatus, hhVeh, hhReg)) {
                 return type;
             }
         }
@@ -157,15 +198,8 @@ public class HouseholdTypeManager {
         return null;
     }
 
-    private String selectAutoMode() {
-        // return autos or autoSufficiency depending on mode chosen
-        String autoMode = "autos";
-        if (purpose.equals(Purpose.HBW) || purpose.equals(Purpose.NHBW)) {
-            autoMode = "autoSufficiency";
-        }
-        return autoMode;
-    }
 
+/*
     private void cancelOutInsufficientRecords(Map<Integer, HouseholdType> householdTypeBySample) {
         for (Map.Entry<Integer, HouseholdType> entry : householdTypeBySample.entrySet()) {
             if (entry.getValue().getNumberOfRecords() < 30) {
@@ -205,4 +239,5 @@ public class HouseholdTypeManager {
             return 12;
         }
     }
+*/
 }

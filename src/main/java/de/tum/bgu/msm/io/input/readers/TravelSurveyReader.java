@@ -34,13 +34,13 @@ public class TravelSurveyReader extends CSVReader {
     @Override
     public void read() {
         // read household travel survey
-        logger.info("  Reading household travel survey");
-        String surveyHouseholdsPath = MitoUtil.getBaseDirectory() + "/" + Resources.INSTANCE.getString(Properties.TRAVEL_SURVEY_HOUSEHOLDS);
-        String surveyTripsPath = MitoUtil.getBaseDirectory() + "/" + Resources.INSTANCE.getString(Properties.TRAVEL_SURVEY_TRIPS);
-        super.read(surveyHouseholdsPath, ",");
-        households = false;
-        super.read(surveyTripsPath, ",");
-        dataSet.setSurvey(survey);
+//        logger.info("  Reading household travel survey");
+//        String surveyHouseholdsPath = MitoUtil.getBaseDirectory() + "/" + Resources.INSTANCE.getString(Properties.TRAVEL_SURVEY_HOUSEHOLDS);
+//        String surveyTripsPath = MitoUtil.getBaseDirectory() + "/" + Resources.INSTANCE.getString(Properties.TRAVEL_SURVEY_TRIPS);
+//        super.read(surveyHouseholdsPath, ",");
+//        households = false;
+//        super.read(surveyTripsPath, ",");
+//        dataSet.setSurvey(survey);
     }
 
     @Override

@@ -71,4 +71,8 @@ public class HouseholdType {
         return size >= sizeL && size <= sizeH;
     }
 
+    public boolean hasTheseAttributes(int hhSizeL, int hhSizeH, int wrkL, int wrkH, int ecoStatL, int ecoStatH, int autoL, int autoH, int regL, int regH) {
+        return(hhSizeL==sizeL && hhSizeH==sizeH && wrkL==workersL && wrkH == workersH && ecoStatL == economicStatusL &&
+        ecoStatH == economicStatusH && autoL==autosL && autoH==autosH && regL==regionL && regH==regionH);
+    }
 }

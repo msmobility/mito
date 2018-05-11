@@ -19,6 +19,13 @@ public class Properties {
     public static final String TRAVEL_SURVEY_HOUSEHOLDS = "household.travel.survey.hh";
     public static final String TRAVEL_SURVEY_TRIPS = "household.travel.survey.trips";
 
+    public static final String HBW_TRIP_FREQUENCIES = "HBW.trip.frequencies";
+    public static final String HBS_TRIP_FREQUENCIES = "HBS.trip.frequencies";
+    public static final String HBO_TRIP_FREQUENCIES = "HBO.trip.frequencies";
+    public static final String HBE_TRIP_FREQUENCIES = "HBE.trip.frequencies";
+    public static final String NHBW_TRIP_FREQUENCIES = "NHBW.trip.frequencies";
+    public static final String NHBO_TRIP_FREQUENCIES = "NHBO.trip.frequencies";
+
     public static final String TRIP_ATTRACTION_RATES = "trip.attraction.rates";
     public static final String TRIP_PRODUCTION_OUTPUT = "trip.production.output";
     public static final String TRIP_ATTRACTION_OUTPUT = "trip.attraction.output";

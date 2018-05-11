@@ -81,21 +81,21 @@ public class EconomicStatusReader extends CSVReader {
             int codeInc6000_6600 = Integer.parseInt(record[inc6000_6600Index]);
             int codeInc6600_7000 = Integer.parseInt(record[inc6600_7000Index]);
             int codeInc7000plus  = Integer.parseInt(record[inc7000plusIndex ]);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc0_500",     codeInc0_500);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc500_900",   codeInc500_900);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc900_1500",  codeInc900_1500);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc1500_2000", codeInc1500_2000);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc2000_2600", codeInc2000_2600);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc2600_3000", codeInc2600_3000);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc3000_3600", codeInc3000_3600);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc3600_4000", codeInc3600_4000);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc4000_4600", codeInc4000_4600);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc4600_5000", codeInc4600_5000);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc5000_5600", codeInc5000_5600);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc5600_6000", codeInc5600_6000);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc6000_6600", codeInc6000_6600);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc6600_7000", codeInc6600_7000);
-            economicStatusDefinition.put(hhSizeFactor+"_Inc7000plus",  codeInc7000plus);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc0-500",     codeInc0_500);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc500-900",   codeInc500_900);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc900-1500",  codeInc900_1500);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc1500-2000", codeInc1500_2000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc2000-2600", codeInc2000_2600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc2600-3000", codeInc2600_3000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc3000-3600", codeInc3000_3600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc3600-4000", codeInc3600_4000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc4000-4600", codeInc4000_4600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc4600-5000", codeInc4600_5000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc5000-5600", codeInc5000_5600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc5600-6000", codeInc5600_6000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc6000-6600", codeInc6000_6600);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc6600-7000", codeInc6600_7000);
+            economicStatusDefinition.put(hhSizeFactor+"_Inc7000+",  codeInc7000plus);
         }
     }
 

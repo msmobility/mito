@@ -179,5 +179,9 @@ public final class GenericCsvReader extends CSVReader {
                     .map(entry -> Float.parseFloat(entry.getValue()))
                     .collect(Collectors.toList());
         }
+
+        public int getRowCount () {
+            return table.column(0).entrySet().size();
+        }
     }
 }
