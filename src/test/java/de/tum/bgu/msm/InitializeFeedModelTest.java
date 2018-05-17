@@ -36,7 +36,6 @@ public class InitializeFeedModelTest {
         Assert.assertEquals(1, model.getData().getZones().size());
         Assert.assertEquals(1, model.getData().getHouseholds().size());
         Assert.assertEquals(2, model.getData().getPersons().size());
-        Assert.assertNotNull(model.getData().getSurvey());
         Assert.assertEquals(1., model.getData().getTravelTimes().getTravelTime(1, 1, 0, "car"), 0.);
     }
 }
