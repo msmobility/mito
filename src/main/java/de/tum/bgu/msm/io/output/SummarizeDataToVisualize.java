@@ -131,7 +131,7 @@ public class SummarizeDataToVisualize {
 
 
                 //double travelTime = dataSet.getTravelTimes(String.valueOf(trip.getTripMode())).getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
-                double travelTime = dataSet.getTravelTimes("car").getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour());
+                double travelTime = dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour(), "car");
                 double existingTime = avTimeByZoneAndPurp.get(trip.getTripOrigin().getId()).get(purpose);
                 avTimeByZoneAndPurp.get(trip.getTripOrigin().getId()).replace(purpose, (travelTime + existingTime));
 
@@ -281,6 +281,7 @@ public class SummarizeDataToVisualize {
             resultFile(txt);
         }
 
+/*
         for (int i = 0; i < 30; i++) {
             String txt = "PPbyTrips_";
             txt = txt.concat(String.valueOf(i));
@@ -302,6 +303,7 @@ public class SummarizeDataToVisualize {
             }
             resultFile(txt);
         }
+*/
 
         resultFile("close");
 
