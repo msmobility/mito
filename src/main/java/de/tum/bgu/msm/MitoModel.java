@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.Input;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -70,6 +71,10 @@ public final class MitoModel {
         ttd.generateTravelDemand();
 
         printOutline(startTime);
+    }
+
+    public TravelTimes getTravelTimesAfterRunningMito(){
+        return dataSet.getTravelTimes();
     }
 
     private void printOutline(long startTime) {

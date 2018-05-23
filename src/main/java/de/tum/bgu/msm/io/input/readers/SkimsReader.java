@@ -37,4 +37,8 @@ public class SkimsReader extends AbstractOmxReader {
         DoubleMatrix2D distanceSkimNMT = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
+
+    public void readOnlyTravelDistances(){
+        readTravelDistances();
+    }
 }
