@@ -42,7 +42,8 @@ public class RawTripGenerator {
     }
 
     private void generateByPurposeMultiThreaded() {
-        final ConcurrentExecutor<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        final ConcurrentExecutor<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
+                ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Pair<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
         for(Purpose purpose: PURPOSES) {
             tasks.add(new TripsByPurposeGenerator(dataSet, purpose));
@@ -62,7 +63,8 @@ public class RawTripGenerator {
         long rawTrips = dataSet.getTrips().size() + DROPPED_TRIPS_AT_BORDER_COUNTER.get();
         logger.info("  Generated " + MitoUtil.customFormat("###,###", rawTrips) + " raw trips.");
         if (DROPPED_TRIPS_AT_BORDER_COUNTER.get() > 0) {
-            logger.info(MitoUtil.customFormat("  " + "###,###", DROPPED_TRIPS_AT_BORDER_COUNTER.get()) + " trips were dropped at boundary of study area.");
+            logger.info(MitoUtil.customFormat("  " + "###,###", DROPPED_TRIPS_AT_BORDER_COUNTER.get()) +
+                    " trips were dropped at boundary of study area.");
         }
     }
 }

@@ -44,7 +44,7 @@ public final class MitoUtil {
 
     public static float rounder(float value, int digits) {
         // rounds value to digits behind the decimal point
-        return Math.round(value * Math.pow(10, digits) + 0.5) / (float) Math.pow(10, digits);
+        return Math.round(value * Math.pow(10, digits)) / (float) Math.pow(10, digits);
     }
 
     private static int getHighestVal(int[] array) {

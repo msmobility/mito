@@ -48,8 +48,8 @@ public class TravelTimeBudgetModule extends Module {
         for(Purpose purpose: discretionaryPurposes) {
             tasks.add(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values()));
         }
-        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
-        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes("car"), dataSet.getPeakHour()));
+        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes(), dataSet.getPeakHour()));
+        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()));
         try {
             service.invokeAll(tasks);
         } catch (InterruptedException e) {

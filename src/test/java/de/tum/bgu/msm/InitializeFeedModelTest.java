@@ -1,16 +1,12 @@
 package de.tum.bgu.msm;
 
-import cern.colt.matrix.tdouble.DoubleFactory2D;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
-import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.io.input.InputFeed;
+import de.tum.bgu.msm.io.input.Input;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class InitializeFeedModelTest {
@@ -31,11 +27,7 @@ public class InitializeFeedModelTest {
         MitoPerson person2 = new MitoPerson(2, Occupation.UNEMPLOYED, -1, 1, Gender.FEMALE, true);
         household.addPerson(person2);
 
-        Map<String, TravelTimes> map = new LinkedHashMap<>();
-        map.put("car", new SkimTravelTimes(DoubleFactory2D.dense.identity(2)));
-        map.put("pt", new SkimTravelTimes(DoubleFactory2D.dense.identity(2)));
-
-        InputFeed feed = new InputFeed(zones, map, households);
+        Input.InputFeed feed = new Input.InputFeed(zones, (origin, destination, timeOfDay_s, mode) -> 1, households);
         model = MitoModel.createModelWithInitialFeed("./testInput/test.properties", Implementation.MUNICH, feed);
     }
 
@@ -44,7 +36,6 @@ public class InitializeFeedModelTest {
         Assert.assertEquals(1, model.getData().getZones().size());
         Assert.assertEquals(1, model.getData().getHouseholds().size());
         Assert.assertEquals(2, model.getData().getPersons().size());
-        Assert.assertNotNull(model.getData().getSurvey());
-        Assert.assertEquals(1., model.getData().getTravelTimes("car").getTravelTime(1, 1, 0), 0.);
+        Assert.assertEquals(1., model.getData().getTravelTimes().getTravelTime(1, 1, 0, "car"), 0.);
     }
 }

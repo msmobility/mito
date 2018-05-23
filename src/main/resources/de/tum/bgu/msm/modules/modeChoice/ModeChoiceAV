@@ -55,13 +55,13 @@ townOrRuralCommunityHBW = [0.0, 0.071, -0.39, -0.86, -0.88, -1.22, -0.89];
 generalizedCostHBW      = [-0.0088, -0.0088, 0.0, -0.0088, -0.0088, -0.0088, 0.0];
 tripLengthHBW           = [0.0, 0.0, -0.32, 0.0, 0.0, 0.0, -2.02];
 
-var calculateHBWProbabilities = function(hh, person, trip, travelTimeByMode,  travelDistanceAuto, travelDistanceNMT){
+var calculateHBWProbabilities = function(hh, person, trip, travelTimes,  travelDistanceAuto, travelDistanceNMT, peakHour){
 
-timeAutoD = travelTimeByMode.get("autoD");
-timeAutoP =  travelTimeByMode.get("autoP");
-timeBus =  travelTimeByMode.get("bus");
-timeTrain =  travelTimeByMode.get("train");
-timeTramMetro =  travelTimeByMode.get("tramMetro");
+    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
 income = hh.getIncome();
 age = person.getAge();
 gender = person.getGender();
@@ -199,13 +199,13 @@ distToRailStopHBE   = [0.0, 0.0, 0.0, -0.28, -0.26, -0.46, 0.0];
 generalizedCostHBE  = [-0.0025, -0.0025, 0.0, -0.0025, -0.0025, -0.0025, 0.0];
 tripLengthHBE       = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.71];
 
-var calculateHBEProbabilities = function(hh, person, trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT){
+var calculateHBEProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-timeAutoD = travelTimeByMode.get("autoD");
-timeAutoP =  travelTimeByMode.get("autoP");
-timeBus =  travelTimeByMode.get("bus");
-timeTrain =  travelTimeByMode.get("train");
-timeTramMetro =  travelTimeByMode.get("tramMetro");
+    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getGender();
 driversLicense = person.hasDriversLicense();
@@ -313,16 +313,16 @@ hhChildrenHBS           = [0.0, -0.051, 0.0, 0.0, 0.0, 0.0, -0.17];
 generalizedCostHBS_Sq   = [-0.0000068, -0.0000068, 0.0, -0.0000068, -0.0000068, -0.0000068, 0.0];
 tripLengthHBS           = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.46];
 
-var calculateHBSProbabilities = function(hh, person, trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT){
+var calculateHBSProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
 var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
 hhChildren = dataSet.getChildrenForHousehold(hh);
 
-timeAutoD = travelTimeByMode.get("autoD");
-timeAutoP =  travelTimeByMode.get("autoP");
-timeBus =  travelTimeByMode.get("bus");
-timeTrain =  travelTimeByMode.get("train");
-timeTramMetro =  travelTimeByMode.get("tramMetro");
+    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getGender();
 driversLicense = person.hasDriversLicense();
@@ -437,13 +437,13 @@ distToRailStopHBO   = [0.0, 0.0, 0.0, -0.61, -0.57, -0.58, -0.065];
 generalizedCostHBO  = [-0.0012, -0.0012, 0.0, -0.0012, -0.0012, -0.0012, 0.0];
 tripLengthHBO       = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.68];
 
-var calculateHBOProbabilities = function(hh, person, trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT){
+var calculateHBOProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-timeAutoD = travelTimeByMode.get("autoD");
-timeAutoP =  travelTimeByMode.get("autoP");
-timeBus =  travelTimeByMode.get("bus");
-timeTrain =  travelTimeByMode.get("train");
-timeTramMetro =  travelTimeByMode.get("tramMetro");
+    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getGender();
 driversLicense = person.hasDriversLicense();
@@ -558,13 +558,13 @@ distToRailStopNHBW  = [0.0, 0.0, 0.0, -0.24, 0.0, -0.16, -0.37];
 generalizedCostNHBW = [-0.0034, -0.0034, 0.0, -0.0034, -0.0034, -0.0034, 0.0];
 tripLengthNHBW      = [0.0, 0.0, -0.28, 0.0, 0.0, 0.0, -1.54];
 
-var calculateNHBWProbabilities = function(hh, person, trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT){
+var calculateNHBWProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-timeAutoD = travelTimeByMode.get("autoD");
-timeAutoP =  travelTimeByMode.get("autoP");
-timeBus =  travelTimeByMode.get("bus");
-timeTrain =  travelTimeByMode.get("train");
-timeTramMetro =  travelTimeByMode.get("tramMetro");
+    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
 income = hh.getIncome();
 age = person.getAge();
 driversLicense = person.hasDriversLicense();
@@ -672,13 +672,13 @@ ruralNHBO               = [0.0, 0.0, 0.0, -0.70, -0.91, -1.12, 0.0];
 generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0];
 tripLengthNHBO          = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57];
 
-var calculateNHBOProbabilities = function(hh, person, trip, travelTimeByMode, travelDistanceAuto, travelDistanceNMT){
+var calculateNHBOProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-timeAutoD = travelTimeByMode.get("autoD");
-timeAutoP =  travelTimeByMode.get("autoP");
-timeBus =  travelTimeByMode.get("bus");
-timeTrain =  travelTimeByMode.get("train");
-timeTramMetro =  travelTimeByMode.get("tramMetro");
+    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getGender();
 driversLicense = person.hasDriversLicense();

@@ -1,22 +1,49 @@
 package de.tum.bgu.msm.data.travelTimes;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import de.tum.bgu.msm.util.matrices.Matrices;
+import omx.OmxFile;
+import omx.OmxMatrix;
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SkimTravelTimes implements TravelTimes {
-    private final DoubleMatrix2D matrix;
 
-    public SkimTravelTimes(DoubleMatrix2D matrix) {
-        this.matrix = matrix;
-    }
+    private final static Logger LOGGER = Logger.getLogger(SkimTravelTimes.class);
 
+    private final Map<String, DoubleMatrix2D> matricesByMode = new HashMap<>();
+
+    /**
+     * retrieves the travel time between origin and destination for a specific mode and time.
+     * @param origin zone id of the origin
+     * @param destination zone id of the destination
+     * @param timeOfDay_s time of day in seconds
+     * @param mode mode for which the travel time applies
+     * @return the travel time in minutes
+     */
     @Override
-    public double getTravelTime(int origin, int destination, double timeOfDay_s) {
+    public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
         // Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
         // different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
-        return matrix.getQuick(origin, destination);
+        return matricesByMode.get(mode).getQuick(origin, destination);
     }
 
-    public DoubleMatrix2D getPeakTravelTimeMatrix() {
-        return matrix;
+    /**
+     * Reads a skim matrix from an omx file and stores it for the given mode and year. To allow conversion between units
+     * use the factor to multiply all values.
+     * @param mode the mode for which the travel times are read
+     * @param file the path to the omx file
+     * @param matrixName the name of the matrix inside the omx file
+     * @param factor a scalar factor which every entry is multiplied with
+     */
+    public final void readSkim(final String mode, final String file, final String matrixName, final double factor) {
+        LOGGER.info("Reading " + mode + " skim");
+        final OmxFile omx = new OmxFile(file);
+        omx.openReadOnly();
+        final OmxMatrix timeOmxSkimTransit = omx.getMatrix(matrixName);
+        final DoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, factor);
+        matricesByMode.put(mode, skim);
     }
 }
