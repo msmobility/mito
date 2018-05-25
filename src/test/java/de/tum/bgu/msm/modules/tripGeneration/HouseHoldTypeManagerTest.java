@@ -26,19 +26,19 @@ public class HouseHoldTypeManagerTest {
     @Test
     public final void test() {
         HouseholdTypeManager manager = new HouseholdTypeManager(Purpose.HBW);
-        manager.createHouseHoldTypeDefinitions();
         List<HouseholdType> types = manager.householdTypes;
         Assert.assertEquals(20, types.size());
         for(HouseholdType type: types) {
             Assert.assertEquals(0, type.getNumberOfRecords());
         }
 
-        MitoHousehold household1 = new MitoHousehold(1,  4, 1, null);
+        MitoHousehold household1 = new MitoHousehold(1,  4, 1, new MitoZone(1, 0, AreaType.URBAN));
         household1.addPerson(new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true));
         MitoHousehold household2 = new MitoHousehold(2,  4, 1, zone);
         household2.addPerson(new MitoPerson(2, Occupation.WORKER, -1, 30, Gender.MALE, true));
         Assert.assertNull(manager.determineHouseholdType(household1));
 
+        household2.setEconomicStatus(1);
         HouseholdType determinedType = manager.determineHouseholdType(household2);
         Assert.assertNotNull(determinedType);
         Assert.assertEquals(1, determinedType.getNumberOfRecords());

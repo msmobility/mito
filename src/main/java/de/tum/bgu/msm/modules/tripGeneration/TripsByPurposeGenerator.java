@@ -72,7 +72,8 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         }
 
         List<MitoTrip> trips = new ArrayList<>();
-        for (int i = 0; i < selectNumberOfTrips(tripFrequencies); i++) {
+        int numberOfTrips  = selectNumberOfTrips(tripFrequencies);
+        for (int i = 0; i < numberOfTrips; i++) {
             MitoTrip trip = createTrip(hh);
             if (trip != null) {
                 trips.add(trip);
