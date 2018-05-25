@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Assert;
@@ -18,7 +17,7 @@ public class ModeChoiceCalculatorTest {
 
     @Before
     public void setup() {
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV"));
         calculator = new ModeChoiceJSCalculator(reader);
     }

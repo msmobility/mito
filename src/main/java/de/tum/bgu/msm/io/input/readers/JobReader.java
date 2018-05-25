@@ -1,10 +1,10 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.jobTypes.maryland.MarylandJobType;
+import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import de.tum.bgu.msm.io.input.CSVReader;
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -64,18 +64,11 @@ public class JobReader extends CSVReader {
                 logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
                 return;
             }
-            if(Resources.INSTANCE.implementation == Implementation.MUNICH) {
-                try {
-                    zone.addEmployeeForType(MunichJobType.valueOf(type.toUpperCase()));
-                } catch (IllegalArgumentException e) {
-                    logger.error("Job Type " + type + " used in job microdata but is not defined in " + Resources.INSTANCE.implementation + " implementation.");
-                }
-            } else if (Resources.INSTANCE.implementation == Implementation.MARYLAND){
-                try {
-                    zone.addEmployeeForType(MarylandJobType.valueOf(type.toUpperCase()));
-                } catch (IllegalArgumentException e) {
-                    logger.error("Job Type " + type + " used in job microdata but is not defined in " + Resources.INSTANCE.implementation + " implementation.");
-                }
+
+            try {
+                zone.addEmployeeForType(MunichJobType.valueOf(type.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                logger.error("Job Type " + type + " used in job microdata but is not defined");
             }
             pp.setOccupationZone(zone);
         }

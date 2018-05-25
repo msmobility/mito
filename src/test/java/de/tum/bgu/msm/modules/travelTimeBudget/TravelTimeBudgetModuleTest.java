@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import com.google.common.collect.Lists;
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
@@ -19,7 +18,7 @@ public class TravelTimeBudgetModuleTest {
     @Before
     public void setup() {
 
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelTimes((origin, destination, time, mode) -> 20);
