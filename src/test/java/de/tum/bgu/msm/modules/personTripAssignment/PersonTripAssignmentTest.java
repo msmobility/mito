@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.personTripAssignment;
 
 import com.google.common.collect.Lists;
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -55,7 +54,7 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testAssignment() throws IOException {
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
 
         setupAndRun();
         for (MitoTrip trip : dataSet.getTrips().values()) {

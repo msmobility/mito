@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -22,7 +21,7 @@ public class ModeChoiceTest {
     @Before
     public void setupTest() {
         MitoUtil.initializeRandomNumber(new Random(42));
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);

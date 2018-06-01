@@ -1,10 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
-
-import java.util.Properties;
-import java.util.ResourceBundle;
 
 /**
  * Implements the Transport in Microsimulation Orchestrator (TIMO)
@@ -18,7 +14,7 @@ class MitoMuc {
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = MitoModel.standAloneModel(args[0], Implementation.MUNICH);
+        MitoModel model = MitoModel.standAloneModel(args[0]);
         model.runModel();
     }
 }

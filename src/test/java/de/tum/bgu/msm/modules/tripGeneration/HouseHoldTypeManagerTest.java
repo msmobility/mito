@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Assert;
@@ -18,7 +17,7 @@ public class HouseHoldTypeManagerTest {
 
     @Before
     public void setupTest() {
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
 
         zone = new MitoZone(1, 10, AreaType.RURAL);
     }

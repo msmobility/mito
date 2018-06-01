@@ -3,18 +3,14 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.data.survey.SurveyRecord;
-import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.io.input.readers.GenericCsvReader;
 import de.tum.bgu.msm.io.input.readers.GenericCsvReader.GenericCsvTable;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Nico on 20.07.2017.
@@ -74,7 +70,7 @@ public class HouseholdTypeManager {
                             tripFrequencyThisHousehold.add(dataTable.getInt(row, columnName));
                         }
                     }
-                    tripFrequency.put(ht, getIntegerArrayFromArrayList(tripFrequencyThisHousehold));
+                    tripFrequency.put(ht, tripFrequencyThisHousehold.toArray(new Integer[]{}));
                 }
             }
             if (!foundThisHhType) {
@@ -83,14 +79,6 @@ public class HouseholdTypeManager {
         }
         return tripFrequency;
     }
-
-
-    private Integer[] getIntegerArrayFromArrayList (ArrayList<Integer> list) {
-        Integer[] integerArray = new Integer[list.size()];
-        for (int i = 0; i < list.size(); i++) integerArray[i] = list.get(i);
-        return integerArray;
-    }
-
 
     public void createHouseHoldTypeDefinitions() {
         // todo: should this not read the token from the class Properties.java?
