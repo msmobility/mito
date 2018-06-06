@@ -30,7 +30,7 @@ if(purpose == "Total") {
 
     if(economicStatus == 4) {
         economicStatusParam = 0.0547;
-    } else if(economicStatusParam == 5) {
+    } else if(economicStatus == 5) {
         economicStatusParam = 0.1107;
     } else {
         economicStatusParam = 0;
@@ -147,11 +147,11 @@ if(purpose == "Total") {
 
     if(householdSize == 2) {
         householdSizeParam = 0.225;
-    } else if(householdSize == 3) {{
+    } else if(householdSize == 3) {
         householdSizeParam = 0.308;
-    } else if(householdSize == 4) {{
+    } else if(householdSize == 4) {
         householdSizeParam = 0.420;
-    } else if(householdSize >= 5) {{
+    } else if(householdSize >= 5) {
         householdSizeParam = 0.441;
     }
 
@@ -182,11 +182,11 @@ if(purpose == "Total") {
 
     if(householdSize == 2) {
         householdSizeParam = 0.225;
-    } else if(householdSize == 3) {{
+    } else if(householdSize == 3) {
         householdSizeParam = 0.308;
-    } else if(householdSize == 4) {{
+    } else if(householdSize == 4) {
         householdSizeParam = 0.420;
-    } else if(householdSize >= 5) {{
+    } else if(householdSize >= 5) {
         householdSizeParam = 0.441;
     }
 
