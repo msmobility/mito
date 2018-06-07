@@ -105,7 +105,7 @@
         <dependency>
             <groupId>net.sourceforge.parallelcolt</groupId>
             <artifactId>parallelcolt</artifactId>
-            <version>LATEST</version>
+            <version>0.10.1</version>
         </dependency>
         <dependency>
             <groupId>omx</groupId>

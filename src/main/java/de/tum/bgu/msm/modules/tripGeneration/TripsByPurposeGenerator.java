@@ -1,8 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.survey.SurveyRecord;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -31,7 +29,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
     private final HouseholdTypeManager householdTypeManager;
 
 
-    public TripsByPurposeGenerator(DataSet dataSet, Purpose purpose) {
+    TripsByPurposeGenerator(DataSet dataSet, Purpose purpose) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
@@ -43,15 +41,10 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
-        long counter = 0;
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-//            if (LongMath.isPowerOfTwo(counter)) {
-//                logger.info(counter + " households done for purpose " + purpose + ".");
-//            }
             generateTripsForHousehold(hh);
-            counter++;
         }
-        return new Pair(purpose, tripsByHH);
+        return new Pair<>(purpose, tripsByHH);
     }
 
 
@@ -81,53 +74,6 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
         }
         tripsByHH.put(hh, trips);
     }
-
-/*    private void collectTripFrequencyDistribution(Map<Integer, HouseholdType> householdTypeBySampleId) {
-        // Summarize frequency of number of trips for each household type by each trip purpose
-        //
-        // Storage Structure
-        //   HashMap<String, Integer> tripsByHhTypeAndPurpose: Token is hhType_TripPurpose
-        //   |
-        //   contains -> Integer[] tripFrequencyList: Frequency of 0, 1, 2, 3, ... trips
-        initializeFrequencyArrays(householdTypeBySampleId);
-        fillFrequencyArrays(householdTypeBySampleId);
-    }*/
-
-/*
-    private void fillFrequencyArrays(Map<Integer, HouseholdType> householdTypeBySampleId) {
-
-        for (SurveyRecord record : dataSet.getSurvey().getRecords().values()) {
-            HouseholdType type = householdTypeBySampleId.get(record.getId());
-            if (type == null) {
-                logger.info("Trips for travel survey record " + record.getId() + " and purpose " + purpose + " " +
-                        "ignored, as no household type is applicable.");
-                continue;
-            }
-            addTripFrequencyForHouseholdType(record.getTripsForPurpose(purpose), type);
-        }
-    }
-*/
-
-/*
-    private void addTripFrequencyForHouseholdType(int tripsOfThisHouseholdForGivenPurpose, HouseholdType type) {
-        String token = type.getId() + "_" + purpose;
-        Integer[] tripsOfThisHouseholdType = tripsByHhType.get(token);
-        tripsOfThisHouseholdType[tripsOfThisHouseholdForGivenPurpose]++;
-        tripsByHhType.put(token, tripsOfThisHouseholdType);
-    }
-*/
-
-
-/*
-    private void initializeFrequencyArrays(Map<Integer, HouseholdType> householdTypeBySampleId) {
-        for (HouseholdType type : householdTypeBySampleId.values()) {
-            String token = type.getId() + "_" + purpose;
-            // fill Storage structure from bottom       0                  10                  20                  30
-            Integer[] tripFrequencyList = new Integer[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  // space for up to 30 trips
-            tripsByHhType.put(token, tripFrequencyList);
-        }
-    }
-*/
 
     private int selectNumberOfTrips(Integer[] tripFrequencies) {
         double[] probabilities = new double[tripFrequencies.length];
