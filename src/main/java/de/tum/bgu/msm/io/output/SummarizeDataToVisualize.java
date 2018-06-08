@@ -22,13 +22,13 @@ public class SummarizeDataToVisualize {
     private static PrintWriter resultWriter;
     private static PrintWriter resultWriterFinal;
 
-    public static Boolean resultWriterReplicate = false;
+    private static Boolean resultWriterReplicate = false;
 
-    public static void resultFileSpatial(String action) {
+    private static void resultFileSpatial(String action) {
         resultFileSpatial(action,true);
     }
 
-    public static void resultFileSpatial(String action, Boolean writeFinal) {
+    private static void resultFileSpatial(String action, Boolean writeFinal) {
         // handle summary file
         switch (action) {
             case "open":
@@ -51,11 +51,11 @@ public class SummarizeDataToVisualize {
         }
     }
 
-    public static void resultFile(String action){
+    private static void resultFile(String action){
         resultFile(action, true);
     }
 
-    public static void resultFile(String action, Boolean writeFinal){
+    private static void resultFile(String action, Boolean writeFinal){
         switch (action){
             case "open":
                 String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput";
@@ -77,6 +77,10 @@ public class SummarizeDataToVisualize {
         }
     }
 
+    /**
+     * Summarizing results to be shown spatially as zone attributes
+     * @param dataSet
+     */
     public static void summarizeSpatially (DataSet dataSet) {
         // write out results by zone
         resultFileSpatial("open");
@@ -96,8 +100,6 @@ public class SummarizeDataToVisualize {
         Map<Integer, Map<Purpose, Integer>> avTimeByZoneAndPurpCount = new HashMap<>(dataSet.getZones().size());
         Map<Integer, Map<Purpose, Integer>> avTTBudgetByZoneAndPurpCount = new HashMap<>(dataSet.getZones().size());
 
-
-
         for(Integer zoneId: dataSet.getZones().keySet()) {
             Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.values().length);
             Map<Purpose, Double> initialDoubles = new HashMap<>(Purpose.values().length);
@@ -105,6 +107,7 @@ public class SummarizeDataToVisualize {
                 initialValues.put(purpose, 0);
                 initialDoubles.put(purpose, 0.);
             }
+
             tripProdByZoneAndPurp.put(zoneId, initialValues);
             avDistByZoneAndPurp.put(zoneId, initialDoubles);
             avTimeByZoneAndPurp.put(zoneId, initialDoubles);
@@ -168,173 +171,188 @@ public class SummarizeDataToVisualize {
         }
         resultFileSpatial("close");
     }
+    private static void summarizeTravelTimeDistribution (DataSet dataSet){
+        Map<Integer, Map<Purpose, Integer>> timeByPurpose = new HashMap<>();
+        for (MitoTrip trip: dataSet.getTrips().values()) {
+            Purpose purpose = trip.getTripPurpose();
+            Mode mode = trip.getTripMode();
+            if (trip.getTripOrigin() != null && trip.getTripDestination() != null) {
+                //travelTimes.add(dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour(), "car"));
+                double rawTime = dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour(), "car" );
+                int refinedTime = (int)Math.round(rawTime);
+                if (timeByPurpose.containsKey(refinedTime)){
+                    if (timeByPurpose.get(refinedTime).containsKey(purpose)) {
+                        int existingTripCount = timeByPurpose.get(refinedTime).get(purpose);
+                        timeByPurpose.get(refinedTime).replace(purpose, existingTripCount + 1);
+                    } else {
+                        timeByPurpose.get(refinedTime).put(purpose, 1);
+                    }
+                } else {
+                    //personsByTripsAndPurpose.put(tripsByPurpose, new HashMap(){{put(purpose, 1);}});
+                    Map<Purpose, Integer> tripMap = new HashMap<>();
+                    tripMap.put(purpose, 1);
+                    timeByPurpose.put(refinedTime, tripMap);
+                }
+            }
+        }
+        for (int i: timeByPurpose.keySet()) {
+            String txt = "Time_";
+            txt = txt.concat(String.valueOf(i));
+            for (Purpose purpose: Purpose.values()){
+                Integer trips =  timeByPurpose.get(i).get(purpose);
+                txt = txt.concat("," + trips);
+            }
+            resultFile(txt);
+        }
+    }
 
-//        Map<MitoZone, Long> result = dataSet.getTrips().values().stream()
-//                .filter(trip ->
-//                        trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null)
-//                .collect(Collectors.groupingBy(MitoTrip::getTripOrigin, Collectors.counting()));
+    private static void summarizeTravelDistanceDistribution(DataSet dataSet){
+        Map<Integer, Map<Purpose, Integer>> distanceByPurpose = new HashMap<>();
+        for (MitoTrip trip: dataSet.getTrips().values()) {
+            Purpose purpose = trip.getTripPurpose();
+            if (trip.getTripOrigin() != null && trip.getTripDestination() != null) {
+                double rawDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
+                int refinedDistance = (int)Math.round(rawDistance);
+                if (distanceByPurpose.containsKey(refinedDistance)){
+                    if (distanceByPurpose.get(refinedDistance).containsKey(purpose)) {
+                        int existingTripCount = distanceByPurpose.get(refinedDistance).get(purpose);
+                        distanceByPurpose.get(refinedDistance).replace(purpose, existingTripCount + 1);
+                    } else {
+                        distanceByPurpose.get(refinedDistance).put(purpose, 1);
+                    }
+                } else {
+                    //personsByTripsAndPurpose.put(tripsByPurpose, new HashMap(){{put(purpose, 1);}});
+                    Map<Purpose, Integer> tripMap = new HashMap<>();
+                    tripMap.put(purpose, 1);
+                    distanceByPurpose.put(refinedDistance, tripMap);
+                }
+            }
+        }
+        for (int i: distanceByPurpose.keySet()) {
+            String txt = "Distance_";
+            txt = txt.concat(String.valueOf(i));
+            for (Purpose purpose: Purpose.values()){
+                Integer trips =  distanceByPurpose.get(i).get(purpose);
+                txt = txt.concat("," + trips);
+            }
+            resultFile(txt);
+        }
+    }
 
-//        dataSet.getTrips().values().stream()
-//                .filter(trip ->
-//                        trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null)
-//                .collect(Collectors.groupingBy(MitoTrip::getTripOrigin, Collectors.averagingDouble(new ToDoubleFunction<MitoTrip>() {
-//                    @Override
-//                    public double applyAsDouble(MitoTrip value) {
-//                        return dataSet.getTravelTimes().get("car").getTravelTime(value.getTripOrigin().getId(), value.getTripDestination().getId(), 8*60*60);
-//                    }
-//                })));
-
-
+    /**
+     * Summarizing results for non-spatial analysis
+     * @param dataSet
+     */
     public static void summarizeNonSpatially (DataSet dataSet) {
-
         resultFile("open");
-
         String hd = "Attribute";
         for (Purpose purpose: Purpose.values()){
             hd = hd.concat("," + purpose);
         }
         resultFile(hd);
+        summarizeModeChoice(dataSet);
+        summarizePersonsByNumberOfTrips(dataSet);
+        summarizeHouseholdsByNumberOfTrips(dataSet);
+        summarizeTravelDistanceDistribution(dataSet);
+        summarizeTravelTimeDistribution(dataSet);
+        resultFile("close");
+    }
 
+    /**
+     * Summarizing mode choice results
+     * @param dataSet
+     */
+    private static void summarizeModeChoice (DataSet dataSet){
         for (Mode mode: Mode.values()){
             String txt = "ModeShare_";
             txt = txt.concat(String.valueOf(mode));
             for (Purpose purpose: Purpose.values()){
                 Double share = dataSet.getModeShareForPurpose(purpose, mode);
-
                 txt = txt.concat("," + share);
             }
             resultFile(txt);
         }
+    }
 
-        Map<Integer, Map<Purpose, Integer>> myhouseholdsByTripsAndPurp = new HashMap<>();
-        Map<Integer, Map<Purpose, Integer>> householdsByTripsAndPurp = new HashMap<>();
-        Map<Integer, Map<Purpose, Integer>> personsByTripsAndPurp = new HashMap<>();
-
-        for(int i = 0; i < 30; i++) {
-            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.values().length);
-            for(Purpose purpose: Purpose.values()) {
-                initialValues.put(purpose, 0);
-            }
-            myhouseholdsByTripsAndPurp.put(i, initialValues);
-            householdsByTripsAndPurp.put(i, initialValues);
-            personsByTripsAndPurp.put(i, initialValues);
-        }
-
-        for (MitoPerson person : dataSet.getPersons().values()) {
+    /**
+     * Summarizing persons by the number of trips made
+     * @param dataSet
+     */
+    private static void summarizePersonsByNumberOfTrips (DataSet dataSet) {
+        Map<Integer, Map<Purpose, Integer>> personsByTripsAndPurpose = new HashMap<>();
+        for (MitoPerson person: dataSet.getPersons().values()){
             Map<Purpose, Integer> trips = new HashMap<>(Purpose.values().length);
-            for (Purpose purpose : Purpose.values()){
+            for (Purpose purpose: Purpose.values()){
                 trips.put(purpose, 0);
             }
             Set<MitoTrip> personTrips = person.getTrips();
-            for (MitoTrip trip : personTrips) {
+            for (MitoTrip trip: personTrips){
                 Purpose purpose = trip.getTripPurpose();
-                int existingCount = trips.get(purpose);
-                trips.put(purpose, existingCount + 1);
+                int existingTripCount = trips.get(purpose);
+                trips.put(purpose, existingTripCount + 1);
             }
             for (Purpose purpose: Purpose.values()){
-                int tripsByPurp = trips.get(purpose);
-                int existingCount = personsByTripsAndPurp.get(tripsByPurp).get(purpose);
-                personsByTripsAndPurp.get(tripsByPurp).replace(purpose, (existingCount + 1));
-            }
-        }
-
-        for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            Map<Purpose, Integer> trips = new HashMap<>(Purpose.values().length);
-            for (Purpose purpose : Purpose.values()){
-                trips.put(purpose, 0);
-            }
-            //Map<Integer, MitoPerson> householdPersons = household.getPersons();
-            for (MitoPerson person: household.getPersons().values()) {
-                Set<MitoTrip> personTrips = person.getTrips();
-
-                for (MitoTrip trip : personTrips) {
-                    Purpose purpose = trip.getTripPurpose();
-                    int existingCount = trips.get(purpose);
-                    trips.put(purpose, existingCount + 1);
+                int tripsByPurpose = trips.get(purpose);
+                if (personsByTripsAndPurpose.containsKey(tripsByPurpose)){
+                    if (personsByTripsAndPurpose.get(tripsByPurpose).containsKey(purpose)) {
+                        int existingPersonCount = personsByTripsAndPurpose.get(tripsByPurpose).get(purpose);
+                        personsByTripsAndPurpose.get(tripsByPurpose).replace(purpose, existingPersonCount + 1);
+                    } else {
+                        personsByTripsAndPurpose.get(tripsByPurpose).put(purpose, 1);
+                    }
+                } else {
+                    //personsByTripsAndPurpose.put(tripsByPurpose, new HashMap(){{put(purpose, 1);}});
+                    Map<Purpose, Integer> personMap = new HashMap<>();
+                    personMap.put(purpose, 1);
+                    personsByTripsAndPurpose.put(tripsByPurpose, personMap);
                 }
             }
-
-            for (Purpose purpose: Purpose.values()){
-                int tripsByPurp = trips.get(purpose);
-                int existingCount = myhouseholdsByTripsAndPurp.get(tripsByPurp).get(purpose);
-                myhouseholdsByTripsAndPurp.get(tripsByPurp).replace(purpose, (existingCount + 1));
-            }
         }
-
-
-        for (MitoHousehold household: dataSet.getHouseholds().values()){
-            for (Purpose purpose: Purpose.values()){
-                int tripsByPurp = household.getTripsForPurpose(purpose).size();
-                int existingCount = householdsByTripsAndPurp.get(tripsByPurp).get(purpose);
-                householdsByTripsAndPurp.get(tripsByPurp).replace(purpose, (existingCount + 1) );
-            }
-        }
-
-        for (int i = 0; i < 30; i++) {
-            String txt = "HHbyTrips_";
-            txt = txt.concat(String.valueOf(i));
-            for (Purpose purpose: Purpose.values()){
-                Integer trips = householdsByTripsAndPurp.get(i).get(purpose);
-
-                txt = txt.concat("," + trips);
-            }
-            resultFile(txt);
-        }
-
-/*
-        for (int i = 0; i < 30; i++) {
+        for (int i: personsByTripsAndPurpose.keySet()) {
             String txt = "PPbyTrips_";
             txt = txt.concat(String.valueOf(i));
             for (Purpose purpose: Purpose.values()){
-                Integer trips = personsByTripsAndPurp.get(i).get(purpose);
-
+                Integer trips =  personsByTripsAndPurpose.get(i).get(purpose);
                 txt = txt.concat("," + trips);
             }
             resultFile(txt);
         }
-
-        for (int i = 0; i < 30; i++) {
-            String txt = "myHHbyTrips_";
-            txt = txt.concat(String.valueOf(i));
-            for (Purpose purpose: Purpose.values()){
-                Integer trips = myhouseholdsByTripsAndPurp.get(i).get(purpose);
-
-                txt = txt.concat("," + trips);
-            }
-            resultFile(txt);
-        }
-*/
-
-        resultFile("close");
-
-/*
-        Map<Integer, Map<Purpose, Integer>> tripByPersonAndPurp = new HashMap<>(dataSet.getPersons().size());
-
-        for(Integer personId: dataSet.getPersons().keySet()) {
-            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.values().length);
-            for(Purpose purpose: Purpose.values()) {
-                initialValues.put(purpose, 0);
-            }
-            tripByPersonAndPurp.put(personId, initialValues);
-        }
-
-        for (MitoTrip trip: dataSet.getTrips().values()) {
-            Purpose purpose = trip.getTripPurpose();
-            int person = tripByPersonAndPurp.get(trip.getPerson().getId()).get(purpose);
-            tripByPersonAndPurp.get(trip.getPerson().getId()).replace(purpose, (person + 1));
-        }
-
-        int maxCount = tripByPersonAndPurp.get
-        for (int zoneId: dataSet.getZones().keySet()){
-            String txt = String.valueOf(zoneId);
-            for (Purpose purpose: Purpose.values()){
-                int tripsProduced = tripProdByZoneAndPurp.get(zoneId).get(purpose);
-                txt = txt.concat("," + tripsProduced);
-            }
-            resultFileSpatial(txt);
-        }*/
     }
 
+    /**
+     * Summarizing households by the number of trips made
+     * @param dataSet
+     */
+    private static void summarizeHouseholdsByNumberOfTrips (DataSet dataSet) {
+        Map<Integer, Map<Purpose, Integer>> householdsByTripsAndPurpose = new HashMap<>();
+        for (MitoHousehold household : dataSet.getHouseholds().values()) {
+            for (Purpose purpose : Purpose.values()) {
+                int tripsByPurpose = household.getTripsForPurpose(purpose).size();
+                if (householdsByTripsAndPurpose.containsKey(tripsByPurpose)){
+                    if (householdsByTripsAndPurpose.get(tripsByPurpose).containsKey(purpose)){
+                        int existingHouseholdCount = householdsByTripsAndPurpose.get(tripsByPurpose).get(purpose);
+                        householdsByTripsAndPurpose.get(tripsByPurpose).replace(purpose, existingHouseholdCount + 1);
+                    } else {
+                        householdsByTripsAndPurpose.get(tripsByPurpose).put(purpose, 1);
+                    }
+                } else {
+                    //householdsByTripsAndPurpose.put(tripsByPurpose, new HashMap(){{put(purpose, 1);}});
+                    Map<Purpose, Integer> householdMap = new HashMap<>();
+                    householdMap.put(purpose, 1);
+                    householdsByTripsAndPurpose.put(tripsByPurpose, householdMap);
+                }
+            }
+        }
+        for (int i: householdsByTripsAndPurpose.keySet()) {
+            String txt = "HHbyTrips_";
+            txt = txt.concat(String.valueOf(i));
+            for (Purpose purpose: Purpose.values()){
+                Integer trips =  householdsByTripsAndPurpose.get(i).get(purpose);
+                txt = txt.concat("," + trips);
+            }
+            resultFile(txt);
+        }
+    }
 }
 
 /*
@@ -354,3 +372,17 @@ public class SummarizeDataToVisualize {
         }
 */
 
+//        Map<MitoZone, Long> result = dataSet.getTrips().values().stream()
+//                .filter(trip ->
+//                        trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null)
+//                .collect(Collectors.groupingBy(MitoTrip::getTripOrigin, Collectors.counting()));
+
+//        dataSet.getTrips().values().stream()
+//                .filter(trip ->
+//                        trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null)
+//                .collect(Collectors.groupingBy(MitoTrip::getTripOrigin, Collectors.averagingDouble(new ToDoubleFunction<MitoTrip>() {
+//                    @Override
+//                    public double applyAsDouble(MitoTrip value) {
+//                        return dataSet.getTravelTimes().get("car").getTravelTime(value.getTripOrigin().getId(), value.getTripDestination().getId(), 8*60*60);
+//                    }
+//                })));
