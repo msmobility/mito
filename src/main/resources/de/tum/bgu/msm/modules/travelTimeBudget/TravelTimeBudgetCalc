@@ -36,17 +36,18 @@ if(purpose == "Total") {
         economicStatusParam = 0;
     }
 
-    if(areaType == 2) {
+    if(areaType == 20) {
         area = -0.0878;
-    } else if(areaType == 3) {
+    } else if(areaType == 30) {
         area = -0.0832;
-    } else if(areaType == 4) {
+    } else if(areaType == 40) {
         area = -0.1061;
     } else {
         area = 0;
     }
 
 } else if(purpose == "HBO") {
+
     intercept = 4.0951;
     youngAdultsParam = 0.0885;
     workersParam = 0.0203;
@@ -79,11 +80,11 @@ if(purpose == "Total") {
         economicStatusParam = 0;
     }
 
-    if(areaType == 2) {
+    if(areaType == 20) {
         area = -0.1474;
-    } else if(areaType == 3) {
+    } else if(areaType == 30) {
         area = -0.1594;
-    } else if(areaType == 4) {
+    } else if(areaType == 40) {
         area = -0.1133;
     } else {
         area = 0;
@@ -120,12 +121,10 @@ if(purpose == "Total") {
         economicStatusParam = 0;
     }
 
-    if(areaType == 2) {
-        area = -0.1474;
-    } else if(areaType == 3) {
-        area = -0.1594;
-    } else if(areaType == 4) {
-        area = -0.1133;
+   if(areaType == 30) {
+        area = -0.136;
+    } else if(areaType == 40) {
+        area = 0.046;
     } else {
         area = 0;
     }
@@ -144,6 +143,7 @@ if(purpose == "Total") {
     nhboParam = 0;
     femalesParam = -0.09;
     retireesParam = 0;
+    area = 0;
 
     if(householdSize == 2) {
         householdSizeParam = 0.225;
@@ -153,6 +153,8 @@ if(purpose == "Total") {
         householdSizeParam = 0.420;
     } else if(householdSize >= 5) {
         householdSizeParam = 0.441;
+    } else {
+        householdSizeParam = 0;
     }
 
     if(economicStatus == 4) {
@@ -162,8 +164,6 @@ if(purpose == "Total") {
     } else {
         economicStatusParam = 0;
     }
-
-  throw new Error("Area types not implemented yet");
 
 } else if(purpose == "NHBO") {
     intercept = 3.45457;
@@ -181,13 +181,15 @@ if(purpose == "Total") {
     retireesParam = 0;
 
     if(householdSize == 2) {
-        householdSizeParam = 0.225;
+        householdSizeParam = 0.27228;
     } else if(householdSize == 3) {
-        householdSizeParam = 0.308;
+        householdSizeParam = 0.35532;
     } else if(householdSize == 4) {
-        householdSizeParam = 0.420;
+        householdSizeParam = 0.52997;
     } else if(householdSize >= 5) {
-        householdSizeParam = 0.441;
+        householdSizeParam = 0.70424;
+    } else {
+        householdSizeParam = 0;
     }
 
     if(economicStatus == 4) {
@@ -198,7 +200,13 @@ if(purpose == "Total") {
         economicStatusParam = 0;
     }
 
-    throw new Error("Area types not implemented yet");
+    if(areaType == 20) {
+        area = -0.05425;
+    } else if(areaType == 40) {
+        area = -0.13383;
+    } else {
+        area = 0;
+    }
 
 } else {
       throw "Undefined purpose given!"
@@ -220,7 +228,7 @@ nhboImpact = NHBO * nhboParam;
 utility = intercept + householdSizeParam + area + femalesImpact + economicStatusParam +
     youngAdultsImpact + retireesImpact + workersImpact + carsImpact +
     hbwImpact + hbeImpact + hbsImpact + hboImpact + nhbwImpact + nhboImpact;
+
 result = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility);
 return result;
 };
-

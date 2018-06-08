@@ -17,7 +17,7 @@ public class InitializeFeedModelTest {
     public void setupTest() {
 
         Map<Integer, MitoZone> zones = new HashMap<>();
-        zones.put(1, new MitoZone(1, 10, AreaType.RURAL));
+        zones.put(1, new MitoZone(1, 10, AreaTypes.SGType.RURAL));
 
         Map<Integer, MitoHousehold> households = new HashMap<>();
         MitoHousehold household = new MitoHousehold(1, 1, 1, zones.get(1));
