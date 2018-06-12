@@ -1,9 +1,12 @@
 package de.tum.bgu.msm.io.input;
 
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoZone;
+import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
+import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
@@ -48,6 +51,13 @@ public class Input {
         }
         dataSet.setTravelTimes(feed.travelTimes);
         setHouseholdsFromFeed(feed.households);
+        readAdditionalData();
+        readTravelDistances();
+    }
+
+
+    public void readTravelDistances() {
+        new SkimsReader(dataSet).readSkimDistances();
     }
 
     private void setHouseholdsFromFeed(Map<Integer, MitoHousehold> households) {

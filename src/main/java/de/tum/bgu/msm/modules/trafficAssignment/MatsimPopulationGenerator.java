@@ -23,22 +23,21 @@ import java.util.Map;
 public class MatsimPopulationGenerator {
 
     private static final Logger logger = Logger.getLogger(MatsimPopulationGenerator.class);
-    private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
+    //private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
 
-    public MatsimPopulationGenerator(){
 
-        loadZoneShapeFile();
-    }
-
-    public void loadZoneShapeFile(){
-
+    public static Map<Integer,SimpleFeature> loadZoneShapeFile(){
+        Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
         for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
             zoneFeatureMap.put(zoneId,feature);
         }
+
+        return zoneFeatureMap;
+
     }
 
-    public Population generateMatsimPopulation(DataSet dataSet, Config config){
+    public static Population generateMatsimPopulation(DataSet dataSet, Config config,  Map<Integer,SimpleFeature> zoneFeatureMap){
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
         dataSet.getTripSubsample().values().forEach(trip ->{
@@ -81,7 +80,7 @@ public class MatsimPopulationGenerator {
     }
 
 
-    public String getOriginActivity(Purpose purpose){
+    public static String getOriginActivity(Purpose purpose){
         if (purpose.equals(Purpose.NHBW)){
             return "work";
         } else if (purpose.equals(Purpose.NHBO)){
@@ -91,7 +90,7 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    public String getDestinationActivity(Purpose purpose){
+    public static String getDestinationActivity(Purpose purpose){
         if (purpose.equals(Purpose.HBW)){
             return "work";
         } else if (purpose.equals(Purpose.HBE)){
