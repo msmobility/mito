@@ -53,8 +53,7 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
-        SummarizeDataToVisualize.summarizeSpatially(dataSet);
-        SummarizeDataToVisualize.summarizeNonSpatially(dataSet);
+        SummarizeDataToVisualize.writeFinalSummary(dataSet);
 
 //        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
 //        ModeChoice modeChoice = new ModeChoice(dataSet);
