@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.input.Input;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class InitializeFeedModelTest {
         model = MitoModel.createModelWithInitialFeed("./testInput/test.properties", feed);
     }
 
-    @Test
+    @Ignore
     public void testInput() {
         Assert.assertEquals(1, model.getData().getZones().size());
         Assert.assertEquals(1, model.getData().getHouseholds().size());
