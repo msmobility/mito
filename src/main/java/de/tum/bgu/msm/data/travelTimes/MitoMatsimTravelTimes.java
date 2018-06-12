@@ -29,18 +29,19 @@ public class MitoMatsimTravelTimes implements TravelTimes {
     private TripRouter tripRouter;
     private final Map<Integer, List<Node>> zoneCalculationNodesMap = new HashMap<>();
     private final static int NUMBER_OF_CALC_POINTS = 1;
+    private final static double DEFAULT_PEAK_H_S = 28800.;
     private final Map<Id<Node>, Map<Double, Map<Id<Node>, LeastCostPathTree.NodeData>>> treesForNodesByTimes = new HashMap<>();
 
     public void updateTravelTimesFromMatsim(TravelTime travelTime, TravelDisutility travelDisutility,
                                             //LeastCostPathTree leastCoastPathTree,
                                             Map<Integer, SimpleFeature> zoneFeatureMap,
                                             Network network, TripRouter tripRouter) {
-        this.leastCoastPathTree = leastCoastPathTree;
+        this.leastCoastPathTree = new LeastCostPathTree(travelTime, travelDisutility);
         this.network = network;
         this.tripRouter = tripRouter;
         this.treesForNodesByTimes.clear();
         updateZoneConnections(zoneFeatureMap);
-        intializeTreesAtPeakHour(8 * 3600, travelTime, travelDisutility);
+        intializeTreesAtPeakHour(DEFAULT_PEAK_H_S, travelTime, travelDisutility);
         updateTransitSkims();
     }
 
@@ -91,7 +92,7 @@ public class MitoMatsimTravelTimes implements TravelTimes {
         if (TransportMode.car.equals(mode)) {
             //updated travel times by car from MATSim
             //todo implement time dependent travel times
-            return getTravelTimeUsingMatsim(origin, destination, 8 * 3600, mode);
+            return getTravelTimeUsingMatsim(origin, destination, DEFAULT_PEAK_H_S, mode);
         } else if (TransportMode.pt.equals(mode)) {
             //pt times for silo
             return getAllTransitModesTravelTime(origin, destination, timeOfDay_s);
