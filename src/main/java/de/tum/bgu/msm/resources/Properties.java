@@ -58,4 +58,7 @@ public class Properties {
     public static final String ZONE_SHAPEFILE_CRS = "zone.shapefile.crs";
     public static final String ZONE_SHAPEFILE_ID_FIELD  = "zone.shapefile.id.field";
     public static final String DEFAULT_BUDGET = "default.budget.";
+
+    public static final String SPATIAL_RESULT_FILE_NAME = "spatial.result.file.name";
+    public static final String RESULT_FILE_NAME = "result.file.name";
 }
