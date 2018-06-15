@@ -29,8 +29,8 @@ public class MitoMatsimTravelTimes implements TravelTimes {
     private TripRouter tripRouter;
     private final Map<Integer, List<Node>> zoneCalculationNodesMap = new HashMap<>();
     private final static int NUMBER_OF_CALC_POINTS = 1;
-    private final static double DEFAULT_PEAK_H_S = 28800.;
-    private final Map<Id<Node>, Map<Double, Map<Id<Node>, LeastCostPathTree.NodeData>>> treesForNodesByTimes = new HashMap<>();
+    private final static int DEFAULT_PEAK_H_S = 28800;
+    private final Map<Id<Node>, Map<Integer, Map<Id<Node>, LeastCostPathTree.NodeData>>> treesForNodesByTimes = new HashMap<>();
 
     public void updateTravelTimesFromMatsim(TravelTime travelTime, TravelDisutility travelDisutility,
                                             //LeastCostPathTree leastCoastPathTree,
@@ -70,13 +70,13 @@ public class MitoMatsimTravelTimes implements TravelTimes {
     }
 
 
-    public void intializeTreesAtPeakHour(double peakHour_s, TravelTime travelTime, TravelDisutility travelDisutility) {
+    public void intializeTreesAtPeakHour(int peakHour_s, TravelTime travelTime, TravelDisutility travelDisutility) {
 
         zoneCalculationNodesMap.keySet().parallelStream().forEach(origin -> {
             LeastCostPathTree leastCoastPathTree = new LeastCostPathTree(travelTime, travelDisutility);
             Map<Id<Node>, LeastCostPathTree.NodeData> tree;
             for (Node originNode : zoneCalculationNodesMap.get(origin)) {
-                Map<Double, Map<Id<Node>, LeastCostPathTree.NodeData>> treesForOneNodeByTimes = new HashMap<>();
+                Map<Integer, Map<Id<Node>, LeastCostPathTree.NodeData>> treesForOneNodeByTimes = new HashMap<>();
                 leastCoastPathTree.calculate(network, originNode, peakHour_s);
                 tree = leastCoastPathTree.getTree();
                 treesForOneNodeByTimes.put(peakHour_s, tree);
@@ -102,13 +102,13 @@ public class MitoMatsimTravelTimes implements TravelTimes {
         }
     }
 
-    private double getTravelTimeUsingMatsim(int origin, int destination, double timeOfDay_s, String mode) {
+    private double getTravelTimeUsingMatsim(int origin, int destination, int timeOfDay_s, String mode) {
         double sumTravelTime_min = 0.;
 
         for (Node originNode : zoneCalculationNodesMap.get(origin)) { // Several points in a given origin zone
             Map<Id<Node>, LeastCostPathTree.NodeData> tree;
             if (treesForNodesByTimes.containsKey(originNode.getId())) {
-                Map<Double, Map<Id<Node>, LeastCostPathTree.NodeData>> treesForOneNodeByTimes = treesForNodesByTimes.get(originNode.getId());
+                Map<Integer, Map<Id<Node>, LeastCostPathTree.NodeData>> treesForOneNodeByTimes = treesForNodesByTimes.get(originNode.getId());
                 if (treesForOneNodeByTimes.containsKey(timeOfDay_s)) {
                     tree = treesForOneNodeByTimes.get(timeOfDay_s);
                 } else {
@@ -117,7 +117,7 @@ public class MitoMatsimTravelTimes implements TravelTimes {
                     treesForOneNodeByTimes.put(timeOfDay_s, tree);
                 }
             } else {
-                Map<Double, Map<Id<Node>, LeastCostPathTree.NodeData>> treesForOneNodeByTimes = new HashMap<>();
+                Map<Integer, Map<Id<Node>, LeastCostPathTree.NodeData>> treesForOneNodeByTimes = new HashMap<>();
                 leastCoastPathTree.calculate(network, originNode, timeOfDay_s);
                 tree = leastCoastPathTree.getTree();
                 treesForOneNodeByTimes.put(timeOfDay_s, tree);

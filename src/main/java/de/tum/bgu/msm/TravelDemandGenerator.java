@@ -3,6 +3,7 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
@@ -52,9 +53,9 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
-//        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-//        ModeChoice modeChoice = new ModeChoice(dataSet);
-//        modeChoice.run();
+        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        ModeChoice modeChoice = new ModeChoice(dataSet);
+        modeChoice.run();
 
         boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
         if (runTimeOfDayChoice) {
