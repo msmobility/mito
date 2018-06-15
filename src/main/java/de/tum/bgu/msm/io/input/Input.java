@@ -51,13 +51,17 @@ public class Input {
         }
         dataSet.setTravelTimes(feed.travelTimes);
         setHouseholdsFromFeed(feed.households);
+
+        dataSet.setYear(feed.year);
+
         readAdditionalData();
-        readTravelDistances();
+        readTravelDistancesAndTransitTravelTimes();
     }
 
 
-    public void readTravelDistances() {
+    public void readTravelDistancesAndTransitTravelTimes() {
         new SkimsReader(dataSet).readSkimDistances();
+        new SkimsReader(dataSet).readOnlyTransitTravelTimes();
     }
 
     private void setHouseholdsFromFeed(Map<Integer, MitoHousehold> households) {
@@ -80,11 +84,13 @@ public class Input {
         private final Map<Integer, MitoZone> zones;
         private final TravelTimes travelTimes;
         private final Map<Integer, MitoHousehold> households;
+        private final int year;
 
-        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, Map<Integer, MitoHousehold> households) {
+        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, Map<Integer, MitoHousehold> households, int year) {
             this.zones = zones;
             this.travelTimes = travelTimes;
             this.households = households;
+            this.year = year;
         }
     }
 }

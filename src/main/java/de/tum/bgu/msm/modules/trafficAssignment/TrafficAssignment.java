@@ -47,7 +47,7 @@ public class TrafficAssignment extends Module {
 
         String runId = "mito_assignment";
         matsimConfig.controler().setRunId(runId);
-        matsimConfig.controler().setOutputDirectory(outputDirectory + "output/");
+        matsimConfig.controler().setOutputDirectory(outputDirectory + "/" + dataSet.getYear());
         matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
 
         matsimConfig.qsim().setNumberOfThreads(16);

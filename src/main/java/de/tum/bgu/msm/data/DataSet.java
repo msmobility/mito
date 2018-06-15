@@ -29,6 +29,7 @@ public class DataSet {
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
     private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
+    private int year;
 
     public TravelSurvey<? extends SurveyRecord> getSurvey() {
         return this.survey;
@@ -171,5 +172,13 @@ public class DataSet {
 
     public Double getModeShareForPurpose(Purpose purpose, Mode mode){
         return modeSharesByPurpose.get(purpose, mode);
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year){
+        this.year = year;
     }
 }
