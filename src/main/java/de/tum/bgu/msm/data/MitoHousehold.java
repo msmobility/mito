@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
 
@@ -20,6 +21,8 @@ public class MitoHousehold implements Id {
     private int economicStatus;
     private final int autos;
     private final MitoZone homeZone;
+    //Qin
+    private Coord homeCoord;
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
@@ -100,5 +103,13 @@ public class MitoHousehold implements Id {
 
     public void setEconomicStatus(int economicStatus) {
         this.economicStatus = economicStatus;
+    }
+
+    public Coord getHomeCoord() {
+        return homeCoord;
+    }
+
+    public void setHomeCoord(Coord homeCoord) {
+        this.homeCoord = homeCoord;
     }
 }
