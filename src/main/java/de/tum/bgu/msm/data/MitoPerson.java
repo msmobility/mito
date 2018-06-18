@@ -23,7 +23,6 @@ public class MitoPerson implements Id{
     private MitoZone occupationZone;
     private final int age;
     private final boolean driversLicense;
-    //Qin
     private Coord occupationCoord; //jobLocation or schoolLocation
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 

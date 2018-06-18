@@ -21,7 +21,6 @@ public class MitoHousehold implements Id {
     private int economicStatus;
     private final int autos;
     private final MitoZone homeZone;
-    //Qin
     private Coord homeCoord;
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
