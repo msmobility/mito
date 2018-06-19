@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.resources;
 
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.util.MitoUtil;
 
 import java.io.FileInputStream;
@@ -15,19 +14,17 @@ public class Resources {
     public static Resources INSTANCE;
 
     private final Properties properties;
-    public final Implementation implementation;
 
-    private Resources(Properties properties, Implementation implementation) {
+    private Resources(Properties properties) {
         this.properties = properties;
-        this.implementation = implementation;
     }
 
-    public static void initializeResources(String fileName, Implementation implementation) {
+    public static void initializeResources(String fileName) {
         try (FileInputStream in = new FileInputStream(fileName)){
             Properties properties = new Properties();
             properties.load(in);
             MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
-            INSTANCE = new Resources(properties, implementation);
+            INSTANCE = new Resources(properties);
             in.close();
         } catch (IOException e) {
             e.printStackTrace();

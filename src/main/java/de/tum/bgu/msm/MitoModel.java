@@ -36,29 +36,39 @@ public final class MitoModel {
     private final Input manager;
     private final DataSet dataSet;
 
-    private MitoModel(String propertiesFile, Implementation implementation) {
+    private MitoModel(String propertiesFile) {
         this.dataSet = new DataSet();
         this.manager = new Input(dataSet);
-        Resources.initializeResources(propertiesFile, implementation);
+        Resources.initializeResources(propertiesFile);
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel standAloneModel(String propertiesFile, Implementation implementation) {
+    public static MitoModel standAloneModel(String propertiesFile) {
         logger.info(" Creating standalone version of MITO ");
-        MitoModel model = new MitoModel(propertiesFile, implementation);
+        MitoModel model = new MitoModel(propertiesFile);
         model.manager.readAsStandAlone();
         model.manager.readAdditionalData();
         return model;
     }
 
-    public static MitoModel createModelWithInitialFeed(String propertiesFile, Implementation implementation, Input.InputFeed feed) {
-        MitoModel model = new MitoModel(propertiesFile, implementation);
+
+    public static MitoModel initializeModelFromSilo(String propertiesFile) {
+        logger.info(" Initializing MITO from SILO");
+        MitoModel model = new MitoModel(propertiesFile);
+
+
+        return model;
+    }
+
+    public static MitoModel createModelWithInitialFeed(String propertiesFile, Input.InputFeed feed) {
+        MitoModel model = new MitoModel(propertiesFile);
         model.manager.readFromFeed(feed);
         model.manager.readAdditionalData();
         return model;
     }
 
     public void feedData(Input.InputFeed feed) {
+        logger.info(" SILO data is being received in MITO");
         manager.readFromFeed(feed);
     }
 

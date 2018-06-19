@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Assert;
@@ -18,7 +17,7 @@ public class ModeChoiceCalculatorTest {
 
     @Before
     public void setup() {
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV"));
         calculator = new ModeChoiceJSCalculator(reader);
     }
@@ -27,7 +26,7 @@ public class ModeChoiceCalculatorTest {
     public void test() {
         MitoZone zone = new MitoZone(1, 100, null);
         zone.setDistanceToNearestRailStop(0.5f);
-        //origin.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_mediumSizedCity);
+        //origin.setAreaTypeHBWModeChoice(AreaType.HBW_mediumSizedCity);
         MitoHousehold hh = new MitoHousehold(1, 20000, 1, null);
         MitoPerson pp = new MitoPerson(1, Occupation.STUDENT, 1, 20, Gender.FEMALE, true);
         hh.addPerson(pp);

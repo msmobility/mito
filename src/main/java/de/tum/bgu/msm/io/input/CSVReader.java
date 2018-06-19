@@ -40,7 +40,7 @@ public abstract class CSVReader extends AbstractInputReader{
                 e.printStackTrace();
             }
         }
-        logger.info("Read " + numberOfRecords + " records.");
+        logger.info(this.getClass().getSimpleName() + ": Read " + numberOfRecords + " records.");
     }
 
     private void initializeReader(String fileName, String delimiter) {

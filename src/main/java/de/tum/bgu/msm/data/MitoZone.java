@@ -13,7 +13,6 @@ import java.util.EnumMap;
 public class MitoZone implements Id{
 
     private final int zoneId;
-    private final AreaType areaType;
     private final float size;
     private float reductionAtBorderDamper = 0;
     private int numberOfHouseholds = 0;
@@ -22,24 +21,28 @@ public class MitoZone implements Id{
     private final EnumMap<Purpose, Double> tripAttraction = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
 
-    private AreaTypeForModeChoice areaTypeHBWModeChoice;
-    private AreaTypeForModeChoice areaTypeNHBOmodeChoice;
+    private final AreaTypes.SGType areaTypeSG;
+    private AreaTypes.RType areaTypeR;
 
     private float distanceToNearestRailStop;
 
-    public MitoZone(int id, float size, AreaType areaType) {
+    public MitoZone(int id, float size, AreaTypes.SGType areaType) {
         this.zoneId = id;
         this.size = size;
-        this.areaType = areaType;
+        this.areaTypeSG = areaType;
     }
 
-    public AreaTypeForModeChoice getAreaTypeHBWModeChoice() {return areaTypeHBWModeChoice;}
+    public AreaTypes.SGType getAreaTypeSG() {
+        return areaTypeSG;
+    }
 
-    public void setAreaTypeHBWModeChoice(AreaTypeForModeChoice areaTypeHBWModeChoice){this.areaTypeHBWModeChoice = areaTypeHBWModeChoice;}
+    public AreaTypes.RType getAreaTypeR() {
+        return areaTypeR;
+    }
 
-    public AreaTypeForModeChoice getAreaTypeNHBOModeChoice() {return areaTypeNHBOmodeChoice;}
-
-    public void setAreaTypeNHBOModeChoice(AreaTypeForModeChoice areaTypeNHBOModeChoice){this.areaTypeNHBOmodeChoice = areaTypeNHBOModeChoice;}
+    public void setAreaTypeR(AreaTypes.RType areaTypeR) {
+        this.areaTypeR = areaTypeR;
+    }
 
     public float getDistanceToNearestRailStop() {return distanceToNearestRailStop;}
 
@@ -64,10 +67,6 @@ public class MitoZone implements Id{
 
     public void setReductionAtBorderDamper(float damper) {
         this.reductionAtBorderDamper = damper;
-    }
-
-    public AreaType getAreaType() {
-        return areaType;
     }
 
     public int getNumberOfHouseholds() {

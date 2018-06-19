@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import com.google.common.collect.Lists;
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
@@ -19,7 +18,7 @@ public class TravelTimeBudgetModuleTest {
     @Before
     public void setup() {
 
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelTimes((origin, destination, time, mode) -> 20);
@@ -36,16 +35,16 @@ public class TravelTimeBudgetModuleTest {
         MitoHousehold emptyHousehold = dataSet.getHouseholds().get(1);
         assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(HBW), 0.001);
         assertEquals(0, emptyHousehold.getTravelTimeBudgetForPurpose(HBE), 0.001);
-        assertEquals(18.809, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(10.397, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(9.704, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(11.209, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(22.811, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(5.700, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(6.749, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(12.572, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
             totalTravelTimeBudget += emptyHousehold.getTravelTimeBudgetForPurpose(purpose);
         }
-        assertEquals(50.121, totalTravelTimeBudget, 0.001);
+        assertEquals(47.8349, totalTravelTimeBudget, 0.001);
     }
 
     @Test
@@ -53,16 +52,16 @@ public class TravelTimeBudgetModuleTest {
         MitoHousehold poorRetirees = dataSet.getHouseholds().get(2);
         assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(HBW), 0.001);
         assertEquals(0, poorRetirees.getTravelTimeBudgetForPurpose(HBE), 0.001);
-        assertEquals(29.036, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(14.150, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(12.588, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(14.642, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(34.907, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(9.460, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(8.811, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(18.827, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
             totalTravelTimeBudget += poorRetirees.getTravelTimeBudgetForPurpose(purpose);
         }
-        assertEquals(70.418, totalTravelTimeBudget, 0.001);
+        assertEquals(72.006, totalTravelTimeBudget, 0.001);
     }
 
     @Test
@@ -70,16 +69,16 @@ public class TravelTimeBudgetModuleTest {
         MitoHousehold poorBigFamily = dataSet.getHouseholds().get(3);
         assertEquals(60.0, poorBigFamily.getTravelTimeBudgetForPurpose(HBW), 0.001);
         assertEquals(40, poorBigFamily.getTravelTimeBudgetForPurpose(HBE), 0.001);
-        assertEquals(18.288, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(8.571, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(9.989, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(11.185, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(10.134, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(4.482, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(3.743, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(7.259, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
             totalTravelTimeBudget += poorBigFamily.getTravelTimeBudgetForPurpose(purpose);
         }
-        assertEquals(148.0352, totalTravelTimeBudget, 0.001);
+        assertEquals(125.619, totalTravelTimeBudget, 0.001);
     }
 
     @Test
@@ -87,16 +86,16 @@ public class TravelTimeBudgetModuleTest {
         MitoHousehold richBigFamily = dataSet.getHouseholds().get(4);
         assertEquals(60.0, richBigFamily.getTravelTimeBudgetForPurpose(HBW), 0.001);
         assertEquals(40, richBigFamily.getTravelTimeBudgetForPurpose(HBE), 0.001);
-        assertEquals(18.748, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
-        assertEquals(7.604, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
-        assertEquals(12.263, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
-        assertEquals(9.419, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
+        assertEquals(10.134, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBO), 0.001);
+        assertEquals(4.482, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.HBS), 0.001);
+        assertEquals(3.743, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBW), 0.001);
+        assertEquals(7.259, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
         for(Purpose purpose: Purpose.values()) {
             totalTravelTimeBudget += richBigFamily.getTravelTimeBudgetForPurpose(purpose);
         }
-        assertEquals(148.035, totalTravelTimeBudget, 0.001);
+        assertEquals(125.619, totalTravelTimeBudget, 0.001);
     }
 
     private void addHouseholds() {
@@ -114,7 +113,7 @@ public class TravelTimeBudgetModuleTest {
     }
 
     private void addZone() {
-        dummyZone = new MitoZone(1, 10, AreaType.URBAN);
+        dummyZone = new MitoZone(1, 10, AreaTypes.SGType.CORE_CITY);
         dataSet.addZone(dummyZone);
     }
 

@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.Implementation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -22,7 +21,7 @@ public class ModeChoiceTest {
     @Before
     public void setupTest() {
         MitoUtil.initializeRandomNumber(new Random(42));
-        Resources.initializeResources("./testInput/test.properties", Implementation.MUNICH);
+        Resources.initializeResources("./testInput/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);
@@ -42,12 +41,11 @@ public class ModeChoiceTest {
         trip1 = new MitoTrip(1, Purpose.HBW);
         MitoPerson person1 = new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true);
         trip1.setPerson(person1);
-        MitoZone zone1 = new MitoZone(1, 100, AreaType.URBAN);
+        MitoZone zone1 = new MitoZone(1, 100, AreaTypes.SGType.CORE_CITY);
         zone1.setDistanceToNearestRailStop(0.5f);
-        zone1.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_coreCity);
+
         trip1.setTripOrigin(zone1);
-        MitoZone zone2 = new MitoZone(2, 100, AreaType.URBAN);
-        zone2.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_coreCity);
+        MitoZone zone2 = new MitoZone(2, 100, AreaTypes.SGType.CORE_CITY);
         trip1.setTripDestination(zone2);
 
         household1 = new MitoHousehold(1, 24000, 1, zone1);
@@ -62,12 +60,10 @@ public class ModeChoiceTest {
         trip2 = new MitoTrip(2, Purpose.HBO);
         MitoPerson person2 = new MitoPerson(2, Occupation.WORKER, -1, 30, Gender.MALE, true);
         trip2.setPerson(person2);
-        MitoZone zone3 = new MitoZone(3, 100, AreaType.URBAN);
+        MitoZone zone3 = new MitoZone(3, 100, AreaTypes.SGType.CORE_CITY);
         zone3.setDistanceToNearestRailStop(0.5f);
-        zone3.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_coreCity);
         trip2.setTripOrigin(zone3);
-        MitoZone zone4 = new MitoZone(4, 100, AreaType.URBAN);
-        zone4.setAreaTypeHBWModeChoice(AreaTypeForModeChoice.HBW_coreCity);
+        MitoZone zone4 = new MitoZone(4, 100, AreaTypes.SGType.CORE_CITY);
         trip2.setTripDestination(zone4);
 
         household2 = new MitoHousehold(2, 24000, 1, zone3);
