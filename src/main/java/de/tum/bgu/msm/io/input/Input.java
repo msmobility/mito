@@ -58,7 +58,6 @@ public class Input {
         readTravelDistancesAndTransitTravelTimes();
     }
 
-
     public void readTravelDistancesAndTransitTravelTimes() {
         new SkimsReader(dataSet).readSkimDistances();
         new SkimsReader(dataSet).readOnlyTransitTravelTimes();
