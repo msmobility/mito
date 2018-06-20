@@ -56,9 +56,8 @@ public class TrafficAssignment extends Module {
         matsimConfig.controler().setWriteEventsInterval(matsimConfig.controler().getLastIteration());
 
         matsimConfig.qsim().setStuckTime(10);
-        //todo added factor to run small populations
-        matsimConfig.qsim().setFlowCapFactor(0.01 * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
-        matsimConfig.qsim().setStorageCapFactor(0.01 * Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)),0.75));
+        matsimConfig.qsim().setFlowCapFactor(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+        matsimConfig.qsim().setStorageCapFactor(Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)),0.75));
     }
 
     private void createPopulation() {
