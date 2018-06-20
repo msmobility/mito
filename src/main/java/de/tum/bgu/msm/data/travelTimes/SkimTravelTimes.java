@@ -27,8 +27,18 @@ public class SkimTravelTimes implements TravelTimes {
     public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
         // Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
         // different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
-        return matricesByMode.get(mode).getQuick(origin, destination);
-    }
+        if (mode.equals("pt")) {
+            if (matricesByMode.containsKey("pt")) {
+                return matricesByMode.get(mode).getQuick(origin, destination);
+            } else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
+                return getPtTime(origin, destination, timeOfDay_s);
+            } else {
+                throw new RuntimeException("define transit travel modes!!");
+            }
+        } else {
+            return matricesByMode.get(mode).getQuick(origin, destination);
+        }
+        }
 
     /**
      * Reads a skim matrix from an omx file and stores it for the given mode and year. To allow conversion between units
@@ -46,4 +56,27 @@ public class SkimTravelTimes implements TravelTimes {
         final DoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, factor);
         matricesByMode.put(mode, skim);
     }
+
+    /**
+     * Updates a skim matrix from an external source
+     * @param mode the mode for which the travel times are read
+     * @param skim the skim matrix with travel times in minutes
+     */
+    public void updateSkimMatrix(DoubleMatrix2D skim, String mode){
+        matricesByMode.put(mode, skim);
+    }
+
+    private double getPtTime(int origin, int destination, double timeOfDay_s) {
+        double travelTime = Double.MAX_VALUE;
+        if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
+            travelTime = getTravelTime(origin, destination, timeOfDay_s, "bus");
+        } else if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime){
+            travelTime = getTravelTime(origin, destination, timeOfDay_s, "tramMetro");
+        } else if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
+            travelTime = getTravelTime(origin, destination, timeOfDay_s, "train");
+        }
+        return travelTime;
+    }
+
+
 }
