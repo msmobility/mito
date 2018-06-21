@@ -50,11 +50,12 @@ public class CarSkimUpdater {
     }
 
     public void run() {
-        updateZoneConnections();
+        calculateMatrixFromMatsim();
+        updateMatrix();
 
     }
 
-    private void updateZoneConnections() {
+    private void calculateMatrixFromMatsim() {
         nodesByZone.clear();
         zoneFeatureMap.keySet().stream().parallel().forEach(zoneId -> {
             SimpleFeature originFeature = zoneFeatureMap.get(zoneId);
@@ -98,9 +99,6 @@ public class CarSkimUpdater {
 
 
     private void updateMatrix() {
-        nodesByZone.keySet().stream().parallel().forEach(origin -> {
-
-        });
         SkimTravelTimes skimTravelTimes = (SkimTravelTimes) dataSet.getTravelTimes();
         skimTravelTimes.updateSkimMatrix(carTravelTimeMatrix, TransportMode.car);
 

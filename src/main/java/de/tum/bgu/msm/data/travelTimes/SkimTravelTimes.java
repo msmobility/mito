@@ -63,7 +63,9 @@ public class SkimTravelTimes implements TravelTimes {
      * @param skim the skim matrix with travel times in minutes
      */
     public void updateSkimMatrix(DoubleMatrix2D skim, String mode){
+
         matricesByMode.put(mode, skim);
+        LOGGER.warn("The skim matrix for mode " + mode + "has been updated");
     }
 
     private double getPtTime(int origin, int destination, double timeOfDay_s) {
