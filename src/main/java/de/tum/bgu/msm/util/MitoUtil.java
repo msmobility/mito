@@ -1,8 +1,11 @@
 package de.tum.bgu.msm.util;
 
+import com.vividsolutions.jts.geom.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
+import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -295,6 +298,4 @@ public final class MitoUtil {
     public static Random getRandomObject() {
         return rand;
     }
-
-
 }

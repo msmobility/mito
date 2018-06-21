@@ -26,7 +26,6 @@ public class TrafficAssignment extends Module {
     private Config matsimConfig;
     private MutableScenario matsimScenario;
     private String outputDirectory = "output/trafficAssignment/";
-    private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
 
     public TrafficAssignment(DataSet dataSet) {
         super(dataSet);
@@ -65,8 +64,7 @@ public class TrafficAssignment extends Module {
     }
 
     private void createPopulation() {
-        this.zoneFeatureMap = MatsimPopulationGenerator.loadZoneShapeFile();
-        Population population = MatsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig, zoneFeatureMap);
+        Population population = MatsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig);
         matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(matsimConfig);
         matsimScenario.setPopulation(population);
     }
@@ -81,7 +79,7 @@ public class TrafficAssignment extends Module {
 
         LeastCostPathTree leastCoastPathTree = new LeastCostPathTree(travelTime, travelDisutility);
         MitoMatsimTravelTimes mitoMatsimTravelTimes = new MitoMatsimTravelTimes();
-        mitoMatsimTravelTimes.updateTravelTimesFromMatsim(travelTime, travelDisutility, zoneFeatureMap, matsimScenario.getNetwork(), controler.getTripRouterProvider().get() );
+        mitoMatsimTravelTimes.updateTravelTimesFromMatsim(travelTime, travelDisutility, dataSet.getZones(), matsimScenario.getNetwork(), controler.getTripRouterProvider().get() );
 
 
         dataSet.setTravelTimes(mitoMatsimTravelTimes);

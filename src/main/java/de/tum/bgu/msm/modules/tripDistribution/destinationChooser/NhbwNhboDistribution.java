@@ -72,8 +72,12 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                 if(hasBudgetForPurpose(household)) {
                     updateBudgets(household);
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        trip.setTripOrigin(findOrigin(household, trip));
-                        trip.setTripDestination(findDestination(trip));
+                        MitoZone origin = findOrigin(household, trip);
+                        trip.setTripOrigin(origin);
+                        trip.setTripOriginCoord(origin.getRandomCoord());
+                        MitoZone destination = findDestination(trip);
+                        trip.setTripDestination(destination);
+                        trip.setTripDestinationCoord(destination.getRandomCoord());
                         postProcessTrip(trip);
                         TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
                     }

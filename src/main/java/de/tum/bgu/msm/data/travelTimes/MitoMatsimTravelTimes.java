@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data.travelTimes;
 
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.modules.trafficAssignment.MatsimPopulationGenerator;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -34,13 +35,14 @@ public class MitoMatsimTravelTimes implements TravelTimes {
 
     public void updateTravelTimesFromMatsim(TravelTime travelTime, TravelDisutility travelDisutility,
                                             //LeastCostPathTree leastCoastPathTree,
-                                            Map<Integer, SimpleFeature> zoneFeatureMap,
+                                            //Map<Integer, SimpleFeature> zoneFeatureMap,
+                                            Map<Integer, MitoZone> zones,
                                             Network network, TripRouter tripRouter) {
         this.leastCoastPathTree = new LeastCostPathTree(travelTime, travelDisutility);
         this.network = network;
         this.tripRouter = tripRouter;
         this.treesForNodesByTimes.clear();
-        updateZoneConnections(zoneFeatureMap);
+        updateZoneConnections(zones);
         intializeTreesAtPeakHour(DEFAULT_PEAK_H_S, travelTime, travelDisutility);
         updateTransitSkims();
     }
@@ -51,19 +53,18 @@ public class MitoMatsimTravelTimes implements TravelTimes {
         delegate.readSkim("train", Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM), "mat1", 1.);
     }
 
-    private void updateZoneConnections(Map<Integer, SimpleFeature> zoneFeatureMap) {
+    private void updateZoneConnections(Map<Integer, MitoZone> zones) {
         zoneCalculationNodesMap.clear();
-        for (int zoneId : zoneFeatureMap.keySet()) {
-            SimpleFeature originFeature = zoneFeatureMap.get(zoneId);
+        for (MitoZone mitoZone : zones.values()) {
 
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
-                Coord originCoord = MatsimPopulationGenerator.getRandomCoordinateInZone(originFeature);
+                Coord originCoord = mitoZone.getRandomCoord();
                 Node originNode = NetworkUtils.getNearestLink(network, originCoord).getToNode();
 
-                if (!zoneCalculationNodesMap.containsKey(zoneId)) {
-                    zoneCalculationNodesMap.put(zoneId, new LinkedList());
+                if (!zoneCalculationNodesMap.containsKey(mitoZone.getId())) {
+                    zoneCalculationNodesMap.put(mitoZone.getId(), new LinkedList());
                 }
-                zoneCalculationNodesMap.get(zoneId).add(originNode);
+                zoneCalculationNodesMap.get(mitoZone.getId()).add(originNode);
             }
         }
         LOGGER.trace("There are " + zoneCalculationNodesMap.keySet().size() + " origin zones.");

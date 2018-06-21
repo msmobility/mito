@@ -53,7 +53,8 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             if (hasTripsForPurpose(household)) {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(household.getHomeZone());
-                    trip.setTripDestination(findDestination(household, trip));
+                    trip.setTripOriginCoord(household.getHomeCoord());
+                    findDestination(household, trip);
                     TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
                 }
             }
@@ -62,15 +63,17 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
         return null;
     }
 
-    private MitoZone findDestination(MitoHousehold household, MitoTrip trip) {
+    private void findDestination(MitoHousehold household, MitoTrip trip) {
         if (isFixedByOccupation(trip)) {
-            return trip.getPerson().getOccupationZone();
+            trip.setTripDestination(trip.getPerson().getOccupationZone());
+            trip.setTripDestinationCoord(trip.getPerson().getOccupationCoord());
+        } else {
+            TripDistribution.RANDOM_OCCUPATION_DESTINATION_TRIPS.incrementAndGet();
+            DoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
+            final MitoZone destination = zonesCopy.get(MitoUtil.select(probabilities.toArray(), random, probabilities.zSum()));
+            trip.setTripDestination(destination);
+            trip.setTripDestinationCoord(destination.getRandomCoord());
         }
-        TripDistribution.RANDOM_OCCUPATION_DESTINATION_TRIPS.incrementAndGet();
-
-        DoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
-        final int destination = MitoUtil.select(probabilities.toArray(), random, probabilities.zSum());
-        return zonesCopy.get(destination);
     }
 
     private boolean hasTripsForPurpose(MitoHousehold household) {
@@ -85,5 +88,4 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
         }
         return false;
     }
-
 }

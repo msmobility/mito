@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.population.Person;
 
 /**
@@ -16,6 +17,9 @@ public class MitoTrip implements Id{
 
     private MitoZone tripOrigin;
     private MitoZone tripDestination;
+
+    private Coord tripOriginCoord;
+    private Coord tripDestinationCoord;
 
     private MitoPerson person;
 
@@ -105,6 +109,22 @@ public class MitoTrip implements Id{
         } else {
             return true;
         }
+    }
+
+    public Coord getTripOriginCoord() {
+        return tripOriginCoord;
+    }
+
+    public void setTripOriginCoord(Coord tripOriginCoord) {
+        this.tripOriginCoord = tripOriginCoord;
+    }
+
+    public Coord getTripDestinationCoord() {
+        return tripDestinationCoord;
+    }
+
+    public void setTripDestinationCoord(Coord tripDestinationCoord) {
+        this.tripDestinationCoord = tripDestinationCoord;
     }
 
     @Override

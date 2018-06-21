@@ -19,7 +19,7 @@ public class MitoPerson implements Id{
     private final int id;
     private final Gender gender;
     private final Occupation occupation;
-    private int workplace;
+    private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
     private MitoZone occupationZone;
     private final int age;
     private final boolean driversLicense;

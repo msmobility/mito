@@ -68,7 +68,10 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                     adjustDestinationProbabilities(household.getHomeZone());
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         trip.setTripOrigin(household.getHomeZone());
-                        trip.setTripDestination(findDestination());
+                        trip.setTripOriginCoord(household.getHomeCoord());
+                        MitoZone zone = findDestination();
+                        trip.setTripDestination(zone);
+                        trip.setTripDestinationCoord(zone.getRandomCoord());
                         postProcessTrip(trip);
                         TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
                     }

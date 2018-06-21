@@ -1,8 +1,12 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
@@ -12,7 +16,13 @@ import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.gis.ShapeFileReader;
+import org.opengis.feature.simple.SimpleFeature;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -52,9 +62,9 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
-//        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-//        ModeChoice modeChoice = new ModeChoice(dataSet);
-//        modeChoice.run();
+        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        ModeChoice modeChoice = new ModeChoice(dataSet);
+        modeChoice.run();
 
         boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
         if (runTimeOfDayChoice) {
@@ -62,6 +72,8 @@ public class TravelDemandGenerator {
             TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
             timeOfDayChoice.run();
         }
+
+
 
         boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
         if (runTimeOfDayChoice && runScaling) {
@@ -84,4 +96,7 @@ public class TravelDemandGenerator {
             SummarizeData.writeCharts(dataSet);
         }
     }
+
+
+
 }
