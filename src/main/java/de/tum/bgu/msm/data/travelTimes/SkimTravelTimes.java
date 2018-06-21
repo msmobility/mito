@@ -70,9 +70,11 @@ public class SkimTravelTimes implements TravelTimes {
         double travelTime = Double.MAX_VALUE;
         if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
             travelTime = getTravelTime(origin, destination, timeOfDay_s, "bus");
-        } else if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime){
+        }
+        if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime){
             travelTime = getTravelTime(origin, destination, timeOfDay_s, "tramMetro");
-        } else if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
+        }
+        if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
             travelTime = getTravelTime(origin, destination, timeOfDay_s, "train");
         }
         return travelTime;

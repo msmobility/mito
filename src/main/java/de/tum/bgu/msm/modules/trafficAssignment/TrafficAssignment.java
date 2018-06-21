@@ -71,7 +71,6 @@ public class TrafficAssignment extends Module {
         final Controler controler = new Controler(matsimScenario);
         controler.run();
 
-        //set a MitoMatsim travel time as current travel time
         TravelTime travelTime = controler.getLinkTravelTimes();
         TravelDisutility travelDisutility = controler.getTravelDisutilityFactory().createTravelDisutility(travelTime);
 

@@ -43,62 +43,67 @@ public class CarSkimUpdater {
         this.travelTime = travelTime;
         this.travelDisutility = travelDisutility;
         //creates a matrix of (n+1 zones) rows and columns
-        int maxZone = dataSet.getZones().keySet().stream().max(Integer::compareTo).get()+1;
+        int maxZone = dataSet.getZones().keySet().stream().max(Integer::compareTo).get() + 1;
         this.carTravelTimeMatrix = new DenseDoubleMatrix2D(maxZone, maxZone);
         this.dataSet = dataSet;
 
     }
 
-    public void run(){
+    public void run() {
         updateZoneConnections();
-        updateMatrix();
+
     }
 
     private void updateZoneConnections() {
         nodesByZone.clear();
         zoneFeatureMap.keySet().stream().parallel().forEach(zoneId -> {
             SimpleFeature originFeature = zoneFeatureMap.get(zoneId);
-
+            nodesByZone.put(zoneId, new LinkedList());
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
                 Coord originCoord = MatsimPopulationGenerator.getRandomCoordinateInZone(originFeature);
                 Node originNode = NetworkUtils.getNearestLink(network, originCoord).getToNode();
-                nodesByZone.put(zoneId, new LinkedList());
                 nodesByZone.get(zoneId).add(originNode);
+            }
+        });
+        LOGGER.info("Assigned nodes to  " + nodesByZone.keySet().size());
 
-                ArrayList<Map<Id<Node>, LeastCostPathTree.NodeData>> treesByZone = new ArrayList<>();
+        zoneFeatureMap.keySet().stream().parallel().forEach(zoneId -> {
+            //ArrayList<Map<Id<Node>, LeastCostPathTree.NodeData>> treesAtThisZone = new ArrayList<>();
+            for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
+                Node originNode = nodesByZone.get(zoneId).get(i);
                 LeastCostPathTree leastCoastPathTree = new LeastCostPathTree(travelTime, travelDisutility);
                 Map<Id<Node>, LeastCostPathTree.NodeData> tree;
                 leastCoastPathTree.calculate(network, originNode, DEFAULT_PEAK_H_S);
                 tree = leastCoastPathTree.getTree();
-                treesByZone.add(tree);
-                this.treesByZone.put(zoneId, treesByZone);
-            }
-        });
+                //treesAtThisZone.add(tree);
+                //this.treesByZone.put(zoneId, treesAtThisZone);
 
-        LOGGER.info("There are " + nodesByZone.keySet().size() + " origin zones.");
-    }
-
-
-    private void updateMatrix() {
-        AtomicInteger count = new AtomicInteger(0);
-        nodesByZone.keySet().stream().parallel().forEach(origin -> {
-            for (int destination : nodesByZone.keySet()) {
-                double sumTravelTime_min = 0.;
-                if (origin <= destination) {
-                    for (Map<Id<Node>, LeastCostPathTree.NodeData> tree: treesByZone.get(origin)) { // loop different origin nodes
+                for (int destination : nodesByZone.keySet()) {
+                    double sumTravelTime_min = 0.;
+                    if (zoneId <= destination) {
                         for (Node destinationNode : nodesByZone.get(destination)) {// several points in a given destination zone
                             double arrivalTime_s = tree.get(destinationNode.getId()).getTime();
                             sumTravelTime_min += ((arrivalTime_s - DEFAULT_PEAK_H_S) / 60.);
                         }
+
+                    carTravelTimeMatrix.setQuick(zoneId, destination, sumTravelTime_min / NUMBER_OF_CALC_POINTS / NUMBER_OF_CALC_POINTS);
+                    carTravelTimeMatrix.setQuick(destination, zoneId, sumTravelTime_min / NUMBER_OF_CALC_POINTS / NUMBER_OF_CALC_POINTS);
                     }
-                    carTravelTimeMatrix.setQuick(origin, destination, sumTravelTime_min / NUMBER_OF_CALC_POINTS / NUMBER_OF_CALC_POINTS);
-                    carTravelTimeMatrix.setQuick(destination, origin, sumTravelTime_min / NUMBER_OF_CALC_POINTS / NUMBER_OF_CALC_POINTS);
                 }
             }
         });
+        LOGGER.info("Calculated trees for " + nodesByZone.keySet().size());
+        LOGGER.info("Completed car matrix update");
+    }
+
+
+    private void updateMatrix() {
+        nodesByZone.keySet().stream().parallel().forEach(origin -> {
+
+        });
         SkimTravelTimes skimTravelTimes = (SkimTravelTimes) dataSet.getTravelTimes();
         skimTravelTimes.updateSkimMatrix(carTravelTimeMatrix, TransportMode.car);
-        LOGGER.info("Completed car matrix update");
+
     }
 
 
