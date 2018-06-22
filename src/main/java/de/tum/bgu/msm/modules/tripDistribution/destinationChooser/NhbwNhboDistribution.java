@@ -18,11 +18,14 @@ import java.util.*;
 
 import static de.tum.bgu.msm.data.Purpose.*;
 
+/**
+ * @author Nico
+ */
 public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<Void> {
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
-    private final Normal distribution = new Normal(1, 0.15, DoubleRandomEngine.makeDefault());
+    private final Normal distribution = new Normal(0, 0.2, DoubleRandomEngine.makeDefault());
 
     private final Purpose purpose;
     private final List<Purpose> priorPurposes;
@@ -34,10 +37,10 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private double idealBudgetSum = 0;
     private double actualBudgetSum = 0;
-    private double adjustedBudget;
     private double hhBudgetPerTrip;
 
     private final Map<Integer, MitoZone> zonesCopy;
+    private double adjustedBudget;
 
     private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, Occupation relatedOccupation,
                                  EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
@@ -66,19 +69,32 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
-                logger.info(counter + " households done for Purpose " + purpose);
+                logger.info(counter + " households done for Purpose " + purpose
+                        + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
                 if(hasBudgetForPurpose(household)) {
                     updateBudgets(household);
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        trip.setTripOrigin(findOrigin(household, trip));
-                        trip.setTripDestination(findDestination(trip));
+                        MitoZone origin = findOrigin(household, trip);
+                        if(origin == null) {
+                            logger.debug("No origin found for trip" + trip);
+                            TripDistribution.failedTripsCounter.incrementAndGet();
+                            continue;
+                        }
+                        trip.setTripOrigin(origin);
+                        MitoZone destination = findDestination(trip);
+                        trip.setTripDestination(destination);
+                        if(destination == null) {
+                            logger.debug("No destination found for trip" + trip);
+                            TripDistribution.failedTripsCounter.incrementAndGet();
+                            continue;
+                        }
                         postProcessTrip(trip);
-                        TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+                        TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
                 } else {
-                    TripDistribution.FAILED_TRIPS_COUNTER.incrementAndGet();
+                    TripDistribution.failedTripsCounter.incrementAndGet();
                 }
             }
             counter++;
@@ -144,16 +160,13 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private void adjustDestinationProbabilities(MitoZone origin){
         for (int i = 0; i < destinationProbabilities.size(); i++) {
             double travelTime = (travelTimes.getTravelTime(origin.getId(), i, dataSet.getPeakHour(), "car"));
-            final double ratio = travelTime / adjustedBudget;
-            final double density = distribution.pdf(ratio);
-            final double newProb = Math.max(destinationProbabilities.getQuick(i) * density, Double.MIN_VALUE);
-
-            destinationProbabilities.setQuick(i, newProb);
+            final double density = distribution.pdf((adjustedBudget - travelTime) / adjustedBudget);
+            destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * density);
         }
     }
 
     private MitoZone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
-        TripDistribution.COMPLETELY_RANDOM_NHB_TRIPS.incrementAndGet();
+        TripDistribution.completelyRandomNhbTrips.incrementAndGet();
         final DoubleMatrix1D originProbabilities = baseProbabilities.get(priorPurpose).viewRow(household.getHomeZone().getId());
         final int destination = MitoUtil.select(originProbabilities.toArray(), random);
         return zonesCopy.get(destination);

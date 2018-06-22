@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import javafx.util.Pair;
@@ -16,18 +17,18 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static de.tum.bgu.msm.data.Purpose.HBW;
+import static de.tum.bgu.msm.data.Purpose.*;
 
 /**
  * @author Nico
  */
 public final class TripDistribution extends Module {
 
-    public final static AtomicInteger DISTRIBUTED_TRIPS_COUNTER = new AtomicInteger(0);
-    public final static AtomicInteger FAILED_TRIPS_COUNTER = new AtomicInteger(0);
+    public final static AtomicInteger distributedTripsCounter = new AtomicInteger(0);
+    public final static AtomicInteger failedTripsCounter = new AtomicInteger(0);
 
-    public final static AtomicInteger RANDOM_OCCUPATION_DESTINATION_TRIPS = new AtomicInteger(0);
-    public final static AtomicInteger COMPLETELY_RANDOM_NHB_TRIPS = new AtomicInteger(0);
+    public final static AtomicInteger randomOccupationDestinationTrips = new AtomicInteger(0);
+    public final static AtomicInteger completelyRandomNhbTrips = new AtomicInteger(0);
 
     private final EnumMap<Purpose, DoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
 
@@ -61,26 +62,26 @@ public final class TripDistribution extends Module {
     private void distributeTrips() {
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Void>> homeBasedTasks = new ArrayList<>();
-//        homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(HBS), dataSet));
-//        homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(HBO), dataSet));
+        homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(HBS), dataSet));
+        homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(HBO), dataSet));
         homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(HBW), dataSet));
-//        homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(HBE), dataSet));
+        homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(HBE), dataSet));
         executor.submitTasksAndWaitForCompletion(homeBasedTasks);
 
 
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
-//        nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
+        nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
         executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);
 
-        logger.info("Distributed: " + DISTRIBUTED_TRIPS_COUNTER + ", failed: " + FAILED_TRIPS_COUNTER);
-        if(RANDOM_OCCUPATION_DESTINATION_TRIPS.get() > 0) {
-            logger.info("There have been " + RANDOM_OCCUPATION_DESTINATION_TRIPS.get() +
+        logger.info("Distributed: " + distributedTripsCounter + ", failed: " + failedTripsCounter);
+        if(randomOccupationDestinationTrips.get() > 0) {
+            logger.info("There have been " + randomOccupationDestinationTrips.get() +
                     " HBW or HBE trips not done by a worker or student or missing occupation zone. " +
                     "Picked a destination by random utility instead.");
         }
-        if(COMPLETELY_RANDOM_NHB_TRIPS.get() > 0) {
-            logger.info("There have been " + COMPLETELY_RANDOM_NHB_TRIPS + " NHBO or NHBW trips" +
+        if(completelyRandomNhbTrips.get() > 0) {
+            logger.info("There have been " + completelyRandomNhbTrips + " NHBO or NHBW trips" +
                     "by persons who don't have a matching home based trip. Assumed a destination for a suitable home based"
                     + " trip as either origin or destination for the non-home-based trip.");
         }
