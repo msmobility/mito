@@ -173,8 +173,8 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
     private void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(),
-                dataSet.getPeakHour(), TransportMode.car);
-        idealBudgetSum += hhBudgetPerTrip;
+            actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(),
+                    dataSet.getPeakHour(), TransportMode.car);
+            idealBudgetSum += hhBudgetPerTrip;
     }
 }

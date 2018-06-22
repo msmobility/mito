@@ -51,6 +51,15 @@ public final class MitoModel {
         return model;
     }
 
+
+    public static MitoModel initializeModelFromSilo(String propertiesFile) {
+        logger.info(" Initializing MITO from SILO");
+        MitoModel model = new MitoModel(propertiesFile);
+
+
+        return model;
+    }
+
     public static MitoModel createModelWithInitialFeed(String propertiesFile, Input.InputFeed feed) {
         MitoModel model = new MitoModel(propertiesFile);
         model.manager.readFromFeed(feed);
@@ -59,6 +68,7 @@ public final class MitoModel {
     }
 
     public void feedData(Input.InputFeed feed) {
+        logger.info(" SILO data is being received in MITO");
         manager.readFromFeed(feed);
     }
 
