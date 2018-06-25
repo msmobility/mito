@@ -1,12 +1,10 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.travelTimes.MitoMatsimTravelTimes;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.matsim.api.core.v01.population.Population;
-import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
@@ -14,10 +12,8 @@ import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.utils.leastcostpathtree.LeastCostPathTree;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +42,7 @@ public class TrafficAssignment extends Module {
 
         String runId = "mito_assignment";
         matsimConfig.controler().setRunId(runId);
-        matsimConfig.controler().setOutputDirectory(outputDirectory + "output/");
+        matsimConfig.controler().setOutputDirectory(outputDirectory + "/" + dataSet.getYear());
         matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
 
         matsimConfig.qsim().setNumberOfThreads(16);
@@ -77,12 +73,9 @@ public class TrafficAssignment extends Module {
         TravelTime travelTime = controler.getLinkTravelTimes();
         TravelDisutility travelDisutility = controler.getTravelDisutilityFactory().createTravelDisutility(travelTime);
 
-        LeastCostPathTree leastCoastPathTree = new LeastCostPathTree(travelTime, travelDisutility);
-        MitoMatsimTravelTimes mitoMatsimTravelTimes = new MitoMatsimTravelTimes();
-        mitoMatsimTravelTimes.updateTravelTimesFromMatsim(travelTime, travelDisutility, dataSet.getZones(), matsimScenario.getNetwork(), controler.getTripRouterProvider().get() );
+        CarSkimUpdater skimUpdater = new CarSkimUpdater(travelTime, travelDisutility, zoneFeatureMap, matsimScenario.getNetwork(), dataSet);
+        skimUpdater.run();
 
-
-        dataSet.setTravelTimes(mitoMatsimTravelTimes);
     }
 
 }

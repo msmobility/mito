@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
+import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
@@ -62,6 +63,8 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
+        SummarizeDataToVisualize.writeFinalSummary(dataSet);
+
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
@@ -72,8 +75,6 @@ public class TravelDemandGenerator {
             TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
             timeOfDayChoice.run();
         }
-
-
 
         boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
         if (runTimeOfDayChoice && runScaling) {
@@ -96,7 +97,4 @@ public class TravelDemandGenerator {
             SummarizeData.writeCharts(dataSet);
         }
     }
-
-
-
 }

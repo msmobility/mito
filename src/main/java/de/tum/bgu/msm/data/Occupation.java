@@ -8,7 +8,7 @@ public enum Occupation {
     public static Occupation valueOf(int occupationCode) {
         if(occupationCode == 1) {
             return WORKER;
-        } else if(occupationCode == 2) {
+        } else if(occupationCode == 2 || occupationCode ==0) {
             return UNEMPLOYED;
         } else if(occupationCode == 3) {
             return STUDENT;
