@@ -73,7 +73,7 @@ public class TrafficAssignment extends Module {
         TravelTime travelTime = controler.getLinkTravelTimes();
         TravelDisutility travelDisutility = controler.getTravelDisutilityFactory().createTravelDisutility(travelTime);
 
-        CarSkimUpdater skimUpdater = new CarSkimUpdater(travelTime, travelDisutility, zoneFeatureMap, matsimScenario.getNetwork(), dataSet);
+        CarSkimUpdater skimUpdater = new CarSkimUpdater(travelTime, travelDisutility, matsimScenario.getNetwork(), dataSet);
         skimUpdater.run();
 
     }
