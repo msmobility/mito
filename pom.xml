@@ -112,11 +112,11 @@
             <artifactId>omx</artifactId>
             <version>2</version>
         </dependency>
-        <dependency>
-            <groupId>de.tum.bgu.msm</groupId>
-            <artifactId>MoPeD_Java</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>de.tum.bgu.msm</groupId>-->
+            <!--<artifactId>MoPeD_Java</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
