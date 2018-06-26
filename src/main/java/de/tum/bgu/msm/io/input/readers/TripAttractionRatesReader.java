@@ -38,7 +38,7 @@ public class TripAttractionRatesReader extends CSVReader{
         for(Purpose purpose: Purpose.values()) {
             AttractionCalculator.ExplanatoryVariable variable = AttractionCalculator.ExplanatoryVariable.valueOf(record[variableIndex]);
             double rate = Double.parseDouble(record[indexForPurpose.get(purpose)]);
-            purpose.putTripAttractionForVariable(variable, rate);
+            purpose.setTripAttractionForVariable(variable, rate);
         }
     }
 }

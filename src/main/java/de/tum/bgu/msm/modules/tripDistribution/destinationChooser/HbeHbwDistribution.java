@@ -55,7 +55,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
                     trip.setTripOrigin(household.getHomeZone());
                     trip.setTripOriginCoord(household.getHomeCoord());
                     findDestination(household, trip);
-                    TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+                    TripDistribution.distributedTripsCounter.incrementAndGet();
                 }
             }
             counter++;
@@ -68,7 +68,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             trip.setTripDestination(trip.getPerson().getOccupationZone());
             trip.setTripDestinationCoord(trip.getPerson().getOccupationCoord());
         } else {
-            TripDistribution.RANDOM_OCCUPATION_DESTINATION_TRIPS.incrementAndGet();
+            TripDistribution.randomOccupationDestinationTrips.incrementAndGet();
             DoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
             final MitoZone destination = zonesCopy.get(MitoUtil.select(probabilities.toArray(), random, probabilities.zSum()));
             trip.setTripDestination(destination);

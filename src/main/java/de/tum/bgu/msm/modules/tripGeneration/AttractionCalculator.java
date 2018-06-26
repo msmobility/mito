@@ -8,13 +8,38 @@ import org.apache.log4j.Logger;
 
 public class AttractionCalculator {
 
-    public enum ExplanatoryVariable {HH, TOT, RE, OFF, OTH, ENR}
+    public enum ExplanatoryVariable {
+        /**
+         * #Households
+         */
+        HH,
+        /**
+         * Total employment
+         */
+        TOT,
+        /**
+         * Retail employment
+         */
+        RE,
+        /**
+         * Office employment
+         */
+        OFF,
+        /**
+         * Other employment
+         */
+        OTH,
+        /**
+         * School enrollment
+         */
+        ENR
+    }
 
     private static final Logger logger = Logger.getLogger(AttractionCalculator.class);
 
     private final DataSet dataSet;
 
-    public AttractionCalculator(DataSet dataSet) {
+    AttractionCalculator(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 

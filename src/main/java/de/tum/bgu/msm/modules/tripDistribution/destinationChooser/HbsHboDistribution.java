@@ -2,13 +2,14 @@ package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.jet.random.tdouble.Normal;
+import cern.jet.random.tdouble.engine.DoubleRandomEngine;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
-import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.TransportMode;
 
@@ -22,20 +23,19 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
-    protected final Purpose purpose;
-    final DoubleMatrix2D baseProbabilities;
-    protected final TravelTimes travelTimes;
-    protected final DataSet dataSet;
+    private final Purpose purpose;
+    private final DoubleMatrix2D baseProbabilities;
+    private final TravelTimes travelTimes;
+    private final DataSet dataSet;
     private final Map<Integer, MitoZone> zonesCopy;
     private DoubleMatrix1D destinationProbabilities;
 
     private double idealBudgetSum = 0;
     private double actualBudgetSum = 0;
-    private double adjustedBudget;
     private double hhBudgetPerTrip;
 
-    private final NormalDistribution distribution = new NormalDistribution(100, 50);
-    private final Map<Integer, Double> densityByDeviation = new HashMap<>();
+    private final Normal distribution = new Normal(0, 0.2, DoubleRandomEngine.makeDefault());
+    private double adjustedBudget;
 
     private HbsHboDistribution(Purpose purpose, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
@@ -59,7 +59,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
-                logger.info(counter + " households done for Purpose " + purpose);
+                logger.info(counter + " households done for Purpose " + purpose
+                        + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
                 if(hasBudgetForPurpose(household)) {
@@ -72,11 +73,16 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                         MitoZone zone = findDestination();
                         trip.setTripDestination(zone);
                         trip.setTripDestinationCoord(zone.getRandomCoord());
+                        if(zone == null) {
+                            logger.debug("No destination found for trip" + trip);
+                            TripDistribution.failedTripsCounter.incrementAndGet();
+                            continue;
+                        }
                         postProcessTrip(trip);
-                        TripDistribution.DISTRIBUTED_TRIPS_COUNTER.incrementAndGet();
+                        TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
                 } else {
-                    TripDistribution.FAILED_TRIPS_COUNTER.incrementAndGet();
+                    TripDistribution.failedTripsCounter.incrementAndGet();
                 }
             }
             counter++;
@@ -86,8 +92,10 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
 
     private void adjustDestinationProbabilities(MitoZone origin){
         for (int i = 0; i < destinationProbabilities.size(); i++) {
-            final int deviation = (int) (travelTimes.getTravelTime(origin.getId(), i, dataSet.getPeakHour(), "car") / adjustedBudget);
-            destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * getDensity(deviation));
+            //divide travel time by 2 as home based trips' budget account for the return trip as well
+            double travelTime = travelTimes.getTravelTime(origin.getId(), i, dataSet.getPeakHour(), "car") / 2.;
+            final double density = distribution.pdf((adjustedBudget - travelTime) / adjustedBudget);
+            destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * density);
         }
     }
 
@@ -114,8 +122,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     }
 
     /**
-     * Copy probabilities for every destination for the current home origin (only applies to home based purposes)
-     * @param household
+     * Copy probabilities for every destination for the current home origin
      */
     private void copyBaseDestinationProbabilities(MitoHousehold household) {
         destinationProbabilities = baseProbabilities.viewRow(household.getHomeZone().getId()).copy();
@@ -129,22 +136,12 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
             ratio = idealBudgetSum / actualBudgetSum;
         }
         hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(purpose) / household.getTripsForPurpose(purpose).size();
-        adjustedBudget = (hhBudgetPerTrip * ratio) / 100;
+        adjustedBudget = hhBudgetPerTrip * ratio;
     }
 
     private MitoZone findDestination() {
         final int destination = MitoUtil.select(destinationProbabilities.toArray(), random, destinationProbabilities.zSum());
         return zonesCopy.get(destination);
-    }
-
-    private double getDensity(int deviation) {
-        if (densityByDeviation.containsKey(deviation)) {
-            return densityByDeviation.get(deviation);
-        } else {
-            double density = distribution.density(deviation);
-            densityByDeviation.put(deviation, density);
-            return density;
-        }
     }
 }
 
