@@ -21,7 +21,7 @@ public class TravelTimeBudgetModuleTest {
         Resources.initializeResources("./testInput/test.properties");
 
         dataSet = new DataSet();
-        dataSet.setTravelTimes((origin, destination, time, mode) -> 20);
+        dataSet.setTravelTimes((origin, destination, time, mode) -> 10);
         addZone();
         addHouseholds();
         addPersons();

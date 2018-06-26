@@ -7,6 +7,11 @@ import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.matsim.core.utils.gis.ShapeFileReader;
+import org.opengis.feature.simple.SimpleFeature;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Nico
@@ -24,6 +29,14 @@ public class ZonesReader extends CSVReader {
     @Override
     public void read() {
         super.read(Resources.INSTANCE.getString(Properties.ZONES), ",");
+        mapFeaturesToZones(dataSet);
+    }
+
+    public static void mapFeaturesToZones(DataSet dataSet) {
+        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
+            int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
+            dataSet.getZones().get(zoneId).setShapeFeature(feature);
+        }
     }
 
     @Override

@@ -83,8 +83,10 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                             continue;
                         }
                         trip.setTripOrigin(origin);
+                        trip.setTripOriginCoord(origin.getRandomCoord());
                         MitoZone destination = findDestination(trip);
                         trip.setTripDestination(destination);
+                        trip.setTripDestinationCoord(destination.getRandomCoord());
                         if(destination == null) {
                             logger.debug("No destination found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();

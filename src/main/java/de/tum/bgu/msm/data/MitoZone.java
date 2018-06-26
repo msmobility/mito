@@ -2,15 +2,21 @@ package de.tum.bgu.msm.data;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
+import de.tum.bgu.msm.util.MitoUtil;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.geotools.MGC;
+import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.EnumMap;
 
 /**
  * Created by Nico on 7/7/2017.
  */
-public class MitoZone implements Id{
+public class MitoZone implements Id {
 
     private final int zoneId;
     private final float size;
@@ -25,6 +31,7 @@ public class MitoZone implements Id{
     private AreaTypes.RType areaTypeR;
 
     private float distanceToNearestRailStop;
+    private SimpleFeature shapeFeature;
 
     public MitoZone(int id, float size, AreaTypes.SGType areaType) {
         this.zoneId = id;
@@ -44,13 +51,18 @@ public class MitoZone implements Id{
         this.areaTypeR = areaTypeR;
     }
 
-    public float getDistanceToNearestRailStop() {return distanceToNearestRailStop;}
+    public float getDistanceToNearestRailStop() {
+        return distanceToNearestRailStop;
+    }
 
     /**
      * Sets distance to nearest rail stop
+     *
      * @param distanceToNearestRailStop distance in km
      */
-    public void setDistanceToNearestRailStop(float distanceToNearestRailStop) {this.distanceToNearestRailStop = distanceToNearestRailStop;}
+    public void setDistanceToNearestRailStop(float distanceToNearestRailStop) {
+        this.distanceToNearestRailStop = distanceToNearestRailStop;
+    }
 
     @Override
     public int getId() {
@@ -124,5 +136,19 @@ public class MitoZone implements Id{
     @Override
     public String toString() {
         return "[MitoZone " + zoneId + "]";
+    }
+
+    public void setShapeFeature(SimpleFeature shapeFeature) {
+        this.shapeFeature = shapeFeature;
+    }
+
+    public Coord getRandomCoord() {
+        // alternative and about 10 times faster way to generate random point inside a geometry. Amit Dec'17
+        RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
+        randomPointsBuilder.setNumPoints(1);
+        randomPointsBuilder.setExtent((Geometry) shapeFeature.getDefaultGeometry());
+        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
+        Point p = MGC.coordinate2Point(coordinate);
+        return new Coord(p.getX(), p.getY());
     }
 }

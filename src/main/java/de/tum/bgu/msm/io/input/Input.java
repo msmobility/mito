@@ -13,7 +13,10 @@ import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.gis.ShapeFileReader;
+import org.opengis.feature.simple.SimpleFeature;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Input {
@@ -56,6 +59,7 @@ public class Input {
 
         readAdditionalData();
         readTravelDistancesAndTransitTravelTimes();
+        ZonesReader.mapFeaturesToZones(dataSet);
     }
 
     public void readTravelDistancesAndTransitTravelTimes() {
@@ -84,12 +88,14 @@ public class Input {
         private final TravelTimes travelTimes;
         private final Map<Integer, MitoHousehold> households;
         private final int year;
+        private Map<Integer, SimpleFeature> zoneFeatureMap;
 
-        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, Map<Integer, MitoHousehold> households, int year) {
+        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, Map<Integer, MitoHousehold> households, int year, Map<Integer,SimpleFeature> zoneFeatureMap) {
             this.zones = zones;
             this.travelTimes = travelTimes;
             this.households = households;
             this.year = year;
+            this.zoneFeatureMap = zoneFeatureMap;
         }
     }
 }

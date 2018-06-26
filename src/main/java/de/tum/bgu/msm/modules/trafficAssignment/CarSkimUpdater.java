@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.trafficAssignment;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
@@ -31,15 +32,15 @@ public class CarSkimUpdater {
     private DoubleMatrix2D carTravelTimeMatrix;
     private TravelDisutility travelDisutility;
     private TravelTime travelTime;
-    private Map<Integer, SimpleFeature> zoneFeatureMap;
+    //private Map<Integer, SimpleFeature> zoneFeatureMap;
     private DataSet dataSet;
 
     public CarSkimUpdater(TravelTime travelTime, TravelDisutility travelDisutility,
-                          Map<Integer, SimpleFeature> zoneFeatureMap,
+                          //Map<Integer, SimpleFeature> zoneFeatureMap,
                           Network network, DataSet dataSet) {
 
         this.network = network;
-        this.zoneFeatureMap = zoneFeatureMap;
+        //this.zoneFeatureMap = zoneFeatureMap;
         this.travelTime = travelTime;
         this.travelDisutility = travelDisutility;
         //creates a matrix of (n+1 zones) rows and columns
@@ -57,18 +58,17 @@ public class CarSkimUpdater {
 
     private void calculateMatrixFromMatsim() {
         nodesByZone.clear();
-        zoneFeatureMap.keySet().stream().parallel().forEach(zoneId -> {
-            SimpleFeature originFeature = zoneFeatureMap.get(zoneId);
-            nodesByZone.put(zoneId, new LinkedList());
+        dataSet.getZones().values().stream().parallel().forEach(mitoZone -> {
+            nodesByZone.put(mitoZone.getId(), new LinkedList());
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
-                Coord originCoord = MatsimPopulationGenerator.getRandomCoordinateInZone(originFeature);
+                Coord originCoord = mitoZone.getRandomCoord();
                 Node originNode = NetworkUtils.getNearestLink(network, originCoord).getToNode();
-                nodesByZone.get(zoneId).add(originNode);
+                nodesByZone.get(mitoZone.getId()).add(originNode);
             }
         });
         LOGGER.info("Assigned nodes to  " + nodesByZone.keySet().size());
 
-        zoneFeatureMap.keySet().stream().parallel().forEach(zoneId -> {
+        dataSet.getZones().keySet().stream().parallel().forEach(zoneId -> {
             //ArrayList<Map<Id<Node>, LeastCostPathTree.NodeData>> treesAtThisZone = new ArrayList<>();
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
                 Node originNode = nodesByZone.get(zoneId).get(i);
