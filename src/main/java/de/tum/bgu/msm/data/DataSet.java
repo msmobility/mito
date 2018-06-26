@@ -2,11 +2,8 @@ package de.tum.bgu.msm.data;
 
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
-import de.tum.bgu.msm.data.survey.SurveyRecord;
-import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.*;
 
@@ -16,8 +13,6 @@ public class DataSet {
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
-
-    private TravelSurvey<? extends SurveyRecord> survey;
 
     private double peakHour = Double.NaN;
 
