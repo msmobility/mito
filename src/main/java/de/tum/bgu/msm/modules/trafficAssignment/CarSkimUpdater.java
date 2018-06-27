@@ -6,8 +6,7 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -45,18 +44,18 @@ public class CarSkimUpdater {
     private final DoubleMatrix2D carDistanceMatrix;
     private TravelDisutility travelDisutility;
     private TravelTime travelTime;
-    private Map<Integer, SimpleFeature> zoneFeatureMap;
+    //private Map<Integer, SimpleFeature> zoneFeatureMap;
     private DataSet dataSet;
     private final Vehicle VEHICLE = VehicleUtils.getFactory().createVehicle(Id.create("theVehicle", Vehicle.class), VehicleUtils.getDefaultVehicleType());
     private final Person PERSON = PopulationUtils.getFactory().createPerson(Id.create("thePerson", Person.class));
 
 
     public CarSkimUpdater(TravelTime travelTime, TravelDisutility travelDisutility,
-                          Map<Integer, SimpleFeature> zoneFeatureMap,
+                          //Map<Integer, SimpleFeature> zoneFeatureMap,
                           Network network, DataSet dataSet) {
 
         this.network = network;
-        this.zoneFeatureMap = zoneFeatureMap;
+        //this.zoneFeatureMap = zoneFeatureMap;
         this.travelTime = travelTime;
         this.travelDisutility = travelDisutility;
         //creates a matrix of (n+1 zones) rows and columns
@@ -77,13 +76,12 @@ public class CarSkimUpdater {
 
     private void calculateMatrixFromMatsim() {
         nodesByZone.clear();
-        zoneFeatureMap.keySet().forEach(zoneId -> {
-            SimpleFeature originFeature = zoneFeatureMap.get(zoneId);
-            nodesByZone.put(zoneId, new LinkedList());
+        dataSet.getZones().values().stream().parallel().forEach(mitoZone -> {
+            nodesByZone.put(mitoZone.getId(), new LinkedList());
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
-                Coord originCoord = MatsimPopulationGenerator.getRandomCoordinateInZone(originFeature);
+                Coord originCoord = mitoZone.getRandomCoord();
                 Node originNode = NetworkUtils.getNearestLink(network, originCoord).getToNode();
-                nodesByZone.get(zoneId).add(originNode);
+                nodesByZone.get(mitoZone.getId()).add(originNode);
             }
         });
         LOGGER.info("Assigned nodes to " + nodesByZone.keySet().size() + " zones");

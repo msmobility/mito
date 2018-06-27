@@ -37,7 +37,7 @@ public class MatsimPopulationGenerator {
 
     }
 
-    public static Population generateMatsimPopulation(DataSet dataSet, Config config,  Map<Integer,SimpleFeature> zoneFeatureMap){
+    public static Population generateMatsimPopulation(DataSet dataSet, Config config){
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
         dataSet.getTripSubsample().values().forEach(trip ->{
@@ -51,22 +51,22 @@ public class MatsimPopulationGenerator {
                     population.addPerson(person);
 
                     String activityTypeAtOrigin = getOriginActivity(trip.getTripPurpose());
-                    Coord originCoordinates = getRandomCoordinateInZone(zoneFeatureMap.get(trip.getTripOrigin().getId()));
-                    Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, originCoordinates);
+
+                    Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, trip.getTripOriginCoord());
                     originActivity.setEndTime(trip.getDepartureInMinutes() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                     plan.addActivity(originActivity);
 
                     plan.addLeg(factory.createLeg(TransportMode.car));
 
                     String activityTypeAtDestination = getDestinationActivity(trip.getTripPurpose());
-                    Coord destinationCoordinates = getRandomCoordinateInZone(zoneFeatureMap.get(trip.getTripDestination().getId()));
-                    Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoordinates);
+
+                    Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, trip.getTripDestinationCoord());
 
                     if (trip.isHomeBased()) {
                         destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                         plan.addActivity(destinationActivity);
                         plan.addLeg(factory.createLeg(TransportMode.car));
-                        plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin,originCoordinates));
+                        plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin,trip.getTripOriginCoord()));
                     } else {
                         plan.addActivity(destinationActivity);
                     }
@@ -101,26 +101,4 @@ public class MatsimPopulationGenerator {
             return "other";
         }
     }
-
-    //taken from silo matsim integration
-    private final static GeometryFactory geometryFactory = new GeometryFactory();
-
-    public static final Coord getRandomCoordinateInZone(SimpleFeature feature) {
-        Geometry geometry = (Geometry) feature.getDefaultGeometry();
-        Envelope envelope = geometry.getEnvelopeInternal();
-        while (true) {
-            Point point = getRandomPointInEnvelope(envelope);
-            if (point.within(geometry)) {
-                return new Coord(point.getX(), point.getY());
-            }
-        }
-    }
-
-    public static final Point getRandomPointInEnvelope(Envelope envelope) {
-        double x = envelope.getMinX() + MitoUtil.getRandomObject().nextDouble() * envelope.getWidth();
-        double y = envelope.getMinY() + MitoUtil.getRandomObject().nextDouble() * envelope.getHeight();
-        return geometryFactory.createPoint(new Coordinate(x,y));
-    }
-
-
 }

@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
 
@@ -18,11 +19,11 @@ public class MitoPerson implements Id{
     private final int id;
     private final Gender gender;
     private final Occupation occupation;
-    private int workplace;
+    private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
     private MitoZone occupationZone;
     private final int age;
     private final boolean driversLicense;
-
+    private Coord occupationCoord; //jobLocation or schoolLocation
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
@@ -76,5 +77,13 @@ public class MitoPerson implements Id{
         if(trip.getPerson() != this) {
             trip.setPerson(this);
         }
+    }
+
+    public Coord getOccupationCoord() {
+        return occupationCoord;
+    }
+
+    public void setOccupationCoord(Coord occupationCoord) {
+        this.occupationCoord = occupationCoord;
     }
 }

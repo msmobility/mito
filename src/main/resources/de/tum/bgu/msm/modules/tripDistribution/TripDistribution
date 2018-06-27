@@ -10,8 +10,8 @@ impedanceParamHbw = 11.0;
 travelDistanceParamHbe = -0.09;
 impedanceParamHbe = 11.;
 
-travelDistanceParamNhbw = -0.133;
-impedanceParamNhbw = 27.5;
+travelDistanceParamNhbw = -0.1;
+impedanceParamNhbw = 21.5;
 
 travelDistanceParamNhbo = -0.095;
 impedanceParamNhbo = 10.2

@@ -12,6 +12,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
 import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
+import org.matsim.api.core.v01.Coord;
 
 import java.io.PrintWriter;
 import java.util.*;
@@ -29,11 +30,15 @@ public class SummarizeData {
         LOGGER.info("  Writing household file");
         String filehh = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + Resources.INSTANCE.getString(Properties.HOUSEHOLDS) + "_t.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
-        pwh.println("id,zone,hhSize,autos,trips,workTrips");
+        pwh.println("id,zone,homeX,homeY,hhSize,autos,trips,workTrips");
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
             pwh.print(hh.getId());
             pwh.print(",");
             pwh.print(hh.getHomeZone());
+            pwh.print(",");
+            pwh.print(hh.getHomeCoord().getX());
+            pwh.print(",");
+            pwh.print(hh.getHomeCoord().getY());
             pwh.print(",");
             pwh.print(hh.getHhSize());
             pwh.print(",");
@@ -74,7 +79,7 @@ public class SummarizeData {
         LOGGER.info("  Writing trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,destination,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
+        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -85,13 +90,40 @@ public class SummarizeData {
             }
             pwh.print(originId);
             pwh.print(",");
+
+            if(trip.getTripOriginCoord() != null){
+                pwh.print(trip.getTripOriginCoord().getX());
+                pwh.print(",");
+                pwh.print(trip.getTripOriginCoord().getY());
+                pwh.print(",");
+            }else{
+                pwh.print("null");
+                pwh.print(",");
+                pwh.print("null");
+                pwh.print(",");
+            }
+
             MitoZone destination = trip.getTripDestination();
             String destinationId = "null";
+            Coord destinationCoord = null;
             if(destination != null) {
                 destinationId = String.valueOf(destination.getId());
+                destinationCoord = trip.getTripDestinationCoord();
             }
             pwh.print(destinationId);
             pwh.print(",");
+            if(trip.getTripDestinationCoord() != null){
+                pwh.print(trip.getTripDestinationCoord().getX());
+                pwh.print(",");
+                pwh.print(trip.getTripDestinationCoord().getY());
+                pwh.print(",");
+            }else{
+                pwh.print("null");
+                pwh.print(",");
+                pwh.print("null");
+                pwh.print(",");
+            }
+
             pwh.print(trip.getTripPurpose());
             pwh.print(",");
             pwh.print(trip.getPerson().getId());

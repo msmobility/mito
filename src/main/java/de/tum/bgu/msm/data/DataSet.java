@@ -2,8 +2,6 @@ package de.tum.bgu.msm.data;
 
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
-import de.tum.bgu.msm.data.survey.SurveyRecord;
-import de.tum.bgu.msm.data.survey.TravelSurvey;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 
@@ -16,8 +14,6 @@ public class DataSet {
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
 
-    private TravelSurvey<? extends SurveyRecord> survey;
-
     private double peakHour = Double.NaN;
 
     private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
@@ -25,19 +21,12 @@ public class DataSet {
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
 
+
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
     private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
     private int year;
-
-    public TravelSurvey<? extends SurveyRecord> getSurvey() {
-        return this.survey;
-    }
-
-    public void setSurvey(TravelSurvey<? extends SurveyRecord> survey) {
-        this.survey = survey;
-    }
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 

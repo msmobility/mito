@@ -1,12 +1,11 @@
 package de.tum.bgu.msm.data;
 
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 import static de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator.ExplanatoryVariable;
 
-public enum Purpose implements Id{
+public enum Purpose implements Id {
     HBW,
     HBE,
     HBS,
@@ -19,13 +18,13 @@ public enum Purpose implements Id{
         return this.ordinal();
     }
 
-    private final Map<ExplanatoryVariable, Double> tripAtractionByVariable = new EnumMap<>(ExplanatoryVariable.class);
+    private final Map<ExplanatoryVariable, Double> tripAttractionByVariable = new EnumMap<>(ExplanatoryVariable.class);
 
-    public void putTripAttractionForVariable(ExplanatoryVariable variable, double rate) {
-        this.tripAtractionByVariable.put(variable, rate);
+    public void setTripAttractionForVariable(ExplanatoryVariable variable, double rate) {
+        this.tripAttractionByVariable.put(variable, rate);
     }
 
     public Double getTripAttractionForVariable(ExplanatoryVariable variable) {
-        return this.tripAtractionByVariable.get(variable);
+        return this.tripAttractionByVariable.get(variable);
     }
 }

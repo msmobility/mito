@@ -29,7 +29,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
-        calculator = new DestinationUtilityJSCalculator(reader);
+        calculator = new DestinationUtilityJSCalculator(reader, purpose);
     }
 
     @Override
@@ -38,7 +38,8 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
         long counter = 0;
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
-                final double utility = getUtility(destination, travelDistances.getTravelDistance(origin.getId(), destination.getId()));
+                final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
+                        travelDistances.getTravelDistance(origin.getId(), destination.getId()));
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination + " | Distance: "
@@ -54,24 +55,5 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
         }
         logger.info("Utility matrix for purpose " + purpose + " done.");
         return new Pair<>(purpose, utilityMatrix);
-    }
-
-    private double getUtility(MitoZone destination, double travelDistance) {
-        switch (purpose) {
-            case HBW:
-                return calculator.calculateHbwUtility(destination, travelDistance);
-            case HBE:
-                return calculator.calculateHbeUtility(destination, travelDistance);
-            case HBS:
-                return calculator.calculateHbsUtility(destination, travelDistance);
-            case HBO:
-                return calculator.calculateHboUtility(destination, travelDistance);
-            case NHBW:
-                return calculator.calculateNhbwUtility(destination, travelDistance);
-            case NHBO:
-                return calculator.calculateNhboUtility(destination, travelDistance);
-            default:
-                throw new IllegalStateException();
-        }
     }
 }

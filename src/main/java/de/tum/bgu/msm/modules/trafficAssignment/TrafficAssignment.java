@@ -22,8 +22,6 @@ public class TrafficAssignment extends Module {
     private Config matsimConfig;
     private MutableScenario matsimScenario;
     private String outputDirectory = "output/trafficAssignment/";
-    private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
-    private final double SILO_SMAPLING_RATE = 1.1; //this is used to provide a more realistic assignment if silo population was scaled down (test only)
 
     public TrafficAssignment(DataSet dataSet) {
         super(dataSet);
@@ -62,8 +60,7 @@ public class TrafficAssignment extends Module {
     }
 
     private void createPopulation() {
-        this.zoneFeatureMap = MatsimPopulationGenerator.loadZoneShapeFile();
-        Population population = MatsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig, zoneFeatureMap);
+        Population population = MatsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig);
         matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(matsimConfig);
         matsimScenario.setPopulation(population);
     }
@@ -72,10 +69,11 @@ public class TrafficAssignment extends Module {
         final Controler controler = new Controler(matsimScenario);
         controler.run();
 
+        //set a MitoMatsim travel time as current travel time
         TravelTime travelTime = controler.getLinkTravelTimes();
         TravelDisutility travelDisutility = controler.getTravelDisutilityFactory().createTravelDisutility(travelTime);
 
-        CarSkimUpdater skimUpdater = new CarSkimUpdater(travelTime, travelDisutility, zoneFeatureMap, matsimScenario.getNetwork(), dataSet);
+        CarSkimUpdater skimUpdater = new CarSkimUpdater(travelTime, travelDisutility, matsimScenario.getNetwork(), dataSet);
         skimUpdater.run();
 
     }

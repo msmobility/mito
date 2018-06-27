@@ -24,11 +24,11 @@ import static de.tum.bgu.msm.data.Purpose.*;
  */
 public final class TripDistribution extends Module {
 
-    public final static AtomicInteger DISTRIBUTED_TRIPS_COUNTER = new AtomicInteger(0);
-    public final static AtomicInteger FAILED_TRIPS_COUNTER = new AtomicInteger(0);
+    public final static AtomicInteger distributedTripsCounter = new AtomicInteger(0);
+    public final static AtomicInteger failedTripsCounter = new AtomicInteger(0);
 
-    public final static AtomicInteger RANDOM_OCCUPATION_DESTINATION_TRIPS = new AtomicInteger(0);
-    public final static AtomicInteger COMPLETELY_RANDOM_NHB_TRIPS = new AtomicInteger(0);
+    public final static AtomicInteger randomOccupationDestinationTrips = new AtomicInteger(0);
+    public final static AtomicInteger completelyRandomNhbTrips = new AtomicInteger(0);
 
     private final EnumMap<Purpose, DoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
 
@@ -74,14 +74,14 @@ public final class TripDistribution extends Module {
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
         executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);
 
-        logger.info("Distributed: " + DISTRIBUTED_TRIPS_COUNTER + ", failed: " + FAILED_TRIPS_COUNTER);
-        if(RANDOM_OCCUPATION_DESTINATION_TRIPS.get() > 0) {
-            logger.info("There have been " + RANDOM_OCCUPATION_DESTINATION_TRIPS.get() +
+        logger.info("Distributed: " + distributedTripsCounter + ", failed: " + failedTripsCounter);
+        if(randomOccupationDestinationTrips.get() > 0) {
+            logger.info("There have been " + randomOccupationDestinationTrips.get() +
                     " HBW or HBE trips not done by a worker or student or missing occupation zone. " +
                     "Picked a destination by random utility instead.");
         }
-        if(COMPLETELY_RANDOM_NHB_TRIPS.get() > 0) {
-            logger.info("There have been " + COMPLETELY_RANDOM_NHB_TRIPS + " NHBO or NHBW trips" +
+        if(completelyRandomNhbTrips.get() > 0) {
+            logger.info("There have been " + completelyRandomNhbTrips + " NHBO or NHBW trips" +
                     "by persons who don't have a matching home based trip. Assumed a destination for a suitable home based"
                     + " trip as either origin or destination for the non-home-based trip.");
         }
