@@ -1,10 +1,14 @@
 package de.tum.bgu.msm.data.travelTimes;
 
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import de.tum.bgu.msm.io.output.OmxMatrixWriter;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
 import omx.OmxMatrix;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.TransportMode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +69,7 @@ public class SkimTravelTimes implements TravelTimes {
     public void updateSkimMatrix(DoubleMatrix2D skim, String mode){
 
         matricesByMode.put(mode, skim);
-        LOGGER.warn("The skim matrix for mode " + mode + "has been updated");
+        LOGGER.warn("The skim matrix for mode " + mode + " has been updated");
     }
 
     private double getPtTime(int origin, int destination, double timeOfDay_s) {
@@ -82,5 +86,10 @@ public class SkimTravelTimes implements TravelTimes {
         return travelTime;
     }
 
+    public void printOutCarSkim(String mode, String filePath, String matrixName) {
+        OmxMatrixWriter.createOmxSkimMatrix(matricesByMode.get(mode),
+                filePath,
+                matrixName);
 
+    }
 }

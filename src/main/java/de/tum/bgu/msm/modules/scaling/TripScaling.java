@@ -15,11 +15,12 @@ public class TripScaling extends Module {
 
     public TripScaling(DataSet dataSet) {
         super(dataSet);
+        tripScalingFactor = Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR));
     }
 
     @Override
     public void run() {
-        tripScalingFactor = Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR));
+
         scaleTrips();
     }
 

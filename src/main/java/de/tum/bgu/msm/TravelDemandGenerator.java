@@ -1,6 +1,9 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
+import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
+import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
@@ -15,6 +18,7 @@ import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.TransportMode;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -87,5 +91,26 @@ public class TravelDemandGenerator {
         if(Resources.INSTANCE.getBoolean(Properties.CREATE_DESTINATION_CHOICE_HISTOGRAMS, true)){
             SummarizeData.writeCharts(dataSet);
         }
+
+        if(Resources.INSTANCE.getBoolean(Properties.PRINT_OUT_SKIM,false)){
+            try {
+
+                int maxZone = dataSet.getZones().keySet().stream().max(Integer::compareTo).get() + 1;
+                OmxMatrixWriter.createOmxFile(Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME), maxZone);
+
+                SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
+                tt.printOutCarSkim(TransportMode.car, Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME),
+                        "timeByTime");
+
+                MatrixTravelDistances td = (MatrixTravelDistances) dataSet.getTravelDistancesAuto();
+                td.printOutDistanceSkim(Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME),
+                        "distanceByTime");
+
+            } catch (ClassCastException e){
+                logger.info("Currently it is not possible to print out a matrix from an object which is not SkimTravelTime");
+            }
+
+        }
+
     }
 }

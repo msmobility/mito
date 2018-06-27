@@ -23,6 +23,7 @@ public class TrafficAssignment extends Module {
     private MutableScenario matsimScenario;
     private String outputDirectory = "output/trafficAssignment/";
     private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
+    private final double SILO_SMAPLING_RATE = 1.1; //this is used to provide a more realistic assignment if silo population was scaled down (test only)
 
     public TrafficAssignment(DataSet dataSet) {
         super(dataSet);
@@ -56,8 +57,8 @@ public class TrafficAssignment extends Module {
         matsimConfig.controler().setWriteEventsInterval(matsimConfig.controler().getLastIteration());
 
         matsimConfig.qsim().setStuckTime(10);
-        matsimConfig.qsim().setFlowCapFactor(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
-        matsimConfig.qsim().setStorageCapFactor(Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)),0.75));
+        matsimConfig.qsim().setFlowCapFactor(SILO_SMAPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+        matsimConfig.qsim().setStorageCapFactor(SILO_SMAPLING_RATE * Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)),0.75));
     }
 
     private void createPopulation() {
