@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.io.input.readers;
 
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
@@ -9,10 +11,15 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
+import java.util.Collections;
+import java.util.EnumMap;
+
 public class TimeOfDayDistributionsReader extends CSVReader {
 
-    private final DoubleMatrix2D arrivalMinuteCumProbByPurpose = new DenseDoubleMatrix2D(24*60+1, Purpose.values().length);
-    private final DoubleMatrix2D durationMinuteCumProvByPurpose = new DenseDoubleMatrix2D(24*60+1, Purpose.values().length);
+    private final EnumMap<Purpose, DoubleMatrix1D> arrivalTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, DoubleMatrix1D> durationCumProbByPurpose = new EnumMap<>(Purpose.class);
+    //private final DoubleMatrix2D arrivalMinuteCumProbByPurpose = new DenseDoubleMatrix2D(24*60+1, Purpose.values().length);
+    //private final DoubleMatrix2D durationMinuteCumProvByPurpose = new DenseDoubleMatrix2D(24*60+1, Purpose.values().length);
 
     private int minuteIndex;
     private int hbe_arrival_index;
@@ -29,7 +36,12 @@ public class TimeOfDayDistributionsReader extends CSVReader {
 
 
     public TimeOfDayDistributionsReader(DataSet dataSet) {
+
         super(dataSet);
+        for (Purpose purpose : Purpose.values()) {
+            arrivalTimeCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
+            durationCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
+        }
     }
 
     @Override
@@ -50,17 +62,17 @@ public class TimeOfDayDistributionsReader extends CSVReader {
     @Override
     protected void processRecord(String[] record) {
         int minute = Integer.parseInt(record[minuteIndex]);
-        arrivalMinuteCumProbByPurpose.setQuick(minute, Purpose.HBE.ordinal(), Double.parseDouble(record[hbe_arrival_index]));
-        arrivalMinuteCumProbByPurpose.setQuick(minute, Purpose.HBO.ordinal(), Double.parseDouble(record[hbo_arrival_index]));
-        arrivalMinuteCumProbByPurpose.setQuick(minute, Purpose.HBS.ordinal(), Double.parseDouble(record[hbs_arrival_index]));
-        arrivalMinuteCumProbByPurpose.setQuick(minute, Purpose.HBW.ordinal(), Double.parseDouble(record[hbw_arrival_index]));
-        arrivalMinuteCumProbByPurpose.setQuick(minute, Purpose.NHBO.ordinal(), Double.parseDouble(record[nhbo_arrival_index]));
-        arrivalMinuteCumProbByPurpose.setQuick(minute, Purpose.NHBW.ordinal(), Double.parseDouble(record[nhbw_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.NHBO).setQuick(minute, Double.parseDouble(record[nhbo_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.NHBW).setQuick(minute, Double.parseDouble(record[nhbw_arrival_index]));
 
-        durationMinuteCumProvByPurpose.setQuick(minute, Purpose.HBE.ordinal(), Double.parseDouble(record[hbe_duration_index]));
-        durationMinuteCumProvByPurpose.setQuick(minute, Purpose.HBO.ordinal(), Double.parseDouble(record[hbo_duration_index]));
-        durationMinuteCumProvByPurpose.setQuick(minute, Purpose.HBS.ordinal(), Double.parseDouble(record[hbs_duration_index]));
-        durationMinuteCumProvByPurpose.setQuick(minute, Purpose.HBW.ordinal(), Double.parseDouble(record[hbw_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBE).setQuick(minute,Double.parseDouble(record[hbe_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBO).setQuick(minute,Double.parseDouble(record[hbo_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBS).setQuick(minute,Double.parseDouble(record[hbs_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBW).setQuick(minute,Double.parseDouble(record[hbw_duration_index]));
 
     }
 
@@ -69,12 +81,12 @@ public class TimeOfDayDistributionsReader extends CSVReader {
         super.read(Resources.INSTANCE.getString(Properties.TIME_OF_DAY_DISTRIBUTIONS), ",");
     }
 
-    public DoubleMatrix2D getArrivalMinuteCumProbByPurpose() {
-        return arrivalMinuteCumProbByPurpose;
+    public EnumMap<Purpose, DoubleMatrix1D> getArrivalMinuteCumProbByPurpose() {
+        return arrivalTimeCumProbByPurpose;
     }
 
-    public DoubleMatrix2D getDurationMinuteCumProvByPurpose() {
-        return durationMinuteCumProvByPurpose;
+    public EnumMap<Purpose, DoubleMatrix1D> getDurationMinuteCumProbByPurpose() {
+        return durationCumProbByPurpose;
     }
 
 
