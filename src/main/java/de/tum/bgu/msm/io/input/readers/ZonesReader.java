@@ -35,8 +35,12 @@ public class ZonesReader extends CSVReader {
     public static void mapFeaturesToZones(DataSet dataSet) {
         for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
-            dataSet.getZones().get(zoneId).setShapeFeature(feature);
-        }
+            if (dataSet.getZones().containsKey(zoneId)){
+                dataSet.getZones().get(zoneId).setShapeFeature(feature);
+            } else {
+                System.out.println("Zone not found in shapefile: " + zoneId + ". No feature will be added.");
+            }
+            }
     }
 
     @Override
