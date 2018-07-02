@@ -37,6 +37,7 @@ public class Input {
         }
         new SkimsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
+        new HouseholdsCoordReader(dataSet).read();
         new PersonsReader(dataSet).read();
         new JobReader(dataSet).read();
     }

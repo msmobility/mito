@@ -105,10 +105,8 @@ public class SummarizeData {
 
             MitoZone destination = trip.getTripDestination();
             String destinationId = "null";
-            Coord destinationCoord = null;
             if(destination != null) {
                 destinationId = String.valueOf(destination.getId());
-                destinationCoord = trip.getTripDestinationCoord();
             }
             pwh.print(destinationId);
             pwh.print(",");

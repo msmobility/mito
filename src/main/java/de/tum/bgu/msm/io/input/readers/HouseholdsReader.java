@@ -8,6 +8,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
 
 /**
  * Created by Nico on 17.07.2017.
@@ -48,7 +49,8 @@ public class HouseholdsReader extends CSVReader {
             logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
             return;
         }
-        dataSet.addHousehold(new MitoHousehold(id, 0, autos, zone));
+        MitoHousehold hh = new MitoHousehold(id, 0, autos, zone);
+        dataSet.addHousehold(hh);
         zone.addHousehold();
     }
 }
