@@ -12,12 +12,14 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * @author Nico
  */
 public class ZonesReader extends CSVReader {
 
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ZonesReader.class);
     private int sizeIndex;
     private int idIndex;
     private int areaTypeIndex;
@@ -35,12 +37,13 @@ public class ZonesReader extends CSVReader {
     public static void mapFeaturesToZones(DataSet dataSet) {
         for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
-            if (dataSet.getZones().containsKey(zoneId)){
-                dataSet.getZones().get(zoneId).setShapeFeature(feature);
-            } else {
-                System.out.println("Zone not found in shapefile: " + zoneId + ". No feature will be added.");
+            MitoZone zone = dataSet.getZones().get(zoneId);
+            if (zone != null){
+                zone.setShapeFeature(feature);
+            }else{
+                logger.warn("zoneId " + zoneId + " doesn't exist in mito zone system");
             }
-            }
+        }
     }
 
     @Override

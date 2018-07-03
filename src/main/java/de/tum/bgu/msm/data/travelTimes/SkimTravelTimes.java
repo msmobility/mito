@@ -10,14 +10,14 @@ import omx.OmxMatrix;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.TransportMode;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class SkimTravelTimes implements TravelTimes {
 
     private final static Logger LOGGER = Logger.getLogger(SkimTravelTimes.class);
 
-    private final Map<String, DoubleMatrix2D> matricesByMode = new HashMap<>();
+    private final ConcurrentMap<String, DoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
 
     /**
      * retrieves the travel time between origin and destination for a specific mode and time.
@@ -42,7 +42,7 @@ public class SkimTravelTimes implements TravelTimes {
         } else {
             return matricesByMode.get(mode).getQuick(origin, destination);
         }
-        }
+    }
 
     /**
      * Reads a skim matrix from an omx file and stores it for the given mode and year. To allow conversion between units

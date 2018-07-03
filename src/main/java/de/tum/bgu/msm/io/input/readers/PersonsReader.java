@@ -5,6 +5,7 @@ import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +24,8 @@ public class PersonsReader extends CSVReader {
     private int posLicence = -1;
     private int posIncome = -1;
     private int posSchool = -1;
+    private int posSchoolCoordX = -1;
+    private int posSchoolCoordY = -1;
 
     public PersonsReader(DataSet dataSet) {
         super(dataSet);
@@ -53,6 +56,9 @@ public class PersonsReader extends CSVReader {
         posSex = headerList.indexOf("gender");
         posOccupation = headerList.indexOf("occupation");
         posWorkplace = headerList.indexOf("workplace");
+        posSchoolCoordX = headerList.indexOf("schoolCoordX");
+        posSchoolCoordY = headerList.indexOf("schoolCoordY");
+        posSchool = headerList.indexOf("schoolTAZ");
         posLicence = headerList.indexOf("driversLicense");
         posIncome = headerList.indexOf("income");
         posSchool = headerList.indexOf("schoolTAZ");
@@ -90,10 +96,12 @@ public class PersonsReader extends CSVReader {
             final int schoolZone = Integer.parseInt(record[posSchool]);
             if(dataSet.getZones().containsKey(schoolZone)) {
                 pp.setOccupationZone(dataSet.getZones().get(schoolZone));
+                pp.setOccupationCoord(new Coord(Double.parseDouble(record[posSchoolCoordX]),Double.parseDouble(record[posSchoolCoordY])));
             } else {
                 logger.warn("Person " + id + " declared as student does not have a school TAZ!");
             }
         }
+
         hh.addPerson(pp);
         dataSet.addPerson(pp);
     }

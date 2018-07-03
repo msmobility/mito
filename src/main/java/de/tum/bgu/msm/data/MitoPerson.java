@@ -21,9 +21,10 @@ public class MitoPerson implements Id{
     private final Occupation occupation;
     private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
     private MitoZone occupationZone;
+    private Coord occupationCoord; //jobLocation or schoolLocation
     private final int age;
     private final boolean driversLicense;
-    private Coord occupationCoord; //jobLocation or schoolLocation
+
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
     public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
