@@ -16,7 +16,7 @@ public class OmxMatrixWriter {
     public static void createOmxFile(String omxFilePath, int numberOfZones) {
 
         try (OmxFile omxFile = new OmxFile(omxFilePath)) {
-            int dim0 = numberOfZones;
+            int dim0 = numberOfZones -1;
             int dim1 = dim0;
             int[] shape = {dim0, dim1};
             int lookup1NA = -1;
@@ -30,7 +30,7 @@ public class OmxMatrixWriter {
             omxFile.openNew(shape);
             omxFile.addLookup(lookup1);
             omxFile.save();
-            omxFile.close();
+
         }
     }
 
@@ -39,7 +39,15 @@ public class OmxMatrixWriter {
         try (OmxFile omxFile = new OmxFile(omxFilePath)) {
             omxFile.openReadWrite();
             double mat1NA = -1;
-            OmxMatrix.OmxDoubleMatrix mat1 = new OmxMatrix.OmxDoubleMatrix(omxMatrixName, matrix.toArray(), mat1NA);
+            double[][] matrixWithZeros = matrix.toArray();
+            double[][] matrixWithoutZeros = new double[matrix.rows()-1][matrix.columns()-1];
+            for (int i = 1; i < matrix.columns(); i++){
+                for (int j = 1; j < matrix.columns(); j++) {
+                    matrixWithoutZeros[i-1][j-1] = matrixWithZeros[i][j];
+                }
+
+            }
+            OmxMatrix.OmxDoubleMatrix mat1 = new OmxMatrix.OmxDoubleMatrix(omxMatrixName, matrixWithoutZeros, mat1NA);
             mat1.setAttribute(OmxConstants.OmxNames.OMX_DATASET_TITLE_KEY.getKey(), "skim_matrix");
             omxFile.addMatrix(mat1);
             omxFile.save();
