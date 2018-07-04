@@ -2,8 +2,6 @@ package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import cern.jet.random.tdouble.Normal;
-import cern.jet.random.tdouble.engine.DoubleRandomEngine;
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
@@ -11,10 +9,11 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.TransportMode;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static de.tum.bgu.msm.data.Purpose.*;
 
@@ -23,15 +22,18 @@ import static de.tum.bgu.msm.data.Purpose.*;
  */
 public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<Void> {
 
+    private final static double VARIANCE_DOUBLED = 10 * 2;
+    private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
+
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
-    private final Normal distribution = new Normal(0, 0.2, DoubleRandomEngine.makeDefault());
+    private final double peakHour;
 
     private final Purpose purpose;
     private final List<Purpose> priorPurposes;
     private final Occupation relatedOccupation;
     private final EnumMap<Purpose, DoubleMatrix2D> baseProbabilities;
-    private DoubleMatrix1D destinationProbabilities;
+    private final double[] destinationProbabilities;
     private final DataSet dataSet;
     private final TravelTimes travelTimes;
 
@@ -40,7 +42,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private double hhBudgetPerTrip;
 
     private final Map<Integer, MitoZone> zonesCopy;
-    private double adjustedBudget;
+    private double mean;
 
     private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, Occupation relatedOccupation,
                                  EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
@@ -51,7 +53,9 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         this.baseProbabilities = baseProbabilities;
         this.dataSet = dataSet;
         this.zonesCopy = new HashMap<>(dataSet.getZones());
-        travelTimes = dataSet.getTravelTimes();
+        this.destinationProbabilities = new double[baseProbabilities.values().iterator().next().columns()];
+        this.travelTimes = dataSet.getTravelTimes();
+        this.peakHour = dataSet.getPeakHour();
     }
 
     public static NhbwNhboDistribution nhbw(EnumMap<Purpose, DoubleMatrix2D> baseProbabilites, DataSet dataSet) {
@@ -73,21 +77,21 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
-                if(hasBudgetForPurpose(household)) {
+                if (hasBudgetForPurpose(household)) {
                     updateBudgets(household);
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         MitoZone origin = findOrigin(household, trip);
-                        if(origin == null) {
+                        if (origin == null) {
                             logger.debug("No origin found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();
                             continue;
                         }
                         trip.setTripOrigin(origin);
                         trip.setTripOriginCoord(origin.getRandomCoord());
-                        MitoZone destination = findDestination(trip);
+                        MitoZone destination = findDestination(trip.getTripOrigin().getId());
                         trip.setTripDestination(destination);
                         trip.setTripDestinationCoord(destination.getRandomCoord());
-                        if(destination == null) {
+                        if (destination == null) {
                             logger.debug("No destination found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();
                             continue;
@@ -107,6 +111,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     /**
      * Checks if members of this household perform trips of the set purpose
+     *
      * @return true if trips are available, false otherwise
      */
     private boolean hasTripsForPurpose(MitoHousehold household) {
@@ -115,6 +120,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     /**
      * Checks if this household has been allocated travel time budget for the set purpose
+     *
      * @return true if budget was allocated, false otherwise
      */
     private boolean hasBudgetForPurpose(MitoHousehold household) {
@@ -123,13 +129,13 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private void updateBudgets(MitoHousehold household) {
         double ratio;
-        if(idealBudgetSum == actualBudgetSum) {
+        if (idealBudgetSum == actualBudgetSum) {
             ratio = 1;
         } else {
             ratio = idealBudgetSum / actualBudgetSum;
         }
         hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(purpose) / household.getTripsForPurpose(purpose).size();
-        adjustedBudget = hhBudgetPerTrip * ratio;
+        mean = hhBudgetPerTrip * ratio;
     }
 
     private MitoZone findOrigin(MitoHousehold household, MitoTrip trip) {
@@ -152,19 +158,18 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         return findRandomOrigin(household, selectedPurpose);
     }
 
-    private MitoZone findDestination(MitoTrip trip) {
-        destinationProbabilities = baseProbabilities.get(purpose).viewRow(trip.getTripOrigin().getId()).copy();
-        adjustDestinationProbabilities(trip.getTripOrigin());
-        final int destination = MitoUtil.select(destinationProbabilities.toArray(), random, destinationProbabilities.zSum());
-        return zonesCopy.get(destination);
-    }
+    private MitoZone findDestination(int origin) {
+        double[] baseProbs = baseProbabilities.get(purpose).viewRow(origin).toArray();
+        IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
+            double factor;
+            //divide travel time by 2 as home based trips' budget account for the return trip as well
+            double diff = travelTimes.getTravelTime(origin, i, peakHour, "car") / 2 - mean;
+            factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
+            destinationProbabilities[i] = baseProbs[i] * factor;
+        });
 
-    private void adjustDestinationProbabilities(MitoZone origin){
-        for (int i = 0; i < destinationProbabilities.size(); i++) {
-            double travelTime = (travelTimes.getTravelTime(origin.getId(), i, dataSet.getPeakHour(), "car"));
-            final double density = distribution.pdf((adjustedBudget - travelTime) / adjustedBudget);
-            destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * density);
-        }
+        int destination = MitoUtil.select(baseProbs, random);
+        return zonesCopy.get(destination);
     }
 
     private MitoZone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
@@ -175,8 +180,8 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
     private void postProcessTrip(MitoTrip trip) {
-            actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(),
-                    dataSet.getPeakHour(), TransportMode.car);
-            idealBudgetSum += hhBudgetPerTrip;
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(),
+                trip.getTripDestination().getId(), peakHour, "car") / 2 - mean;
+        idealBudgetSum += hhBudgetPerTrip;
     }
 }

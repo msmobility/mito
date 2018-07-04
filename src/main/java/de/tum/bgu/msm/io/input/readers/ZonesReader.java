@@ -10,10 +10,6 @@ import de.tum.bgu.msm.util.MitoUtil;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
 /**
  * @author Nico
  */
