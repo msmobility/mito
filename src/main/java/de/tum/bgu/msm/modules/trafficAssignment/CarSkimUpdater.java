@@ -123,8 +123,8 @@ public class CarSkimUpdater {
                             //}
                             carTravelTimeMatrix.setQuick(origin, destination, time/60);
                             carTravelTimeMatrix.setQuick(destination, origin, time/60);
-                            carDistanceMatrix.setQuick(origin, destination, distance);
-                            carDistanceMatrix.setQuick(destination, origin, distance);
+                            carDistanceMatrix.setQuick(origin, destination, distance/1000);
+                            carDistanceMatrix.setQuick(destination, origin, distance/1000);
                         //}
                         //}
                     });
