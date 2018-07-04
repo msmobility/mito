@@ -151,7 +151,7 @@ public class CarSkimUpdater {
             double[] minDistValues = new double[numberOfNeighbours];
             for (int k = 0; k < numberOfNeighbours; k++) {
                 minTimeValues[k] = maximumMinutes;
-                minDistValues[k] = maximumMinutes / 60 * 50 * 1000; //maximum distance results from maximum time at 50 km/h
+                minDistValues[k] = maximumMinutes / 60 * 50; //maximum distance results from maximum time at 50 km/h
             }
             //find the  n closest neighbors - the lower travel time values in the matrix column
             for (int j = 1; j < carTravelTimeMatrix.rows(); j++) {
