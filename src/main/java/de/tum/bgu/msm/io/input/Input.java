@@ -54,6 +54,7 @@ public class Input {
             dataSet.addZone(zone);
         }
         dataSet.setTravelTimes(feed.travelTimes);
+        dataSet.setTravelDistancesAuto(feed.travelDistancesAuto);
         setHouseholdsFromFeed(feed.households);
 
         dataSet.setYear(feed.year);
@@ -64,7 +65,10 @@ public class Input {
     }
 
     public void readTravelDistancesAndTransitTravelTimes() {
-        new SkimsReader(dataSet).readSkimDistances();
+        if (dataSet.getTravelDistancesAuto() == null) {
+            new SkimsReader(dataSet).readSkimDistancesAuto();
+        }
+        new SkimsReader(dataSet).readSkimDistancesNMT();
         new SkimsReader(dataSet).readOnlyTransitTravelTimes();
     }
 
@@ -87,13 +91,15 @@ public class Input {
 
         private final Map<Integer, MitoZone> zones;
         private final TravelTimes travelTimes;
+        private final TravelDistances travelDistancesAuto;
         private final Map<Integer, MitoHousehold> households;
         private final int year;
         private Map<Integer, SimpleFeature> zoneFeatureMap;
 
-        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, Map<Integer, MitoHousehold> households, int year, Map<Integer,SimpleFeature> zoneFeatureMap) {
+        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, TravelDistances travelDistancesAuto, Map<Integer, MitoHousehold> households, int year, Map<Integer,SimpleFeature> zoneFeatureMap) {
             this.zones = zones;
             this.travelTimes = travelTimes;
+            this.travelDistancesAuto = travelDistancesAuto;
             this.households = households;
             this.year = year;
             this.zoneFeatureMap = zoneFeatureMap;

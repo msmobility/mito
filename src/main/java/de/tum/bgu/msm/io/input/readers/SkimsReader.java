@@ -24,8 +24,14 @@ public class SkimsReader extends AbstractOmxReader {
         readTravelDistances();
     }
 
-    public void readSkimDistances(){
-        readTravelDistances();
+    public void readSkimDistancesAuto(){
+        DoubleMatrix2D distanceSkimAuto = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"distanceByTime", 1. / 1000.);
+        dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
+    }
+
+    public void readSkimDistancesNMT(){
+        DoubleMatrix2D distanceSkimNMT = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
+        dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
 
     public void readOnlyTransitTravelTimes(){

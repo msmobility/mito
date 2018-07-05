@@ -42,7 +42,8 @@ public class InitializeFeedModelTest {
         MitoPerson person2 = new MitoPerson(2, Occupation.UNEMPLOYED, -1, 1, Gender.FEMALE, true);
         household.addPerson(person2);
 
-        Input.InputFeed feed = new Input.InputFeed(zones, (origin, destination, timeOfDay_s, mode) -> 1, households, 2017,zoneFeatureMap);
+        Input.InputFeed feed = new Input.InputFeed(zones, (origin, destination, timeOfDay_s, mode) -> 1,
+                (origin, destination) -> 1, households, 2017,zoneFeatureMap);
         model = MitoModel.createModelWithInitialFeed("./testInput/test.properties", feed);
     }
 
