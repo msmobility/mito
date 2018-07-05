@@ -12,7 +12,6 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
 import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
-import org.matsim.api.core.v01.Coord;
 
 import java.io.PrintWriter;
 import java.util.*;
@@ -130,17 +129,17 @@ public class SummarizeData {
                 double distance = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId());
                 pwh.print(distance);
                 pwh.print(",");
-                double time_auto = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "car");
-                pwh.print(time_auto);
+                double timeAuto = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "car");
+                pwh.print(timeAuto);
                 pwh.print(",");
-                double time_bus = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "bus");
-                pwh.print(time_bus);
+                double timeBus = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "bus");
+                pwh.print(timeBus);
                 pwh.print(",");
-                double time_train = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "train");
-                pwh.print(time_train);
+                double timeTrain = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "train");
+                pwh.print(timeTrain);
                 pwh.print(",");
-                double time_tram_metro = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "tramMetro");
-                pwh.print(time_tram_metro);
+                double timeTramMetro = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "tramMetro");
+                pwh.print(timeTramMetro);
             } else {
                 pwh.print("NA,NA,NA,NA,NA");
             }

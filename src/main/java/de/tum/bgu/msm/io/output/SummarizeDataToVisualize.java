@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.io.output;
 
-import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -8,7 +7,9 @@ import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by matthewokrah on 12/03/2018.

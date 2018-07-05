@@ -1,49 +1,51 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import cern.jet.random.tdouble.Normal;
-import cern.jet.random.tdouble.engine.DoubleRandomEngine;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.TransportMode;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * @author Nico
  */
 public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
 
+    private final static double VARIANCE_DOUBLED = 10 * 2;
+    private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
+
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
+    private final double peakHour;
     private final Purpose purpose;
     private final DoubleMatrix2D baseProbabilities;
     private final TravelTimes travelTimes;
     private final DataSet dataSet;
     private final Map<Integer, MitoZone> zonesCopy;
-    private DoubleMatrix1D destinationProbabilities;
+    private final double[] destinationProbabilities;
 
     private double idealBudgetSum = 0;
     private double actualBudgetSum = 0;
     private double hhBudgetPerTrip;
-
-    private final Normal distribution = new Normal(0, 0.2, DoubleRandomEngine.makeDefault());
-    private double adjustedBudget;
+    private double mean;
 
     private HbsHboDistribution(Purpose purpose, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
-        this.travelTimes = dataSet.getTravelTimes();
         this.purpose = purpose;
         this.baseProbabilities = baseProbabilities;
         this.zonesCopy = new HashMap<>(dataSet.getZones());
+        this.destinationProbabilities = new double[baseProbabilities.columns()];
+        this.travelTimes = dataSet.getTravelTimes();
+        this.peakHour = dataSet.getPeakHour();
     }
 
     public static HbsHboDistribution hbs(DoubleMatrix2D baseprobabilities, DataSet dataSet) {
@@ -64,9 +66,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
             }
             if (hasTripsForPurpose(household)) {
                 if(hasBudgetForPurpose(household)) {
-                    copyBaseDestinationProbabilities(household);
                     updateBudgets(household);
-                    adjustDestinationProbabilities(household.getHomeZone());
+                    updateDestinationProbabilities(household.getHomeZone().getId());
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         trip.setTripOrigin(household.getHomeZone());
                         trip.setTripOriginCoord(household.getHomeCoord());
@@ -90,15 +91,6 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         return null;
     }
 
-    private void adjustDestinationProbabilities(MitoZone origin){
-        for (int i = 0; i < destinationProbabilities.size(); i++) {
-            //divide travel time by 2 as home based trips' budget account for the return trip as well
-            double travelTime = travelTimes.getTravelTime(origin.getId(), i, dataSet.getPeakHour(), "car") / 2.;
-            final double density = distribution.pdf((adjustedBudget - travelTime) / adjustedBudget);
-            destinationProbabilities.setQuick(i, destinationProbabilities.getQuick(i) * density);
-        }
-    }
-
     /**
      * Checks if members of this household perform trips of the set purpose
      * @return true if trips are available, false otherwise
@@ -116,16 +108,21 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     }
 
     private void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(),
-                dataSet.getPeakHour(), TransportMode.car);
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
         idealBudgetSum += hhBudgetPerTrip;
     }
 
     /**
      * Copy probabilities for every destination for the current home origin
      */
-    private void copyBaseDestinationProbabilities(MitoHousehold household) {
-        destinationProbabilities = baseProbabilities.viewRow(household.getHomeZone().getId()).copy();
+    private void updateDestinationProbabilities(int origin) {
+        double[] baseProbs = baseProbabilities.viewRow(origin).toArray();
+        IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
+            //divide travel time by 2 as home based trips' budget account for the return trip as well
+            double diff = travelTimes.getTravelTime(origin, i, 21400, "car") /2 - mean;
+            double factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
+            destinationProbabilities[i] =  baseProbs[i] * factor;
+        });
     }
 
     private void updateBudgets(MitoHousehold household) {
@@ -136,11 +133,11 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
             ratio = idealBudgetSum / actualBudgetSum;
         }
         hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(purpose) / household.getTripsForPurpose(purpose).size();
-        adjustedBudget = hhBudgetPerTrip * ratio;
+        mean = hhBudgetPerTrip * ratio;
     }
 
     private MitoZone findDestination() {
-        final int destination = MitoUtil.select(destinationProbabilities.toArray(), random, destinationProbabilities.zSum());
+        final int destination = MitoUtil.select(destinationProbabilities, random);
         return zonesCopy.get(destination);
     }
 }

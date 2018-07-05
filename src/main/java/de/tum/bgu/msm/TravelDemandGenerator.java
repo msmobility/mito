@@ -20,7 +20,6 @@ import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -35,7 +34,6 @@ import java.util.Map;
  * Created on Sep 18, 2016 in Munich, Germany
  *
  */
-
 public class TravelDemandGenerator {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
@@ -67,7 +65,6 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
-        SummarizeDataToVisualize.writeFinalSummary(dataSet);
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         ModeChoice modeChoice = new ModeChoice(dataSet);
@@ -95,6 +92,7 @@ public class TravelDemandGenerator {
         }
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
+        SummarizeDataToVisualize.writeFinalSummary(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
         SummarizeData.writeOutTrips(dataSet);
         if(Resources.INSTANCE.getBoolean(Properties.CREATE_DESTINATION_CHOICE_HISTOGRAMS, true)){

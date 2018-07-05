@@ -1,22 +1,18 @@
 package de.tum.bgu.msm.io.input;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
-import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
-import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class Input {
@@ -50,7 +46,7 @@ public class Input {
     }
 
     public void readFromFeed(InputFeed feed) {
-        for(MitoZone zone: feed.zones.values()) {
+        for (MitoZone zone : feed.zones.values()) {
             dataSet.addZone(zone);
         }
         dataSet.setTravelTimes(feed.travelTimes);
@@ -81,7 +77,7 @@ public class Input {
                         + household.getHomeZone());
             }
             dataSet.addHousehold(household);
-            for(MitoPerson person: household.getPersons().values()) {
+            for (MitoPerson person : household.getPersons().values()) {
                 dataSet.addPerson(person);
             }
         }
@@ -96,7 +92,7 @@ public class Input {
         private final int year;
         private Map<Integer, SimpleFeature> zoneFeatureMap;
 
-        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, TravelDistances travelDistancesAuto, Map<Integer, MitoHousehold> households, int year, Map<Integer,SimpleFeature> zoneFeatureMap) {
+        public InputFeed(Map<Integer, MitoZone> zones, TravelTimes travelTimes, TravelDistances travelDistancesAuto, Map<Integer, MitoHousehold> households, int year, Map<Integer, SimpleFeature> zoneFeatureMap) {
             this.zones = zones;
             this.travelTimes = travelTimes;
             this.travelDistancesAuto = travelDistancesAuto;
