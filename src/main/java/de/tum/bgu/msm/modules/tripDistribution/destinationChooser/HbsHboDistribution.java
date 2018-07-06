@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
  */
 public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
 
-    private final static double VARIANCE_DOUBLED = 10 * 2;
+    private final static double VARIANCE_DOUBLED = 30 * 2;
     private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
@@ -35,7 +35,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     private double idealBudgetSum = 0;
     private double actualBudgetSum = 0;
     private double hhBudgetPerTrip;
-    private double mean;
+    private double adjustedBudget;
 
     private HbsHboDistribution(Purpose purpose, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
@@ -108,7 +108,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     }
 
     private void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car") * 2;
         idealBudgetSum += hhBudgetPerTrip;
     }
 
@@ -118,8 +118,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     private void updateDestinationProbabilities(int origin) {
         double[] baseProbs = baseProbabilities.viewRow(origin).toArray();
         IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
-            //divide travel time by 2 as home based trips' budget account for the return trip as well
-            double diff = travelTimes.getTravelTime(origin, i, 21400, "car") /2 - mean;
+            //multiply travel time by 2 as home based trips' budget account for the return trip as well
+            double diff = travelTimes.getTravelTime(origin, i, peakHour, "car") *2 - adjustedBudget;
             double factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
             destinationProbabilities[i] =  baseProbs[i] * factor;
         });
@@ -133,7 +133,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
             ratio = idealBudgetSum / actualBudgetSum;
         }
         hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(purpose) / household.getTripsForPurpose(purpose).size();
-        mean = hhBudgetPerTrip * ratio;
+        adjustedBudget = hhBudgetPerTrip * ratio;
     }
 
     private MitoZone findDestination() {

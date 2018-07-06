@@ -44,7 +44,7 @@ public class Properties {
 
     public static final String AUTONOMOUS_VEHICLE_CHOICE = "include.AVchoice";
 
-    public static final String CREATE_DESTINATION_CHOICE_HISTOGRAMS = "create.destination.choice.histograms";
+    public static final String CREATE_CHARTS = "charts";
 
     public static final String RUN_TIME_OF_DAY_CHOICE = "run.time.of.day.choice";
     public static final String TIME_OF_DAY_DISTRIBUTIONS = "time.of.day.distribution.file";

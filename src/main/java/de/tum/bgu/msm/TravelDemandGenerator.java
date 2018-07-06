@@ -95,7 +95,7 @@ public class TravelDemandGenerator {
         SummarizeDataToVisualize.writeFinalSummary(dataSet);
         SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
         SummarizeData.writeOutTrips(dataSet);
-        if(Resources.INSTANCE.getBoolean(Properties.CREATE_DESTINATION_CHOICE_HISTOGRAMS, true)){
+        if(Resources.INSTANCE.getBoolean(Properties.CREATE_CHARTS, true)){
             SummarizeData.writeCharts(dataSet);
         }
 

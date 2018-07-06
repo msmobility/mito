@@ -163,7 +163,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
             double factor;
             //divide travel time by 2 as home based trips' budget account for the return trip as well
-            double diff = travelTimes.getTravelTime(origin, i, peakHour, "car") / 2 - mean;
+            double diff = travelTimes.getTravelTime(origin, i, peakHour, "car") - mean;
             factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
             destinationProbabilities[i] = baseProbs[i] * factor;
         });
@@ -181,7 +181,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private void postProcessTrip(MitoTrip trip) {
         actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(),
-                trip.getTripDestination().getId(), peakHour, "car") / 2 - mean;
+                trip.getTripDestination().getId(), peakHour, "car");
         idealBudgetSum += hhBudgetPerTrip;
     }
 }
