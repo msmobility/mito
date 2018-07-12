@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,17 +35,29 @@ public class ModeChoiceCalculatorTest {
         trip.setTripOrigin(zone);
         trip.setTripDestination(zone);
 
-        //for(int i= 0; i< 1000000; i ++) {
-            double[] result = calculator.calculateProbabilities(hh, pp, trip, (origin1, destination, timeOfDay_s, mode) -> {
-                switch(mode) {
-                    case "car": return 15.;
-                    case "bus": return 30.;
-                    case "tramMetro": return 25;
-                    case "train": return 40.;
-                    default: return 0;
-                }
-            }, 5., 5., 0);
-        //}
+        double[] result = calculator.calculateProbabilities(hh, pp, trip, new TravelTimes() {
+        	@Override
+        	public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
+        		switch(mode) {
+        		case "car": return 15.;
+        		case "bus": return 30.;
+        		case "tramMetro": return 25;
+        		case "train": return 40.;
+        		default: return 0;
+        		}
+        	}
+
+			@Override
+			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
+				switch(mode) {
+        		case "car": return 15.;
+        		case "bus": return 30.;
+        		case "tramMetro": return 25;
+        		case "train": return 40.;
+        		default: return 0;
+        		}
+			}
+        }, 5., 5., 0);
         for(int i = 0; i < result.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
         }

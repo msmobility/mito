@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.junit.Before;
@@ -26,7 +27,17 @@ public class ModeChoiceTest {
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);
         dataSet.setTravelDistancesNMT((origin, destination) -> 1000);
-        dataSet.setTravelTimes((origin, destination, timeOfDay_s, mode) -> 10.);
+        dataSet.setTravelTimes(new TravelTimes() {
+			@Override
+			public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
+				return 10.;
+			}
+			
+			@Override
+			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
+				return 10.;
+			}
+		});
         fillDataSet();
     }
 

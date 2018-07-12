@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.Input;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,8 +43,17 @@ public class InitializeFeedModelTest {
         MitoPerson person2 = new MitoPerson(2, Occupation.UNEMPLOYED, -1, 1, Gender.FEMALE, true);
         household.addPerson(person2);
 
-        Input.InputFeed feed = new Input.InputFeed(zones, (origin, destination, timeOfDay_s, mode) -> 1,
-                (origin, destination) -> 1, households, 2017,zoneFeatureMap);
+        Input.InputFeed feed = new Input.InputFeed(zones, new TravelTimes() {
+			@Override
+			public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
+				return 1.;
+			}
+			
+			@Override
+			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
+				return 1.;
+			}
+		}, (origin, destination) -> 1, households, 2017,zoneFeatureMap);
         model = MitoModel.createModelWithInitialFeed("./testInput/test.properties", feed);
     }
 
