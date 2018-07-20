@@ -21,7 +21,7 @@ public class MitoPerson implements Id{
     private final Occupation occupation;
     private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
     private MitoZone occupationZone;
-    private Coord occupationCoord; //jobLocation or schoolLocation
+    private MicroLocation occupationLocation; //jobLocation or schoolLocation
     private final int age;
     private final boolean driversLicense;
 
@@ -80,11 +80,11 @@ public class MitoPerson implements Id{
         }
     }
 
-    public Coord getOccupationCoord() {
-        return occupationCoord;
+    public MicroLocation getOccupationLocation() {
+        return occupationLocation;
     }
 
-    public void setOccupationCoord(Coord occupationCoord) {
-        this.occupationCoord = occupationCoord;
+    public void setOccupationLocation(MicroLocation occupationLocation) {
+        this.occupationLocation = occupationLocation;
     }
 }

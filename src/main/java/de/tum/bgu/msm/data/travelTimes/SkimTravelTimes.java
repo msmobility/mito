@@ -98,57 +98,69 @@ public class SkimTravelTimes implements TravelTimes {
 
 	@Override
 	public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
-		if (origin instanceof MicroLocation) {
-			if (destination instanceof MicroLocation) {
-				return matricesByMode.get(mode).getQuick(((MicroLocation) origin).getZone().getId(),
-						((MicroLocation) destination).getZone().getId());
-			} else {
-				throw new IllegalArgumentException("Travel time requests involving for MicroLocation are only implemented for "
-						+ "skim-based travel times if both origin and destination are Microlocations.");
-			}
-		} else if (origin instanceof Zone) {
-			Zone originZone = (Zone) origin;
-			if (destination instanceof Zone) {
-				Zone destinationZone = (Zone) destination;
-				// Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
-		        // different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
-		        if (mode.equals("pt")) {
-		            if (matricesByMode.containsKey("pt")) {
-		                return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
-		            } else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
-		                return getMinimumPtTravelTime(originZone.getId(), destinationZone.getId(), timeOfDay_s);
-		            } else {
-		                throw new RuntimeException("define transit travel modes!!");
-		            }
-		        } else {
-		            return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
-		        }
-			} else if (destination instanceof Region) {
-				Region destinationRegion = (Region) destination;
-				if (travelTimeToRegion.contains(originZone, destinationRegion)) {
-					return travelTimeToRegion.get(originZone, destinationRegion);
-				}
-				double min = Double.MAX_VALUE;
-        		for (Zone zoneInRegion : destinationRegion.getZones()) {
-        			double travelTime = getTravelTime(origin, zoneInRegion, timeOfDay_s, mode);
-        			if (travelTime < min) {
-        				min = travelTime;
-        			}
-        		}
-        		travelTimeToRegion.put(originZone, destinationRegion, min);
-        		// TODO This suggestion was in Accessibility before with the following comment (by Carlos)
-        	    //this is method is proposed as an alternative for the calculation of time from zone to region
-        		// ...nk/dz, july'18
-//        	    double average = destinationRegion.getZones().stream().mapToDouble(zoneInRegion -> 
-//        	    	getTravelTime(originZone, zoneInRegion, timeOfDay_s, mode)).average().getAsDouble();
-//        	    travelTimeToRegion.put(originZone, destinationRegion, average);
-        		return min;
-			}
+		Zone originZone;
+		if (origin instanceof Zone) {
+			originZone = (Zone) origin;
+		} else if (origin instanceof MicroLocation) {
+			originZone = ((MicroLocation) origin).getZone();
+		} else {
+			throw new IllegalArgumentException("Not implemented fot Location of type " + origin.getClass().getName() +".");
 		}
-		throw new IllegalArgumentException("The combination with origin of type " + origin.getClass().getName() 
-				+ " and destination of type " + destination.getClass().getName() + " is not valid.");
+		
+		Zone destinationZone;
+		if (destination instanceof Zone) {
+			destinationZone = (Zone) destination;
+		} else if (destination instanceof MicroLocation) {
+			destinationZone = ((MicroLocation) destination).getZone();
+		} else {
+			throw new IllegalArgumentException("Not implemented fot Location of type " + destination.getClass().getName() +".");
+		}
+	
+		// Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
+		// different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
+		if (mode.equals("pt")) {
+			if (matricesByMode.containsKey("pt")) {
+				return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
+			} else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
+				return getMinimumPtTravelTime(originZone.getId(), destinationZone.getId(), timeOfDay_s);
+			} else {
+				throw new RuntimeException("define transit travel modes!!");
+			}
+		} else {
+			return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
+		}
 	}
 	
+	@Override
+	public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
+		Zone originZone;
+		if (origin instanceof Zone) {
+			originZone = (Zone) origin;
+		} else if (origin instanceof MicroLocation) {
+			originZone = ((MicroLocation) origin).getZone();
+		} else {
+			throw new IllegalArgumentException("Not implemented fot Location of type " + origin.getClass().getName() +".");
+		}
+		if (travelTimeToRegion.contains(originZone, destination)) {
+			return travelTimeToRegion.get(originZone, destination);
+		}
+		double min = Double.MAX_VALUE;
+		for (Zone zoneInRegion : destination.getZones()) {
+			double travelTime = getTravelTime(origin, zoneInRegion, timeOfDay_s, mode);
+			if (travelTime < min) {
+				min = travelTime;
+			}
+		}
+		travelTimeToRegion.put(originZone, destination, min);
+		// TODO This suggestion was in Accessibility before with the following comment (by Carlos)
+		//this is method is proposed as an alternative for the calculation of time from zone to region
+		// ...nk/dz, july'18
+		//        	    double average = destinationRegion.getZones().stream().mapToDouble(zoneInRegion -> 
+		//        	    	getTravelTime(originZone, zoneInRegion, timeOfDay_s, mode)).average().getAsDouble();
+		//        	    travelTimeToRegion.put(originZone, destinationRegion, average);
+		return min;
+	}
+		
 	public DoubleMatrix2D getMatrixForMode(String mode) {
 			return matricesByMode.get(mode);
 	}

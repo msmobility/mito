@@ -8,6 +8,7 @@ import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +51,11 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for Purpose " + purpose);
             }
+            Coord coord = new Coord(household.getHomeLocation().getCoordinate().x, household.getHomeLocation().getCoordinate().y);
             if (hasTripsForPurpose(household)) {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(household.getHomeZone());
-                    trip.setTripOriginCoord(household.getHomeCoord());
+                    trip.setTripOriginCoord(coord);
                     findDestination(household, trip);
                     TripDistribution.distributedTripsCounter.incrementAndGet();
                 }
@@ -66,7 +68,9 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     private void findDestination(MitoHousehold household, MitoTrip trip) {
         if (isFixedByOccupation(trip)) {
             trip.setTripDestination(trip.getPerson().getOccupationZone());
-            trip.setTripDestinationCoord(trip.getPerson().getOccupationCoord());
+            Coord coord = new Coord(trip.getPerson().getOccupationLocation().getCoordinate().x,
+            		trip.getPerson().getOccupationLocation().getCoordinate().y);
+            trip.setTripDestinationCoord(coord);
         } else {
             TripDistribution.randomOccupationDestinationTrips.incrementAndGet();
             DoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());

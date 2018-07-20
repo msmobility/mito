@@ -96,7 +96,7 @@ public class PersonsReader extends CSVReader {
             final int schoolZone = Integer.parseInt(record[posSchool]);
             if(dataSet.getZones().containsKey(schoolZone)) {
                 pp.setOccupationZone(dataSet.getZones().get(schoolZone));
-                pp.setOccupationCoord(new Coord(Double.parseDouble(record[posSchoolCoordX]),Double.parseDouble(record[posSchoolCoordY])));
+                pp.setOccupationLocation(new MicroLocation(Double.parseDouble(record[posSchoolCoordX]),Double.parseDouble(record[posSchoolCoordY]), null));
             } else {
                 logger.warn("Person " + id + " declared as student does not have a school TAZ!");
             }

@@ -37,6 +37,11 @@ public class ModeChoiceTest {
 			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
 				return 10.;
 			}
+
+			@Override
+			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
+				return 0;
+			}
 		});
         fillDataSet();
     }

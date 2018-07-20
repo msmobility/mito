@@ -53,6 +53,11 @@ public class InitializeFeedModelTest {
 			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
 				return 1.;
 			}
+
+			@Override
+			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
+				return 0;
+			}
 		}, (origin, destination) -> 1, households, 2017,zoneFeatureMap);
         model = MitoModel.createModelWithInitialFeed("./testInput/test.properties", feed);
     }
