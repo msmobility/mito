@@ -43,10 +43,9 @@ public class SummarizeDataToVisualize {
             case "open":
                 String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
-                String resultFileName = Resources.INSTANCE.getString(Properties.SPATIAL_RESULT_FILE_NAME);
-                spatialResultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + resultFileName +
+                spatialResultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFileSpatial" +
                         ".csv", false);
-                spatialResultWriterFinal = MitoUtil.openFileForSequentialWriting(directory + "/" + resultFileName +
+                spatialResultWriterFinal = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFileSpatial" +
                         "_final.csv", false);
                 break;
             case "close":
@@ -80,10 +79,9 @@ public class SummarizeDataToVisualize {
             case "open":
                 String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
-                String resultFileName = Resources.INSTANCE.getString(Properties.RESULT_FILE_NAME);
-                resultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + resultFileName +
+                resultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFile" +
                         ".csv", false);
-                resultWriterFinal = MitoUtil.openFileForSequentialWriting(directory + "/" + resultFileName +
+                resultWriterFinal = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFile" +
                         "_final.csv", false);
                 break;
             case "close":
@@ -342,36 +340,3 @@ public class SummarizeDataToVisualize {
         return avTTBudgetByZoneAndPurpose;
     }
 }
-
-
-/*
-        Map<MitoZone, List<MitoHousehold>> householdsByZone =
-                dataSet.getHouseholds().values().stream().collect(Collectors.groupingBy(household -> household.getHomeZone()));
-
-        Map<MitoZone, Map<Purpose, Double>> avgBudgetByPurpAndZone = new HashMap<>();
-        for(Map.Entry<MitoZone, List<MitoHousehold>> entry: householdsByZone.entrySet()) {
-            Map<Purpose, Double> budgetByPurpose = new HashMap<>();
-            for(Purpose purpose: Purpose.values()) {
-                List<MitoHousehold> households = entry.getValue();
-                double averageBudget = households.stream().mapToDouble(
-                        household -> household.getTravelTimeBudgetForPurpose(purpose)).average().getAsDouble();
-                budgetByPurpose.put(purpose, averageBudget);
-            }
-            avgBudgetByPurpAndZone.put(entry.getKey(), budgetByPurpose);
-        }
-*/
-
-//        Map<MitoZone, Long> result = dataSet.getTrips().values().stream()
-//                .filter(trip ->
-//                        trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null)
-//                .collect(Collectors.groupingBy(MitoTrip::getTripOrigin, Collectors.counting()));
-
-//        dataSet.getTrips().values().stream()
-//                .filter(trip ->
-//                        trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null)
-//                .collect(Collectors.groupingBy(MitoTrip::getTripOrigin, Collectors.averagingDouble(new ToDoubleFunction<MitoTrip>() {
-//                    @Override
-//                    public double applyAsDouble(MitoTrip value) {
-//                        return dataSet.getTravelTimes().get("car").getTravelTime(value.getTripOrigin().getId(), value.getTripDestination().getId(), 8*60*60);
-//                    }
-//                })));
