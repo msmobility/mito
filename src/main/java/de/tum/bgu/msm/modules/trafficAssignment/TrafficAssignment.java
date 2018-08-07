@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.trafficAssignment;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.matsim.api.core.v01.population.Population;
@@ -21,8 +22,8 @@ public class TrafficAssignment extends Module {
 
     private Config matsimConfig;
     private MutableScenario matsimScenario;
-    private String outputDirectory = "output/trafficAssignment/";
-    private final double POPULATION_SAMPLING_RATE = 1.;
+    private String outputSubDirectory = "mitoOutput";
+    private final double SILO_SMAPLING_RATE = 1.2;
 
     public TrafficAssignment(DataSet dataSet) {
         super(dataSet);
@@ -43,7 +44,7 @@ public class TrafficAssignment extends Module {
 
         String runId = "mito_assignment";
         matsimConfig.controler().setRunId(runId);
-        matsimConfig.controler().setOutputDirectory(outputDirectory + "/" + dataSet.getYear());
+        matsimConfig.controler().setOutputDirectory(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "/" + dataSet.getYear() +  "/trafficAssignment");
         matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
 
         matsimConfig.qsim().setNumberOfThreads(16);
@@ -56,12 +57,16 @@ public class TrafficAssignment extends Module {
         matsimConfig.controler().setWriteEventsInterval(matsimConfig.controler().getLastIteration());
 
         matsimConfig.qsim().setStuckTime(10);
-        matsimConfig.qsim().setFlowCapFactor(POPULATION_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
-        matsimConfig.qsim().setStorageCapFactor(POPULATION_SAMPLING_RATE * Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)),0.75));
+        matsimConfig.qsim().setFlowCapFactor(SILO_SMAPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+        matsimConfig.qsim().setStorageCapFactor(SILO_SMAPLING_RATE * Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)),0.75));
     }
 
     private void createPopulation() {
         Population population = MatsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig);
+        LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
+        if (Resources.INSTANCE.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)){
+            population = longDistanceTraffic.addLongDistancePlans(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)), population);
+        }
         matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(matsimConfig);
         matsimScenario.setPopulation(population);
     }
@@ -70,11 +75,7 @@ public class TrafficAssignment extends Module {
         final Controler controler = new Controler(matsimScenario);
         controler.run();
 
-        //set a MitoMatsim travel time as current travel time
-        TravelTime travelTime = controler.getLinkTravelTimes();
-        TravelDisutility travelDisutility = controler.getTravelDisutilityFactory().createTravelDisutility(travelTime);
-
-        CarSkimUpdater skimUpdater = new CarSkimUpdater(travelTime, travelDisutility, matsimScenario.getNetwork(), dataSet);
+        CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
         skimUpdater.run();
 
     }

@@ -63,4 +63,14 @@ public class Properties {
     public static final String PRINT_OUT_SKIM = "print.skim";
     public static final String SKIM_FILE_NAME = "skim.file.name";
 
+    public static final String ADD_EXTERNAL_FLOWS = "add.external.flows";
+    public static final String EXTERNAL_DEPARTURE_TIME_FILE = "external.departure.time.file";
+    public static final String EXTERNAL_ZONES_LIST_FILE = "external.zones.list";
+    public static final String EXTERNAL_ZONES_SHAPEFILE = "external.zones.shp";
+    public static final String EXTERNAL_ZONES_SHAPE_ID_FIELD = "external.zones.shp.id.field";
+    public static final String EXTERNAL_MATRIX_PKW = "external.matrix.pkw";
+    public static final String EXTERNAL_MATRIX_GV = "external.matrix.gv";
+    public static final String EXTERNAL_MATRIX_PKW_PWV = "external.matrix.pkw_pwv";
+    public static final String EXTERNAL_MATRIX_SZM = "external.matrix.szm";
+
 }

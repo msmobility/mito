@@ -19,6 +19,8 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatsimPopulationGenerator {
 
@@ -40,6 +42,7 @@ public class MatsimPopulationGenerator {
     public static Population generateMatsimPopulation(DataSet dataSet, Config config){
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
+        AtomicInteger nonAssignedTripCounter = new AtomicInteger(0);
         dataSet.getTripSubsample().values().forEach(trip ->{
             try {
                 if (trip.getTripMode().equals(Mode.autoDriver)) {
@@ -73,9 +76,10 @@ public class MatsimPopulationGenerator {
 
                 }
             } catch (Exception e){
-                logger.info("The trip " + trip.getId() + " does not have trip mode.");
+                nonAssignedTripCounter.incrementAndGet();
             }
         });
+        logger.warn( nonAssignedTripCounter.get()  + " trips do not have trip origin, destination or mode and cannot be assigned in MATSim");
         return population;
     }
 
