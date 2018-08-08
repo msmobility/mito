@@ -1,17 +1,22 @@
 package de.tum.bgu.msm.data.travelTimes;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import de.tum.bgu.msm.data.Location;
+import de.tum.bgu.msm.data.MicroLocation;
+import de.tum.bgu.msm.data.Region;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
-import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
 import omx.OmxMatrix;
-import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.TransportMode;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class SkimTravelTimes implements TravelTimes {
 
@@ -19,14 +24,12 @@ public class SkimTravelTimes implements TravelTimes {
 
     private final ConcurrentMap<String, DoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
 
+	private final Table<Zone, Region, Double> travelTimeToRegion = HashBasedTable.create();
+
     /**
-     * retrieves the travel time between origin and destination for a specific mode and time.
-     * @param origin zone id of the origin
-     * @param destination zone id of the destination
-     * @param timeOfDay_s time of day in seconds
-     * @param mode mode for which the travel time applies
-     * @return the travel time in minutes
+     * Use method getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) instead
      */
+    @Deprecated
     @Override
     public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
         // Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
@@ -35,7 +38,7 @@ public class SkimTravelTimes implements TravelTimes {
             if (matricesByMode.containsKey("pt")) {
                 return matricesByMode.get(mode).getQuick(origin, destination);
             } else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
-                return getPtTime(origin, destination, timeOfDay_s);
+                return getMinimumPtTravelTime(origin, destination, timeOfDay_s);
             } else {
                 throw new RuntimeException("define transit travel modes!!");
             }
@@ -67,21 +70,22 @@ public class SkimTravelTimes implements TravelTimes {
      * @param skim the skim matrix with travel times in minutes
      */
     public void updateSkimMatrix(DoubleMatrix2D skim, String mode){
-
         matricesByMode.put(mode, skim);
         LOGGER.warn("The skim matrix for mode " + mode + " has been updated");
+        
+        travelTimeToRegion.clear();
     }
 
-    private double getPtTime(int origin, int destination, double timeOfDay_s) {
+    private double getMinimumPtTravelTime(int origin, int destination, double timeOfDay_s) {
         double travelTime = Double.MAX_VALUE;
         if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
-            travelTime = getTravelTime(origin, destination, timeOfDay_s, "bus");
+            travelTime = matricesByMode.get("bus").getQuick(origin, destination);
         }
-        if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime){
-            travelTime = getTravelTime(origin, destination, timeOfDay_s, "tramMetro");
+        if (matricesByMode.get("tramMetro").getQuick(origin, destination) < travelTime){
+            travelTime = matricesByMode.get("tramMetro").getQuick(origin, destination);
         }
-        if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
-            travelTime = getTravelTime(origin, destination, timeOfDay_s, "train");
+        if (matricesByMode.get("train").getQuick(origin, destination) < travelTime) {
+            travelTime = matricesByMode.get("train").getQuick(origin, destination);
         }
         return travelTime;
     }
@@ -90,6 +94,74 @@ public class SkimTravelTimes implements TravelTimes {
         OmxMatrixWriter.createOmxSkimMatrix(matricesByMode.get(mode),
                 filePath,
                 matrixName);
-
     }
+
+	@Override
+	public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
+		Zone originZone;
+		if (origin instanceof Zone) {
+			originZone = (Zone) origin;
+		} else if (origin instanceof MicroLocation) {
+			originZone = ((MicroLocation) origin).getZone();
+		} else {
+			throw new IllegalArgumentException("Not implemented fot Location of type " + origin.getClass().getName() +".");
+		}
+		
+		Zone destinationZone;
+		if (destination instanceof Zone) {
+			destinationZone = (Zone) destination;
+		} else if (destination instanceof MicroLocation) {
+			destinationZone = ((MicroLocation) destination).getZone();
+		} else {
+			throw new IllegalArgumentException("Not implemented fot Location of type " + destination.getClass().getName() +".");
+		}
+	
+		// Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
+		// different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
+		if (mode.equals("pt")) {
+			if (matricesByMode.containsKey("pt")) {
+				return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
+			} else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
+				return getMinimumPtTravelTime(originZone.getId(), destinationZone.getId(), timeOfDay_s);
+			} else {
+				throw new RuntimeException("define transit travel modes!!");
+			}
+		} else {
+			return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
+		}
+	}
+	
+	@Override
+	public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
+		Zone originZone;
+		if (origin instanceof Zone) {
+			originZone = (Zone) origin;
+		} else if (origin instanceof MicroLocation) {
+			originZone = ((MicroLocation) origin).getZone();
+		} else {
+			throw new IllegalArgumentException("Not implemented fot Location of type " + origin.getClass().getName() +".");
+		}
+		if (travelTimeToRegion.contains(originZone, destination)) {
+			return travelTimeToRegion.get(originZone, destination);
+		}
+		double min = Double.MAX_VALUE;
+		for (Zone zoneInRegion : destination.getZones()) {
+			double travelTime = getTravelTime(origin, zoneInRegion, timeOfDay_s, mode);
+			if (travelTime < min) {
+				min = travelTime;
+			}
+		}
+		travelTimeToRegion.put(originZone, destination, min);
+		// TODO This suggestion was in Accessibility before with the following comment (by Carlos)
+		//this is method is proposed as an alternative for the calculation of time from zone to region
+		// ...nk/dz, july'18
+		//        	    double average = destinationRegion.getZones().stream().mapToDouble(zoneInRegion -> 
+		//        	    	getTravelTime(originZone, zoneInRegion, timeOfDay_s, mode)).average().getAsDouble();
+		//        	    travelTimeToRegion.put(originZone, destinationRegion, average);
+		return min;
+	}
+		
+	public DoubleMatrix2D getMatrixForMode(String mode) {
+			return matricesByMode.get(mode);
+	}
 }

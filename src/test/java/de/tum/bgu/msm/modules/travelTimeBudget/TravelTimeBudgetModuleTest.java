@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import com.google.common.collect.Lists;
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,22 @@ public class TravelTimeBudgetModuleTest {
         Resources.initializeResources("./testInput/test.properties");
 
         dataSet = new DataSet();
-        dataSet.setTravelTimes((origin, destination, time, mode) -> 10);
+        dataSet.setTravelTimes(new TravelTimes() {
+			@Override
+			public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
+				return 10.;
+			}
+			
+			@Override
+			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
+				return 10.;
+			}
+
+			@Override
+			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
+				return 0;
+			}
+		});
         addZone();
         addHouseholds();
         addPersons();

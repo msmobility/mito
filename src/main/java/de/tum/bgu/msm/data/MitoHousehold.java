@@ -21,7 +21,7 @@ public class MitoHousehold implements Id {
     private int economicStatus;
     private final int autos;
     private final MitoZone homeZone;
-    private Coord homeCoord;
+    private MicroLocation homeLocation;
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
@@ -104,11 +104,11 @@ public class MitoHousehold implements Id {
         this.economicStatus = economicStatus;
     }
 
-    public Coord getHomeCoord() {
-        return homeCoord;
+    public MicroLocation getHomeLocation() {
+        return homeLocation;
     }
 
-    public void setHomeCoord(Coord homeCoord) {
-        this.homeCoord = homeCoord;
+    public void setHomeLocation(MicroLocation homeLocation) {
+        this.homeLocation = homeLocation;
     }
 }

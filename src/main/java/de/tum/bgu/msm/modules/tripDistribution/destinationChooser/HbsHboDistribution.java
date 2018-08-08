@@ -9,6 +9,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,13 +65,15 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                 logger.info(counter + " households done for Purpose " + purpose
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
+            Coord coord = new Coord(household.getHomeLocation().getCoordinate().x, household.getHomeLocation().getCoordinate().y);
             if (hasTripsForPurpose(household)) {
                 if(hasBudgetForPurpose(household)) {
                     updateBudgets(household);
                     updateDestinationProbabilities(household.getHomeZone().getId());
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         trip.setTripOrigin(household.getHomeZone());
-                        trip.setTripOriginCoord(household.getHomeCoord());
+                        
+                        trip.setTripOriginCoord(coord);
                         MitoZone zone = findDestination();
                         trip.setTripDestination(zone);
                         trip.setTripDestinationCoord(zone.getRandomCoord());

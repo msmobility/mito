@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MicroLocation;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
@@ -76,7 +77,9 @@ public class JobReader extends CSVReader {
                 logger.error("Job Type " + type + " used in job microdata but is not defined");
             }
             pp.setOccupationZone(zone);
-            pp.setOccupationCoord(new Coord(Double.parseDouble(record[posJobCoordX]), Double.parseDouble(record[posJobCoordY])));
+//            pp.setOccupationCoord(new Coord(Double.parseDouble(record[posJobCoordX]), Double.parseDouble(record[posJobCoordY])));
+            pp.setOccupationLocation(new MicroLocation(Double.parseDouble(record[posJobCoordX]),
+            		Double.parseDouble(record[posJobCoordY]), null));
         }
     }
 }

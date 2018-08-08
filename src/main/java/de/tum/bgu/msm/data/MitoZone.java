@@ -16,6 +16,8 @@ import java.util.EnumMap;
 /**
  * Created by Nico on 7/7/2017.
  */
+@Deprecated
+// Should be combined with zone in CommonBase, nk/dz, jul'18
 public class MitoZone implements Id {
 
     private final int zoneId;

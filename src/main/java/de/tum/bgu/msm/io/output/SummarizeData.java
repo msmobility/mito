@@ -38,9 +38,9 @@ public class SummarizeData {
             pwh.print(",");
             pwh.print(hh.getHomeZone());
             pwh.print(",");
-            pwh.print(hh.getHomeCoord().getX());
+            pwh.print(hh.getHomeLocation().getCoordinate().x);
             pwh.print(",");
-            pwh.print(hh.getHomeCoord().getY());
+            pwh.print(hh.getHomeLocation().getCoordinate().y);
             pwh.print(",");
             pwh.print(hh.getHhSize());
             pwh.print(",");
