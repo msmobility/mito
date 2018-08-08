@@ -93,8 +93,10 @@ public class TravelDemandGenerator {
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
         SummarizeDataToVisualize.writeFinalSummary(dataSet);
-        SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
-        SummarizeData.writeOutTrips(dataSet);
+        if (Resources.INSTANCE.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
+            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
+            SummarizeData.writeOutTrips(dataSet);
+        }
         if(Resources.INSTANCE.getBoolean(Properties.CREATE_CHARTS, true)){
             SummarizeData.writeCharts(dataSet);
         }
@@ -102,16 +104,15 @@ public class TravelDemandGenerator {
         if(Resources.INSTANCE.getBoolean(Properties.PRINT_OUT_SKIM,false)){
             try {
 
+                String fileName = "scenOutput/" + MitoModel.getScenarioName() + "/" + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME);
                 int maxZone = dataSet.getZones().keySet().stream().max(Integer::compareTo).get() + 1;
-                OmxMatrixWriter.createOmxFile(Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME), maxZone);
+                OmxMatrixWriter.createOmxFile(fileName, maxZone);
 
                 SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
-                tt.printOutCarSkim(TransportMode.car, Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME),
-                        "timeByTime");
+                tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");
 
                 MatrixTravelDistances td = (MatrixTravelDistances) dataSet.getTravelDistancesAuto();
-                td.printOutDistanceSkim(Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME),
-                        "distanceByTime");
+                td.printOutDistanceSkim(fileName, "distanceByTime");
 
             } catch (ClassCastException e){
                 logger.info("Currently it is not possible to print out a matrix from an object which is not SkimTravelTime");

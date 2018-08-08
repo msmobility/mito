@@ -26,6 +26,7 @@ public class DataSet {
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
     private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
+
     private int year;
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}

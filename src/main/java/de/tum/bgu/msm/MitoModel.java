@@ -2,6 +2,7 @@ package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.Input;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -48,6 +49,7 @@ public final class MitoModel {
         MitoModel model = new MitoModel(propertiesFile);
         model.manager.readAsStandAlone();
         model.manager.readAdditionalData();
+        scenarioName = Resources.INSTANCE.getString(Properties.SCENARIO_NAME);
         return model;
     }
 
@@ -55,8 +57,6 @@ public final class MitoModel {
     public static MitoModel initializeModelFromSilo(String propertiesFile) {
         logger.info(" Initializing MITO from SILO");
         MitoModel model = new MitoModel(propertiesFile);
-
-
         return model;
     }
 

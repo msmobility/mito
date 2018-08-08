@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.io.output;
 
+import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -22,6 +23,8 @@ public class SummarizeDataToVisualize {
     private static PrintWriter resultWriterFinal;
     private static Boolean resultWriterReplicate = false;
 
+    private static int year;
+
     /**
      * Handles the spatial result file along with the final spatial result file
      *
@@ -41,7 +44,7 @@ public class SummarizeDataToVisualize {
         // handle summary file
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput";
+                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + MitoModel.getScenarioName() + "/" +  year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 spatialResultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFileSpatial" +
                         ".csv", false);
@@ -77,7 +80,7 @@ public class SummarizeDataToVisualize {
     private static void resultFile(String action, Boolean writeFinal) {
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput";
+                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + MitoModel.getScenarioName() + "/" + year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 resultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFile" +
                         ".csv", false);
@@ -103,6 +106,7 @@ public class SummarizeDataToVisualize {
      * @param dataSet
      */
     public static void writeFinalSummary(DataSet dataSet) {
+        year = dataSet.getYear();
         // opening aspatial result file and writing out the header
         resultFile("open");
         String hdAspatial = "Attribute";

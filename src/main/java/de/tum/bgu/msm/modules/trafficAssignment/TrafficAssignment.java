@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
+import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.externalFlows.LongDistanceTraffic;
@@ -22,7 +23,7 @@ public class TrafficAssignment extends Module {
 
     private Config matsimConfig;
     private MutableScenario matsimScenario;
-    private String outputSubDirectory = "mitoOutput";
+    private String outputSubDirectory;
     private final double SILO_SMAPLING_RATE = 1.2;
 
     public TrafficAssignment(DataSet dataSet) {
@@ -32,6 +33,7 @@ public class TrafficAssignment extends Module {
 
     @Override
     public void run() {
+        outputSubDirectory = "scenOutput/" + MitoModel.getScenarioName() + "/" + dataSet.getYear();
         configMatsim();
         createPopulation();
         runMatsim();
@@ -44,7 +46,7 @@ public class TrafficAssignment extends Module {
 
         String runId = "mito_assignment";
         matsimConfig.controler().setRunId(runId);
-        matsimConfig.controler().setOutputDirectory(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "/" + dataSet.getYear() +  "/trafficAssignment");
+        matsimConfig.controler().setOutputDirectory(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory +  "/trafficAssignment");
         matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
 
         matsimConfig.qsim().setNumberOfThreads(16);
@@ -63,8 +65,8 @@ public class TrafficAssignment extends Module {
 
     private void createPopulation() {
         Population population = MatsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig);
-        LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
         if (Resources.INSTANCE.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)){
+            LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
             population = longDistanceTraffic.addLongDistancePlans(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)), population);
         }
         matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(matsimConfig);

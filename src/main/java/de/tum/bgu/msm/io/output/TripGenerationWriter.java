@@ -25,9 +25,9 @@ public class TripGenerationWriter {
     public static void writeTripsByPurposeAndZone(DataSet dataSet) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT));
+        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear());
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT));
+        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet.getYear());
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
@@ -76,16 +76,16 @@ public class TripGenerationWriter {
                 + " aggregate trips balanced against attractions.");
     }
 
-    private static String generateOutputFileName (String fileName) {
+    private static String generateOutputFileName (String fileName, int year) {
         if (MitoModel.getScenarioName() != null) {
-            File dir = new File("scenOutput/" + MitoModel.getScenarioName() + "/tripGeneration");
+            File dir = new File("scenOutput/" + MitoModel.getScenarioName() + "/" +  year +  "/tripGeneration");
             if(!dir.exists()){
                 boolean directoryCreated = dir.mkdir();
                 if (!directoryCreated) {
                     logger.warn("Could not create directory for trip gen output: " + dir.toString());
                 }
             }
-            fileName = "scenOutput/" + MitoModel.getScenarioName() + "/tripGeneration/" + fileName;
+            fileName = "scenOutput/" + MitoModel.getScenarioName() + "/" +  year  +  "/tripGeneration/" + fileName;
         }
         return fileName;
     }

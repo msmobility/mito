@@ -27,6 +27,7 @@ public class Input {
 
     public void readAsStandAlone() {
         dataSet.setTravelTimes(new SkimTravelTimes());
+        dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR));
         new ZonesReader(dataSet).read();
         if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();

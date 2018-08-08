@@ -2,6 +2,9 @@ package de.tum.bgu.msm.resources;
 
 public class Properties {
 
+    public static final String SCENARIO_NAME = "scenario.name";
+    public static final String SCENARIO_YEAR = "year";
+
     public static final String RANDOM_SEED = "random.seed";
 
     public static final String REMOVE_TRIPS_AT_BORDER = "reduce.trips.at.outer.border";
@@ -45,6 +48,7 @@ public class Properties {
     public static final String AUTONOMOUS_VEHICLE_CHOICE = "include.AVchoice";
 
     public static final String CREATE_CHARTS = "charts";
+    public static final String PRINT_MICRO_DATA = "micro.data";
 
     public static final String RUN_TIME_OF_DAY_CHOICE = "run.time.of.day.choice";
     public static final String TIME_OF_DAY_DISTRIBUTIONS = "time.of.day.distribution.file";
@@ -72,5 +76,7 @@ public class Properties {
     public static final String EXTERNAL_MATRIX_GV = "external.matrix.gv";
     public static final String EXTERNAL_MATRIX_PKW_PWV = "external.matrix.pkw_pwv";
     public static final String EXTERNAL_MATRIX_SZM = "external.matrix.szm";
+
+
 
 }
