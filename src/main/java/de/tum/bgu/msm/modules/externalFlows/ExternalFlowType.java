@@ -17,4 +17,13 @@ public enum ExternalFlowType {
 
     }
 
+    public static String getPrefixForType(ExternalFlowType type){
+        if (type.equals(Pkw) || type.equals(Pkw_PWV)){
+            return "ld.car";
+        } else {
+            return "ld.truck";
+        }
+
+    }
+
 }
