@@ -31,7 +31,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private final Purpose purpose;
     private final List<Purpose> priorPurposes;
-    private final Occupation relatedOccupation;
+    private final MitoOccupation relatedMitoOccupation;
     private final EnumMap<Purpose, DoubleMatrix2D> baseProbabilities;
     private final double[] destinationProbabilities;
     private final DataSet dataSet;
@@ -44,12 +44,12 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private final Map<Integer, MitoZone> zonesCopy;
     private double mean;
 
-    private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, Occupation relatedOccupation,
+    private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, MitoOccupation relatedMitoOccupation,
                                  EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
         this.priorPurposes = priorPurposes;
-        this.relatedOccupation = relatedOccupation;
+        this.relatedMitoOccupation = relatedMitoOccupation;
         this.baseProbabilities = baseProbabilities;
         this.dataSet = dataSet;
         this.zonesCopy = new HashMap<>(dataSet.getZones());
@@ -60,7 +60,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     public static NhbwNhboDistribution nhbw(EnumMap<Purpose, DoubleMatrix2D> baseProbabilites, DataSet dataSet) {
         return new NhbwNhboDistribution(Purpose.NHBW, Collections.singletonList(Purpose.HBW),
-                Occupation.WORKER, baseProbabilites, dataSet);
+                MitoOccupation.WORKER, baseProbabilites, dataSet);
     }
 
     public static NhbwNhboDistribution nhbo(EnumMap<Purpose, DoubleMatrix2D> baseProbabilites, DataSet dataSet) {
@@ -150,7 +150,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         if (!possibleBaseZones.isEmpty()) {
             return MitoUtil.select(random, possibleBaseZones);
         }
-        if (trip.getPerson().getOccupation() == relatedOccupation && trip.getPerson().getOccupationZone() != null) {
+        if (trip.getPerson().getMitoOccupation() == relatedMitoOccupation && trip.getPerson().getOccupationZone() != null) {
             return trip.getPerson().getOccupationZone();
         }
 

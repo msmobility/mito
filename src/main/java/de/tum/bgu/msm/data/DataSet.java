@@ -121,7 +121,7 @@ public class DataSet {
 
     public static int getFemalesForHousehold(MitoHousehold household) {
         return (int) household.getPersons().values().stream().filter(person ->
-                person.getGender().equals(Gender.FEMALE)).count();
+                person.getMitoGender().equals(MitoGender.FEMALE)).count();
     }
 
     public static int getChildrenForHousehold(MitoHousehold household) {
@@ -142,13 +142,13 @@ public class DataSet {
 
     public static int getNumberOfWorkersForHousehold(MitoHousehold household) {
         return (int) household.getPersons().values().stream().filter(person ->
-                person.getOccupation() == Occupation.WORKER).count();
+                person.getMitoOccupation() == MitoOccupation.WORKER).count();
 
     }
 
     public static int getStudentsForHousehold(MitoHousehold household) {
         return (int) household.getPersons().values().stream().filter(person ->
-                person.getOccupation() == Occupation.STUDENT).count();
+                person.getMitoOccupation() == MitoOccupation.STUDENT).count();
 
     }
 

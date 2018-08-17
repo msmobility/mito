@@ -5,7 +5,6 @@ import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 
 import java.util.Arrays;
 import java.util.List;
@@ -79,10 +78,10 @@ public class PersonsReader extends CSVReader {
         final int age = Integer.parseInt(record[posAge]);
 
         final int genderCode = Integer.parseInt(record[posSex]);
-        Gender gender = Gender.valueOf(genderCode);
+        MitoGender mitoGender = MitoGender.valueOf(genderCode);
 
         final int occupationCode = Integer.parseInt(record[posOccupation]);
-        Occupation occupation = Occupation.valueOf(occupationCode);
+        MitoOccupation mitoOccupation = MitoOccupation.valueOf(occupationCode);
 
         final int workplace = Integer.parseInt(record[posWorkplace]);
 
@@ -91,8 +90,8 @@ public class PersonsReader extends CSVReader {
         int income = Integer.parseInt(record[posIncome]);
         hh.addIncome(income);
 
-        MitoPerson pp = new MitoPerson(id, occupation, workplace, age, gender, driversLicense);
-        if(occupation == Occupation.STUDENT) {
+        MitoPerson pp = new MitoPerson(id, mitoOccupation, workplace, age, mitoGender, driversLicense);
+        if(mitoOccupation == MitoOccupation.STUDENT) {
             final int schoolZone = Integer.parseInt(record[posSchool]);
             if(dataSet.getZones().containsKey(schoolZone)) {
                 pp.setOccupationZone(dataSet.getZones().get(schoolZone));

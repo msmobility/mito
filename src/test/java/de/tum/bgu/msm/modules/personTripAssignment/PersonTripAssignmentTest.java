@@ -21,11 +21,11 @@ public class PersonTripAssignmentTest {
         dataSet = new DataSet();
 
         MitoHousehold household = new MitoHousehold(1, 1, 1, null);
-        household.addPerson(new MitoPerson(1, Occupation.WORKER, 1, 35, Gender.MALE, true));
-        household.addPerson(new MitoPerson(2, Occupation.WORKER, 1, 30, Gender.FEMALE, true));
-        household.addPerson(new MitoPerson(3, Occupation.STUDENT, 1, 10, Gender.FEMALE, false));
-        household.addPerson(new MitoPerson(4, Occupation.STUDENT, 1, 15, Gender.MALE, false));
-        household.addPerson(new MitoPerson(5, Occupation.UNEMPLOYED, 1, 70, Gender.FEMALE, false));
+        household.addPerson(new MitoPerson(1, MitoOccupation.WORKER, 1, 35, MitoGender.MALE, true));
+        household.addPerson(new MitoPerson(2, MitoOccupation.WORKER, 1, 30, MitoGender.FEMALE, true));
+        household.addPerson(new MitoPerson(3, MitoOccupation.STUDENT, 1, 10, MitoGender.FEMALE, false));
+        household.addPerson(new MitoPerson(4, MitoOccupation.STUDENT, 1, 15, MitoGender.MALE, false));
+        household.addPerson(new MitoPerson(5, MitoOccupation.UNEMPLOYED, 1, 70, MitoGender.FEMALE, false));
         dataSet.addHousehold(household);
 
         MitoTrip tripHBW = new MitoTrip(1, Purpose.HBW);
@@ -60,9 +60,9 @@ public class PersonTripAssignmentTest {
         for (MitoTrip trip : dataSet.getTrips().values()) {
             assertNotNull("No Person set for trip " + trip, trip.getPerson());
             if (trip.getTripPurpose().equals(Purpose.HBW)) {
-                assertEquals(Occupation.WORKER, trip.getPerson().getOccupation());
+                assertEquals(MitoOccupation.WORKER, trip.getPerson().getMitoOccupation());
             } else if (trip.getTripPurpose().equals(Purpose.HBE)) {
-                assertEquals(Occupation.STUDENT, trip.getPerson().getOccupation());
+                assertEquals(MitoOccupation.STUDENT, trip.getPerson().getMitoOccupation());
             }
         }
     }

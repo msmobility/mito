@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
 
@@ -17,8 +16,8 @@ public class MitoPerson implements Id{
     private static final Logger logger = Logger.getLogger(MitoPerson.class);
 
     private final int id;
-    private final Gender gender;
-    private final Occupation occupation;
+    private final MitoGender mitoGender;
+    private final MitoOccupation mitoOccupation;
     private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
     private MitoZone occupationZone;
     private MicroLocation occupationLocation; //jobLocation or schoolLocation
@@ -27,12 +26,12 @@ public class MitoPerson implements Id{
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
-    public MitoPerson(int id, Occupation occupation, int workplace, int age, Gender gender, boolean driversLicense) {
+    public MitoPerson(int id, MitoOccupation mitoOccupation, int workplace, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
-        this.occupation = occupation;
+        this.mitoOccupation = mitoOccupation;
         this.workplace = workplace;
         this.age = age;
-        this.gender = gender;
+        this.mitoGender = mitoGender;
         this.driversLicense = driversLicense;
     }
 
@@ -44,8 +43,8 @@ public class MitoPerson implements Id{
         this.occupationZone = occupationZone;
     }
 
-    public Occupation getOccupation() {
-        return occupation;
+    public MitoOccupation getMitoOccupation() {
+        return mitoOccupation;
     }
 
     public MitoZone getOccupationZone() {
@@ -61,8 +60,8 @@ public class MitoPerson implements Id{
         return age;
     }
 
-    public Gender getGender() {
-        return gender;
+    public MitoGender getMitoGender() {
+        return mitoGender;
     }
 
     public boolean hasDriversLicense() {

@@ -1,10 +1,10 @@
 package de.tum.bgu.msm.data;
 
-public enum Gender {
+public enum MitoGender {
     MALE,
     FEMALE;
 
-    public static Gender valueOf(int code) {
+    public static MitoGender valueOf(int code) {
         if(code == 2) {
             return FEMALE;
         } else if(code == 1) {

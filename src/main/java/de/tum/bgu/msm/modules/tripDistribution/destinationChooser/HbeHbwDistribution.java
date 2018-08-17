@@ -21,27 +21,27 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
     private final Purpose purpose;
-    private final Occupation occupation;
+    private final MitoOccupation mitoOccupation;
     private final DoubleMatrix2D baseProbabilities;
 
     private final DataSet dataSet;
     private final Map<Integer, MitoZone> zonesCopy;
 
-    private HbeHbwDistribution(Purpose purpose, Occupation occupation, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
+    private HbeHbwDistribution(Purpose purpose, MitoOccupation mitoOccupation, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
-        this.occupation = occupation;
+        this.mitoOccupation = mitoOccupation;
         this.baseProbabilities = baseProbabilities;
         this.dataSet = dataSet;
         this.zonesCopy = new HashMap<>(dataSet.getZones());
     }
 
     public static HbeHbwDistribution hbe(DoubleMatrix2D baseprobabilities, DataSet dataSet) {
-        return new HbeHbwDistribution(Purpose.HBE, Occupation.STUDENT, baseprobabilities, dataSet);
+        return new HbeHbwDistribution(Purpose.HBE, MitoOccupation.STUDENT, baseprobabilities, dataSet);
     }
 
     public static HbeHbwDistribution hbw(DoubleMatrix2D baseprobabilities, DataSet dataSet) {
-        return new HbeHbwDistribution(Purpose.HBW, Occupation.WORKER, baseprobabilities, dataSet);
+        return new HbeHbwDistribution(Purpose.HBW, MitoOccupation.WORKER, baseprobabilities, dataSet);
     }
 
     @Override
@@ -85,7 +85,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     }
 
     private boolean isFixedByOccupation(MitoTrip trip) {
-        if (trip.getPerson().getOccupation() == occupation) {
+        if (trip.getPerson().getMitoOccupation() == mitoOccupation) {
             if (trip.getPerson().getOccupationZone() != null) {
                 return true;
             }

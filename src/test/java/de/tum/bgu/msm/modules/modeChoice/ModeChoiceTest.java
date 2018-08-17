@@ -55,7 +55,7 @@ public class ModeChoiceTest {
 
     private void fillDataSet() {
         trip1 = new MitoTrip(1, Purpose.HBW);
-        MitoPerson person1 = new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true);
+        MitoPerson person1 = new MitoPerson(1, MitoOccupation.WORKER, -1, 30, MitoGender.MALE, true);
         trip1.setPerson(person1);
         MitoZone zone1 = new MitoZone(1, 100, AreaTypes.SGType.CORE_CITY);
         zone1.setDistanceToNearestRailStop(0.5f);
@@ -74,7 +74,7 @@ public class ModeChoiceTest {
         dataSet.addPerson(person1);
 
         trip2 = new MitoTrip(2, Purpose.HBO);
-        MitoPerson person2 = new MitoPerson(2, Occupation.WORKER, -1, 30, Gender.MALE, true);
+        MitoPerson person2 = new MitoPerson(2, MitoOccupation.WORKER, -1, 30, MitoGender.MALE, true);
         trip2.setPerson(person2);
         MitoZone zone3 = new MitoZone(3, 100, AreaTypes.SGType.CORE_CITY);
         zone3.setDistanceToNearestRailStop(0.5f);

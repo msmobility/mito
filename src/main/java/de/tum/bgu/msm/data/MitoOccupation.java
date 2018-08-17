@@ -1,14 +1,14 @@
 package de.tum.bgu.msm.data;
 
-public enum Occupation {
+public enum MitoOccupation {
     WORKER,
     UNEMPLOYED,
     STUDENT;
 
-    public static Occupation valueOf(int occupationCode) {
+    public static MitoOccupation valueOf(int occupationCode) {
         if(occupationCode == 1) {
             return WORKER;
-        } else if(occupationCode == 2 || occupationCode ==0) {
+        } else if(occupationCode == 2 || occupationCode == 0 || occupationCode == 4) {
             return UNEMPLOYED;
         } else if(occupationCode == 3) {
             return STUDENT;

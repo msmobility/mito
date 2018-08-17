@@ -32,9 +32,9 @@ public class HouseHoldTypeManagerTest {
         }
 
         MitoHousehold household1 = new MitoHousehold(1,  4, 1, new MitoZone(1, 0, AreaTypes.SGType.CORE_CITY));
-        household1.addPerson(new MitoPerson(1, Occupation.WORKER, -1, 30, Gender.MALE, true));
+        household1.addPerson(new MitoPerson(1, MitoOccupation.WORKER, -1, 30, MitoGender.MALE, true));
         MitoHousehold household2 = new MitoHousehold(2,  4, 1, zone);
-        household2.addPerson(new MitoPerson(2, Occupation.WORKER, -1, 30, Gender.MALE, true));
+        household2.addPerson(new MitoPerson(2, MitoOccupation.WORKER, -1, 30, MitoGender.MALE, true));
         Assert.assertNull(manager.determineHouseholdType(household1));
 
         household2.setEconomicStatus(1);

@@ -2,7 +2,7 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Occupation;
+import de.tum.bgu.msm.data.MitoOccupation;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Properties;
@@ -20,7 +20,7 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
     private final double defaultBudget;
     private final Collection<MitoHousehold> households;
     private final Purpose purpose;
-    private final Occupation occupation;
+    private final MitoOccupation mitoOccupation;
     private final TravelTimes travelTimes;
     private final double timeOfDay;
     private int defaultBudgeted = 0;
@@ -32,9 +32,9 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
         this.travelTimes = travelTimes;
         this.timeOfDay = timeOfDay;
         if(purpose == Purpose.HBW) {
-            occupation = Occupation.WORKER;
+            mitoOccupation = MitoOccupation.WORKER;
         } else if(purpose == Purpose.HBE) {
-            occupation = Occupation.STUDENT;
+            mitoOccupation = MitoOccupation.STUDENT;
         } else {
             throw new RuntimeException("MandatoryBudgetCalculator can only be initialized with HBW or HBE purpose!");
         }
@@ -60,12 +60,12 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
             logger.warn("There have been " + defaultBudgeted + " " + purpose
                     + " trips that were accounted for with the default budget of "
                     + defaultBudget + " minutes in the " + purpose + " travel time budgets"
-                    + " because no " + occupation + " was assigned (or occupation zone missing).");
+                    + " because no " + mitoOccupation + " was assigned (or occupation zone missing).");
         }
         return null;
     }
 
     private boolean specifiedByOccupation(MitoTrip trip) {
-        return trip.getPerson().getOccupation().equals(occupation) && trip.getPerson().getOccupationZone() != null;
+        return trip.getPerson().getMitoOccupation().equals(mitoOccupation) && trip.getPerson().getOccupationZone() != null;
     }
 }
