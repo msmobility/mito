@@ -29,7 +29,7 @@ public class TrafficAssignment extends Module {
     private Config matsimConfig;
     private MutableScenario matsimScenario;
     private String outputSubDirectory;
-    private final double SILO_SMAPLING_RATE = 1.2;
+    private final double SILO_SMAPLING_RATE = 1.0;
 
     public TrafficAssignment(DataSet dataSet) {
         super(dataSet);
