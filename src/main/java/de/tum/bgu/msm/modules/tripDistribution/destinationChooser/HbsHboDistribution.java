@@ -65,7 +65,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                 logger.info(counter + " households done for Purpose " + purpose
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
-            Coord coord = new Coord(household.getHomeLocation().getCoordinate().x, household.getHomeLocation().getCoordinate().y);
+            Coord coord = new Coord(household.getHomeLocation().x, household.getHomeLocation().y);
             if (hasTripsForPurpose(household)) {
                 if(hasBudgetForPurpose(household)) {
                     updateBudgets(household);

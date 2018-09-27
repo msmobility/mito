@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.data;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 
 import java.util.*;
 
@@ -12,7 +12,7 @@ import java.util.*;
  *
  */
 
-public class MitoHousehold implements Id {
+public class MitoHousehold implements Id, MicroLocation {
 
     private static final Logger logger = Logger.getLogger(MitoHousehold.class);
 
@@ -21,7 +21,7 @@ public class MitoHousehold implements Id {
     private int economicStatus;
     private final int autos;
     private final MitoZone homeZone;
-    private MicroLocation homeLocation;
+    private Coordinate homeLocation;
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
@@ -104,11 +104,21 @@ public class MitoHousehold implements Id {
         this.economicStatus = economicStatus;
     }
 
-    public MicroLocation getHomeLocation() {
+    public Coordinate getHomeLocation() {
         return homeLocation;
     }
 
-    public void setHomeLocation(MicroLocation homeLocation) {
+    public void setHomeLocation(Coordinate homeLocation) {
         this.homeLocation = homeLocation;
+    }
+
+    @Override
+    public Coordinate getCoordinate() {
+        return homeLocation;
+    }
+
+    @Override
+    public int getZoneId() {
+        return homeZone.getId();
     }
 }

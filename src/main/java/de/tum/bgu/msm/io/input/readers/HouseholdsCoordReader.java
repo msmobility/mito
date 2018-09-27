@@ -1,14 +1,13 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import org.apache.log4j.Logger;
-
+import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MicroLocation;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.apache.log4j.Logger;
 
 /**
  * Created by Qin on 02.07.2018.
@@ -50,8 +49,8 @@ public class HouseholdsCoordReader extends CSVReader {
                 logger.warn(String.format("Household %d does not exist in mito.", hhId));
                 return;
             }
-            MicroLocation homeLocation = new MicroLocation(
-            		Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]), null);
+            Coordinate homeLocation = new Coordinate(
+            		Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
             hh.setHomeLocation(homeLocation);
         }
     }

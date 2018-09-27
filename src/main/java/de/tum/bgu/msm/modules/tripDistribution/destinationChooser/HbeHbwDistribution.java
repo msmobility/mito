@@ -51,7 +51,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for Purpose " + purpose);
             }
-            Coord coord = new Coord(household.getHomeLocation().getCoordinate().x, household.getHomeLocation().getCoordinate().y);
+            Coord coord = new Coord(household.getHomeLocation().x, household.getHomeLocation().y);
             if (hasTripsForPurpose(household)) {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(household.getHomeZone());
@@ -68,8 +68,8 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     private void findDestination(MitoHousehold household, MitoTrip trip) {
         if (isFixedByOccupation(trip)) {
             trip.setTripDestination(trip.getPerson().getOccupationZone());
-            Coord coord = new Coord(trip.getPerson().getOccupationLocation().getCoordinate().x,
-            		trip.getPerson().getOccupationLocation().getCoordinate().y);
+            Coord coord = new Coord(trip.getPerson().getOccupationLocation().x,
+            		trip.getPerson().getOccupationLocation().y);
             trip.setTripDestinationCoord(coord);
         } else {
             TripDistribution.randomOccupationDestinationTrips.incrementAndGet();

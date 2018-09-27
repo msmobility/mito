@@ -1,22 +1,17 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import org.apache.log4j.Logger;
-
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import de.tum.bgu.msm.data.Location;
-import de.tum.bgu.msm.data.MicroLocation;
-import de.tum.bgu.msm.data.Region;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
 import omx.OmxMatrix;
+import org.apache.log4j.Logger;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class SkimTravelTimes implements TravelTimes {
 
@@ -24,7 +19,7 @@ public class SkimTravelTimes implements TravelTimes {
 
     private final ConcurrentMap<String, DoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
 
-	private final Table<Zone, Region, Double> travelTimeToRegion = HashBasedTable.create();
+	private final Table<Integer, Region, Double> travelTimeToRegion = HashBasedTable.create();
 
     /**
      * Use method getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) instead
@@ -98,49 +93,27 @@ public class SkimTravelTimes implements TravelTimes {
 
 	@Override
 	public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
-		Zone originZone;
-		if (origin instanceof Zone) {
-			originZone = (Zone) origin;
-		} else if (origin instanceof MicroLocation) {
-			originZone = ((MicroLocation) origin).getZone();
-		} else {
-			throw new IllegalArgumentException("Not implemented fot Location of type " + origin.getClass().getName() +".");
-		}
-		
-		Zone destinationZone;
-		if (destination instanceof Zone) {
-			destinationZone = (Zone) destination;
-		} else if (destination instanceof MicroLocation) {
-			destinationZone = ((MicroLocation) destination).getZone();
-		} else {
-			throw new IllegalArgumentException("Not implemented fot Location of type " + destination.getClass().getName() +".");
-		}
+		int originZone = origin.getZoneId();
+		int destinationZone = destination.getZoneId();
 	
 		// Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
 		// different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
 		if (mode.equals("pt")) {
 			if (matricesByMode.containsKey("pt")) {
-				return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
+				return matricesByMode.get(mode).getQuick(originZone, destinationZone);
 			} else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
-				return getMinimumPtTravelTime(originZone.getId(), destinationZone.getId(), timeOfDay_s);
+				return getMinimumPtTravelTime(originZone, destinationZone, timeOfDay_s);
 			} else {
 				throw new RuntimeException("define transit travel modes!!");
 			}
 		} else {
-			return matricesByMode.get(mode).getQuick(originZone.getId(), destinationZone.getId());
+			return matricesByMode.get(mode).getQuick(originZone, destinationZone);
 		}
 	}
 	
 	@Override
 	public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
-		Zone originZone;
-		if (origin instanceof Zone) {
-			originZone = (Zone) origin;
-		} else if (origin instanceof MicroLocation) {
-			originZone = ((MicroLocation) origin).getZone();
-		} else {
-			throw new IllegalArgumentException("Not implemented fot Location of type " + origin.getClass().getName() +".");
-		}
+		int originZone = origin.getZoneId();
 		if (travelTimeToRegion.contains(originZone, destination)) {
 			return travelTimeToRegion.get(originZone, destination);
 		}

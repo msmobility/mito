@@ -1,8 +1,11 @@
 package de.tum.bgu.msm.data;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -11,7 +14,7 @@ import java.util.*;
  *
  */
 
-public class MitoPerson implements Id{
+public class MitoPerson implements Id {
 
     private static final Logger logger = Logger.getLogger(MitoPerson.class);
 
@@ -20,7 +23,7 @@ public class MitoPerson implements Id{
     private final MitoOccupation mitoOccupation;
     private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
     private MitoZone occupationZone;
-    private MicroLocation occupationLocation; //jobLocation or schoolLocation
+    private Coordinate occupationLocation; //jobLocation or schoolLocation
     private final int age;
     private final boolean driversLicense;
 
@@ -79,11 +82,11 @@ public class MitoPerson implements Id{
         }
     }
 
-    public MicroLocation getOccupationLocation() {
+    public Coordinate getOccupationLocation() {
         return occupationLocation;
     }
 
-    public void setOccupationLocation(MicroLocation occupationLocation) {
+    public void setOccupationLocation(Coordinate occupationLocation) {
         this.occupationLocation = occupationLocation;
     }
 }
