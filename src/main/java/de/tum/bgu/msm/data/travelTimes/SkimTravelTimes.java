@@ -3,7 +3,9 @@ package de.tum.bgu.msm.data.travelTimes;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.Location;
+import de.tum.bgu.msm.data.Region;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
@@ -57,6 +59,7 @@ public class SkimTravelTimes implements TravelTimes {
         final OmxMatrix timeOmxSkimTransit = omx.getMatrix(matrixName);
         final DoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, factor);
         matricesByMode.put(mode, skim);
+        omx.close();
     }
 
     /**
@@ -133,7 +136,8 @@ public class SkimTravelTimes implements TravelTimes {
 		//        	    travelTimeToRegion.put(originZone, destinationRegion, average);
 		return min;
 	}
-		
+
+	//TODO: used in silo. should probably return a deep copy to prevent illegal changes.
 	public DoubleMatrix2D getMatrixForMode(String mode) {
 			return matricesByMode.get(mode);
 	}
