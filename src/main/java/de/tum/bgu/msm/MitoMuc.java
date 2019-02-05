@@ -1,5 +1,6 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 
 /**
@@ -14,7 +15,7 @@ class MitoMuc {
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = MitoModel.standAloneModel(args[0]);
+        MitoModel model = MitoModel.standAloneModel(args[0], MunichImplementationConfig.get());
         model.runModel();
     }
 }

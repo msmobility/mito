@@ -4,12 +4,13 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoZone;
+import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.ImplementationConfig;
 import org.apache.log4j.Logger;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -25,7 +26,7 @@ public class Input {
         this.dataSet = dataSet;
     }
 
-    public void readAsStandAlone() {
+    public void readAsStandAlone(ImplementationConfig config) {
         dataSet.setTravelTimes(new SkimTravelTimes());
         dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR));
         new ZonesReader(dataSet).read();
@@ -36,7 +37,7 @@ public class Input {
         new HouseholdsReader(dataSet).read();
         new HouseholdsCoordReader(dataSet).read();
         new PersonsReader(dataSet).read();
-        new JobReader(dataSet).read();
+        new JobReader(dataSet, config.getJobTypeFactory()).read();
     }
 
     public void readAdditionalData() {

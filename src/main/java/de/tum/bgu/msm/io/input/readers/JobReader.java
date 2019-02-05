@@ -4,7 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
+import de.tum.bgu.msm.data.jobTypes.JobTypeFactory;
 import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 public class JobReader extends CSVReader {
 
     private static final Logger logger = Logger.getLogger(JobReader.class);
+    private final JobTypeFactory factory;
 
     private int posId = -1;
     private int posZone = -1;
@@ -25,10 +26,10 @@ public class JobReader extends CSVReader {
     private int posJobCoordX = -1;
     private int posJobCoordY = -1;
 
-    public JobReader(DataSet dataSet) {
+    public JobReader(DataSet dataSet, JobTypeFactory factory) {
         super(dataSet);
+        this.factory = factory;
     }
-
 
     @Override
     public void read() {
@@ -71,7 +72,7 @@ public class JobReader extends CSVReader {
             }
 
             try {
-                zone.addEmployeeForType(MunichJobType.valueOf(type.toUpperCase()));
+                zone.addEmployeeForType(factory.getType(type.toUpperCase()));
             } catch (IllegalArgumentException e) {
                 logger.error("Job Type " + type + " used in job microdata but is not defined");
             }
