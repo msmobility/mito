@@ -16,7 +16,6 @@ import org.opengis.feature.simple.SimpleFeature;
 public class ZonesReader extends CSVReader {
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ZonesReader.class);
-    private int sizeIndex;
     private int idIndex;
     private int areaTypeIndex;
 
@@ -44,18 +43,16 @@ public class ZonesReader extends CSVReader {
 
     @Override
     protected void processHeader(String[] header) {
-        idIndex = MitoUtil.findPositionInArray("ZoneId", header);
-        sizeIndex = MitoUtil.findPositionInArray("ACRES", header);
-        areaTypeIndex = MitoUtil.findPositionInArray("BBSR", header);
+        idIndex = MitoUtil.findPositionInArray("Zone", header);
+        areaTypeIndex = MitoUtil.findPositionInArray("BBSR_type", header);
     }
 
     @Override
     protected void processRecord(String[] record) {
         int zoneId = Integer.parseInt(record[idIndex]);
-        float size = Float.parseFloat(record[sizeIndex]);
         int region = Integer.parseInt(record[areaTypeIndex]);
         AreaTypes.SGType areaType = AreaTypes.SGType.valueOf(region);
-        MitoZone zone = new MitoZone(zoneId, size, areaType);
+        MitoZone zone = new MitoZone(zoneId, areaType);
         dataSet.addZone(zone);
     }
 }

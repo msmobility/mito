@@ -2,11 +2,13 @@ package de.tum.bgu.msm.data;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
-import de.tum.bgu.msm.util.MitoUtil;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
@@ -21,7 +23,6 @@ import java.util.EnumMap;
 public class MitoZone implements Id {
 
     private final int zoneId;
-    private final float size;
     private float reductionAtBorderDamper = 0;
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
@@ -35,9 +36,8 @@ public class MitoZone implements Id {
     private float distanceToNearestRailStop;
     private SimpleFeature shapeFeature;
 
-    public MitoZone(int id, float size, AreaTypes.SGType areaType) {
+    public MitoZone(int id, AreaTypes.SGType areaType) {
         this.zoneId = id;
-        this.size = size;
         this.areaTypeSG = areaType;
     }
 
@@ -69,10 +69,6 @@ public class MitoZone implements Id {
     @Override
     public int getId() {
         return this.zoneId;
-    }
-
-    public float getSize() {
-        return this.size;
     }
 
     public float getReductionAtBorderDamper() {
