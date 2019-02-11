@@ -19,7 +19,7 @@ public class HouseHoldTypeManagerTest {
     public void setupTest() {
         Resources.initializeResources("./testInput/test.properties");
 
-        zone = new MitoZone(1, 10, AreaTypes.SGType.RURAL);
+        zone = new MitoZone(1, AreaTypes.SGType.RURAL);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class HouseHoldTypeManagerTest {
             Assert.assertEquals(0, type.getNumberOfRecords());
         }
 
-        MitoHousehold household1 = new MitoHousehold(1,  4, 1, new MitoZone(1, 0, AreaTypes.SGType.CORE_CITY));
+        MitoHousehold household1 = new MitoHousehold(1,  4, 1, new MitoZone(1, AreaTypes.SGType.CORE_CITY));
         household1.addPerson(new MitoPerson(1, MitoOccupation.WORKER, -1, 30, MitoGender.MALE, true));
         MitoHousehold household2 = new MitoHousehold(2,  4, 1, zone);
         household2.addPerson(new MitoPerson(2, MitoOccupation.WORKER, -1, 30, MitoGender.MALE, true));
