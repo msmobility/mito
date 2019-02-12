@@ -60,8 +60,8 @@ public class JobReader extends CSVReader {
                 logger.warn(String.format("Job %d refers to non-existing person %d! Ignoring it.", id, worker));
                 return;
             }
-            if (pp.getWorkplace() != id) {
-                logger.warn("Person " + worker + " has workplace " + pp.getWorkplace() + " in person file but workplace "
+            if (pp.getOccupation() != id) {
+                logger.warn("Person " + worker + " has workplace " + pp.getOccupation() + " in person file but workplace "
                         + id + " in job file. Ignoring job.");
                 return;
             }

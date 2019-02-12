@@ -21,7 +21,7 @@ public class MitoPerson implements Id {
     private final int id;
     private final MitoGender mitoGender;
     private final MitoOccupation mitoOccupation;
-    private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
+    private int occupation;
     private MitoZone occupationZone;
     private Coordinate occupationLocation;
     private final int age;
@@ -29,17 +29,17 @@ public class MitoPerson implements Id {
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
-    public MitoPerson(int id, MitoOccupation mitoOccupation, int workplace, int age, MitoGender mitoGender, boolean driversLicense) {
+    public MitoPerson(int id, MitoOccupation mitoOccupation, int occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
         this.mitoOccupation = mitoOccupation;
-        this.workplace = workplace;
+        this.occupation = occupation;
         this.age = age;
         this.mitoGender = mitoGender;
         this.driversLicense = driversLicense;
     }
 
-    public int getWorkplace() {
-        return workplace;
+    public int getOccupation() {
+        return occupation;
     }
 
     public void setOccupationZone(MitoZone occupationZone) {
