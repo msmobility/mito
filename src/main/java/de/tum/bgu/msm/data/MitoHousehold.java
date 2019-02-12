@@ -121,4 +121,18 @@ public class MitoHousehold implements Id, MicroLocation {
     public int getZoneId() {
         return homeZone.getId();
     }
+
+    @Override
+    public int hashCode() {
+        return hhId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof MitoHousehold) {
+            return hhId == ((MitoHousehold) o).getId();
+        } else {
+            return false;
+        }
+    }
 }

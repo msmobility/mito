@@ -23,7 +23,7 @@ public class MitoPerson implements Id {
     private final MitoOccupation mitoOccupation;
     private int workplace; //TODO change the name "workplace" to be more clear Qin 21' Jun
     private MitoZone occupationZone;
-    private Coordinate occupationLocation; //jobLocation or schoolLocation
+    private Coordinate occupationLocation;
     private final int age;
     private final boolean driversLicense;
 
@@ -88,5 +88,10 @@ public class MitoPerson implements Id {
 
     public void setOccupationLocation(Coordinate occupationLocation) {
         this.occupationLocation = occupationLocation;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

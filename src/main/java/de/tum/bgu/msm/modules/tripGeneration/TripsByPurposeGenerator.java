@@ -16,7 +16,7 @@ import java.util.Map;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.DROPPED_TRIPS_AT_BORDER_COUNTER;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
 
-class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
+class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Pair> {
 
     private static final Logger logger = Logger.getLogger(TripsByPurposeGenerator.class);
     private final boolean dropAtBorder = Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER);
@@ -37,7 +37,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Pair call() {
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);

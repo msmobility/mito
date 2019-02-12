@@ -18,8 +18,6 @@ import java.util.EnumMap;
 /**
  * Created by Nico on 7/7/2017.
  */
-@Deprecated
-// Should be combined with zone in CommonBase, nk/dz, jul'18
 public class MitoZone implements Id {
 
     private final int zoneId;
@@ -141,12 +139,25 @@ public class MitoZone implements Id {
     }
 
     public Coord getRandomCoord() {
-        // alternative and about 10 times faster way to generate random point inside a geometry. Amit Dec'17
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) shapeFeature.getDefaultGeometry());
         Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
         Point p = MGC.coordinate2Point(coordinate);
         return new Coord(p.getX(), p.getY());
+    }
+
+    @Override
+    public int hashCode() {
+        return zoneId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof MitoZone) {
+            return zoneId == ((MitoZone) o).getId();
+        } else {
+            return false;
+        }
     }
 }

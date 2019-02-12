@@ -104,11 +104,7 @@ public class MitoTrip implements Id{
     }
 
     public boolean isHomeBased() {
-        if (this.getTripPurpose().equals(Purpose.NHBW) || this.getTripPurpose().equals(Purpose.NHBO)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !this.getTripPurpose().equals(Purpose.NHBW) && !this.getTripPurpose().equals(Purpose.NHBO);
     }
 
     public Coord getTripOriginCoord() {
@@ -130,5 +126,19 @@ public class MitoTrip implements Id{
     @Override
     public String toString() {
         return "Trip [id: " + this.tripId + " purpose: " + this.tripPurpose + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return tripId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof MitoTrip) {
+            return tripId == ((MitoTrip) o).tripId;
+        } else {
+            return false;
+        }
     }
 }
