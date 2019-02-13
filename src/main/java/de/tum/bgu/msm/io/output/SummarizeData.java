@@ -5,7 +5,6 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.SortedMultiset;
 import com.google.common.collect.TreeMultiset;
 import com.google.common.math.Stats;
-import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -25,10 +24,9 @@ import java.util.*;
 public class SummarizeData {
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(SummarizeData.class);
 
-    private static final String outputSubDirectory = "scenOutput/" + MitoModel.getScenarioName() + "/";
+    public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet, String scenarioName) {
+        String outputSubDirectory = "scenOutput/" + scenarioName + "/";
 
-
-    public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet) {
         LOGGER.info("  Writing household file");
         String filehh = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.HOUSEHOLDS) + "_t.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
@@ -77,7 +75,9 @@ public class SummarizeData {
         pwp.close();
     }
 
-    public static void writeOutTrips(DataSet dataSet) {
+    public static void writeOutTrips(DataSet dataSet, String scenarioName) {
+        String outputSubDirectory = "scenOutput/" + scenarioName + "/";
+
         LOGGER.info("  Writing trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
@@ -85,37 +85,37 @@ public class SummarizeData {
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
-            MitoZone origin = trip.getTripOrigin();
+            Location origin = trip.getTripOrigin();
             String originId = "null";
             if(origin != null) {
-                originId = String.valueOf(origin.getId());
+                originId = String.valueOf(origin.getZoneId());
             }
             pwh.print(originId);
             pwh.print(",");
 
-            if(trip.getTripOriginCoord() != null){
-                pwh.print(trip.getTripOriginCoord().getX());
+            if(origin instanceof MicroLocation){
+                pwh.print(((MicroLocation) origin).getCoordinate().x);
                 pwh.print(",");
-                pwh.print(trip.getTripOriginCoord().getY());
+                pwh.print(((MicroLocation) origin).getCoordinate().y);
                 pwh.print(",");
-            }else{
+            } else{
                 pwh.print("null");
                 pwh.print(",");
                 pwh.print("null");
                 pwh.print(",");
             }
 
-            MitoZone destination = trip.getTripDestination();
+            Location destination = trip.getTripDestination();
             String destinationId = "null";
             if(destination != null) {
-                destinationId = String.valueOf(destination.getId());
+                destinationId = String.valueOf(destination.getZoneId());
             }
             pwh.print(destinationId);
             pwh.print(",");
-            if(trip.getTripDestinationCoord() != null){
-                pwh.print(trip.getTripDestinationCoord().getX());
+            if(destination instanceof MicroLocation){
+                pwh.print(((MicroLocation) destination).getCoordinate().x);
                 pwh.print(",");
-                pwh.print(trip.getTripDestinationCoord().getY());
+                pwh.print(((MicroLocation) destination).getCoordinate().y);
                 pwh.print(",");
             }else{
                 pwh.print("null");
@@ -129,19 +129,19 @@ public class SummarizeData {
             pwh.print(trip.getPerson().getId());
             pwh.print(",");
             if(origin != null && destination != null) {
-                double distance = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId());
+                double distance = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getZoneId(), destination.getZoneId());
                 pwh.print(distance);
                 pwh.print(",");
-                double timeAuto = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "car");
+                double timeAuto = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "car");
                 pwh.print(timeAuto);
                 pwh.print(",");
-                double timeBus = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "bus");
+                double timeBus = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "bus");
                 pwh.print(timeBus);
                 pwh.print(",");
-                double timeTrain = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "train");
+                double timeTrain = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "train");
                 pwh.print(timeTrain);
                 pwh.print(",");
-                double timeTramMetro = dataSet.getTravelTimes().getTravelTime(origin.getId(), destination.getId(), dataSet.getPeakHour(), "tramMetro");
+                double timeTramMetro = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "tramMetro");
                 pwh.print(timeTramMetro);
             } else {
                 pwh.print("NA,NA,NA,NA,NA");
@@ -164,7 +164,9 @@ public class SummarizeData {
     }
 
 
-    private static void writeCharts(DataSet dataSet, Purpose purpose) {
+    private static void writeCharts(DataSet dataSet, Purpose purpose, String scenarioName) {
+        String outputSubDirectory = "scenOutput/" + scenarioName + "/";
+
         List<Double> travelTimes = new ArrayList<>();
         List<Double> travelDistances = new ArrayList<>();
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
@@ -177,17 +179,18 @@ public class SummarizeData {
             }
         }
         for (MitoTrip trip : dataSet.getTrips().values()) {
-            if (trip.getTripPurpose() == purpose && trip.getTripOrigin() != null && trip.getTripDestination() != null) {
-                travelTimes.add(dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), dataSet.getPeakHour(), "car"));
-                double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId());
+            final Location tripOrigin = trip.getTripOrigin();
+            if (trip.getTripPurpose() == purpose && tripOrigin != null && trip.getTripDestination() != null) {
+                travelTimes.add(dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination(), dataSet.getPeakHour(), "car"));
+                double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
                 travelDistances.add(travelDistance);
-                tripsByZone.add(trip.getTripOrigin());
-                if(distancesByZone.containsKey(trip.getTripOrigin().getId())){
-                    distancesByZone.get(trip.getTripOrigin().getId()).add(travelDistance);
+                tripsByZone.add(dataSet.getZones().get(tripOrigin.getZoneId()));
+                if(distancesByZone.containsKey(tripOrigin.getZoneId())){
+                    distancesByZone.get(tripOrigin.getZoneId()).add(travelDistance);
                 } else {
                     List<Double> values = new ArrayList<>();
                     values.add(travelDistance);
-                    distancesByZone.put(trip.getTripOrigin().getId(), values);
+                    distancesByZone.put(tripOrigin.getZoneId(), values);
                 }
             }
         }
@@ -230,9 +233,9 @@ public class SummarizeData {
 
     }
 
-    public static void writeCharts(DataSet dataSet) {
+    public static void writeCharts(DataSet dataSet, String scenarioName) {
         for(Purpose purpose: Purpose.values()) {
-            writeCharts(dataSet, purpose);
+            writeCharts(dataSet, purpose, scenarioName);
         }
     }
 }

@@ -7,15 +7,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public abstract class CSVReader extends AbstractInputReader{
+/**
+ * @author Nico
+ */
+public abstract class AbstractCsvReader extends AbstractInputReader{
 
-    private static final Logger logger = Logger.getLogger(CSVReader.class);
+    private static final Logger logger = Logger.getLogger(AbstractCsvReader.class);
 
     private BufferedReader reader;
 
     private int numberOfRecords = 0;
 
-    protected CSVReader(DataSet dataSet) {
+    protected AbstractCsvReader(DataSet dataSet) {
         super(dataSet);
     }
 
@@ -45,7 +48,7 @@ public abstract class CSVReader extends AbstractInputReader{
 
     private void initializeReader(String fileName, String delimiter) {
         try {
-            reader = new BufferedReader(new FileReader(fileName));
+            reader = new BufferedReader(new FileReader(fileName.trim()));
             processHeader(reader.readLine().split(delimiter));
         } catch (IOException e) {
             logger.error("Error initializing csv reader: " + e.getMessage(), e);

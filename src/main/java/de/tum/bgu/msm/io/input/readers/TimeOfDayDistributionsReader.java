@@ -1,20 +1,17 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
-import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
-import java.util.Collections;
 import java.util.EnumMap;
 
-public class TimeOfDayDistributionsReader extends CSVReader {
+public class TimeOfDayDistributionsReader extends AbstractCsvReader {
 
     private final EnumMap<Purpose, DoubleMatrix1D> arrivalTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, DoubleMatrix1D> durationCumProbByPurpose = new EnumMap<>(Purpose.class);

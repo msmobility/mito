@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
-import com.vividsolutions.jts.geom.*;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MicroLocation;
 import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Properties;
@@ -14,12 +14,12 @@ import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatsimPopulationGenerator {
@@ -55,7 +55,14 @@ public class MatsimPopulationGenerator {
 
                     String activityTypeAtOrigin = getOriginActivity(trip.getTripPurpose());
 
-                    Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, trip.getTripOriginCoord());
+                    Coord originCoord;
+                    if(trip.getTripOrigin() instanceof MicroLocation) {
+                        originCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripOrigin()).getCoordinate());
+                    } else {
+                        originCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                    }
+
+                    Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, originCoord);
                     originActivity.setEndTime(trip.getDepartureInMinutes() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                     plan.addActivity(originActivity);
 
@@ -63,13 +70,19 @@ public class MatsimPopulationGenerator {
 
                     String activityTypeAtDestination = getDestinationActivity(trip.getTripPurpose());
 
-                    Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, trip.getTripDestinationCoord());
+                    Coord destinationCoord;
+                    if(trip.getTripDestination() instanceof MicroLocation) {
+                        destinationCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripDestination()).getCoordinate());
+                    } else {
+                        destinationCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                    }
+                    Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoord);
 
                     if (trip.isHomeBased()) {
                         destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                         plan.addActivity(destinationActivity);
                         plan.addLeg(factory.createLeg(TransportMode.car));
-                        plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin,trip.getTripOriginCoord()));
+                        plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
                     } else {
                         plan.addActivity(destinationActivity);
                     }

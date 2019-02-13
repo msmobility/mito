@@ -58,7 +58,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     }
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
@@ -71,12 +71,9 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                     updateBudgets(household);
                     updateDestinationProbabilities(household.getHomeZone().getId());
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        trip.setTripOrigin(household.getHomeZone());
-                        
-                        trip.setTripOriginCoord(coord);
+                        trip.setTripOrigin(household);
                         MitoZone zone = findDestination();
                         trip.setTripDestination(zone);
-                        trip.setTripDestinationCoord(zone.getRandomCoord());
                         if(zone == null) {
                             logger.debug("No destination found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();
@@ -111,7 +108,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     }
 
     private void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car") * 2;
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getZoneId(),
+                trip.getTripDestination().getZoneId(), peakHour, "car") * 2;
         idealBudgetSum += hhBudgetPerTrip;
     }
 

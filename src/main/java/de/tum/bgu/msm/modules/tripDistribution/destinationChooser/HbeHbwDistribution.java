@@ -21,31 +21,31 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
     private final Purpose purpose;
-    private final MitoOccupation mitoOccupation;
+    private final MitoOccupationStatus mitoOccupationStatus;
     private final DoubleMatrix2D baseProbabilities;
 
     private final DataSet dataSet;
     private final Map<Integer, MitoZone> zonesCopy;
 
-    private HbeHbwDistribution(Purpose purpose, MitoOccupation mitoOccupation, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
+    private HbeHbwDistribution(Purpose purpose, MitoOccupationStatus mitoOccupationStatus, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
-        this.mitoOccupation = mitoOccupation;
+        this.mitoOccupationStatus = mitoOccupationStatus;
         this.baseProbabilities = baseProbabilities;
         this.dataSet = dataSet;
         this.zonesCopy = new HashMap<>(dataSet.getZones());
     }
 
     public static HbeHbwDistribution hbe(DoubleMatrix2D baseprobabilities, DataSet dataSet) {
-        return new HbeHbwDistribution(Purpose.HBE, MitoOccupation.STUDENT, baseprobabilities, dataSet);
+        return new HbeHbwDistribution(Purpose.HBE, MitoOccupationStatus.STUDENT, baseprobabilities, dataSet);
     }
 
     public static HbeHbwDistribution hbw(DoubleMatrix2D baseprobabilities, DataSet dataSet) {
-        return new HbeHbwDistribution(Purpose.HBW, MitoOccupation.WORKER, baseprobabilities, dataSet);
+        return new HbeHbwDistribution(Purpose.HBW, MitoOccupationStatus.WORKER, baseprobabilities, dataSet);
     }
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
@@ -54,8 +54,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             Coord coord = new Coord(household.getHomeLocation().x, household.getHomeLocation().y);
             if (hasTripsForPurpose(household)) {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                    trip.setTripOrigin(household.getHomeZone());
-                    trip.setTripOriginCoord(coord);
+                    trip.setTripOrigin(household);
                     findDestination(household, trip);
                     TripDistribution.distributedTripsCounter.incrementAndGet();
                 }
@@ -67,16 +66,12 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
 
     private void findDestination(MitoHousehold household, MitoTrip trip) {
         if (isFixedByOccupation(trip)) {
-            trip.setTripDestination(trip.getPerson().getOccupationZone());
-            Coord coord = new Coord(trip.getPerson().getOccupationLocation().x,
-            		trip.getPerson().getOccupationLocation().y);
-            trip.setTripDestinationCoord(coord);
+            trip.setTripDestination(trip.getPerson().getOccupation());
         } else {
             TripDistribution.randomOccupationDestinationTrips.incrementAndGet();
             DoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
             final MitoZone destination = zonesCopy.get(MitoUtil.select(probabilities.toArray(), random, probabilities.zSum()));
             trip.setTripDestination(destination);
-            trip.setTripDestinationCoord(destination.getRandomCoord());
         }
     }
 
@@ -85,10 +80,8 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     }
 
     private boolean isFixedByOccupation(MitoTrip trip) {
-        if (trip.getPerson().getMitoOccupation() == mitoOccupation) {
-            if (trip.getPerson().getOccupationZone() != null) {
-                return true;
-            }
+        if (trip.getPerson().getMitoOccupationStatus() == mitoOccupationStatus) {
+            return trip.getPerson().getOccupation() != null;
         }
         return false;
     }

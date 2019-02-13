@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -9,7 +9,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LongDistanceTimeOfDayDistributionReader extends CSVReader {
+public class LongDistanceTimeOfDayDistributionReader extends AbstractCsvReader {
 
     private int posHour;
     private int posProbability;

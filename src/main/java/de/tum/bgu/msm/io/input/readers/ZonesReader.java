@@ -3,7 +3,7 @@ package de.tum.bgu.msm.io.input.readers;
 import de.tum.bgu.msm.data.AreaTypes;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -13,7 +13,7 @@ import org.opengis.feature.simple.SimpleFeature;
 /**
  * @author Nico
  */
-public class ZonesReader extends CSVReader {
+public class ZonesReader extends AbstractCsvReader {
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ZonesReader.class);
     private int idIndex;

@@ -11,6 +11,7 @@ public class Properties {
 
     public static final String AUTO_PEAK_SKIM = "auto.peak.travelTime";
     public static final String JOBS = "job.file.ascii";
+    public static final String SCHOOLS = "school.file.ascii";
     public static final String HOUSEHOLDS = "household.file.ascii";
     public static final String PERSONS = "person.file.ascii";
     public static final String DWELLINGS = "dwelling.file.ascii";
@@ -76,7 +77,6 @@ public class Properties {
     public static final String EXTERNAL_MATRIX_GV = "external.matrix.gv";
     public static final String EXTERNAL_MATRIX_PKW_PWV = "external.matrix.pkw_pwv";
     public static final String EXTERNAL_MATRIX_SZM = "external.matrix.szm";
-
 
 
 }
