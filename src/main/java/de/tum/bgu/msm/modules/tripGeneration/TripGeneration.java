@@ -24,6 +24,7 @@ public class TripGeneration extends Module {
     public void run() {
         logger.info("  Started microscopic trip generation model.");
         generateRawTrips();
+        generateAirportTrips();
         calculateAttractions();
         balanceTrips();
         logger.info("  Completed microscopic trip generation model.");
@@ -32,6 +33,11 @@ public class TripGeneration extends Module {
     private void generateRawTrips() {
         RawTripGenerator rawTripGenerator = new RawTripGenerator(dataSet);
         rawTripGenerator.run();
+    }
+
+    private void generateAirportTrips() {
+        AirportTripGeneration airportTripGeneration = new AirportTripGeneration(dataSet);
+        airportTripGeneration.run();
     }
 
     private void calculateAttractions() {

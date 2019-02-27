@@ -24,8 +24,8 @@ public class PersonTripAssignment extends Module {
     @Override
     public void run() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            for(Purpose purpose: Purpose.values()) {
-                for(Iterator<MitoTrip> iterator = household.getTripsForPurpose(purpose).listIterator(); iterator.hasNext(); ) {
+            for (Purpose purpose : Purpose.values()) {
+                for (Iterator<MitoTrip> iterator = household.getTripsForPurpose(purpose).listIterator(); iterator.hasNext(); ) {
                     MitoTrip trip = iterator.next();
                     Map<MitoPerson, Double> probabilitiesByPerson = getProbabilityByPersonForTrip(household, trip);
                     if (probabilitiesByPerson != null && !probabilitiesByPerson.isEmpty()) {
@@ -53,9 +53,13 @@ public class PersonTripAssignment extends Module {
             assignNHBW(household, probabilitiesByPerson);
         } else if (purpose == NHBO) {
             assignNHBO(household, probabilitiesByPerson);
+        } else if (purpose == AIRPORT) {
+            assignAIRPORT(household, probabilitiesByPerson);
         }
         return probabilitiesByPerson;
     }
+
+
 
     private void selectPersonForTrip(MitoTrip trip, Map<MitoPerson, Double> probabilitiesByPerson) {
         MitoPerson selectedPerson = MitoUtil.select(probabilitiesByPerson);
@@ -133,6 +137,11 @@ public class PersonTripAssignment extends Module {
         if (probabilitiesByPerson.isEmpty()) {
             fillEquallyDistributed(household, probabilitiesByPerson);
         }
+    }
+
+    private void assignAIRPORT(MitoHousehold household, Map<MitoPerson,Double> probabilitiesByPerson) {
+        //todo remove the trips for the persons that are travelling to the airport?
+        fillEquallyDistributed(household, probabilitiesByPerson);
     }
 
     private void fillEquallyDistributed(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
