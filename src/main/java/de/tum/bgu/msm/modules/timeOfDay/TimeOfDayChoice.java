@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.timeOfDay;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
@@ -16,7 +15,6 @@ import java.util.EnumMap;
 
 
 public class TimeOfDayChoice extends Module {
-
 
     private static final Logger logger = Logger.getLogger(TimeOfDayChoice.class);
 
@@ -41,7 +39,7 @@ public class TimeOfDayChoice extends Module {
 
     }
 
-    void loadProbabilities() {
+    private void loadProbabilities() {
         TimeOfDayDistributionsReader reader = new TimeOfDayDistributionsReader(dataSet);
         reader.read();
         arrivalMinuteCumProbByPurpose = reader.getArrivalMinuteCumProbByPurpose();
@@ -50,7 +48,7 @@ public class TimeOfDayChoice extends Module {
     }
 
 
-    void chooseDepartureTimes() {
+    private void chooseDepartureTimes() {
 
         dataSet.getTrips().values().forEach(trip -> {
                     try {
@@ -78,11 +76,11 @@ public class TimeOfDayChoice extends Module {
     }
 
 
-    int chooseArrivalTime(MitoTrip mitoTrip) {
+    private int chooseArrivalTime(MitoTrip mitoTrip) {
         return MitoUtil.select(arrivalMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
     }
 
-    int chooseDepartureTimeForReturnTrip(MitoTrip mitoTrip, int arrivalTime) {
+    private int chooseDepartureTimeForReturnTrip(MitoTrip mitoTrip, int arrivalTime) {
 
         //if departure is after midnight
         int duration = MitoUtil.select(durationMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
@@ -93,16 +91,14 @@ public class TimeOfDayChoice extends Module {
         }
     }
 
-    public double estimateTravelTimeForDeparture(MitoTrip trip, double arrivalInMinutes) {
+    private double estimateTravelTimeForDeparture(MitoTrip trip, double arrivalInMinutes) {
         if (trip.getTripMode().equals(Mode.walk)) {
-            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / speedWalk;
+            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / speedWalk;
         } else if (trip.getTripMode().equals(Mode.bicycle)) {
-            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getId(), trip.getTripDestination().getId()) / speedBicycle;
+            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / speedBicycle;
         } else {
             //both transit and car use here travel times by car
-            return dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), arrivalInMinutes * 60, "car");
+            return dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), arrivalInMinutes * 60, "car");
         }
     }
-
-
 }

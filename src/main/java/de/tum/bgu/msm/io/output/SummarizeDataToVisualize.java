@@ -1,11 +1,9 @@
 package de.tum.bgu.msm.io.output;
 
-import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
-import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -16,7 +14,6 @@ import java.util.Set;
  * Created by matthewokrah on 12/03/2018.
  */
 public class SummarizeDataToVisualize {
-    private static final Logger logger = Logger.getLogger(SummarizeDataToVisualize.class);
     private static PrintWriter spatialResultWriter;
     private static PrintWriter spatialResultWriterFinal;
     private static PrintWriter resultWriter;
@@ -30,8 +27,8 @@ public class SummarizeDataToVisualize {
      *
      * @param action a string to indicate the action to take on the spatial result file
      */
-    private static void resultFileSpatial(String action) {
-        resultFileSpatial(action, true);
+    private static void resultFileSpatial(String action, String scenarioName) {
+        resultFileSpatial(action, true, scenarioName);
     }
 
     /**
@@ -40,11 +37,11 @@ public class SummarizeDataToVisualize {
      * @param action     a string to indicate the action to take on the spatial result file
      * @param writeFinal a boolean to indicate whether to write to the final spatial result file
      */
-    private static void resultFileSpatial(String action, Boolean writeFinal) {
+    private static void resultFileSpatial(String action, boolean writeFinal, String scenarioName) {
         // handle summary file
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + MitoModel.getScenarioName() + "/" +  year + "/";
+                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" +  year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 spatialResultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFileSpatial" +
                         ".csv", false);
@@ -67,8 +64,8 @@ public class SummarizeDataToVisualize {
      *
      * @param action a string to indicate the action to take on the result file
      */
-    private static void resultFile(String action) {
-        resultFile(action, true);
+    private static void resultFile(String action, String scenarioName) {
+        resultFile(action, true, scenarioName);
     }
 
     /**
@@ -77,10 +74,10 @@ public class SummarizeDataToVisualize {
      * @param action     a string to indicate the action to take on result file
      * @param writeFinal a boolean to indicate whether to write to the final result file
      */
-    private static void resultFile(String action, Boolean writeFinal) {
+    private static void resultFile(String action, boolean writeFinal, String scenarioName) {
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + MitoModel.getScenarioName() + "/" + year + "/";
+                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" + year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 resultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFile" +
                         ".csv", false);
@@ -105,23 +102,23 @@ public class SummarizeDataToVisualize {
      *
      * @param dataSet
      */
-    public static void writeFinalSummary(DataSet dataSet) {
+    public static void writeFinalSummary(DataSet dataSet, String scenarioName) {
         year = dataSet.getYear();
         // opening aspatial result file and writing out the header
-        resultFile("open");
+        resultFile("open", scenarioName);
         String hdAspatial = "Attribute";
         for (Purpose purpose : Purpose.values()) {
             hdAspatial = hdAspatial.concat("," + purpose);
         }
-        resultFile(hdAspatial);
+        resultFile(hdAspatial, scenarioName);
 
         // opening spatial result file and writing out the header
-        resultFileSpatial("open");
+        resultFileSpatial("open", scenarioName);
         String hdSpatial = "Zone";
         for (Purpose purpose : Purpose.values()) {
             hdSpatial = hdSpatial.concat("," + purpose + "P" + "," + purpose + "A" + "," + purpose + "AvDist" + "," + purpose + "AvTime" + "," + purpose + "TTB");
         }
-        resultFileSpatial(hdSpatial);
+        resultFileSpatial(hdSpatial, scenarioName);
 
         // initializing HashMaps to hold results
         Map<Integer, Map<Purpose, Integer>> distanceByPurpose = new HashMap<>();
@@ -134,10 +131,10 @@ public class SummarizeDataToVisualize {
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 Purpose purpose = trip.getTripPurpose();
-                Integer tripOrigin = trip.getTripOrigin().getId();
-                double rawDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin, trip.getTripDestination().getId());
+                Integer tripOrigin = trip.getTripOrigin().getZoneId();
+                double rawDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin, trip.getTripDestination().getZoneId());
                 int refinedDistance = (int) Math.round(rawDistance);
-                double rawTime = dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination().getId(), dataSet.getPeakHour(), "car");
+                double rawTime = dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination().getZoneId(), dataSet.getPeakHour(), "car");
                 int refinedTime = (int) Math.round(rawTime);
 
                 // updating the intitalized HashMaps
@@ -150,14 +147,14 @@ public class SummarizeDataToVisualize {
         }
 
         // writing out aspatial results
-        writeAspatialSummary(distanceByPurpose, "Distance_");
-        writeAspatialSummary(timeByPurpose, "Time_");
-        summarizeModeChoice(dataSet);
-        summarizeAtPersonLevel(dataSet);
+        writeAspatialSummary(distanceByPurpose, "Distance_", scenarioName);
+        writeAspatialSummary(timeByPurpose, "Time_", scenarioName);
+        summarizeModeChoice(dataSet, scenarioName);
+        summarizeAtPersonLevel(dataSet, scenarioName);
 
 
         // writing out household level aspatial results and getting household level spatial results
-        Map<Integer, Map<Purpose, Double>> avTTBudgetByZoneAndPurp = householdLevelSummary(dataSet);
+        Map<Integer, Map<Purpose, Double>> avTTBudgetByZoneAndPurp = householdLevelSummary(dataSet, scenarioName);
 
         // writing out spatial results
         for (MitoZone zone : dataSet.getZones().values()) {
@@ -171,12 +168,12 @@ public class SummarizeDataToVisualize {
                 double avTTBudget = avTTBudgetByZoneAndPurp.get(zoneId).get(purpose);
                 txt = txt.concat("," + tripsProduced + "," + tripsAttracted + "," + avTripDist + "," + avTripTime + "," + avTTBudget);
             }
-            resultFileSpatial(txt);
+            resultFileSpatial(txt, scenarioName);
         }
 
         // closing all result files
-        resultFile("close");
-        resultFileSpatial("close");
+        resultFile("close", scenarioName);
+        resultFileSpatial("close", scenarioName);
     }
 
     /**
@@ -185,14 +182,14 @@ public class SummarizeDataToVisualize {
      * @param map    a HashMap containing the aspatial results
      * @param prefix a string indicating the aspatial attribute
      */
-    private static void writeAspatialSummary(Map<Integer, Map<Purpose, Integer>> map, String prefix) {
+    private static void writeAspatialSummary(Map<Integer, Map<Purpose, Integer>> map, String prefix, String scenarioName) {
         for (int i : map.keySet()) {
             String txt = prefix.concat(String.valueOf(i));
             for (Purpose purpose : Purpose.values()) {
                 Integer trips = map.get(i).get(purpose);
                 txt = txt.concat("," + trips);
             }
-            resultFile(txt);
+            resultFile(txt, scenarioName);
         }
     }
 
@@ -236,7 +233,7 @@ public class SummarizeDataToVisualize {
      *
      * @param dataSet
      */
-    private static void summarizeModeChoice(DataSet dataSet) {
+    private static void summarizeModeChoice(DataSet dataSet, String scenarioName) {
         for (Mode mode : Mode.values()) {
             String txt = "ModeShare_";
             txt = txt.concat(String.valueOf(mode));
@@ -244,7 +241,7 @@ public class SummarizeDataToVisualize {
                 Double share = dataSet.getModeShareForPurpose(purpose, mode);
                 txt = txt.concat("," + share);
             }
-            resultFile(txt);
+            resultFile(txt, scenarioName);
         }
     }
 
@@ -253,7 +250,7 @@ public class SummarizeDataToVisualize {
      *
      * @param dataSet
      */
-    private static void summarizeAtPersonLevel(DataSet dataSet) {
+    private static void summarizeAtPersonLevel(DataSet dataSet, String scenarioName) {
         Map<Integer, Map<Purpose, Integer>> personsByTripsAndPurpose = new HashMap<>();
         for (MitoPerson person : dataSet.getPersons().values()) {
             Map<Purpose, Integer> trips = new HashMap<>(Purpose.values().length);
@@ -271,7 +268,7 @@ public class SummarizeDataToVisualize {
                 updateMap(personsByTripsAndPurpose, tripsByPurpose, purpose);
             }
         }
-        writeAspatialSummary(personsByTripsAndPurpose, "PPbyTrips_");
+        writeAspatialSummary(personsByTripsAndPurpose, "PPbyTrips_", scenarioName);
     }
 
     /**
@@ -316,7 +313,7 @@ public class SummarizeDataToVisualize {
      * @param dataSet
      * @return a hashMap containing the average travel time budget by zone and purpose
      */
-    private static Map<Integer, Map<Purpose, Double>> householdLevelSummary(DataSet dataSet) {
+    private static Map<Integer, Map<Purpose, Double>> householdLevelSummary(DataSet dataSet, String scenarioName) {
         Map<Integer, Map<Purpose, Integer>> householdsByTripsAndPurpose = new HashMap<>();
         Map<Integer, Map<Purpose, Double>> totalTTBudgetByZoneAndPurpose = initializedDoubleMap(dataSet);
         Map<Integer, Map<Purpose, Integer>> ttBudgetCounterByZoneAndPurpose = initializedIntMap(dataSet);
@@ -340,7 +337,7 @@ public class SummarizeDataToVisualize {
                 avTTBudgetByZoneAndPurpose.get(zoneId).replace(purpose, total / count);
             }
         }
-        writeAspatialSummary(householdsByTripsAndPurpose, "HHbyTrips_");
+        writeAspatialSummary(householdsByTripsAndPurpose, "HHbyTrips_", scenarioName);
         return avTTBudgetByZoneAndPurpose;
     }
 }

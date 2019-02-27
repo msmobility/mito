@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
+import de.tum.bgu.msm.DummyOccupation;
+import de.tum.bgu.msm.DummyZone;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
@@ -20,22 +22,22 @@ public class ModeChoiceCalculatorTest {
     public void setup() {
         Resources.initializeResources("./testInput/test.properties");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV"));
-        calculator = new ModeChoiceJSCalculator(reader);
+        calculator = new ModeChoiceJSCalculator(reader, Purpose.HBS);
     }
 
     @Test
     public void test() {
-        MitoZone zone = new MitoZone(1, null);
+        MitoZone zone = DummyZone.dummy;
         zone.setDistanceToNearestRailStop(0.5f);
         //origin.setAreaTypeHBWModeChoice(AreaType.HBW_mediumSizedCity);
         MitoHousehold hh = new MitoHousehold(1, 20000, 1, null);
-        MitoPerson pp = new MitoPerson(1, MitoOccupation.STUDENT, 1, 20, MitoGender.FEMALE, true);
+        MitoPerson pp = new MitoPerson(1, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
         hh.addPerson(pp);
         MitoTrip trip = new MitoTrip(1, Purpose.HBS);
         trip.setTripOrigin(zone);
         trip.setTripDestination(zone);
 
-        double[] result = calculator.calculateProbabilities(hh, pp, trip, new TravelTimes() {
+        double[] result = calculator.calculateProbabilities(hh, pp, zone, zone, new TravelTimes() {
         	@Override
         	public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
         		switch(mode) {

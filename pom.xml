@@ -6,7 +6,7 @@
     <groupId>com.github.msmobility</groupId>
     <artifactId>mito</artifactId>
     <name>MITO</name>
-    <version>master-SNAPSHOT</version>
+    <version>master</version>
     <description>Microscopic Transportation Orchestrator</description>
     <url>mito.zone</url>
     <inceptionYear>2015</inceptionYear>

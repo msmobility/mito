@@ -3,7 +3,7 @@ package de.tum.bgu.msm.io.input.readers;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * Class that can be used for reading arbitrary csv files. Provides a {@link GenericCsvTable} that holds the data.
  * Make sure to call {@link #read()} first.
  */
-public final class GenericCsvReader extends CSVReader {
+public final class GenericCsvReader extends AbstractCsvReader {
 
     private final String fileName;
     private final GenericCsvTable table = new GenericCsvTable();

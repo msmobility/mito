@@ -2,7 +2,6 @@ package de.tum.bgu.msm.io.input.readers;
 
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.input.CSVReader;
 import de.tum.bgu.msm.modules.externalFlows.ExternalFlowType;
 import de.tum.bgu.msm.modules.externalFlows.ExternalFlowZone;
 import de.tum.bgu.msm.resources.Properties;

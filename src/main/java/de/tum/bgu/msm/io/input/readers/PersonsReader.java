@@ -1,8 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -11,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class PersonsReader extends CSVReader {
+public class PersonsReader extends AbstractCsvReader {
 
     private static final Logger logger = Logger.getLogger(PersonsReader.class);
 
@@ -20,12 +19,12 @@ public class PersonsReader extends CSVReader {
     private int posAge = -1;
     private int posSex = -1;
     private int posOccupation = -1;
-    private int posWorkplace = -1;
+    private int posWorkplaceId = -1;
     private int posLicence = -1;
     private int posIncome = -1;
-    private int posSchool = -1;
-    private int posSchoolCoordX = -1;
-    private int posSchoolCoordY = -1;
+    private int posSchoolId = -1;
+
+    private int occupationCounter = 0;
 
     public PersonsReader(DataSet dataSet) {
         super(dataSet);
@@ -45,6 +44,7 @@ public class PersonsReader extends CSVReader {
         if(noIncomeHouseholds > 0) {
             logger.warn("There are " + noIncomeHouseholds + " households with no income after reading all persons.");
         }
+        logger.info("There are " + occupationCounter + " persons without occupation (student or worker).");
     }
 
     @Override
@@ -55,13 +55,10 @@ public class PersonsReader extends CSVReader {
         posAge = headerList.indexOf("age");
         posSex = headerList.indexOf("gender");
         posOccupation = headerList.indexOf("occupation");
-        posWorkplace = headerList.indexOf("workplace");
-        posSchoolCoordX = headerList.indexOf("schoolCoordX");
-        posSchoolCoordY = headerList.indexOf("schoolCoordY");
-        posSchool = headerList.indexOf("schoolTAZ");
+        posWorkplaceId = headerList.indexOf("workplace");
+        posSchoolId = headerList.indexOf("schoolId");
         posLicence = headerList.indexOf("driversLicense");
         posIncome = headerList.indexOf("income");
-        posSchool = headerList.indexOf("schoolTAZ");
     }
 
     @Override
@@ -82,25 +79,41 @@ public class PersonsReader extends CSVReader {
         MitoGender mitoGender = MitoGender.valueOf(genderCode);
 
         final int occupationCode = Integer.parseInt(record[posOccupation]);
-        MitoOccupation mitoOccupation = MitoOccupation.valueOf(occupationCode);
+        MitoOccupationStatus mitoOccupationStatus = MitoOccupationStatus.valueOf(occupationCode);
 
-        final int workplace = Integer.parseInt(record[posWorkplace]);
+        final int workplace = Integer.parseInt(record[posWorkplaceId]);
+        final int school = Integer.parseInt(record[posSchoolId]);
 
         final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
 
         int income = Integer.parseInt(record[posIncome]);
         hh.addIncome(income);
 
-        MitoPerson pp = new MitoPerson(id, mitoOccupation, workplace, age, mitoGender, driversLicense);
-        if(mitoOccupation == MitoOccupation.STUDENT) {
-            final int schoolZone = Integer.parseInt(record[posSchool]);
-            if(dataSet.getZones().containsKey(schoolZone)) {
-                pp.setOccupationZone(dataSet.getZones().get(schoolZone));
-                pp.setOccupationLocation(new Coordinate(Double.parseDouble(record[posSchoolCoordX]),Double.parseDouble(record[posSchoolCoordY])));
-            } else {
-                logger.warn("Person " + id + " declared as student does not have a school TAZ!");
-            }
+        MitoOccupation occupation = null;
+
+        switch (mitoOccupationStatus) {
+            case WORKER:
+                if(dataSet.getJobs().containsKey(workplace)) {
+                    occupation = (dataSet.getJobs().get(workplace));
+                } else {
+                    logger.warn("Person " + id + " declared as student does not have a valid school!");
+                }
+                break;
+            case STUDENT:
+                if(dataSet.getSchools().containsKey(school)) {
+                    occupation = (dataSet.getSchools().get(school));
+                } else {
+                    logger.warn("Person " + id + " declared as student does not have a valid school!");
+                }
+                break;
+            case UNEMPLOYED:
+            default:
+                logger.debug("Person " + id + " does not have an occupation.");
+                occupationCounter++;
+                break;
         }
+
+        MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
 
         hh.addPerson(pp);
         dataSet.addPerson(pp);

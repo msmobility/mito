@@ -31,7 +31,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private final Purpose purpose;
     private final List<Purpose> priorPurposes;
-    private final MitoOccupation relatedMitoOccupation;
+    private final MitoOccupationStatus relatedMitoOccupationStatus;
     private final EnumMap<Purpose, DoubleMatrix2D> baseProbabilities;
     private final double[] destinationProbabilities;
     private final DataSet dataSet;
@@ -44,12 +44,12 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private final Map<Integer, MitoZone> zonesCopy;
     private double mean;
 
-    private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, MitoOccupation relatedMitoOccupation,
+    private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, MitoOccupationStatus relatedMitoOccupationStatus,
                                  EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
         this.priorPurposes = priorPurposes;
-        this.relatedMitoOccupation = relatedMitoOccupation;
+        this.relatedMitoOccupationStatus = relatedMitoOccupationStatus;
         this.baseProbabilities = baseProbabilities;
         this.dataSet = dataSet;
         this.zonesCopy = new HashMap<>(dataSet.getZones());
@@ -60,7 +60,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     public static NhbwNhboDistribution nhbw(EnumMap<Purpose, DoubleMatrix2D> baseProbabilites, DataSet dataSet) {
         return new NhbwNhboDistribution(Purpose.NHBW, Collections.singletonList(Purpose.HBW),
-                MitoOccupation.WORKER, baseProbabilites, dataSet);
+                MitoOccupationStatus.WORKER, baseProbabilites, dataSet);
     }
 
     public static NhbwNhboDistribution nhbo(EnumMap<Purpose, DoubleMatrix2D> baseProbabilites, DataSet dataSet) {
@@ -69,7 +69,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
@@ -80,17 +80,15 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                 if (hasBudgetForPurpose(household)) {
                     updateBudgets(household);
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        MitoZone origin = findOrigin(household, trip);
+                        Location origin = findOrigin(household, trip);
                         if (origin == null) {
                             logger.debug("No origin found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();
                             continue;
                         }
                         trip.setTripOrigin(origin);
-                        trip.setTripOriginCoord(origin.getRandomCoord());
-                        MitoZone destination = findDestination(trip.getTripOrigin().getId());
+                        MitoZone destination = findDestination(trip.getTripOrigin().getZoneId());
                         trip.setTripDestination(destination);
-                        trip.setTripDestinationCoord(destination.getRandomCoord());
                         if (destination == null) {
                             logger.debug("No destination found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();
@@ -138,8 +136,8 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         mean = hhBudgetPerTrip * ratio;
     }
 
-    private MitoZone findOrigin(MitoHousehold household, MitoTrip trip) {
-        final List<MitoZone> possibleBaseZones = new ArrayList<>();
+    private Location findOrigin(MitoHousehold household, MitoTrip trip) {
+        final List<Location> possibleBaseZones = new ArrayList<>();
         for (Purpose purpose : priorPurposes) {
             for (MitoTrip priorTrip : household.getTripsForPurpose(purpose)) {
                 if (priorTrip.getPerson().equals(trip.getPerson())) {
@@ -150,8 +148,9 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         if (!possibleBaseZones.isEmpty()) {
             return MitoUtil.select(random, possibleBaseZones);
         }
-        if (trip.getPerson().getMitoOccupation() == relatedMitoOccupation && trip.getPerson().getOccupationZone() != null) {
-            return trip.getPerson().getOccupationZone();
+        if (trip.getPerson().getMitoOccupationStatus() == relatedMitoOccupationStatus &&
+            trip.getPerson().getOccupation() != null) {
+            return trip.getPerson().getOccupation();
         }
 
         final Purpose selectedPurpose = MitoUtil.select(random, priorPurposes);
@@ -180,8 +179,8 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
     private void postProcessTrip(MitoTrip trip) {
-        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getId(),
-                trip.getTripDestination().getId(), peakHour, "car");
+        actualBudgetSum += travelTimes.getTravelTime(trip.getTripOrigin().getZoneId(),
+                trip.getTripDestination().getZoneId(), peakHour, "car");
         idealBudgetSum += hhBudgetPerTrip;
     }
 }

@@ -3,7 +3,7 @@ package de.tum.bgu.msm.io.input.readers;
 import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 /**
  * Created by Qin on 02.07.2018.
  */
-public class HouseholdsCoordReader extends CSVReader {
+public class HouseholdsCoordReader extends AbstractCsvReader {
 
     private int posHHId = -1;
     private int posCoordX = -1;
@@ -26,7 +26,7 @@ public class HouseholdsCoordReader extends CSVReader {
 
     @Override
     public void read() {
-        logger.info("  Reading household microlocation coordinate from dwelling file");
+        logger.info("Reading household microlocation coordinate from dwelling file");
         String fileName = Resources.INSTANCE.getString(Properties.DWELLINGS);
         super.read(fileName, ",");
     }

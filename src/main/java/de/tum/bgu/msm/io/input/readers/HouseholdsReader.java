@@ -3,17 +3,16 @@ package de.tum.bgu.msm.io.input.readers;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 
 /**
  * Created by Nico on 17.07.2017.
  */
-public class HouseholdsReader extends CSVReader {
+public class HouseholdsReader extends AbstractCsvReader {
 
     private int posId = -1;
     private int posTaz = -1;
