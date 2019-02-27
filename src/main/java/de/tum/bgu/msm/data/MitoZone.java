@@ -9,7 +9,6 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
-import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -18,7 +17,7 @@ import java.util.EnumMap;
 /**
  * Created by Nico on 7/7/2017.
  */
-public class MitoZone implements Id {
+public class MitoZone implements Id, Location {
 
     private final int zoneId;
     private float reductionAtBorderDamper = 0;
@@ -89,8 +88,8 @@ public class MitoZone implements Id {
         return schoolEnrollment;
     }
 
-    public void setSchoolEnrollment(int schoolEnrollment) {
-        this.schoolEnrollment = schoolEnrollment;
+    public void addSchoolEnrollment(int schoolEnrollment) {
+        this.schoolEnrollment += schoolEnrollment;
     }
 
     public void addEmployeeForType(JobType type) {
@@ -138,13 +137,13 @@ public class MitoZone implements Id {
         this.shapeFeature = shapeFeature;
     }
 
-    public Coord getRandomCoord() {
+    public Coordinate getRandomCoord() {
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) shapeFeature.getDefaultGeometry());
         Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
         Point p = MGC.coordinate2Point(coordinate);
-        return new Coord(p.getX(), p.getY());
+        return new Coordinate(p.getX(), p.getY());
     }
 
     @Override
@@ -159,5 +158,10 @@ public class MitoZone implements Id {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int getZoneId() {
+        return zoneId;
     }
 }

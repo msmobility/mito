@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.io.output;
 
-import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.MitoZone;
@@ -22,12 +21,12 @@ public class TripGenerationWriter {
 
     private static final Logger logger = Logger.getLogger(TripGenerationWriter.class);
 
-    public static void writeTripsByPurposeAndZone(DataSet dataSet) {
+    public static void writeTripsByPurposeAndZone(DataSet dataSet, String scenarioName) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear());
+        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear(), scenarioName);
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet.getYear());
+        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet.getYear(), scenarioName);
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
@@ -49,8 +48,8 @@ public class TripGenerationWriter {
         for (MitoTrip trip: dataSet.getTrips().values()) {
             if(trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 Purpose purpose = trip.getTripPurpose();
-                int number = tripProdByZoneAndPurp.get(trip.getTripOrigin().getId()).get(purpose);
-                tripProdByZoneAndPurp.get(trip.getTripOrigin().getId()).replace(purpose, (number + 1));
+                int number = tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).get(purpose);
+                tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).replace(purpose, (number + 1));
             }
         }
 
@@ -76,16 +75,16 @@ public class TripGenerationWriter {
                 + " aggregate trips balanced against attractions.");
     }
 
-    private static String generateOutputFileName (String fileName, int year) {
-        if (MitoModel.getScenarioName() != null) {
-            File dir = new File("scenOutput/" + MitoModel.getScenarioName() + "/" +  year +  "/tripGeneration");
+    private static String generateOutputFileName (String fileName, int year, String scenarioName) {
+        if (scenarioName != null) {
+            File dir = new File("scenOutput/" + scenarioName + "/" +  year +  "/tripGeneration");
             if(!dir.exists()){
                 boolean directoryCreated = dir.mkdir();
                 if (!directoryCreated) {
                     logger.warn("Could not create directory for trip gen output: " + dir.toString());
                 }
             }
-            fileName = "scenOutput/" + MitoModel.getScenarioName() + "/" +  year  +  "/tripGeneration/" + fileName;
+            fileName = "scenOutput/" + scenarioName + "/" +  year  +  "/tripGeneration/" + fileName;
         }
         return fileName;
     }

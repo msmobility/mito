@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -13,45 +12,34 @@ import java.util.Set;
  * Created on June 8, 2017 in Munich, Germany
  *
  */
-
 public class MitoPerson implements Id {
 
     private static final Logger logger = Logger.getLogger(MitoPerson.class);
 
     private final int id;
     private final MitoGender mitoGender;
-    private final MitoOccupation mitoOccupation;
-    private int occupation;
-    private MitoZone occupationZone;
-    private Coordinate occupationLocation;
+    private final MitoOccupationStatus mitoOccupationStatus;
+    private final MitoOccupation occupation;
     private final int age;
     private final boolean driversLicense;
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
-    public MitoPerson(int id, MitoOccupation mitoOccupation, int occupation, int age, MitoGender mitoGender, boolean driversLicense) {
+    public MitoPerson(int id, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
-        this.mitoOccupation = mitoOccupation;
+        this.mitoOccupationStatus = mitoOccupationStatus;
         this.occupation = occupation;
         this.age = age;
         this.mitoGender = mitoGender;
         this.driversLicense = driversLicense;
     }
 
-    public int getOccupation() {
+    public MitoOccupation getOccupation() {
         return occupation;
     }
 
-    public void setOccupationZone(MitoZone occupationZone) {
-        this.occupationZone = occupationZone;
-    }
-
-    public MitoOccupation getMitoOccupation() {
-        return mitoOccupation;
-    }
-
-    public MitoZone getOccupationZone() {
-        return occupationZone;
+    public MitoOccupationStatus getMitoOccupationStatus() {
+        return mitoOccupationStatus;
     }
 
     @Override
@@ -80,14 +68,6 @@ public class MitoPerson implements Id {
         if(trip.getPerson() != this) {
             trip.setPerson(this);
         }
-    }
-
-    public Coordinate getOccupationLocation() {
-        return occupationLocation;
-    }
-
-    public void setOccupationLocation(Coordinate occupationLocation) {
-        this.occupationLocation = occupationLocation;
     }
 
     @Override

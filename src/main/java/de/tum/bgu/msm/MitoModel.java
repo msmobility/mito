@@ -1,7 +1,8 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.input.Input;
+import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
+import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
@@ -16,7 +17,7 @@ import java.util.Random;
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  * <p>
- * To run MITO, the following data need either to be passed in (using methods feedData) from another program or
+ * To run MITO, the following data need either to be passed in from another program or
  * need to be read from files and passed in (using method initializeStandAlone):
  * - zones
  * - autoTravelTimes
@@ -27,50 +28,36 @@ import java.util.Random;
  * - otherEmplByZone
  * - totalEmplByZone
  * - sizeOfZonesInAcre
- * All other data are read by function  manager.readAdditionalData();
  */
-
 public final class MitoModel {
 
     private static final Logger logger = Logger.getLogger(MitoModel.class);
-    private static String scenarioName;
+    private final String scenarioName;
 
-    private final Input manager;
-    private final DataSet dataSet;
+    private DataSet dataSet;
 
-    private MitoModel(String propertiesFile) {
-        this.dataSet = new DataSet();
-        this.manager = new Input(dataSet);
+    private MitoModel(String propertiesFile, DataSet dataSet, String scenarioName) {
+        this.dataSet = dataSet;
+        this.scenarioName = scenarioName;
         Resources.initializeResources(propertiesFile);
         MitoUtil.initializeRandomNumber();
     }
 
     public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
-        MitoModel model = new MitoModel(propertiesFile);
-        model.manager.readAsStandAlone(config);
-        model.manager.readAdditionalData();
-        scenarioName = Resources.INSTANCE.getString(Properties.SCENARIO_NAME);
+        MitoModel model = new MitoModel(propertiesFile, new DataSet(), Resources.INSTANCE.getString(Properties.SCENARIO_NAME));
+        model.readStandAlone(config);
         return model;
     }
 
-
-    public static MitoModel initializeModelFromSilo(String propertiesFile) {
+    public static MitoModel initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
-        MitoModel model = new MitoModel(propertiesFile);
+        MitoModel model = new MitoModel(propertiesFile, dataSet, scenarioName);
+        new SkimsReader(dataSet).readSkimDistancesAuto();
+        new SkimsReader(dataSet).readSkimDistancesNMT();
+        new SkimsReader(dataSet).readOnlyTransitTravelTimes();
+        model.readAdditionalData();
         return model;
-    }
-
-    public static MitoModel createModelWithInitialFeed(String propertiesFile, Input.InputFeed feed) {
-        MitoModel model = new MitoModel(propertiesFile);
-        model.manager.readFromFeed(feed);
-        model.manager.readAdditionalData();
-        return model;
-    }
-
-    public void feedData(Input.InputFeed feed) {
-        logger.info(" SILO data is being received in MITO");
-        manager.readFromFeed(feed);
     }
 
     public void runModel() {
@@ -78,9 +65,31 @@ public final class MitoModel {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
         TravelDemandGenerator ttd = new TravelDemandGenerator(dataSet);
-        ttd.generateTravelDemand();
+        ttd.generateTravelDemand(scenarioName);
 
         printOutline(startTime);
+    }
+
+    private void readStandAlone(ImplementationConfig config) {
+        dataSet.setTravelTimes(new SkimTravelTimes());
+        dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR));
+        new ZonesReader(dataSet).read();
+        if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
+            new BorderDampersReader(dataSet).read();
+        }
+        new SkimsReader(dataSet).read();
+        new JobReader(dataSet, config.getJobTypeFactory()).read();
+        new SchoolsReader(dataSet).read();
+        new HouseholdsReader(dataSet).read();
+        new HouseholdsCoordReader(dataSet).read();
+        new PersonsReader(dataSet).read();
+        readAdditionalData();
+    }
+
+    private void readAdditionalData() {
+        new TripAttractionRatesReader(dataSet).read();
+        new ModeChoiceInputReader(dataSet).read();
+        new EconomicStatusReader(dataSet).read();
     }
 
     private void printOutline(long startTime) {
@@ -101,12 +110,8 @@ public final class MitoModel {
         MitoUtil.setBaseDirectory(baseDirectory);
     }
 
-    public static String getScenarioName() {
+    public String getScenarioName() {
         return scenarioName;
-    }
-
-    public static void setScenarioName(String setScenarioName) {
-        scenarioName = setScenarioName;
     }
 
     public void setRandomNumberGenerator(Random random) {

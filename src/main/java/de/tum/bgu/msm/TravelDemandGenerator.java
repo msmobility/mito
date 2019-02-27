@@ -4,9 +4,6 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
@@ -22,11 +19,6 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.TransportMode;
-import org.matsim.core.utils.gis.ShapeFileReader;
-import org.opengis.feature.simple.SimpleFeature;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -43,7 +35,7 @@ public class TravelDemandGenerator {
         this.dataSet = dataSet;
     }
 
-    public void generateTravelDemand () {
+    public void generateTravelDemand (String scenarioName) {
 
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet);
@@ -87,24 +79,24 @@ public class TravelDemandGenerator {
         boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
         if (runTimeOfDayChoice && runScaling && runAssignment) {
             logger.info("Running traffic assignment in MATsim");
-            TrafficAssignment trafficAssignment = new TrafficAssignment(dataSet);
+            TrafficAssignment trafficAssignment = new TrafficAssignment(dataSet, scenarioName);
             trafficAssignment.run();
         }
 
-        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet);
-        SummarizeDataToVisualize.writeFinalSummary(dataSet);
+        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
+        SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
         if (Resources.INSTANCE.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
-            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
-            SummarizeData.writeOutTrips(dataSet);
+            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet, scenarioName);
+            SummarizeData.writeOutTrips(dataSet, scenarioName);
         }
         if(Resources.INSTANCE.getBoolean(Properties.CREATE_CHARTS, true)){
-            SummarizeData.writeCharts(dataSet);
+            SummarizeData.writeCharts(dataSet, scenarioName);
         }
 
         if(Resources.INSTANCE.getBoolean(Properties.PRINT_OUT_SKIM,false)){
             try {
 
-                String fileName = "scenOutput/" + MitoModel.getScenarioName() + "/" + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME);
+                String fileName = "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME);
                 int maxZone = dataSet.getZones().keySet().stream().max(Integer::compareTo).get() + 1;
                 OmxMatrixWriter.createOmxFile(fileName, maxZone);
 

@@ -19,7 +19,7 @@ public class SkimsReader extends AbstractOmxReader {
 
     @Override
     public void read() {
-        LOGGER.info("  Reading skims");
+        LOGGER.info("Reading skims");
         readTravelTimeSkims();
         readTravelDistances();
     }

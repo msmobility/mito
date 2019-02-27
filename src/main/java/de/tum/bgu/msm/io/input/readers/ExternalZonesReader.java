@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.io.input.readers;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.modules.externalFlows.ExternalFlowZone;
 import de.tum.bgu.msm.modules.externalFlows.ExternalFlowZoneType;
 import de.tum.bgu.msm.resources.Properties;
@@ -13,7 +13,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExternalZonesReader extends CSVReader {
+public class ExternalZonesReader extends AbstractCsvReader {
 
     private Map<Integer, ExternalFlowZone> zones;
 

@@ -2,10 +2,10 @@ package de.tum.bgu.msm.io.input.readers;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoPerson;
+import de.tum.bgu.msm.data.MitoJob;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.jobTypes.JobTypeFactory;
-import de.tum.bgu.msm.io.input.CSVReader;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * Created by Nico on 17.07.2017.
  */
-public class JobReader extends CSVReader {
+public class JobReader extends AbstractCsvReader {
 
     private static final Logger logger = Logger.getLogger(JobReader.class);
     private final JobTypeFactory factory;
@@ -33,7 +33,7 @@ public class JobReader extends CSVReader {
 
     @Override
     public void read() {
-        logger.info("  Reading job micro data from ascii file");
+        logger.info("Reading job micro data from ascii file");
         String fileName = Resources.INSTANCE.getString(Properties.JOBS);
         super.read(fileName, ",");
     }
@@ -55,16 +55,6 @@ public class JobReader extends CSVReader {
         int worker = Integer.parseInt(record[posWorker]);
         String type = record[posType];
         if (worker > 0) {
-            MitoPerson pp = dataSet.getPersons().get(worker);
-            if(pp == null) {
-                logger.warn(String.format("Job %d refers to non-existing person %d! Ignoring it.", id, worker));
-                return;
-            }
-            if (pp.getOccupation() != id) {
-                logger.warn("Person " + worker + " has workplace " + pp.getOccupation() + " in person file but workplace "
-                        + id + " in job file. Ignoring job.");
-                return;
-            }
             MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone == null) {
                 logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
@@ -72,13 +62,15 @@ public class JobReader extends CSVReader {
             }
 
             try {
-                zone.addEmployeeForType(factory.getType(type.toUpperCase()));
+                zone.addEmployeeForType(factory.getType(type.toUpperCase().replaceAll("\"","")));
             } catch (IllegalArgumentException e) {
                 logger.error("Job Type " + type + " used in job microdata but is not defined");
             }
-            pp.setOccupationZone(zone);
-            pp.setOccupationLocation(new Coordinate(Double.parseDouble(record[posJobCoordX]),
+            Coordinate coordinate = (new Coordinate(Double.parseDouble(record[posJobCoordX]),
             		Double.parseDouble(record[posJobCoordY])));
+
+            MitoJob job = new MitoJob(zone, coordinate, id);
+            dataSet.addJob(job);
         }
     }
 }

@@ -6,7 +6,6 @@ import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
-
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -15,7 +14,6 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.contrib.accessibility.utils.LeastCostPathTreeExtended;
 import org.matsim.contrib.dvrp.router.DijkstraTree;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.network.NetworkUtils;
@@ -23,10 +21,13 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
+import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.vehicles.Vehicle;
 import org.matsim.vehicles.VehicleUtils;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -75,7 +76,7 @@ public class CarSkimUpdater {
         dataSet.getZones().values().stream().parallel().forEach(mitoZone -> {
             nodesByZone.put(mitoZone.getId(), new LinkedList());
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
-                Coord originCoord = mitoZone.getRandomCoord();
+                Coord originCoord = CoordUtils.createCoord(mitoZone.getRandomCoord());
                 Node originNode = NetworkUtils.getNearestLink(network, originCoord).getToNode();
                 nodesByZone.get(mitoZone.getId()).add(originNode);
             }

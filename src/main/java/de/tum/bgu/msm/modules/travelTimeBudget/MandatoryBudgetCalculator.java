@@ -1,8 +1,8 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoOccupationStatus;
 import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.MitoOccupation;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Properties;
@@ -20,7 +20,7 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
     private final double defaultBudget;
     private final Collection<MitoHousehold> households;
     private final Purpose purpose;
-    private final MitoOccupation mitoOccupation;
+    private final MitoOccupationStatus mitoOccupationStatus;
     private final TravelTimes travelTimes;
     private final double timeOfDay;
     private int defaultBudgeted = 0;
@@ -32,23 +32,23 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
         this.travelTimes = travelTimes;
         this.timeOfDay = timeOfDay;
         if(purpose == Purpose.HBW) {
-            mitoOccupation = MitoOccupation.WORKER;
+            mitoOccupationStatus = MitoOccupationStatus.WORKER;
         } else if(purpose == Purpose.HBE) {
-            mitoOccupation = MitoOccupation.STUDENT;
+            mitoOccupationStatus = MitoOccupationStatus.STUDENT;
         } else {
             throw new RuntimeException("MandatoryBudgetCalculator can only be initialized with HBW or HBE purpose!");
         }
     }
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
         for (MitoHousehold household : households) {
             double budget = 0;
             for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                 if (specifiedByOccupation(trip)) {
                     //Multiply by 2, as the budget should contain the return trip of home based trips as well
                     budget += 2 * travelTimes.getTravelTime(household.getHomeZone().getId(),
-                            trip.getPerson().getOccupationZone().getId(), timeOfDay, TransportMode.car);
+                            trip.getPerson().getOccupation().getZoneId(), timeOfDay, TransportMode.car);
                 } else {
                     budget += defaultBudget;
                     defaultBudgeted ++;
@@ -60,12 +60,13 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
             logger.warn("There have been " + defaultBudgeted + " " + purpose
                     + " trips that were accounted for with the default budget of "
                     + defaultBudget + " minutes in the " + purpose + " travel time budgets"
-                    + " because no " + mitoOccupation + " was assigned (or occupation zone missing).");
+                    + " because no " + mitoOccupationStatus + " was assigned (or occupation zone missing).");
         }
         return null;
     }
 
     private boolean specifiedByOccupation(MitoTrip trip) {
-        return trip.getPerson().getMitoOccupation().equals(mitoOccupation) && trip.getPerson().getOccupationZone() != null;
+        return trip.getPerson().getMitoOccupationStatus().equals(mitoOccupationStatus)
+                && trip.getPerson().getOccupation().getOccupationZone() != null;
     }
 }

@@ -19,13 +19,16 @@ public class DataSet {
     private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
+    private final Map<Integer, MitoSchool> schools = new LinkedHashMap<>();
+    private final Map<Integer, MitoJob> jobs = new LinkedHashMap<>();
+
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
+    private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
-    private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
     private int year;
 
@@ -57,6 +60,14 @@ public class DataSet {
         return Collections.unmodifiableMap(households);
     }
 
+    public Map<Integer, MitoSchool> getSchools() {
+        return Collections.unmodifiableMap(schools);
+    }
+
+    public Map<Integer, MitoJob> getJobs() {
+        return Collections.unmodifiableMap(jobs);
+    }
+
     public Map<Integer, MitoTrip> getTrips() {
         return Collections.unmodifiableMap(trips);
     }
@@ -85,7 +96,6 @@ public class DataSet {
         }
     }
 
-
     public void addZone(final MitoZone zone) {
         MitoZone test = zones.putIfAbsent(zone.getId(), zone);
         if(test != null) {
@@ -104,6 +114,20 @@ public class DataSet {
         MitoPerson test = persons.putIfAbsent(person.getId(), person);
         if(test != null) {
             throw new IllegalArgumentException("MitoPerson id " + person.getId() + " already exists!");
+        }
+    }
+
+    public void addJob(final MitoJob job) {
+        MitoJob test = jobs.putIfAbsent(job.getId(), job);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoJob id " + job.getId() + " already exists!");
+        }
+    }
+
+    public void addSchool(final MitoSchool school) {
+        MitoSchool test = schools.putIfAbsent(school.getId(), school);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoSchool id " + school.getId() + " already exists!");
         }
     }
 
@@ -142,13 +166,13 @@ public class DataSet {
 
     public static int getNumberOfWorkersForHousehold(MitoHousehold household) {
         return (int) household.getPersons().values().stream().filter(person ->
-                person.getMitoOccupation() == MitoOccupation.WORKER).count();
+                person.getMitoOccupationStatus() == MitoOccupationStatus.WORKER).count();
 
     }
 
     public static int getStudentsForHousehold(MitoHousehold household) {
         return (int) household.getPersons().values().stream().filter(person ->
-                person.getMitoOccupation() == MitoOccupation.STUDENT).count();
+                person.getMitoOccupationStatus() == MitoOccupationStatus.STUDENT).count();
 
     }
 

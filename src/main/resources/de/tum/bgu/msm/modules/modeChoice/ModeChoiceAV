@@ -55,21 +55,21 @@ townOrRuralCommunityHBW = [0.0, 0.071, -0.39, -0.86, -0.88, -1.22, -0.89];
 generalizedCostHBW      = [-0.0088, -0.0088, 0.0, -0.0088, -0.0088, -0.0088, 0.0];
 tripLengthHBW           = [0.0, 0.0, -0.32, 0.0, 0.0, 0.0, -2.02];
 
-var calculateHBWProbabilities = function(hh, person, trip, travelTimes,  travelDistanceAuto, travelDistanceNMT, peakHour){
+var calculateHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes,  travelDistanceAuto, travelDistanceNMT, peakHour){
 
-    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
-    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
-    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
-    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 income = hh.getIncome();
 age = person.getAge();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhSize = hh.getHhSize();
 hhAutos = hh.getAutos();
-distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
-areaType = trip.getTripOrigin().getAreaTypeHBWModeChoice();
+distToRailStop = originZone.getDistanceToNearestRailStop();
+areaType = originZone.getAreaTypeHBWModeChoice();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD;
@@ -199,18 +199,18 @@ distToRailStopHBE   = [0.0, 0.0, 0.0, -0.28, -0.26, -0.46, 0.0];
 generalizedCostHBE  = [-0.0025, -0.0025, 0.0, -0.0025, -0.0025, -0.0025, 0.0];
 tripLengthHBE       = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.71];
 
-var calculateHBEProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+var calculateHBEProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
-    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
-    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
-    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
-distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
+distToRailStop = originZone.getDistanceToNearestRailStop();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD
@@ -313,21 +313,21 @@ hhChildrenHBS           = [0.0, -0.051, 0.0, 0.0, 0.0, 0.0, -0.17];
 generalizedCostHBS_Sq   = [-0.0000068, -0.0000068, 0.0, -0.0000068, -0.0000068, -0.0000068, 0.0];
 tripLengthHBS           = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.46];
 
-var calculateHBSProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+var calculateHBSProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
 var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
 hhChildren = dataSet.getChildrenForHousehold(hh);
 
-    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
-    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
-    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
-    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
-distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
+distToRailStop = originZone.getDistanceToNearestRailStop();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
@@ -437,19 +437,19 @@ distToRailStopHBO   = [0.0, 0.0, 0.0, -0.61, -0.57, -0.58, -0.065];
 generalizedCostHBO  = [-0.0012, -0.0012, 0.0, -0.0012, -0.0012, -0.0012, 0.0];
 tripLengthHBO       = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.68];
 
-var calculateHBOProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+var calculateHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
-    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
-    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
-    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 hhSize = hh.getHhSize();
-distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
+distToRailStop = originZone.getDistanceToNearestRailStop();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
@@ -558,18 +558,18 @@ distToRailStopNHBW  = [0.0, 0.0, 0.0, -0.24, 0.0, -0.16, -0.37];
 generalizedCostNHBW = [-0.0034, -0.0034, 0.0, -0.0034, -0.0034, -0.0034, 0.0];
 tripLengthNHBW      = [0.0, 0.0, -0.28, 0.0, 0.0, 0.0, -1.54];
 
-var calculateNHBWProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+var calculateNHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
-    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
-    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
-    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 income = hh.getIncome();
 age = person.getAge();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
-distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
+distToRailStop = originZone.getDistanceToNearestRailStop();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
@@ -672,19 +672,19 @@ ruralNHBO               = [0.0, 0.0, 0.0, -0.70, -0.91, -1.12, 0.0];
 generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0];
 tripLengthNHBO          = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57];
 
-var calculateNHBOProbabilities = function(hh, person, trip, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
-    timeAutoD = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "car");
+    timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
-    timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
-    timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
-    timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 income = hh.getIncome();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
-distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
-areaType = trip.getTripOrigin().getAreaTypeNHBOModeChoice();
+distToRailStop = originZone.getDistanceToNearestRailStop();
+areaType = originZone.getAreaTypeNHBOModeChoice();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD

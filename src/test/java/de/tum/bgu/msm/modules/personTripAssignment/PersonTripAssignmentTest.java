@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.personTripAssignment;
 
 import com.google.common.collect.Lists;
+import de.tum.bgu.msm.DummyOccupation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -21,11 +22,11 @@ public class PersonTripAssignmentTest {
         dataSet = new DataSet();
 
         MitoHousehold household = new MitoHousehold(1, 1, 1, null);
-        household.addPerson(new MitoPerson(1, MitoOccupation.WORKER, 1, 35, MitoGender.MALE, true));
-        household.addPerson(new MitoPerson(2, MitoOccupation.WORKER, 1, 30, MitoGender.FEMALE, true));
-        household.addPerson(new MitoPerson(3, MitoOccupation.STUDENT, 1, 10, MitoGender.FEMALE, false));
-        household.addPerson(new MitoPerson(4, MitoOccupation.STUDENT, 1, 15, MitoGender.MALE, false));
-        household.addPerson(new MitoPerson(5, MitoOccupation.UNEMPLOYED, 1, 70, MitoGender.FEMALE, false));
+        household.addPerson(new MitoPerson(1, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 35, MitoGender.MALE, true));
+        household.addPerson(new MitoPerson(2, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 30, MitoGender.FEMALE, true));
+        household.addPerson(new MitoPerson(3, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 10, MitoGender.FEMALE, false));
+        household.addPerson(new MitoPerson(4, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 15, MitoGender.MALE, false));
+        household.addPerson(new MitoPerson(5, MitoOccupationStatus.UNEMPLOYED, null, 70, MitoGender.FEMALE, false));
         dataSet.addHousehold(household);
 
         MitoTrip tripHBW = new MitoTrip(1, Purpose.HBW);
@@ -60,9 +61,9 @@ public class PersonTripAssignmentTest {
         for (MitoTrip trip : dataSet.getTrips().values()) {
             assertNotNull("No Person set for trip " + trip, trip.getPerson());
             if (trip.getTripPurpose().equals(Purpose.HBW)) {
-                assertEquals(MitoOccupation.WORKER, trip.getPerson().getMitoOccupation());
+                assertEquals(MitoOccupationStatus.WORKER, trip.getPerson().getMitoOccupationStatus());
             } else if (trip.getTripPurpose().equals(Purpose.HBE)) {
-                assertEquals(MitoOccupation.STUDENT, trip.getPerson().getMitoOccupation());
+                assertEquals(MitoOccupationStatus.STUDENT, trip.getPerson().getMitoOccupationStatus());
             }
         }
     }

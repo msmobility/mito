@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.data;
 
-import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.population.Person;
 
 /**
@@ -9,17 +8,13 @@ import org.matsim.api.core.v01.population.Person;
  * Created on Mar 26, 2017 in Munich, Germany
  *
  */
-
 public class MitoTrip implements Id{
 
     private final int tripId;
     private final Purpose tripPurpose;
 
-    private MitoZone tripOrigin;
-    private MitoZone tripDestination;
-
-    private Coord tripOriginCoord;
-    private Coord tripDestinationCoord;
+    private Location tripOrigin;
+    private Location tripDestination;
 
     private MitoPerson person;
 
@@ -40,11 +35,11 @@ public class MitoTrip implements Id{
         return tripId;
     }
 
-    public MitoZone getTripOrigin() {
+    public Location getTripOrigin() {
         return tripOrigin;
     }
 
-    public void setTripOrigin(MitoZone origin) {
+    public void setTripOrigin(Location origin) {
         this.tripOrigin = origin;
     }
 
@@ -52,11 +47,11 @@ public class MitoTrip implements Id{
         return tripPurpose;
     }
 
-    public MitoZone getTripDestination() {
+    public Location getTripDestination() {
         return this.tripDestination;
     }
 
-    public void setTripDestination(MitoZone destination) {
+    public void setTripDestination(Location destination) {
         this.tripDestination = destination;
     }
 
@@ -105,22 +100,6 @@ public class MitoTrip implements Id{
 
     public boolean isHomeBased() {
         return !this.getTripPurpose().equals(Purpose.NHBW) && !this.getTripPurpose().equals(Purpose.NHBO);
-    }
-
-    public Coord getTripOriginCoord() {
-        return tripOriginCoord;
-    }
-
-    public void setTripOriginCoord(Coord tripOriginCoord) {
-        this.tripOriginCoord = tripOriginCoord;
-    }
-
-    public Coord getTripDestinationCoord() {
-        return tripDestinationCoord;
-    }
-
-    public void setTripDestinationCoord(Coord tripDestinationCoord) {
-        this.tripDestinationCoord = tripDestinationCoord;
     }
 
     @Override

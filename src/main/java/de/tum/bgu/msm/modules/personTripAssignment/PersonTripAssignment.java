@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static de.tum.bgu.msm.data.MitoOccupation.STUDENT;
-import static de.tum.bgu.msm.data.MitoOccupation.WORKER;
+import static de.tum.bgu.msm.data.MitoOccupationStatus.STUDENT;
+import static de.tum.bgu.msm.data.MitoOccupationStatus.WORKER;
 import static de.tum.bgu.msm.data.Purpose.*;
 
 public class PersonTripAssignment extends Module {
@@ -69,7 +69,7 @@ public class PersonTripAssignment extends Module {
 
     private void assignHBW(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
         for (MitoPerson person : household.getPersons().values()) {
-            if (person.getMitoOccupation() == WORKER) {
+            if (person.getMitoOccupationStatus() == WORKER) {
                 final long previousTrips = person.getTrips().stream().filter(trip -> trip.getTripPurpose() == HBW).count();
                 probabilitiesByPerson.put(person, Math.pow(10, -previousTrips));
             }
@@ -88,7 +88,7 @@ public class PersonTripAssignment extends Module {
 
     private void assignHBE(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
         for (MitoPerson person : household.getPersons().values()) {
-            if (person.getMitoOccupation() == STUDENT) {
+            if (person.getMitoOccupationStatus() == STUDENT) {
                 long previousTrips = person.getTrips().stream().filter(trip -> trip.getTripPurpose() == HBE).count();
                 double probability = Math.pow(10, -previousTrips);
                 probabilitiesByPerson.put(person, probability);
@@ -101,7 +101,7 @@ public class PersonTripAssignment extends Module {
 
     private void assignHBSHBO(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
         for (MitoPerson person : household.getPersons().values()) {
-            if (person.getMitoOccupation() == WORKER) {
+            if (person.getMitoOccupationStatus() == WORKER) {
                 probabilitiesByPerson.put(person, 1. / 3.);
             }
             probabilitiesByPerson.put(person, 1.);
