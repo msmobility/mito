@@ -38,6 +38,10 @@ public class MitoZone implements Id, Location {
         this.areaTypeSG = areaType;
     }
 
+    public boolean isMunichZone() {
+        return "9162000".equals(this.shapeFeature.getAttribute("AGS").toString());
+    }
+
     public AreaTypes.SGType getAreaTypeSG() {
         return areaTypeSG;
     }
