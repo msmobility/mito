@@ -1,8 +1,8 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -21,35 +21,21 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.io.input.readers.GenericCsvReader;
-import de.tum.bgu.msm.io.input.readers.GenericCsvReader.GenericCsvTable;
 
 public class TripCSVToMATSimPlan {
 
 	// This class will read trip lists in CSV from MITO and creates a MATSim XML
 	// plan file
-
-	private static String[] columns = { "id", "originX", "originY", "destinationX", "destinationY", "purpose", "person",
-			"mode", "distance", "departure_time", "departure_time_return" };
+	private static String delimiter = ",";
 
 	private static String filename;
-	private static GenericCsvTable table;
 	private static PopulationFactory factory;
 	private static Network network;
-	private static Map<String, Integer> indexes = new HashMap<String, Integer>();
 
 	public static void main(String[] args) {
+		// TODO add logging
 		filename = args[0];
 		String networkFile = args[1];
-
-		// TODO add logging
-		GenericCsvReader reader = new GenericCsvReader(filename);
-		reader.read();
-		table = reader.getTable();
-
-		for (String column : columns) {
-			indexes.put(column, table.getColumnIndexOf(column));
-		}
 
 		Config config = ConfigUtils.createConfig();
 		config.network().setInputFile(networkFile);
@@ -60,8 +46,28 @@ public class TripCSVToMATSimPlan {
 		Population population = PopulationUtils.createPopulation(config);
 		factory = population.getFactory();
 
-		for (int i = 0; i < table.getRowCount(); i++) {
-			population.addPerson(createPersonFromTrips(i));
+		try {
+			FileReader in = null;
+			BufferedReader br = null;
+			try {
+				in = new FileReader(filename);
+				br = new BufferedReader(in);
+
+				String line;
+				int i = 0;
+				br.readLine(); // skip CSV header
+				while ((line = br.readLine()) != null) {
+					population.addPerson(createPersonFromTrip(i++, line));
+				}
+			} finally {
+				if (br != null)
+					br.close();
+
+				if (in != null)
+					in.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		PopulationWriter popwriter = new PopulationWriter(population);
@@ -70,54 +76,50 @@ public class TripCSVToMATSimPlan {
 		System.out.println("done.");
 	}
 
-	private static Person createPersonFromTrips(int i) {
-		Id<Person> matsimId = Id.createPersonId(table.getString(i, indexes.get("id")) + "_" + i);
+	private static Person createPersonFromTrip(int i, String line) {
+		Trip t = new Trip(line);
+
+		Id<Person> matsimId = Id.createPersonId(t.person + "_" + i);
 
 		Person p = factory.createPerson(Id.createPersonId(matsimId));
 		Plan plan = factory.createPlan();
 
-		Purpose purpose = Purpose.valueOf(table.getString(i, indexes.get("purpose")));
+		Purpose purpose = Purpose.valueOf(t.purpose);
 		boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
-		
+
 		String firstActivityType = MatsimPopulationGenerator.getOriginActivity(purpose);
-		Coord firstCoord = new Coord(table.getDouble(i, indexes.get("originX")),
-				table.getDouble(i, indexes.get("originY")));
+		Coord firstCoord = new Coord(t.originX, t.originY);
 
 		Activity firstAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
 		firstAct.setLinkId(NetworkUtils.getNearestLink(network, firstCoord).getId());
 
-		Double departureTime = table.getDouble(i, indexes.get("departure_time"));
-		firstAct.setEndTime(departureTime);
+		firstAct.setEndTime(t.departure_time);
 		plan.addActivity(firstAct);
 
-		String mode = decodeMode(table.getString(i, indexes.get("mode")));
+		String mode = decodeMode(t.mode);
 		Leg firstLeg = factory.createLeg(mode);
-		firstLeg.setDepartureTime(departureTime);
+		firstLeg.setDepartureTime(t.departure_time);
 		plan.addLeg(firstLeg);
-		
+
 		String secondActivityType = MatsimPopulationGenerator.getDestinationActivity(purpose);
-		Coord secondCoord = new Coord(table.getDouble(i, indexes.get("destinationX")),
-				table.getDouble(i, indexes.get("destinationY")));
-		
+		Coord secondCoord = new Coord(t.destinationX, t.destinationY);
+
 		Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
 		secondAct.setLinkId(NetworkUtils.getNearestLink(network, secondCoord).getId());
-		secondAct.setStartTime(departureTime + 1); // TODO include MITO's travel time estimations
-		
-		Double departureTimeReturn = null;
-		if (roundTrip) {
-			departureTimeReturn = table.getDouble(i, indexes.get("departure_time_return"));
-			secondAct.setEndTime(departureTimeReturn);
-		}
+		secondAct.setStartTime(t.departure_time + 1); // TODO include MITO's travel time estimations
+
+		if (roundTrip) 
+			secondAct.setEndTime(t.departure_time_return);
 		plan.addActivity(secondAct);
-		
+
 		if (roundTrip) {
 			Leg secondLeg = factory.createLeg(mode);
-			secondLeg.setDepartureTime(departureTimeReturn);
+			secondLeg.setDepartureTime(t.departure_time_return);
 			plan.addLeg(secondLeg);
-			
+
 			Activity thirdAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
 			thirdAct.setLinkId(NetworkUtils.getNearestLink(network, firstCoord).getId());
-			thirdAct.setStartTime(departureTimeReturn + 1); // TODO include MITO's travel time estimations
+			thirdAct.setStartTime(t.departure_time_return + 1); // TODO include MITO's travel time estimations
 			plan.addActivity(thirdAct);
 		}
 
@@ -134,8 +136,41 @@ public class TripCSVToMATSimPlan {
 		case "bus":
 		case "tramOrMetro":
 			return "pt";
+		case "bicycle":
+			return "bike";
 		default:
 			return encodedMode;
 		}
+	}
+
+	public final static class Trip {
+	    public final double originX;
+	    public final double originY;
+	    public final double destinationX;
+	    public final double destinationY;
+	    public final String purpose;
+	    public final String person;
+	    public final double distance;
+	    public final String mode;
+	    public final double departure_time;
+	    public final double departure_time_return;
+
+	    public Trip(String line) {
+	    	String[] data = line.split(delimiter);
+		    this.originX = Double.parseDouble(data[2]);
+		    this.originY = Double.parseDouble(data[3]);
+		    this.destinationX = Double.parseDouble(data[4]);
+		    this.destinationY = Double.parseDouble(data[5]);
+		    this.purpose = data[7];
+		    this.person = data[8];
+		    this.distance = Double.parseDouble(data[9]);
+		    this.mode = data[14];
+		    this.departure_time = Double.parseDouble(data[15]);
+		    
+		    if (data.length >= 17)
+		    	this.departure_time_return = Double.parseDouble(data[16]);
+		    else
+		    	this.departure_time_return = -1;
+	    }
 	}
 }
