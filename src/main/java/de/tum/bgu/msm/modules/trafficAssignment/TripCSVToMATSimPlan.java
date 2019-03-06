@@ -57,7 +57,9 @@ public class TripCSVToMATSimPlan {
 				int i = 0;
 				br.readLine(); // skip CSV header
 				while ((line = br.readLine()) != null) {
-					population.addPerson(createPersonFromTrip(i++, line));
+					Person p = createPersonFromTrip(i++, line);
+					if (p != null)
+						population.addPerson(p);
 				}
 			} finally {
 				if (br != null)
@@ -78,6 +80,10 @@ public class TripCSVToMATSimPlan {
 
 	private static Person createPersonFromTrip(int i, String line) {
 		Trip t = new Trip(line);
+		
+		String mode = decodeMode(t.mode);
+		if (mode.equals("autoPassenger"))
+			return null;
 
 		Id<Person> matsimId = Id.createPersonId(t.person + "_" + i);
 
@@ -95,8 +101,7 @@ public class TripCSVToMATSimPlan {
 
 		firstAct.setEndTime(t.departure_time);
 		plan.addActivity(firstAct);
-
-		String mode = decodeMode(t.mode);
+		
 		Leg firstLeg = factory.createLeg(mode);
 		firstLeg.setDepartureTime(t.departure_time);
 		plan.addLeg(firstLeg);
@@ -108,7 +113,7 @@ public class TripCSVToMATSimPlan {
 		secondAct.setLinkId(NetworkUtils.getNearestLink(network, secondCoord).getId());
 		secondAct.setStartTime(t.departure_time + 1); // TODO include MITO's travel time estimations
 
-		if (roundTrip) 
+		if (roundTrip)
 			secondAct.setEndTime(t.departure_time_return);
 		plan.addActivity(secondAct);
 
@@ -144,33 +149,33 @@ public class TripCSVToMATSimPlan {
 	}
 
 	public final static class Trip {
-	    public final double originX;
-	    public final double originY;
-	    public final double destinationX;
-	    public final double destinationY;
-	    public final String purpose;
-	    public final String person;
-	    public final double distance;
-	    public final String mode;
-	    public final double departure_time;
-	    public final double departure_time_return;
+		public final double originX;
+		public final double originY;
+		public final double destinationX;
+		public final double destinationY;
+		public final String purpose;
+		public final String person;
+		public final double distance;
+		public final String mode;
+		public final double departure_time;
+		public final double departure_time_return;
 
-	    public Trip(String line) {
-	    	String[] data = line.split(delimiter);
-		    this.originX = Double.parseDouble(data[2]);
-		    this.originY = Double.parseDouble(data[3]);
-		    this.destinationX = Double.parseDouble(data[4]);
-		    this.destinationY = Double.parseDouble(data[5]);
-		    this.purpose = data[7];
-		    this.person = data[8];
-		    this.distance = Double.parseDouble(data[9]);
-		    this.mode = data[14];
-		    this.departure_time = Double.parseDouble(data[15]);
-		    
-		    if (data.length >= 17)
-		    	this.departure_time_return = Double.parseDouble(data[16]);
-		    else
-		    	this.departure_time_return = -1;
-	    }
+		public Trip(String line) {
+			String[] data = line.split(delimiter);
+			this.originX = Double.parseDouble(data[2]);
+			this.originY = Double.parseDouble(data[3]);
+			this.destinationX = Double.parseDouble(data[4]);
+			this.destinationY = Double.parseDouble(data[5]);
+			this.purpose = data[7];
+			this.person = data[8];
+			this.distance = Double.parseDouble(data[9]);
+			this.mode = data[14];
+			this.departure_time = Double.parseDouble(data[15]);
+
+			if (data.length >= 17)
+				this.departure_time_return = Double.parseDouble(data[16]);
+			else
+				this.departure_time_return = -1;
+		}
 	}
 }
