@@ -90,9 +90,6 @@ public class TripCSVToMATSimPlan {
 		Trip t = new Trip(line);
 		
 		String mode = decodeMode(t.mode);
-		if (mode.equals("autoPassenger"))
-			return null;
-
 		Id<Person> matsimId = Id.createPersonId(t.person + "_" + i);
 
 		Person p = factory.createPerson(Id.createPersonId(matsimId));
@@ -145,6 +142,8 @@ public class TripCSVToMATSimPlan {
 		switch (encodedMode) {
 		case "autoDriver":
 			return "car";
+		case "autoPassenger":
+			return "car_passenger";
 		case "train":
 		case "bus":
 		case "tramOrMetro":
