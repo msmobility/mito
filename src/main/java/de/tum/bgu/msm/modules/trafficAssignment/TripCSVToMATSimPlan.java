@@ -3,6 +3,9 @@ package de.tum.bgu.msm.modules.trafficAssignment;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -17,6 +20,7 @@ import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -30,7 +34,7 @@ public class TripCSVToMATSimPlan {
 
 	private static String filename;
 	private static PopulationFactory factory;
-	private static Network network;
+	private static Network carNetwork;
 
 	public static void main(String[] args) {
 		// TODO add logging
@@ -41,7 +45,11 @@ public class TripCSVToMATSimPlan {
 		config.network().setInputFile(networkFile);
 
 		Scenario scenario = ScenarioUtils.loadScenario(config);
-		network = scenario.getNetwork();
+		TransportModeNetworkFilter filter = new TransportModeNetworkFilter(scenario.getNetwork());
+		Set<String> modesCar = new HashSet<>();
+		modesCar.add("car");
+		carNetwork = NetworkUtils.createNetwork();
+		filter.filter(carNetwork, modesCar);
 
 		Population population = PopulationUtils.createPopulation(config);
 		factory = population.getFactory();
@@ -97,7 +105,7 @@ public class TripCSVToMATSimPlan {
 		Coord firstCoord = new Coord(t.originX, t.originY);
 
 		Activity firstAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
-		firstAct.setLinkId(NetworkUtils.getNearestLink(network, firstCoord).getId());
+		firstAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
 
 		firstAct.setEndTime(t.departure_time);
 		plan.addActivity(firstAct);
@@ -110,7 +118,7 @@ public class TripCSVToMATSimPlan {
 		Coord secondCoord = new Coord(t.destinationX, t.destinationY);
 
 		Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
-		secondAct.setLinkId(NetworkUtils.getNearestLink(network, secondCoord).getId());
+		secondAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, secondCoord).getId());
 		secondAct.setStartTime(t.departure_time + 1); // TODO include MITO's travel time estimations
 
 		if (roundTrip)
@@ -123,7 +131,7 @@ public class TripCSVToMATSimPlan {
 			plan.addLeg(secondLeg);
 
 			Activity thirdAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
-			thirdAct.setLinkId(NetworkUtils.getNearestLink(network, firstCoord).getId());
+			thirdAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
 			thirdAct.setStartTime(t.departure_time_return + 1); // TODO include MITO's travel time estimations
 			plan.addActivity(thirdAct);
 		}
