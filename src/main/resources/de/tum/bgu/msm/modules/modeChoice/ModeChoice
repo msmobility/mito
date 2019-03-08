@@ -590,3 +590,16 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 }
+
+var calculateAIRPORTProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+
+    probabilityAutoD = 0,2;
+    probabilityAutoP = 0.4;
+    probabilityBicycle = 0;
+    probabilityBus = 0.1;
+    probabilityTrain = 0.3
+    probabilityTramMetro = 0;
+    probabilityWalk = 0;
+
+    return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
+}

@@ -4,6 +4,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
@@ -72,6 +73,7 @@ public final class TripDistribution extends Module {
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
+        nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));
         executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);
 
         logger.info("Distributed: " + distributedTripsCounter + ", failed: " + failedTripsCounter);

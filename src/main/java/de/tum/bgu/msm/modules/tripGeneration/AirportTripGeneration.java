@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
@@ -25,15 +22,18 @@ public class AirportTripGeneration {
 
     public void run() {
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-            List<MitoTrip> tripsByHh = new ArrayList<>();
-            if (MitoUtil.getRandomObject().nextDouble() < 0.001) {
-                MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), Purpose.AIRPORT);
-                dataSet.addTrip(trip);
-                tripsByHh.add(trip);
-                hh.setTripsByPurpose(tripsByHh, Purpose.AIRPORT);
-                counter++;
+            for (MitoPerson person : hh.getPersons().values() ) {
+                List<MitoTrip> tripsByHh = new ArrayList<>();
+                if (MitoUtil.getRandomObject().nextDouble() < 0.006092*2) {
+                    //temporary, the trip rate including access and egress, as well as including residents and visitors
+                    MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), Purpose.AIRPORT);
+                    dataSet.addTrip(trip);
+                    tripsByHh.add(trip);
+                    hh.setTripsByPurpose(tripsByHh, Purpose.AIRPORT);
+                    counter++;
+                }
             }
         }
-        LOGGER.info("Generated " + counter + " trips to or from the airports");
+        LOGGER.info("Generated " + counter + " trips to or from the airport");
     }
 }

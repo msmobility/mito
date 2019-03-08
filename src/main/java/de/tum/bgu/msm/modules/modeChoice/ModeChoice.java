@@ -126,6 +126,13 @@ public class ModeChoice extends Module {
                 countTripsSkipped++;
                 return;
             }
+            //found Nan when there is no transit!!
+            for(int i=0; i < probabilities.length; i++){
+                if(Double.isNaN(probabilities[i])){
+                    probabilities[i] = 0;
+                }
+            }
+
             double sum = MitoUtil.getSum(probabilities);
             if (sum > 0) {
                 trip.setTripMode(Mode.valueOf(MitoUtil.select(probabilities, random, sum)));
