@@ -1,8 +1,8 @@
 package de.tum.bgu.msm;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.MitoOccupation;
 import de.tum.bgu.msm.data.MitoZone;
+import org.locationtech.jts.geom.Coordinate;
 
 public class DummyOccupation implements MitoOccupation {
 
