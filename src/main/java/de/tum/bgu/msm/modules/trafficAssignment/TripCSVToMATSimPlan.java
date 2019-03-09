@@ -171,8 +171,8 @@ public class TripCSVToMATSimPlan {
 			String[] data = line.split(delimiter);
 			this.originX = Double.parseDouble(data[2]);
 			this.originY = Double.parseDouble(data[3]);
-			this.destinationX = Double.parseDouble(data[4]);
-			this.destinationY = Double.parseDouble(data[5]);
+			this.destinationX = Double.parseDouble(data[5]);
+			this.destinationY = Double.parseDouble(data[6]);
 			this.purpose = data[7];
 			this.person = data[8];
 			this.distance = Double.parseDouble(data[9]);
