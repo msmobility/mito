@@ -88,7 +88,7 @@ public class TripCSVToMATSimPlan {
 
 	private static Person createPersonFromTrip(int i, String line) {
 		Trip t = new Trip(line);
-		
+
 		String mode = decodeMode(t.mode);
 		Id<Person> matsimId = Id.createPersonId(t.person + "_" + i);
 
@@ -106,7 +106,7 @@ public class TripCSVToMATSimPlan {
 
 		firstAct.setEndTime(t.departure_time);
 		plan.addActivity(firstAct);
-		
+
 		Leg firstLeg = factory.createLeg(mode);
 		firstLeg.setDepartureTime(t.departure_time);
 		plan.addLeg(firstLeg);
@@ -177,10 +177,11 @@ public class TripCSVToMATSimPlan {
 			this.person = data[8];
 			this.distance = Double.parseDouble(data[9]);
 			this.mode = data[14];
-			this.departure_time = Double.parseDouble(data[15]);
+			// departure time comes in minutes, needed as seconds
+			this.departure_time = Double.parseDouble(data[15]) * 60; 
 
 			if (data.length >= 17)
-				this.departure_time_return = Double.parseDouble(data[16]);
+				this.departure_time_return = Double.parseDouble(data[16]) * 60;
 			else
 				this.departure_time_return = -1;
 		}
