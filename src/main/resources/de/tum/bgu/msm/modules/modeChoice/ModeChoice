@@ -26,7 +26,7 @@ VOT7000_other_transit = 13.29;
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order:[AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBW            = [0.0, 0.64, 2.98, 2.95, 2.87, 3.03, 5.84];
+interceptHBW            = [0.0, 0.53, 2.78, 3.12, 3.11, 3.06, 6.30];
 ageHBW                  = [0.0, -0.0037, 0.0, -0.016, -0.017, -0.014, 0.0];
 maleHBW                 = [0.0, -0.16, 0.22, -0.28, -0.25, -0.18, 0.0];
 driversLicenseHBW       = [0.0, -1.03, -1.86, -2.25, -2.09, -2.14, -2.16];
@@ -39,6 +39,7 @@ townHBW                 = [0.0, 0.071, -0.39, -0.86, -0.88, -1.22, -0.89];
 ruralHBW                = [0.0, 0.071, -0.39, -0.86, -0.88, -1.22, -0.89];
 generalizedCostHBW      = [-0.0088, -0.0088, 0.0, -0.0088, -0.0088, -0.0088, 0.0];
 tripLengthHBW           = [0.0, 0.0, -0.32, 0.0, 0.0, 0.0, -2.02];
+isMunichTripHBW         = [0.0, 0.04, 0.63, 0.77, 0.76, 0.77, 2.32];
 
 var calculateHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto,
     travelDistanceNMT, peakHour){
@@ -56,6 +57,7 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
     hhAutos = hh.getAutos();
     distToRailStop = originZone.getDistanceToNearestRailStop();
     areaType = originZone.getAreaTypeSG();
+    isMunichTrip = originZone.isMunichZone();
 
     if(income/12 <= 1500){
         gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD
@@ -83,7 +85,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           mediumSizedCityHBW[0]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[0]*(areaType.name().equals("TOWN")) +
                           ruralHBW[0]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[0]*gcAutoD;
+                          generalizedCostHBW[0]*gcAutoD +
+                          isMunichTripHBW[0]*isMunichTrip;
 
     utilityAutoP        = interceptHBW[1] + ageHBW[1]*age + maleHBW[1]*(gender.name().equals("MALE")) +
                           driversLicenseHBW[1]*driversLicense + hhSizeHBW[1]*hhSize + hhAutosHBW[1]*hhAutos +
@@ -91,7 +94,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           mediumSizedCityHBW[1]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[1]*(areaType.name().equals("TOWN")) +
                           ruralHBW[1]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[1]*gcAutoP;
+                          generalizedCostHBW[1]*gcAutoP +
+                          isMunichTripHBW[1]*isMunichTrip;
 
     utilityBicycle      = interceptHBW[2] + ageHBW[2]*age + maleHBW[2]*(gender.name().equals("MALE")) +
                           driversLicenseHBW[2]*driversLicense + hhSizeHBW[2]*hhSize + hhAutosHBW[2]*hhAutos +
@@ -99,7 +103,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           mediumSizedCityHBW[2]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[2]*(areaType.name().equals("TOWN")) +
                           ruralHBW[2]*(areaType.name().equals("RURAL")) +
-                          tripLengthHBW[2]*travelDistanceNMT;
+                          tripLengthHBW[2]*travelDistanceNMT +
+                          isMunichTripHBW[2]*isMunichTrip;
 
     utilityBus          = interceptHBW[3] + ageHBW[3]*age + maleHBW[3]*(gender.name().equals("MALE")) +
                           driversLicenseHBW[3]*driversLicense + hhSizeHBW[3]*hhSize + hhAutosHBW[3]*hhAutos +
@@ -107,7 +112,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           mediumSizedCityHBW[3]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[3]*(areaType.name().equals("TOWN")) +
                           ruralHBW[3]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[3]*gcBus;
+                          generalizedCostHBW[3]*gcBus +
+                          isMunichTripHBW[3]*isMunichTrip;
 
     utilityTrain        = interceptHBW[4] + ageHBW[4]*age + maleHBW[4]*(gender.name().equals("MALE")) +
                           driversLicenseHBW[4]*driversLicense + hhSizeHBW[4]*hhSize + hhAutosHBW[4]*hhAutos +
@@ -115,7 +121,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           mediumSizedCityHBW[4]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[4]*(areaType.name().equals("TOWN")) +
                           ruralHBW[4]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[4]*gcTrain;
+                          generalizedCostHBW[4]*gcTrain +
+                          isMunichTripHBW[4]*isMunichTrip;
 
     utilityTramMetro    = interceptHBW[5] + ageHBW[5]*age + maleHBW[5]*(gender.name().equals("MALE")) +
                           driversLicenseHBW[5]*driversLicense + hhSizeHBW[5]*hhSize + hhAutosHBW[5]*hhAutos +
@@ -123,7 +130,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           mediumSizedCityHBW[5]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[5]*(areaType.name().equals("TOWN")) +
                           ruralHBW[5]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[5]*gcTramMetro;
+                          generalizedCostHBW[5]*gcTramMetro +
+                          isMunichTripHBW[5]*isMunichTrip;
 
     utilityWalk         = interceptHBW[6] + ageHBW[6]*age + maleHBW[6]*(gender.name().equals("MALE")) +
                           driversLicenseHBW[6]*driversLicense + hhSizeHBW[6]*hhSize + hhAutosHBW[6]*hhAutos +
@@ -131,7 +139,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           mediumSizedCityHBW[6]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[6]*(areaType.name().equals("TOWN")) +
                           ruralHBW[6]*(areaType.name().equals("RURAL")) +
-                          tripLengthHBW[6]*travelDistanceNMT;
+                          tripLengthHBW[6]*travelDistanceNMT +
+                          isMunichTripHBW[6]*isMunichTrip;
 
     logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
     logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient)
@@ -154,14 +163,14 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
 ///////////////////////////////////////////////// HBE Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order - [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBE        = [0.0, 1.25, 2.82, 2.15, 1.73, 1.97, 5.14];
+interceptHBE        = [0.0, 1.41, 2.15, 3.00, 2.72, 3.02, 4.23];
 maleHBE             = [0.0, -0.17, 0.0, -0.14, -0.15, -0.15, 0.0];
 driversLicenseHBE   = [0.0, -1.26, -0.43, -1.23, -0.75, -0.77, -0.55];
 hhAutosHBE          = [0.0, -0.11, -0.56, -0.52, -0.56, -0.70, -0.68];
 distToRailStopHBE   = [0.0, 0.0, 0.0, -0.28, -0.26, -0.46, 0.0];
 generalizedCostHBE  = [-0.0025, -0.0025, 0.0, -0.0025, -0.0025, -0.0025, 0.0];
 tripLengthHBE       = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.71];
-isMunichTripHBE         = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+isMunichTripHBE         = [0.0, 0.02, 0.25, 0.07, 0.08, 0.06, -0.49];
 
 var calculateHBEProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
@@ -245,7 +254,7 @@ var calculateHBEProbabilities = function(hh, person, originZone, destinationZone
 ///////////////////////////////////////////////// HBS Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBS            = [0.0, 1.27, 2.58, 1.80, 1.36, 1.76, 5.01];
+interceptHBS            = [0.0, 0.92, 2.50, 1.61, 1.17, 1.67, 6.35];
 maleHBS                 = [0.0, -0.47, -0.14, -0.62, -0.47, -0.53, -0.15];
 driversLicenseHBS       = [0.0, -1.43, -1.86, -2.43, -2.46, -2.39, -2.10];
 hhAutosHBS              = [0.0, -0.03, -0.81, -1.88, -1.73, -1.88, -0.86];
@@ -253,7 +262,7 @@ distToRailStopHBS       = [0.0, 0.0, 0.0, -0.87, -0.68, -1.02, 0.0];
 hhChildrenHBS           = [0.0, -0.051, 0.0, 0.0, 0.0, 0.0, -0.17];
 generalizedCostHBS_Sq   = [-0.0000068, -0.0000068, 0.0, -0.0000068, -0.0000068, -0.0000068, 0.0];
 tripLengthHBS           = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.46];
-isMunichTripHBS         = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+isMunichTripHBS         = [0.0, 0.05, 1.16, 1.35, 1.32, 1.36, 1.94];
 
 var calculateHBSProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
@@ -339,7 +348,7 @@ var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
 ///////////////////////////////////////////////// HBO Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBO        = [0.0, 1.14, 1.38, 1.36, 1.08, 1.46, 3.74];
+interceptHBO        = [0.0, 1.04, 1.25, 1.47, 1.22, 1.59, 4.09];
 maleHBO             = [0.0, -0.27, 0.17, -0.13, 0.0, -0.063, -0.13];
 driversLicenseHBO   = [0.0, -1.34, -1.51, -1.91, -1.66, -1.74, -1.30];
 hhAutosHBO          = [0.0, -0.029, -0.57, -1.54, -1.56, -1.72, -0.30];
@@ -347,7 +356,7 @@ hhSizeHBO           = [0.0, 0.0, 0.0, -0.11, -0.11, -0.15, -0.19];
 distToRailStopHBO   = [0.0, 0.0, 0.0, -0.61, -0.57, -0.58, -0.065];
 generalizedCostHBO  = [-0.0012, -0.0012, 0.0, -0.0012, -0.0012, -0.0012, 0.0];
 tripLengthHBO       = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.68];
-isMunichTripHBO         = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+isMunichTripHBO         = [0.0, 0.14, 0.61, 1.25, 1.23, 1.25, 0.34];
 
 var calculateHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
@@ -431,7 +440,7 @@ var calculateHBOProbabilities = function(hh, person, originZone, destinationZone
 ///////////////////////////////////////////////// NHBW Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptNHBW       = [0.0, 0.68, 2.02, 0.65, 1.21, 1.0, 4.74];
+interceptNHBW       = [0.0, 0.58, 1.99, 0.72, 1.11, 1.02, 7.22];
 ageNHBW             = [0.0, -0.0045, 0.0, 0.0, -0.0059, 0.0, -0.011];
 driversLicenseNHBW  = [0.0, -0.94, -1.56, -1.61, -1.67, -1.37, -1.43];
 hhAutosNHBW         = [0.0, -0.11, -1.12, -1.23, -1.44, -1.52, -0.47];
@@ -511,7 +520,7 @@ var calculateNHBWProbabilities = function(hh, person, originZone, destinationZon
 ///////////////////////////////////////////////// NHBO Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptNHBO           = [0.0, 1.23, 1.08, 0.56, 0.41, 0.59, 2.89];
+interceptNHBO           = [0.0, 1.21, 0.93, 0.68, 0.64, 0.84, 2.99];
 maleNHBO                = [0.0, -0.24, 0.0, -0.20, -0.23, -0.18, -0.073];
 driversLicenseNHBO      = [0.0, -1.40, -1.49, -2.02, -1.74, -1.77, -1.44];
 hhAutosNHBO             = [0.0, -0.029, -0.73, -0.80, -0.85, -0.86, -0.40];
