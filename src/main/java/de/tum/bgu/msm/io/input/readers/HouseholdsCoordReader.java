@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
@@ -8,6 +7,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Created by Qin on 02.07.2018.

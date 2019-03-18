@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data;
 
-import com.vividsolutions.jts.geom.Coordinate;
+
+import org.locationtech.jts.geom.Coordinate;
 
 import java.util.Objects;
 

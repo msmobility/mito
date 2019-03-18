@@ -18,7 +18,7 @@ public class TrafficAssignment extends Module {
     private Config matsimConfig;
     private MutableScenario matsimScenario;
     private String outputSubDirectory;
-    private final double SILO_SMAPLING_RATE = 1.0;
+    private final double SILO_SAMPLING_RATE = 1.0;
 
     public TrafficAssignment(DataSet dataSet, String scenarioName) {
         super(dataSet);
@@ -31,7 +31,6 @@ public class TrafficAssignment extends Module {
         configMatsim();
         createPopulation();
         runMatsim();
-
     }
 
     private void configMatsim() {
@@ -53,8 +52,8 @@ public class TrafficAssignment extends Module {
         matsimConfig.controler().setWriteEventsInterval(matsimConfig.controler().getLastIteration());
 
         matsimConfig.qsim().setStuckTime(10);
-        matsimConfig.qsim().setFlowCapFactor(SILO_SMAPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
-        matsimConfig.qsim().setStorageCapFactor(SILO_SMAPLING_RATE * Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)), 0.75));
+        matsimConfig.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+        matsimConfig.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)), 0.75));
     }
 
     private void createPopulation() {
@@ -75,5 +74,4 @@ public class TrafficAssignment extends Module {
         skimUpdater.run();
 
     }
-
 }
