@@ -9,15 +9,19 @@ import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
+import omx.OmxLookup;
 import omx.OmxMatrix;
+import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class SkimTravelTimes implements TravelTimes {
 
-    private final static Logger LOGGER = Logger.getLogger(SkimTravelTimes.class);
+    private final static Logger logger = Logger.getLogger(SkimTravelTimes.class);
 
     private final ConcurrentMap<String, DoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
 
@@ -53,11 +57,26 @@ public class SkimTravelTimes implements TravelTimes {
      * @param factor a scalar factor which every entry is multiplied with
      */
     public final void readSkim(final String mode, final String file, final String matrixName, final double factor) {
-        LOGGER.info("Reading " + mode + " skim");
+        logger.info("Reading " + mode + " skim");
         final OmxFile omx = new OmxFile(file);
         omx.openReadOnly();
+        final Set<String> lookupNames = omx.getLookupNames();
+        OmxLookup lookup = null;
+        if(!lookupNames.isEmpty()) {
+            final Iterator<String> iterator = omx.getLookupNames().iterator();
+            final String next = iterator.next();
+            lookup = omx.getLookup(next);
+            if(!lookup.getOmxJavaType().equals(OmxHdf5Datatype.OmxJavaType.INT)) {
+                throw new IllegalArgumentException("Provided omx matrix lookup " +
+                        "is not of type int but of type: " + lookup.getOmxJavaType().name() +
+                        " please use int.");
+            }
+            if(iterator.hasNext()) {
+                logger.warn("More than one lookup was provided. Will use the first one (name: " + next + ")");
+            }
+        }
         final OmxMatrix timeOmxSkimTransit = omx.getMatrix(matrixName);
-        final DoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, factor);
+        final DoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, lookup, factor);
         matricesByMode.put(mode, skim);
         omx.close();
     }
@@ -69,7 +88,7 @@ public class SkimTravelTimes implements TravelTimes {
      */
     public void updateSkimMatrix(DoubleMatrix2D skim, String mode){
         matricesByMode.put(mode, skim);
-        LOGGER.warn("The skim matrix for mode " + mode + " has been updated");
+        logger.warn("The skim matrix for mode " + mode + " has been updated");
         
         travelTimeToRegion.clear();
     }

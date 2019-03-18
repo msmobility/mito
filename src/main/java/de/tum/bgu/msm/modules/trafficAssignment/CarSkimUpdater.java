@@ -1,11 +1,10 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -37,8 +36,8 @@ public class CarSkimUpdater {
     private final Map<Integer, List<Node>> nodesByZone = new ConcurrentHashMap<>();
     private final static int NUMBER_OF_CALC_POINTS = 1;
     private final int DEFAULT_PEAK_H_S = 8 * 3600;
-    private final DoubleMatrix2D carTravelTimeMatrix;
-    private final DoubleMatrix2D carDistanceMatrix;
+    private final IndexedDoubleMatrix2D carTravelTimeMatrix;
+    private final IndexedDoubleMatrix2D carDistanceMatrix;
     private TravelDisutility travelDisutility;
     private Controler controler;
     private TravelTime travelTime;
@@ -58,9 +57,8 @@ public class CarSkimUpdater {
         this.travelTime = controler.getLinkTravelTimes();
         this.travelDisutility = controler.getTravelDisutilityFactory().createTravelDisutility(travelTime);
         //creates a matrix of (n+1 zones) rows and columns
-        int maxZone = dataSet.getZones().keySet().stream().max(Integer::compareTo).get() + 1;
-        this.carTravelTimeMatrix = new DenseDoubleMatrix2D(maxZone, maxZone);
-        this.carDistanceMatrix = new DenseDoubleMatrix2D(maxZone, maxZone);
+        this.carTravelTimeMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
+        this.carDistanceMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
         this.dataSet = dataSet;
     }
 
