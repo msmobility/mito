@@ -1,12 +1,12 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.Region;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
 import omx.OmxLookup;
@@ -23,7 +23,7 @@ public class SkimTravelTimes implements TravelTimes {
 
     private final static Logger logger = Logger.getLogger(SkimTravelTimes.class);
 
-    private final ConcurrentMap<String, DoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, IndexedDoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
 
 	private final Table<Integer, Region, Double> travelTimeToRegion = HashBasedTable.create();
 
@@ -37,14 +37,14 @@ public class SkimTravelTimes implements TravelTimes {
         // different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
         if (mode.equals("pt")) {
             if (matricesByMode.containsKey("pt")) {
-                return matricesByMode.get(mode).getQuick(origin, destination);
+                return matricesByMode.get(mode).getIndexed(origin, destination);
             } else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
                 return getMinimumPtTravelTime(origin, destination, timeOfDay_s);
             } else {
                 throw new RuntimeException("define transit travel modes!!");
             }
         } else {
-            return matricesByMode.get(mode).getQuick(origin, destination);
+            return matricesByMode.get(mode).getIndexed(origin, destination);
         }
     }
 
@@ -76,7 +76,7 @@ public class SkimTravelTimes implements TravelTimes {
             }
         }
         final OmxMatrix timeOmxSkimTransit = omx.getMatrix(matrixName);
-        final DoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, lookup, factor);
+        final IndexedDoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, lookup, factor);
         matricesByMode.put(mode, skim);
         omx.close();
     }
@@ -86,7 +86,7 @@ public class SkimTravelTimes implements TravelTimes {
      * @param mode the mode for which the travel times are read
      * @param skim the skim matrix with travel times in minutes
      */
-    public void updateSkimMatrix(DoubleMatrix2D skim, String mode){
+    public void updateSkimMatrix(IndexedDoubleMatrix2D skim, String mode){
         matricesByMode.put(mode, skim);
         logger.warn("The skim matrix for mode " + mode + " has been updated");
         
@@ -95,14 +95,14 @@ public class SkimTravelTimes implements TravelTimes {
 
     private double getMinimumPtTravelTime(int origin, int destination, double timeOfDay_s) {
         double travelTime = Double.MAX_VALUE;
-        if (matricesByMode.get("bus").getQuick(origin, destination) < travelTime) {
-            travelTime = matricesByMode.get("bus").getQuick(origin, destination);
+        if (matricesByMode.get("bus").getIndexed(origin, destination) < travelTime) {
+            travelTime = matricesByMode.get("bus").getIndexed(origin, destination);
         }
-        if (matricesByMode.get("tramMetro").getQuick(origin, destination) < travelTime){
-            travelTime = matricesByMode.get("tramMetro").getQuick(origin, destination);
+        if (matricesByMode.get("tramMetro").getIndexed(origin, destination) < travelTime){
+            travelTime = matricesByMode.get("tramMetro").getIndexed(origin, destination);
         }
-        if (matricesByMode.get("train").getQuick(origin, destination) < travelTime) {
-            travelTime = matricesByMode.get("train").getQuick(origin, destination);
+        if (matricesByMode.get("train").getIndexed(origin, destination) < travelTime) {
+            travelTime = matricesByMode.get("train").getIndexed(origin, destination);
         }
         return travelTime;
     }
@@ -122,14 +122,14 @@ public class SkimTravelTimes implements TravelTimes {
 		// different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
 		if (mode.equals("pt")) {
 			if (matricesByMode.containsKey("pt")) {
-				return matricesByMode.get(mode).getQuick(originZone, destinationZone);
+				return matricesByMode.get(mode).getIndexed(originZone, destinationZone);
 			} else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
 				return getMinimumPtTravelTime(originZone, destinationZone, timeOfDay_s);
 			} else {
 				throw new RuntimeException("define transit travel modes!!");
 			}
 		} else {
-			return matricesByMode.get(mode).getQuick(originZone, destinationZone);
+			return matricesByMode.get(mode).getIndexed(originZone, destinationZone);
 		}
 	}
 	
@@ -157,7 +157,7 @@ public class SkimTravelTimes implements TravelTimes {
 	}
 
 	//TODO: used in silo. should probably return a deep copy to prevent illegal changes.
-	public DoubleMatrix2D getMatrixForMode(String mode) {
+	public IndexedDoubleMatrix2D getMatrixForMode(String mode) {
 			return matricesByMode.get(mode);
 	}
 }
