@@ -1,5 +1,8 @@
 package de.tum.bgu.msm.util.matrices;
 
+import cern.colt.function.tdouble.DoubleDoubleFunction;
+import cern.colt.function.tdouble.DoubleFunction;
+import cern.colt.map.tint.AbstractIntIntMap;
 import cern.colt.map.tint.OpenIntIntHashMap;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
@@ -9,8 +12,8 @@ import java.util.Collection;
 
 public class IndexedDoubleMatrix1D  {
 
-    private final OpenIntIntHashMap externalId2InternalIndex;
-    private final OpenIntIntHashMap internalIndex2ExternalId;
+    private final AbstractIntIntMap externalId2InternalIndex;
+    private final AbstractIntIntMap internalIndex2ExternalId;
 
     private final DoubleMatrix1D delegate;
 
@@ -32,7 +35,7 @@ public class IndexedDoubleMatrix1D  {
         }
     }
 
-    public IndexedDoubleMatrix1D(DoubleMatrix1D delegate, OpenIntIntHashMap external2InternalLookup, OpenIntIntHashMap internal2ExternalLookup) {
+    public IndexedDoubleMatrix1D(DoubleMatrix1D delegate, AbstractIntIntMap external2InternalLookup, AbstractIntIntMap internal2ExternalLookup) {
         this.externalId2InternalIndex = external2InternalLookup;
         this.internalIndex2ExternalId = internal2ExternalLookup;
         this.delegate = delegate;
@@ -78,6 +81,72 @@ public class IndexedDoubleMatrix1D  {
      */
     public double zSum() {
         return delegate.zSum();
+    }
+
+    /**
+     * Sets all cells to the state specified by value.
+     */
+    public IndexedDoubleMatrix1D assign(double val) {
+        delegate.assign(val);
+        return this;
+    }
+
+    /**
+     * Sets all cells to the state specified by the evaluation of the double function.
+     */
+    public IndexedDoubleMatrix1D assign(DoubleFunction doubleFunction) {
+        delegate.assign(doubleFunction);
+        return this;
+    }
+
+    public IndexedDoubleMatrix1D assign(IndexedDoubleMatrix1D matrix) {
+        delegate.assign(matrix.delegate);
+        return this;
+    }
+
+    /**
+     * Assigns the result of a function to each cell; x[i] = function(x[i],y[i]).
+     * Example:
+     *        	 // assign x[i] = x[i]<sup>y[i]</sup>
+     *        	 m1 = 0 1 2 3;
+     *        	 m2 = 0 2 4 6;
+     *        	 m1.assign(m2, cern.jet.math.Functions.pow);
+     *        	 -->
+     *        	 m1 == 1 1 16 729
+     *
+     */
+    public IndexedDoubleMatrix1D assign(IndexedDoubleMatrix1D matrix1D, DoubleDoubleFunction function) {
+        delegate.assign(matrix1D.delegate, function);
+        return this;
+    }
+
+    /**
+     * Return the maximum value of this matrix together with its location
+     * @return { maximum_value, location };
+     */
+    public double[] getMaxValAndInternalIndex() {
+        return delegate.getMaxLocation();
+    }
+
+    /**
+     * Returns the number of cells.
+     * @return
+     */
+    public long size() {
+        return delegate.size();
+    }
+
+    /**
+     * Constructs and returns a deep copy of the receiver.
+     * Note that the returned matrix is an independent deep copy.
+     * The returned matrix is not backed by this matrix,
+     * so changes in the returned matrix are not reflected in this matrix, and vice-versa.
+     */
+    public IndexedDoubleMatrix1D copy() {
+        return new IndexedDoubleMatrix1D(
+                delegate.copy(),
+                externalId2InternalIndex.copy(),
+                internalIndex2ExternalId.copy());
     }
 }
 

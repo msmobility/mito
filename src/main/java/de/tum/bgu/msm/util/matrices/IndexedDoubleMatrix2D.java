@@ -1,5 +1,8 @@
 package de.tum.bgu.msm.util.matrices;
 
+import cern.colt.function.tdouble.DoubleFunction;
+import cern.colt.function.tdouble.IntIntDoubleFunction;
+import cern.colt.map.tint.AbstractIntIntMap;
 import cern.colt.map.tint.OpenIntIntHashMap;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
@@ -12,11 +15,11 @@ import java.util.Collection;
  */
 public class IndexedDoubleMatrix2D {
 
-    private final OpenIntIntHashMap externalRowId2InternalIndex;
-    private final OpenIntIntHashMap externalColId2InternalIndex;
+    private final AbstractIntIntMap externalRowId2InternalIndex;
+    private final AbstractIntIntMap externalColId2InternalIndex;
 
-    private final OpenIntIntHashMap internalRowIndex2ExternalId;
-    private final OpenIntIntHashMap internalColIndex2ExternalId;
+    private final AbstractIntIntMap internalRowIndex2ExternalId;
+    private final AbstractIntIntMap internalColIndex2ExternalId;
 
     private final DoubleMatrix2D delegate;
 
@@ -68,6 +71,18 @@ public class IndexedDoubleMatrix2D {
             internalRowIndex2ExternalId.put(i, lookup[i]);
             internalColIndex2ExternalId.put(i, lookup[i]);
         }
+    }
+
+    private IndexedDoubleMatrix2D(DoubleMatrix2D delegate,
+                                  AbstractIntIntMap externalRowId2InternalIndex,
+                                  AbstractIntIntMap internalRowIndex2ExternalId,
+                                  AbstractIntIntMap externalColId2InternalIndex,
+                                  AbstractIntIntMap internalColIndex2ExternalId) {
+        this.delegate = delegate;
+        this.externalRowId2InternalIndex = externalRowId2InternalIndex;
+        this.internalRowIndex2ExternalId = internalRowIndex2ExternalId;
+        this.externalColId2InternalIndex = externalColId2InternalIndex;
+        this.internalColIndex2ExternalId = internalColIndex2ExternalId;
     }
 
     /**
@@ -178,4 +193,102 @@ public class IndexedDoubleMatrix2D {
         return delegate.rows();
     }
 
+    /**
+     * Sets all cells to the state specified by value.
+     */
+    public IndexedDoubleMatrix2D assign(double val) {
+        delegate.assign(val);
+        return this;
+    }
+
+    /**
+     * Sets all cells to the state specified by value.
+     */
+    public IndexedDoubleMatrix2D assign(DoubleFunction doubleFunction) {
+        delegate.assign(doubleFunction);
+        return this;
+    }
+
+    /**
+     * Return the maximum value of this matrix together with its location
+     * @return { maximum_value, location };
+     */
+    public double[] getMaxValAndInternalIndex() {
+        return delegate.getMaxLocation();
+    }
+
+    /**
+     * Returns the number of cells which is rows()*columns().
+     * @return
+     */
+    public long size() {
+        return delegate.size();
+    }
+
+    /**
+     * Constructs and returns a new sub-range view that is a height x width sub matrix starting at <b>internal</b>
+     * ids [row,column].
+     * Operations on the returned view can only be applied to the restricted range.
+     * Any attempt to access coordinates not contained in the view will throw an IndexOutOfBoundsException.
+     */
+    public IndexedDoubleMatrix2D viewPart(int row, int column, int height, int width) {
+        final OpenIntIntHashMap newExternalRow2Internal = new OpenIntIntHashMap();
+        final OpenIntIntHashMap newInternalRow2External = new OpenIntIntHashMap();
+
+        final OpenIntIntHashMap newExternalCol2Internal = new OpenIntIntHashMap();
+        final OpenIntIntHashMap newInternalCol2External = new OpenIntIntHashMap();
+
+
+        for(int i = 0; i < height; i++) {
+            newExternalRow2Internal.put(externalRowId2InternalIndex.get(row+i),i);
+            newInternalRow2External.put(i, externalRowId2InternalIndex.get(row+i));
+        }
+        for(int j = 0; j < width; j++) {
+            newExternalCol2Internal.put(externalRowId2InternalIndex.get(column+j), j);
+            newInternalCol2External.put(j, externalRowId2InternalIndex.get(column+j));
+        }
+
+        return new IndexedDoubleMatrix2D(
+                delegate.viewPart(row, column, height, width),
+                newExternalRow2Internal,
+                newInternalRow2External,
+                newExternalCol2Internal,
+                newInternalCol2External);
+    }
+
+    /**
+     * Replaces all cell values of the receiver with the values of another matrix.
+     * Both matrices must have the same number of rows and columns.
+     */
+    public IndexedDoubleMatrix2D assign(IndexedDoubleMatrix2D matrix2D) {
+        delegate.assign(matrix2D.delegate);
+        return this;
+    }
+
+    /**
+     * Constructs and returns a deep copy of the receiver.
+     * Note that the returned matrix is an independent deep copy.
+     * The returned matrix is not backed by this matrix,
+     * so changes in the returned matrix are not reflected in this matrix, and vice-versa.
+     */
+    public IndexedDoubleMatrix2D copy() {
+        return new IndexedDoubleMatrix2D(
+                delegate.copy(),
+                externalRowId2InternalIndex.copy(),
+                internalRowIndex2ExternalId.copy(),
+                externalColId2InternalIndex.copy(),
+                internalColIndex2ExternalId.copy());
+    }
+
+    /**
+     * Assigns the result of a function to each non-zero cell; x[row,col] = function(x[row,col]).
+     * Use this method for fast special-purpose iteration.
+     * Parameters to function are as follows: first==row <b>internal index</b>,
+     * second==column <b>internal index</b>, third==nonZeroValue
+     * @param function
+     */
+    public IndexedDoubleMatrix2D forEachNonZero(IntIntDoubleFunction function) {
+        delegate.forEachNonZero(function);
+        return this;
+    }
 }
