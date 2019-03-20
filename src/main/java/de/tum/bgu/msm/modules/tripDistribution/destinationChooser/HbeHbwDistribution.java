@@ -1,14 +1,13 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +21,12 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
 
     private final Purpose purpose;
     private final MitoOccupationStatus mitoOccupationStatus;
-    private final DoubleMatrix2D baseProbabilities;
+    private final IndexedDoubleMatrix2D baseProbabilities;
 
     private final DataSet dataSet;
     private final Map<Integer, MitoZone> zonesCopy;
 
-    private HbeHbwDistribution(Purpose purpose, MitoOccupationStatus mitoOccupationStatus, DoubleMatrix2D baseProbabilities, DataSet dataSet) {
+    private HbeHbwDistribution(Purpose purpose, MitoOccupationStatus mitoOccupationStatus, IndexedDoubleMatrix2D baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
         this.mitoOccupationStatus = mitoOccupationStatus;
@@ -36,11 +35,11 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
         this.zonesCopy = new HashMap<>(dataSet.getZones());
     }
 
-    public static HbeHbwDistribution hbe(DoubleMatrix2D baseprobabilities, DataSet dataSet) {
+    public static HbeHbwDistribution hbe(IndexedDoubleMatrix2D baseprobabilities, DataSet dataSet) {
         return new HbeHbwDistribution(Purpose.HBE, MitoOccupationStatus.STUDENT, baseprobabilities, dataSet);
     }
 
-    public static HbeHbwDistribution hbw(DoubleMatrix2D baseprobabilities, DataSet dataSet) {
+    public static HbeHbwDistribution hbw(IndexedDoubleMatrix2D baseprobabilities, DataSet dataSet) {
         return new HbeHbwDistribution(Purpose.HBW, MitoOccupationStatus.WORKER, baseprobabilities, dataSet);
     }
 
@@ -51,7 +50,6 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for Purpose " + purpose);
             }
-            Coord coord = new Coord(household.getHomeLocation().x, household.getHomeLocation().y);
             if (hasTripsForPurpose(household)) {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(household);
@@ -69,8 +67,9 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             trip.setTripDestination(trip.getPerson().getOccupation());
         } else {
             TripDistribution.randomOccupationDestinationTrips.incrementAndGet();
-            DoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
-            final MitoZone destination = zonesCopy.get(MitoUtil.select(probabilities.toArray(), random, probabilities.zSum()));
+            IndexedDoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
+            final int internalIndex = MitoUtil.select(probabilities.toNonIndexedArray(), random, probabilities.zSum());
+            final MitoZone destination = zonesCopy.get(probabilities.getIdForInternalIndex(internalIndex));
             trip.setTripDestination(destination);
         }
     }

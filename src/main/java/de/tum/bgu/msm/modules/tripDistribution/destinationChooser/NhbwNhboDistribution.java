@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
@@ -9,6 +7,8 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
 
@@ -32,8 +32,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private final Purpose purpose;
     private final List<Purpose> priorPurposes;
     private final MitoOccupationStatus relatedMitoOccupationStatus;
-    private final EnumMap<Purpose, DoubleMatrix2D> baseProbabilities;
-    private final double[] destinationProbabilities;
+    private final EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities;
     private final DataSet dataSet;
     private final TravelTimes travelTimes;
 
@@ -45,7 +44,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private double mean;
 
     private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, MitoOccupationStatus relatedMitoOccupationStatus,
-                                 EnumMap<Purpose, DoubleMatrix2D> baseProbabilities, DataSet dataSet) {
+                                 EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
         this.priorPurposes = priorPurposes;
@@ -53,17 +52,16 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         this.baseProbabilities = baseProbabilities;
         this.dataSet = dataSet;
         this.zonesCopy = new HashMap<>(dataSet.getZones());
-        this.destinationProbabilities = new double[baseProbabilities.values().iterator().next().columns()];
         this.travelTimes = dataSet.getTravelTimes();
         this.peakHour = dataSet.getPeakHour();
     }
 
-    public static NhbwNhboDistribution nhbw(EnumMap<Purpose, DoubleMatrix2D> baseProbabilites, DataSet dataSet) {
+    public static NhbwNhboDistribution nhbw(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites, DataSet dataSet) {
         return new NhbwNhboDistribution(Purpose.NHBW, Collections.singletonList(Purpose.HBW),
                 MitoOccupationStatus.WORKER, baseProbabilites, dataSet);
     }
 
-    public static NhbwNhboDistribution nhbo(EnumMap<Purpose, DoubleMatrix2D> baseProbabilites, DataSet dataSet) {
+    public static NhbwNhboDistribution nhbo(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites, DataSet dataSet) {
         return new NhbwNhboDistribution(Purpose.NHBO, ImmutableList.of(HBO, HBE, HBS),
                 null, baseProbabilites, dataSet);
     }
@@ -158,24 +156,24 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
     private MitoZone findDestination(int origin) {
-        double[] baseProbs = baseProbabilities.get(purpose).viewRow(origin).toArray();
-        IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
-            double factor;
+        final IndexedDoubleMatrix1D row = baseProbabilities.get(purpose).viewRow(origin);
+        double[] baseProbs = row.toNonIndexedArray();
+        IntStream.range(0, baseProbs.length).parallel().forEach(i -> {
             //divide travel time by 2 as home based trips' budget account for the return trip as well
-            double diff = travelTimes.getTravelTime(origin, i, peakHour, "car") - mean;
-            factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
-            destinationProbabilities[i] = baseProbs[i] * factor;
+            double diff = travelTimes.getTravelTime(origin, row.getIdForInternalIndex(i), peakHour, "car") - mean;
+            double factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
+            baseProbs[i] = baseProbs[i] * factor;
         });
 
-        int destination = MitoUtil.select(baseProbs, random);
-        return zonesCopy.get(destination);
+        int destinationInternalId = MitoUtil.select(baseProbs, random);
+        return zonesCopy.get(row.getIdForInternalIndex(destinationInternalId));
     }
 
     private MitoZone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
         TripDistribution.completelyRandomNhbTrips.incrementAndGet();
-        final DoubleMatrix1D originProbabilities = baseProbabilities.get(priorPurpose).viewRow(household.getHomeZone().getId());
-        final int destination = MitoUtil.select(originProbabilities.toArray(), random);
-        return zonesCopy.get(destination);
+        final IndexedDoubleMatrix1D originProbabilities = baseProbabilities.get(priorPurpose).viewRow(household.getHomeZone().getId());
+        final int destinationInternalId = MitoUtil.select(originProbabilities.toNonIndexedArray(), random);
+        return zonesCopy.get(originProbabilities.getIdForInternalIndex(destinationInternalId));
     }
 
     private void postProcessTrip(MitoTrip trip) {

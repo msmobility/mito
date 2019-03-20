@@ -1,14 +1,18 @@
 package de.tum.bgu.msm.util.matrices;
 
 import cern.colt.map.tint.OpenIntIntHashMap;
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import de.tum.bgu.msm.data.Id;
 
 import java.util.Collection;
 
-public class IndexedDoubleMatrix1D extends DenseDoubleMatrix1D {
+public class IndexedDoubleMatrix1D  {
 
-    private final OpenIntIntHashMap index;
+    private final OpenIntIntHashMap externalId2InternalIndex;
+    private final OpenIntIntHashMap internalIndex2ExternalId;
+
+    private final DoubleMatrix1D delegate;
 
     /**
      * Creates a new id-indexed vector for double values. Each id will be associated with a subsequent
@@ -17,13 +21,21 @@ public class IndexedDoubleMatrix1D extends DenseDoubleMatrix1D {
      * total number of different ids is still limited.
      */
     public IndexedDoubleMatrix1D(Collection<? extends Id> entries) {
-        super(entries.size());
-
+        delegate = new DenseDoubleMatrix1D(entries.size());
         int counter = 0;
-        index = new OpenIntIntHashMap(entries.size());
+        externalId2InternalIndex = new OpenIntIntHashMap(entries.size());
+        internalIndex2ExternalId = new OpenIntIntHashMap(entries.size());
         for(Id row: entries) {
-            index.put(row.getId(), counter++);
+            externalId2InternalIndex.put(row.getId(), counter);
+            internalIndex2ExternalId.put(counter, row.getId());
+            counter++;
         }
+    }
+
+    public IndexedDoubleMatrix1D(DoubleMatrix1D delegate, OpenIntIntHashMap external2InternalLookup, OpenIntIntHashMap internal2ExternalLookup) {
+        this.externalId2InternalIndex = external2InternalLookup;
+        this.internalIndex2ExternalId = internal2ExternalLookup;
+        this.delegate = delegate;
     }
 
     /**
@@ -32,7 +44,7 @@ public class IndexedDoubleMatrix1D extends DenseDoubleMatrix1D {
      * @param val the value associated in the underlying indexed matrix
      */
     public void setIndexed(int i, double val) {
-        setQuick(index.get(i), val);
+        delegate.setQuick(externalId2InternalIndex.get(i), val);
     }
 
     /**
@@ -40,7 +52,32 @@ public class IndexedDoubleMatrix1D extends DenseDoubleMatrix1D {
      * @param i id of row entry
      */
     public double getIndexed(int i) {
-        return getQuick(index.get(i));
+        return delegate.getQuick(externalId2InternalIndex.get(i));
+    }
+
+    /**
+     * Returns the non-indexed double matrix with indices ranging from 0....n-1, n being the number of rows.
+     * @return
+     */
+    public double[] toNonIndexedArray() {
+        return delegate.toArray();
+    }
+
+    /**
+     * Returns the associated id for the given internal index.
+     * @param index
+     * @return
+     */
+    public int getIdForInternalIndex(int index) {
+        return this.internalIndex2ExternalId.get(index);
+    }
+
+    /**
+     * Returns the sum of all cells; Sum( x[i] ).
+     * @return
+     */
+    public double zSum() {
+        return delegate.zSum();
     }
 }
 
