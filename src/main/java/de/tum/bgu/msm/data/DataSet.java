@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
@@ -31,6 +32,10 @@ public class DataSet {
 
 
     private int year;
+
+    private EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose;
+    private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
+    private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
@@ -194,5 +199,29 @@ public class DataSet {
 
     public void setYear(int year){
         this.year = year;
+    }
+
+    public EnumMap<Purpose, DoubleMatrix1D> getArrivalMinuteCumProbByPurpose() {
+        return arrivalMinuteCumProbByPurpose;
+    }
+
+    public void setArrivalMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose) {
+        this.arrivalMinuteCumProbByPurpose = arrivalMinuteCumProbByPurpose;
+    }
+
+    public EnumMap<Purpose, DoubleMatrix1D> getDurationMinuteCumProbByPurpose() {
+        return durationMinuteCumProbByPurpose;
+    }
+
+    public void setDurationMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose) {
+        this.durationMinuteCumProbByPurpose = durationMinuteCumProbByPurpose;
+    }
+
+    public EnumMap<Purpose, DoubleMatrix1D> getDepartureMinuteCumProbByPurpose() {
+        return departureMinuteCumProbByPurpose;
+    }
+
+    public void setDepartureMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose) {
+        this.departureMinuteCumProbByPurpose = departureMinuteCumProbByPurpose;
     }
 }

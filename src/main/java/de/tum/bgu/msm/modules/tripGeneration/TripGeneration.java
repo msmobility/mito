@@ -3,6 +3,8 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
@@ -15,16 +17,20 @@ import org.apache.log4j.Logger;
 public class TripGeneration extends Module {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
+    private final boolean addAirportDemand;
 
     public TripGeneration(DataSet dataSet) {
         super(dataSet);
+        addAirportDemand = Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false);
     }
 
     @Override
     public void run() {
         logger.info("  Started microscopic trip generation model.");
         generateRawTrips();
-        generateAirportTrips();
+        if (addAirportDemand){
+            generateAirportTrips();
+        }
         calculateAttractions();
         balanceTrips();
         logger.info("  Completed microscopic trip generation model.");

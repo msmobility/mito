@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
 import com.google.common.math.LongMath;
-import com.vividsolutions.jts.geom.Coordinate;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.resources.Properties;
@@ -22,7 +21,7 @@ public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
     protected AirportDistribution(long randomSeed, DataSet dataSet) {
         super(randomSeed);
         this.dataSet = dataSet;
-        this.airport = dataSet.getZones().get(1659);
+        this.airport = dataSet.getZones().get(Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE));
     }
 
     public static AirportDistribution airportDistribution(DataSet dataSet) {

@@ -7,6 +7,8 @@ import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistrib
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import javafx.util.Pair;
@@ -15,6 +17,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -73,7 +76,9 @@ public final class TripDistribution extends Module {
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
-        nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));
+        if (Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
+            nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));
+        }
         executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);
 
         logger.info("Distributed: " + distributedTripsCounter + ", failed: " + failedTripsCounter);

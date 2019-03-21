@@ -91,6 +91,8 @@ public final class MitoModel {
         new TripAttractionRatesReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
+        new TimeOfDayDistributionsReader(dataSet).read();
+
     }
 
     private void printOutline(long startTime) {

@@ -1,0 +1,11 @@
+var calculateTripRateToAirport = function(hh, airportZone, travelDistances){
+
+    distance = travelDistances.getTravelDistance(hh.getHomeZone().getId(), airportZone);
+    if (hh.getHomeZone().getAreaTypeSG() == "CORE_CITY") {
+        isCity = 1;
+    } else {
+        isCity = 0;
+    }
+
+    return 2 * Math.exp(-4.642 - 0.00002882 * distance * 1000 + 1.531 * isCity);
+}

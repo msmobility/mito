@@ -140,7 +140,8 @@ public class PersonTripAssignment extends Module {
     }
 
     private void assignAIRPORT(MitoHousehold household, Map<MitoPerson,Double> probabilitiesByPerson) {
-        //todo remove the trips for the persons that are travelling to the airport?
+        //by now we assign all the trips to the airport to residents, with the uniform probability for all hh
+        //members. Consider improvement: assign them long-distance travelers' based on socio-demographic attributes.
         fillEquallyDistributed(household, probabilitiesByPerson);
     }
 

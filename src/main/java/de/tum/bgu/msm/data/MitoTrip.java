@@ -4,11 +4,11 @@ import org.matsim.api.core.v01.population.Person;
 
 /**
  * Holds trip objects for the Microsimulation Transport Orchestrator (MITO)
+ *
  * @author Rolf Moeckel
  * Created on Mar 26, 2017 in Munich, Germany
- *
  */
-public class MitoTrip implements Id{
+public class MitoTrip implements Id {
 
     private final int tripId;
     private final Purpose tripPurpose;
@@ -61,14 +61,18 @@ public class MitoTrip implements Id{
 
     public void setPerson(MitoPerson person) {
         this.person = person;
-        if(!person.getTrips().contains(this)) {
+        if (!person.getTrips().contains(this)) {
             person.addTrip(this);
         }
     }
 
-    public Mode getTripMode() { return tripMode; }
+    public Mode getTripMode() {
+        return tripMode;
+    }
 
-    public void setTripMode(Mode tripMode) { this.tripMode = tripMode; }
+    public void setTripMode(Mode tripMode) {
+        this.tripMode = tripMode;
+    }
 
     public void setDepartureInMinutes(int departureInMinutes) {
         this.departureInMinutes = departureInMinutes;
@@ -114,7 +118,7 @@ public class MitoTrip implements Id{
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof MitoTrip) {
+        if (o instanceof MitoTrip) {
             return tripId == ((MitoTrip) o).tripId;
         } else {
             return false;
