@@ -592,6 +592,98 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
 }
 
 var calculateAIRPORTProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
-    //using the HBO probabilities
-    return calculateHBOProbabilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour);
+
+       //       [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk]
+       //k =    [0.0,   0.0,   0.0,     0.0,  0.0,   0.0,  0.0]
+       //first iteration (x2)
+       //k =    [-0.82, 0.12, -0.02,    0.04, 0.74, -0.04, 0.0];
+       //second iteration
+       //k =    [-0.74,   -0.20,  -0.03,  0.10, 1.05, -0.03, 0.0];
+       //third iteration
+       //k =    [-0.82,   -0.40,  -0.03,  0.12, 1.31, -0.04, 0.0];
+       //fourth iteration
+       //k =    [-0.95,   -0.50,  -0.04,  0.15, 1.53, -0.04, 0.0];
+       //fifth iteration
+       //k =    [-1.06,   -0.60,  -0.05,  0.18, 1.72, -0.04, 0.0];
+       //sixth iteration
+       //k =    [-1.15,   -0.68,  -0.06,  0.21, 1.88, -0.04, 0.0];
+       //seventh iteration
+       //k =    [-1.25,   -0.78,  -0.08,  0.25, 2.10, -0.04, 0.0];
+       //eight iteration
+       k =    [-1.32,   -0.85,  -0.10,  0.30, 2.25, -0.04, 0.0];
+
+
+
+       timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+       timeAutoP = timeAutoD;
+       timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+       timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+       timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+       income = hh.getIncome();
+       gender = person.getMitoGender();
+       driversLicense = person.hasDriversLicense();
+       hhAutos = hh.getAutos();
+       hhSize = hh.getHhSize();
+       distToRailStop = originZone.getDistanceToNearestRailStop();
+
+       if(income/12 <= 1500){
+       gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
+       gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
+       gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
+       gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
+       gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
+       } else if (income/12 > 1500 && income/12 <= 5600){
+       gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
+       gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
+       gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
+       gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
+       gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
+       } else if (income/12 > 5600){
+       gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
+       gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
+       gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
+       gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
+       gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
+       }
+
+       utilityAutoD        = k[0] + interceptHBO[0] + maleHBO[0]*(gender.name().equals("MALE")) + driversLicenseHBO[0]*driversLicense +
+                             hhAutosHBO[0]*hhAutos + hhSizeHBO[0]*hhSize + distToRailStopHBO[0]*distToRailStop +
+                             generalizedCostHBO[0]*gcAutoD;
+
+       utilityAutoP        = k[1] + interceptHBO[1] + maleHBO[1]*(gender.name().equals("MALE")) + driversLicenseHBO[1]*driversLicense +
+                             hhAutosHBO[1]*hhAutos + hhSizeHBO[1]*hhSize + distToRailStopHBO[1]*distToRailStop +
+                             generalizedCostHBO[1]*gcAutoP;
+
+       utilityBicycle      = k[2] + interceptHBO[2] + maleHBO[2]*(gender.name().equals("MALE")) + driversLicenseHBO[2]*driversLicense +
+                             hhAutosHBO[2]*hhAutos + hhSizeHBO[2]*hhSize + distToRailStopHBO[2]*distToRailStop +
+                             tripLengthHBO[2]*travelDistanceNMT;
+
+       utilityBus          = k[3] + interceptHBO[3] + maleHBO[3]*(gender.name().equals("MALE")) + driversLicenseHBO[3]*driversLicense +
+                             hhAutosHBO[3]*hhAutos + hhSizeHBO[3]*hhSize + distToRailStopHBO[3]*distToRailStop +
+                             generalizedCostHBO[3]*gcBus;
+
+       utilityTrain        = k[4] +interceptHBO[4] + maleHBO[4]*(gender.name().equals("MALE")) + driversLicenseHBO[4]*driversLicense +
+                             hhAutosHBO[4]*hhAutos + hhSizeHBO[4]*hhSize + distToRailStopHBO[4]*distToRailStop +
+                             generalizedCostHBO[4]*gcTrain;
+
+       utilityTramMetro    = k[5] + interceptHBO[5] + maleHBO[5]*(gender.name().equals("MALE")) + driversLicenseHBO[5]*driversLicense +
+                             hhAutosHBO[5]*hhAutos + hhSizeHBO[5]*hhSize + distToRailStopHBO[5]*distToRailStop +
+                             generalizedCostHBO[5]*gcTramMetro;
+
+       utilityWalk         = k[6] + interceptHBO[6] + maleHBO[6]*(gender.name().equals("MALE")) + driversLicenseHBO[6]*driversLicense +
+                             hhAutosHBO[6]*hhAutos + hhSizeHBO[6]*hhSize + distToRailStopHBO[6]*distToRailStop +
+                             tripLengthHBO[6]*travelDistanceNMT;
+
+       logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+       logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
+
+       probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+       probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+       probabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+       probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+       probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+       probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
+       probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+
+       return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 }
