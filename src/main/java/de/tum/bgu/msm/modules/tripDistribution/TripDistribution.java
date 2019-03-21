@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
@@ -9,6 +8,7 @@ import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribu
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
@@ -31,7 +31,7 @@ public final class TripDistribution extends Module {
     public final static AtomicInteger randomOccupationDestinationTrips = new AtomicInteger(0);
     public final static AtomicInteger completelyRandomNhbTrips = new AtomicInteger(0);
 
-    private final EnumMap<Purpose, DoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, IndexedDoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
 
     private final static Logger logger = Logger.getLogger(TripDistribution.class);
 
@@ -49,13 +49,13 @@ public final class TripDistribution extends Module {
     }
 
     private void buildMatrices() {
-        List<Callable<Pair<Purpose,DoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
+        List<Callable<Pair<Purpose,IndexedDoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
         for (Purpose purpose : Purpose.values()) {
             utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet));
         }
-        ConcurrentExecutor<Pair<Purpose, DoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        List<Pair<Purpose,DoubleMatrix2D>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);
-        for(Pair<Purpose, DoubleMatrix2D> result: results) {
+        ConcurrentExecutor<Pair<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        List<Pair<Purpose,IndexedDoubleMatrix2D>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);
+        for(Pair<Purpose, IndexedDoubleMatrix2D> result: results) {
             utilityMatrices.put(result.getKey(), result.getValue());
         }
     }

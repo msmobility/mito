@@ -12,6 +12,9 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
 import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
+import org.locationtech.jts.geom.Coordinate;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.io.PrintWriter;
 import java.util.*;
@@ -99,10 +102,19 @@ public class SummarizeData {
                 pwh.print(((MicroLocation) origin).getCoordinate().y);
                 pwh.print(",");
             } else{
-                pwh.print("null");
-                pwh.print(",");
-                pwh.print("null");
-                pwh.print(",");
+                if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
+                        origin != null){
+                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                    pwh.print(coordinate.getX());
+                    pwh.print(",");
+                    pwh.print(coordinate.getY());
+                    pwh.print(",");
+                } else {
+                    pwh.print("null");
+                    pwh.print(",");
+                    pwh.print("null");
+                    pwh.print(",");
+                }
             }
 
             Location destination = trip.getTripDestination();
@@ -118,10 +130,19 @@ public class SummarizeData {
                 pwh.print(((MicroLocation) destination).getCoordinate().y);
                 pwh.print(",");
             }else{
-                pwh.print("null");
-                pwh.print(",");
-                pwh.print("null");
-                pwh.print(",");
+                if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
+                        destination != null){
+                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                    pwh.print(coordinate.getX());
+                    pwh.print(",");
+                    pwh.print(coordinate.getY());
+                    pwh.print(",");
+                } else {
+                    pwh.print("null");
+                    pwh.print(",");
+                    pwh.print("null");
+                    pwh.print(",");
+                }
             }
 
             pwh.print(trip.getTripPurpose());

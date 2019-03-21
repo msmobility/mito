@@ -36,7 +36,7 @@ public final class MitoModel {
 
     private DataSet dataSet;
 
-    private MitoModel(String propertiesFile, DataSet dataSet, String scenarioName) {
+    private MitoModel(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
@@ -45,7 +45,7 @@ public final class MitoModel {
     public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(propertiesFile, new DataSet(), Resources.INSTANCE.getString(Properties.SCENARIO_NAME));
+        MitoModel model = new MitoModel(new DataSet(), Resources.INSTANCE.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
@@ -53,7 +53,7 @@ public final class MitoModel {
     public static MitoModel initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(propertiesFile, dataSet, scenarioName);
+        MitoModel model = new MitoModel(dataSet, scenarioName);
         new SkimsReader(dataSet).readSkimDistancesAuto();
         new SkimsReader(dataSet).readSkimDistancesNMT();
         new SkimsReader(dataSet).readOnlyTransitTravelTimes();

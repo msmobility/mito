@@ -1,12 +1,11 @@
 package de.tum.bgu.msm.io.output;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import omx.OmxFile;
 import omx.OmxLookup;
 import omx.OmxMatrix;
 import omx.hdf5.OmxConstants;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,26 +34,23 @@ public class OmxMatrixWriter {
     }
 
 
-    public static void createOmxSkimMatrix(DoubleMatrix2D matrix, String omxFilePath, String omxMatrixName) {
+    public static void createOmxSkimMatrix(IndexedDoubleMatrix2D matrix, String omxFilePath, String omxMatrixName) {
         try (OmxFile omxFile = new OmxFile(omxFilePath)) {
             omxFile.openReadWrite();
             double mat1NA = -1;
-            double[][] matrixWithZeros = matrix.toArray();
-            double[][] matrixWithoutZeros = new double[matrix.rows()-1][matrix.columns()-1];
-            for (int i = 1; i < matrix.columns(); i++){
-                for (int j = 1; j < matrix.columns(); j++) {
-                    matrixWithoutZeros[i-1][j-1] = matrixWithZeros[i][j];
-                }
 
-            }
-            OmxMatrix.OmxDoubleMatrix mat1 = new OmxMatrix.OmxDoubleMatrix(omxMatrixName, matrixWithoutZeros, mat1NA);
+            double[][] array = matrix.toNonIndexedArray();
+            int[] indices = matrix.getRowLookupArray();
+            OmxLookup lookup = new OmxLookup.OmxIntLookup("zone", indices, -1);
+
+            OmxMatrix.OmxDoubleMatrix mat1 = new OmxMatrix.OmxDoubleMatrix(omxMatrixName, array, mat1NA);
             mat1.setAttribute(OmxConstants.OmxNames.OMX_DATASET_TITLE_KEY.getKey(), "skim_matrix");
             omxFile.addMatrix(mat1);
+            omxFile.addLookup(lookup);
             omxFile.save();
             System.out.println(omxFile.summary());
             omxFile.close();
             System.out.println(omxMatrixName + "matrix written");
         }
     }
-
 }

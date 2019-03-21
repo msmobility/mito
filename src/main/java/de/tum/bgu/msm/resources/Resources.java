@@ -25,7 +25,6 @@ public class Resources {
             properties.load(in);
             MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
             INSTANCE = new Resources(properties);
-            in.close();
         } catch (IOException e) {
             e.printStackTrace();
         } 
