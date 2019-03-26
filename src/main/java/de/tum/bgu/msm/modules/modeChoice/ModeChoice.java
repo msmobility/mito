@@ -68,6 +68,30 @@ public class ModeChoice extends Module {
                 }
             }
         }
+
+
+        //auxiliar code for calibration
+//        double shareAutoDriver = 0.15;
+//        double shareAutoPassenger = 0.43;
+//        double shareNonMotorized = 0.0;
+//        double shareMetro = 0.0;
+//        double shareBus = 0.03;
+//        double shareTrain = 1 - shareAutoDriver - shareAutoPassenger - shareNonMotorized - shareMetro - shareBus;
+//
+//        double k_autoDriver = shareAutoDriver - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoDriver);
+//        double k_autoPassenger = shareAutoPassenger - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoPassenger);
+//        double k_bicycle = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bicycle);
+//        double k_walk = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.walk);
+//        double k_bus = shareBus - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bus);
+//        double k_metro = shareMetro - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.tramOrMetro);
+//        double k_train = shareTrain - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.train);
+//
+//        logger.info(k_autoDriver + "," +
+//                k_autoPassenger + "," + k_bicycle +
+//                "," + k_bus + "," + k_train + "," + k_metro + "," +
+//                k_walk );
+
+
     }
 
     static class ModeChoiceByPurpose extends RandomizableConcurrentFunction<Void> {
@@ -127,8 +151,8 @@ public class ModeChoice extends Module {
                 return;
             }
             //found Nan when there is no transit!!
-            for(int i=0; i < probabilities.length; i++){
-                if(Double.isNaN(probabilities[i])){
+            for (int i = 0; i < probabilities.length; i++) {
+                if (Double.isNaN(probabilities[i])) {
                     probabilities[i] = 0;
                 }
             }
