@@ -6,6 +6,7 @@ import de.tum.bgu.msm.DummyZone;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,17 +30,17 @@ public class TravelTimeBudgetModuleTest {
 			public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
 				return 10.;
 			}
-			
-			@Override
-			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
-				return 10.;
-			}
 
 			@Override
 			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
 				return 0;
 			}
-		});
+
+            @Override
+            public IndexedDoubleMatrix2D getPeakSkim(String mode) {
+                return null;
+            }
+        });
         dataSet.addZone(dummyZone);
 
         addHouseholds();

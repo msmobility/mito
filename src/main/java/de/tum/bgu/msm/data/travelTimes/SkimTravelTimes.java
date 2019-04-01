@@ -28,27 +28,6 @@ public class SkimTravelTimes implements TravelTimes {
 	private final Table<Integer, Region, Double> travelTimeToRegion = HashBasedTable.create();
 
     /**
-     * Use method getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) instead
-     */
-    @Deprecated
-    @Override
-    public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
-        // Currently, the time of day is not used here, but it could. E.g. if there are multiple matrices for
-        // different "time-of-day slices" the argument could be used to select the correct matrix, nk/dz, jan'18
-        if (mode.equals("pt")) {
-            if (matricesByMode.containsKey("pt")) {
-                return matricesByMode.get(mode).getIndexed(origin, destination);
-            } else if (matricesByMode.containsKey("bus") && matricesByMode.containsKey("tramMetro") && matricesByMode.containsKey("train")){
-                return getMinimumPtTravelTime(origin, destination, timeOfDay_s);
-            } else {
-                throw new RuntimeException("define transit travel modes!!");
-            }
-        } else {
-            return matricesByMode.get(mode).getIndexed(origin, destination);
-        }
-    }
-
-    /**
      * Reads a skim matrix from an omx file and stores it for the given mode and year. To allow conversion between units
      * use the factor to multiply all values.
      * @param mode the mode for which the travel times are read
@@ -156,7 +135,12 @@ public class SkimTravelTimes implements TravelTimes {
 		return min;
 	}
 
-	//TODO: used in silo. should probably return a deep copy to prevent illegal changes.
+    @Override
+    public IndexedDoubleMatrix2D getPeakSkim(String mode) {
+        return matricesByMode.get(mode);
+    }
+
+    //TODO: used in silo. should probably return a deep copy to prevent illegal changes.
 	public IndexedDoubleMatrix2D getMatrixForMode(String mode) {
 			return matricesByMode.get(mode);
 	}
