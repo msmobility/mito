@@ -8,7 +8,10 @@ import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import de.tum.bgu.msm.data.Id;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 public class IndexedDoubleMatrix1D  {
 
@@ -25,9 +28,11 @@ public class IndexedDoubleMatrix1D  {
      */
     public IndexedDoubleMatrix1D(Collection<? extends Id> entries) {
         delegate = new DenseDoubleMatrix1D(entries.size());
-        int counter = 0;
+        List<? extends Id> sortedEntries = new ArrayList<>(entries);
+        sortedEntries.sort(Comparator.comparingInt(Id::getId));
         externalId2InternalIndex = new OpenIntIntHashMap(entries.size());
         internalIndex2ExternalId = new OpenIntIntHashMap(entries.size());
+        int counter = 0;
         for(Id row: entries) {
             externalId2InternalIndex.put(row.getId(), counter);
             internalIndex2ExternalId.put(counter, row.getId());

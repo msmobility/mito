@@ -8,7 +8,10 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import de.tum.bgu.msm.data.Id;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author nkuehnel
@@ -32,10 +35,16 @@ public class IndexedDoubleMatrix2D {
     public IndexedDoubleMatrix2D(Collection<? extends Id> rows, Collection<? extends Id> columns) {
         delegate = new DenseDoubleMatrix2D(rows.size(), columns.size());
 
+        List<? extends Id> sortedRows = new ArrayList<>(rows);
+        List<? extends Id> sortedColumns = new ArrayList<>(columns);
+        sortedRows.sort(Comparator.comparingInt(Id::getId));
+        sortedColumns.sort(Comparator.comparingInt(Id::getId));
+
+
         int counter = 0;
         externalRowId2InternalIndex = new OpenIntIntHashMap(rows.size());
         internalRowIndex2ExternalId = new OpenIntIntHashMap(rows.size());
-        for (Id row : rows) {
+        for (Id row : sortedRows) {
             externalRowId2InternalIndex.put(row.getId(), counter);
             internalRowIndex2ExternalId.put(counter, row.getId());
             counter++;
@@ -44,7 +53,7 @@ public class IndexedDoubleMatrix2D {
         counter = 0;
         externalColId2InternalIndex = new OpenIntIntHashMap(columns.size());
         internalColIndex2ExternalId = new OpenIntIntHashMap(columns.size());
-        for (Id col : columns) {
+        for (Id col : sortedColumns) {
             externalColId2InternalIndex.put(col.getId(), counter);
             internalColIndex2ExternalId.put(counter, col.getId());
             counter++;
