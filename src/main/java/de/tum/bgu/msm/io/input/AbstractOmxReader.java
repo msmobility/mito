@@ -22,7 +22,7 @@ public abstract class AbstractOmxReader extends AbstractInputReader{
         super(dataSet);
     }
 
-    protected IndexedDoubleMatrix2D readAndConvertToDoubleMatrix(String fileName, String matrixName, double factor) {
+    public static IndexedDoubleMatrix2D readAndConvertToDoubleMatrix(String fileName, String matrixName, double factor) {
         OmxFile omx = new OmxFile(fileName);
         omx.openReadOnly();
         final Set<String> lookupNames = omx.getLookupNames();
