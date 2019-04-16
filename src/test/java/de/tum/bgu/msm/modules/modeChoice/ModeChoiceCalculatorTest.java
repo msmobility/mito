@@ -59,6 +59,11 @@ public class ModeChoiceCalculatorTest {
             public IndexedDoubleMatrix2D getPeakSkim(String mode) {
                 return null;
             }
+
+            @Override
+            public TravelTimes duplicate() {
+                return null;
+            }
         }, 5., 5., 0);
         for(int i = 0; i < result.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
