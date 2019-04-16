@@ -11,4 +11,6 @@ public interface TravelTimes {
     double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode);
 
     IndexedDoubleMatrix2D getPeakSkim(String mode);
+
+    TravelTimes duplicate();
 }

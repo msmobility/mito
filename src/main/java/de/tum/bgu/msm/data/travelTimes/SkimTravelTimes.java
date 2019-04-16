@@ -13,8 +13,10 @@ import omx.OmxLookup;
 import omx.OmxMatrix;
 import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.TransportMode;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -68,8 +70,10 @@ public class SkimTravelTimes implements TravelTimes {
     public void updateSkimMatrix(IndexedDoubleMatrix2D skim, String mode){
         matricesByMode.put(mode, skim);
         logger.warn("The skim matrix for mode " + mode + " has been updated");
-        
-        travelTimeToRegion.clear();
+
+        if(TransportMode.car.equals(mode)) {
+            travelTimeToRegion.clear();
+        }
     }
 
     private double getMinimumPtTravelTime(int origin, int destination, double timeOfDay_s) {
@@ -138,6 +142,16 @@ public class SkimTravelTimes implements TravelTimes {
     @Override
     public IndexedDoubleMatrix2D getPeakSkim(String mode) {
         return matricesByMode.get(mode);
+    }
+
+    @Override
+    public TravelTimes duplicate() {
+        SkimTravelTimes travelTimes = new SkimTravelTimes();
+        for(Map.Entry<String, IndexedDoubleMatrix2D> skims: this.matricesByMode.entrySet()) {
+            travelTimes.matricesByMode.put(skims.getKey(), skims.getValue().copy());
+        }
+        travelTimes.travelTimeToRegion.putAll(this.travelTimeToRegion);
+        return travelTimes;
     }
 
     //TODO: used in silo. should probably return a deep copy to prevent illegal changes.
