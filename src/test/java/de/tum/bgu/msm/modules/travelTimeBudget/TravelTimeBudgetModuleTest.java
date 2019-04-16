@@ -40,6 +40,11 @@ public class TravelTimeBudgetModuleTest {
             public IndexedDoubleMatrix2D getPeakSkim(String mode) {
                 return null;
             }
+
+            @Override
+            public TravelTimes duplicate() {
+                return null;
+            }
         });
         dataSet.addZone(dummyZone);
 

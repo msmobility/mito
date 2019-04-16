@@ -44,6 +44,11 @@ public class ModeChoiceTest {
             public IndexedDoubleMatrix2D getPeakSkim(String mode) {
                 return null;
             }
+
+            @Override
+            public TravelTimes duplicate() {
+                return null;
+            }
         });
         fillDataSet();
     }
