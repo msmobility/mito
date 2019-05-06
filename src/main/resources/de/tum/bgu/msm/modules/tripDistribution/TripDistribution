@@ -11,10 +11,10 @@ travelDistanceParamHbe = -0.149;
 impedanceParamHbe = 28.3;
 
 travelDistanceParamNhbw = -0.03;
-impedanceParamNhbw = 12.1;
+impedanceParamNhbw = 16.1;
 
 travelDistanceParamNhbo = -0.09;
-impedanceParamNhbo = 10.6;
+impedanceParamNhbo = 16.6;
 
 var calculateHBW = function (travelDistance, attraction) {
     if(attraction == 0) {

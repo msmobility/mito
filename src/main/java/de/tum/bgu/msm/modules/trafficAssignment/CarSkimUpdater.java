@@ -67,7 +67,7 @@ public class CarSkimUpdater {
         nodesByZone.clear();
 
         dataSet.getZones().values().stream().parallel().forEach(mitoZone -> {
-            nodesByZone.put(mitoZone.getId(), new LinkedList());
+            nodesByZone.put(mitoZone.getId(), new LinkedList<>());
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
                 Coord originCoord = CoordUtils.createCoord(mitoZone.getRandomCoord());
                 Node originNode = NetworkUtils.getNearestLink(network, originCoord).getToNode();
@@ -75,14 +75,6 @@ public class CarSkimUpdater {
             }
         });
         logger.info("Assigned nodes to " + nodesByZone.keySet().size() + " zones");
-
-        Map<Id<Link>, Double> linkPeakHourTimes = new ConcurrentHashMap<>();
-        Map<Id<Link>, Double> linkOffPeakHourTimes = new ConcurrentHashMap<>();
-        for (Link link : network.getLinks().values()) {
-            linkPeakHourTimes.put(link.getId(), travelTime.getLinkTravelTime(link, DEFAULT_PEAK_H_S, PERSON, VEHICLE));
-            linkOffPeakHourTimes.put(link.getId(), link.getLength() / link.getFreespeed());
-        }
-        logger.info("Assigned travel times");
 
 
         long startTime2 = System.currentTimeMillis();
@@ -137,6 +129,7 @@ public class CarSkimUpdater {
                 return null;
             });
         }
+        executor.execute();
 
         long runtime2 = (System.currentTimeMillis() - startTime2) / 1000;
         logger.info("Completed car matrix update in " + runtime2 + " seconds(dvrp methods)");
