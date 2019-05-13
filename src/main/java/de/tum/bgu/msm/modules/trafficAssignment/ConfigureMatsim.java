@@ -5,6 +5,7 @@ import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
+import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
 
 public class ConfigureMatsim {
 
@@ -31,7 +32,7 @@ public class ConfigureMatsim {
         }{
             StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
             strategySettings.setStrategyName("ReRoute");
-            strategySettings.setWeight(0.5);
+            strategySettings.setWeight(0.1);
             config.strategy().addStrategySettings(strategySettings);
         }
 

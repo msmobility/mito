@@ -96,9 +96,9 @@ public class TravelDemandGenerator {
         if(Resources.INSTANCE.getBoolean(Properties.PRINT_OUT_SKIM,false)){
             try {
 
-                String fileName = "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME);
-                int maxZone = dataSet.getZones().keySet().stream().max(Integer::compareTo).get() + 1;
-                OmxMatrixWriter.createOmxFile(fileName, maxZone);
+                String fileName = "./scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME);
+                int dimension = dataSet.getZones().size();
+                OmxMatrixWriter.createOmxFile(fileName, dimension);
 
                 SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
                 tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");

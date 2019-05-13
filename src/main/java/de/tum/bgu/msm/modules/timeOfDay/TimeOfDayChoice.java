@@ -110,7 +110,7 @@ public class TimeOfDayChoice extends Module {
             return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / speedBicycle;
         } else {
             //both transit and car use here travel times by car
-            return dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId(), arrivalInMinutes * 60, "car");
+            return dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin(), trip.getTripDestination(), arrivalInMinutes * 60, "car");
         }
     }
 }
