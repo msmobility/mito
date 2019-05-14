@@ -134,6 +134,14 @@ public class IndexedDoubleMatrix1D  {
     }
 
     /**
+     * Return the minimum value of this matrix together with its location
+     * @return { minimum_value, location };
+     */
+    public double[] getMinValAndInternalIndex() {
+        return delegate.getMinLocation();
+    }
+
+    /**
      * Returns the number of cells.
      * @return
      */

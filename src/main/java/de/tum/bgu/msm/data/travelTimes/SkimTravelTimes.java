@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.Region;
 import de.tum.bgu.msm.data.Zone;
@@ -15,6 +13,7 @@ import omx.hdf5.OmxHdf5Datatype;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.TransportMode;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +26,7 @@ public class SkimTravelTimes implements TravelTimes {
 
     private final ConcurrentMap<String, IndexedDoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
 
-	private final Table<Integer, Region, Double> travelTimeToRegion = HashBasedTable.create();
+	private  IndexedDoubleMatrix2D travelTimeToRegion;
 
     /**
      * Reads a skim matrix from an omx file and stores it for the given mode and year. To allow conversion between units
@@ -60,7 +59,27 @@ public class SkimTravelTimes implements TravelTimes {
         final IndexedDoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, lookup, factor);
         matricesByMode.put(mode, skim);
         omx.close();
+        travelTimeToRegion = null;
     }
+
+    public void updateZoneToRegionTravelTimes(Collection<Zone> zones, Collection<Region> regions) {
+        logger.info("Updating minimal zone to region travel times...");
+        travelTimeToRegion = new IndexedDoubleMatrix2D(zones, regions);
+        zones.parallelStream().forEach( z -> {
+            for(Region region: regions) {
+                int originZone = z.getZoneId();
+                double min = Double.MAX_VALUE;
+                for (Zone zoneInRegion : region.getZones()) {
+                    double travelTime = matricesByMode.get(TransportMode.car).getIndexed(originZone, zoneInRegion.getZoneId());
+                    if (travelTime < min) {
+                        min = travelTime;
+                    }
+                }
+                travelTimeToRegion.setIndexed(originZone, region.getId(), min);
+            }
+        });
+    }
+
 
     /**
      * Updates a skim matrix from an external source
@@ -72,7 +91,7 @@ public class SkimTravelTimes implements TravelTimes {
         logger.warn("The skim matrix for mode " + mode + " has been updated");
 
         if(TransportMode.car.equals(mode)) {
-            travelTimeToRegion.clear();
+            travelTimeToRegion = null;
         }
     }
 
@@ -118,25 +137,29 @@ public class SkimTravelTimes implements TravelTimes {
 	
 	@Override
 	public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
-		int originZone = origin.getZoneId();
-		if (travelTimeToRegion.contains(originZone, destination)) {
-			return travelTimeToRegion.get(originZone, destination);
-		}
-		double min = Double.MAX_VALUE;
-		for (Zone zoneInRegion : destination.getZones()) {
-			double travelTime = getTravelTime(origin, zoneInRegion, timeOfDay_s, mode);
-			if (travelTime < min) {
-				min = travelTime;
-			}
-		}
-		travelTimeToRegion.put(originZone, destination, min);
-		// TODO This suggestion was in Accessibility before with the following comment (by Carlos)
-		//this is method is proposed as an alternative for the calculation of time from zone to region
-		// ...nk/dz, july'18
-		//        	    double average = destinationRegion.getZones().stream().mapToDouble(zoneInRegion -> 
-		//        	    	getTravelTime(originZone, zoneInRegion, timeOfDay_s, mode)).average().getAsDouble();
-		//        	    travelTimeToRegion.put(originZone, destinationRegion, average);
-		return min;
+        if(travelTimeToRegion == null) {
+            throw new RuntimeException("Travel time to regions not initialized. " +
+                    "Make sure to call updateZoneToRegionTravelTimes() first");
+        }
+        return travelTimeToRegion.getIndexed(origin.getZoneId(), destination.getId());
+
+//        if (origin instanceof Zone) {
+//            int originZone = origin.getZoneId();
+//            if (travelTimeToRegion.getIndexed(originZone, destination.getId()) > 0) {
+//                return travelTimeToRegion.getIndexed(originZone, destination.getId());
+//            }
+//            double min = Double.MAX_VALUE;
+//            for (Zone zoneInRegion : destination.getZones()) {
+//                double travelTime = matricesByMode.get(mode).getIndexed(originZone, zoneInRegion.getZoneId());
+//                if (travelTime < min) {
+//                    min = travelTime;
+//                }
+//            }
+//            travelTimeToRegion.setIndexed(originZone, destination.getId(), min);
+//            return min;
+//        } else {
+//            throw new IllegalArgumentException("Not implemented for origins of types other than Zone. Type is of type " + origin.getClass());
+//        }
 	}
 
     @Override
@@ -150,7 +173,7 @@ public class SkimTravelTimes implements TravelTimes {
         for(Map.Entry<String, IndexedDoubleMatrix2D> skims: this.matricesByMode.entrySet()) {
             travelTimes.matricesByMode.put(skims.getKey(), skims.getValue().copy());
         }
-        travelTimes.travelTimeToRegion.putAll(this.travelTimeToRegion);
+        travelTimes.travelTimeToRegion = this.travelTimeToRegion.copy();
         return travelTimes;
     }
 
