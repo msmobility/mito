@@ -54,9 +54,9 @@ public final class MitoModel {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         MitoModel model = new MitoModel(dataSet, scenarioName);
-        new SkimsReader(dataSet).readSkimDistancesAuto();
-        new SkimsReader(dataSet).readSkimDistancesNMT();
         new SkimsReader(dataSet).readOnlyTransitTravelTimes();
+        new SkimsReader(dataSet).readSkimDistancesNMT();
+        new SkimsReader(dataSet).readSkimDistancesAuto();
         model.readAdditionalData();
         return model;
     }
@@ -72,18 +72,18 @@ public final class MitoModel {
     }
 
     private void readStandAlone(ImplementationConfig config) {
-        dataSet.setTravelTimes(new SkimTravelTimes());
         dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR));
         new ZonesReader(dataSet).read();
         if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
-        new SkimsReader(dataSet).read();
         new JobReader(dataSet, config.getJobTypeFactory()).read();
         new SchoolsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
         new HouseholdsCoordReader(dataSet).read();
         new PersonsReader(dataSet).read();
+        dataSet.setTravelTimes(new SkimTravelTimes());
+        new SkimsReader(dataSet).read();
         readAdditionalData();
     }
 

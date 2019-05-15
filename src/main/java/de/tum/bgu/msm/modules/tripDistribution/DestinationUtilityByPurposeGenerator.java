@@ -1,12 +1,11 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
-import de.tum.bgu.msm.util.matrices.Matrices;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
@@ -15,7 +14,7 @@ import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpose, DoubleMatrix2D>> {
+public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpose, IndexedDoubleMatrix2D>> {
 
     private final static Logger logger = Logger.getLogger(DestinationUtilityByPurposeGenerator.class);
 
@@ -33,8 +32,8 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
     }
 
     @Override
-    public Pair<Purpose, DoubleMatrix2D> call() throws Exception {
-        final DoubleMatrix2D utilityMatrix = Matrices.doubleMatrix2D(zones.values(), zones.values());
+    public Pair<Purpose, IndexedDoubleMatrix2D> call() throws Exception {
+        final IndexedDoubleMatrix2D utilityMatrix = new IndexedDoubleMatrix2D(zones.values(), zones.values());
         long counter = 0;
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
@@ -46,7 +45,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
                             + travelDistances.getTravelDistance(origin.getId(), destination.getId()) +
                             " | Purpose: " + purpose + " | attraction rate: " + destination.getTripAttraction(purpose));
                 }
-                utilityMatrix.setQuick(origin.getId(), destination.getId(), utility);
+                utilityMatrix.setIndexed(origin.getId(), destination.getId(), utility);
                 if (LongMath.isPowerOfTwo(counter)) {
                     logger.info(counter + " OD pairs done for purpose " + purpose);
                 }

@@ -95,10 +95,14 @@ public class ModeChoice extends Module {
         @Override
         public Void call() {
             countTripsSkipped = 0;
-            for (MitoHousehold household : dataSet.getHouseholds().values()) {
-                for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                    chooseMode(trip, calculateTripProbabilities(household, trip));
+            try {
+                for (MitoHousehold household : dataSet.getHouseholds().values()) {
+                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        chooseMode(trip, calculateTripProbabilities(household, trip));
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             logger.info(countTripsSkipped + " trips skipped for " + purpose);
             return null;

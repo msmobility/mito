@@ -77,14 +77,14 @@ public class TripGenerationWriter {
 
     private static String generateOutputFileName (String fileName, int year, String scenarioName) {
         if (scenarioName != null) {
-            File dir = new File("scenOutput/" + scenarioName + "/" +  year +  "/tripGeneration");
+            File dir = new File("./scenOutput/" + scenarioName + "/" +  year +  "/tripGeneration");
             if(!dir.exists()){
                 boolean directoryCreated = dir.mkdir();
                 if (!directoryCreated) {
                     logger.warn("Could not create directory for trip gen output: " + dir.toString());
                 }
             }
-            fileName = "scenOutput/" + scenarioName + "/" +  year  +  "/tripGeneration/" + fileName;
+            fileName = "./scenOutput/" + scenarioName + "/" +  year  +  "/tripGeneration/" + fileName;
         }
         return fileName;
     }

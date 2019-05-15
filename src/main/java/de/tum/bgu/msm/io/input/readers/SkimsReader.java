@@ -1,12 +1,12 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.AbstractOmxReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 
 public class SkimsReader extends AbstractOmxReader {
@@ -25,12 +25,12 @@ public class SkimsReader extends AbstractOmxReader {
     }
 
     public void readSkimDistancesAuto(){
-        DoubleMatrix2D distanceSkimAuto = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"distanceByTime", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimAuto = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"distanceByTime", 1. / 1000.);
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
     }
 
     public void readSkimDistancesNMT(){
-        DoubleMatrix2D distanceSkimNMT = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
 
@@ -51,9 +51,9 @@ public class SkimsReader extends AbstractOmxReader {
     }
 
     private void readTravelDistances(){
-        DoubleMatrix2D distanceSkimAuto = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"distanceByTime", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimAuto = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM),"distanceByTime", 1. / 1000.);
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
-        DoubleMatrix2D distanceSkimNMT = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
 }

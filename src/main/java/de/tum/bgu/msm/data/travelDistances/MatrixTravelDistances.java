@@ -1,19 +1,19 @@
 package de.tum.bgu.msm.data.travelDistances;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 
-public class MatrixTravelDistances implements TravelDistances{
+public class MatrixTravelDistances implements TravelDistances {
 
-    private final DoubleMatrix2D matrix;
+    private final IndexedDoubleMatrix2D matrix;
 
-    public MatrixTravelDistances(DoubleMatrix2D matrix) {
+    public MatrixTravelDistances(IndexedDoubleMatrix2D matrix) {
         this.matrix = matrix;
     }
 
     @Override
     public double getTravelDistance(int origin, int destination) {
-        return matrix.getQuick(origin, destination);
+        return matrix.getIndexed(origin, destination);
     }
 
     public void printOutDistanceSkim(String filePath, String matrixName) {

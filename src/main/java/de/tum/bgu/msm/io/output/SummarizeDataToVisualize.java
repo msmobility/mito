@@ -131,18 +131,18 @@ public class SummarizeDataToVisualize {
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 Purpose purpose = trip.getTripPurpose();
-                Integer tripOrigin = trip.getTripOrigin().getZoneId();
-                double rawDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin, trip.getTripDestination().getZoneId());
+                Location tripOrigin = trip.getTripOrigin();
+                double rawDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
                 int refinedDistance = (int) Math.round(rawDistance);
-                double rawTime = dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination().getZoneId(), dataSet.getPeakHour(), "car");
+                double rawTime = dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination(), dataSet.getPeakHour(), "car");
                 int refinedTime = (int) Math.round(rawTime);
 
                 // updating the intitalized HashMaps
                 updateMap(distanceByPurpose, refinedDistance, purpose);
                 updateMap(timeByPurpose, refinedTime, purpose);
-                updateMap(tripProdByZoneAndPurp, tripOrigin, purpose);
-                updateSpatialMap(avDistByZoneAndPurp, tripOrigin, purpose, rawDistance);
-                updateSpatialMap(avTimeByZoneAndPurp, tripOrigin, purpose, rawTime);
+                updateMap(tripProdByZoneAndPurp, tripOrigin.getZoneId(), purpose);
+                updateSpatialMap(avDistByZoneAndPurp, tripOrigin.getZoneId(), purpose, rawDistance);
+                updateSpatialMap(avTimeByZoneAndPurp, tripOrigin.getZoneId(), purpose, rawTime);
             }
         }
 
