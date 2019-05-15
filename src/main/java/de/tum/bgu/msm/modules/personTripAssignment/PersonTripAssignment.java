@@ -5,6 +5,7 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -142,12 +143,20 @@ public class PersonTripAssignment extends Module {
     private void assignAIRPORT(MitoHousehold household, Map<MitoPerson,Double> probabilitiesByPerson) {
         //by now we assign all the trips to the airport to residents, with the uniform probability for all hh
         //members. Consider improvement: assign them long-distance travelers' based on socio-demographic attributes.
-        fillEquallyDistributed(household, probabilitiesByPerson);
+        fillEquallyDistributedAmongAdults(household, probabilitiesByPerson);
     }
 
     private void fillEquallyDistributed(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
         for (MitoPerson person : household.getPersons().values()) {
             probabilitiesByPerson.put(person, 1.);
+        }
+    }
+
+    private void fillEquallyDistributedAmongAdults(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
+        for (MitoPerson person : household.getPersons().values()) {
+            if (person.getAge() > 17) {
+                probabilitiesByPerson.put(person, 1.);
+            }
         }
     }
 }

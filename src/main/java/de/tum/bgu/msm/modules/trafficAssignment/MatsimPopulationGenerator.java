@@ -114,6 +114,8 @@ public class MatsimPopulationGenerator {
             return "education";
         } else if (purpose.equals(Purpose.HBS)){
             return "shopping";
+        } else if (purpose.equals(Purpose.AIRPORT)) {
+            return "airport";
         } else {
             return "other";
         }

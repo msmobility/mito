@@ -1,11 +1,6 @@
-var calculateTripRateToAirport = function(hh, airportZone, travelDistances){
+var getNumberOfTripsToAirport = function(year){
 
-    distance = travelDistances.getTravelDistance(hh.getHomeZone().getId(), airportZone);
-    if (hh.getHomeZone().getAreaTypeSG() == "CORE_CITY") {
-        isCity = 1;
-    } else {
-        isCity = 0;
-    }
+     //returns the number of trips to the airport for the specified year (includes trips to the airport and from the airport)
 
-    return 2 * Math.exp(-4.642 - 0.00002882 * distance * 1000 + 1.531 * isCity);
+     return 56600;
 }

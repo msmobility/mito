@@ -59,6 +59,10 @@ public class ConfigureMatsim {
         otherActivity.setTypicalDuration(1*60*60);
         config.planCalcScore().addActivityParams(otherActivity);
 
+        PlanCalcScoreConfigGroup.ActivityParams airportActivity = new PlanCalcScoreConfigGroup.ActivityParams("airport");
+        airportActivity.setTypicalDuration(1*60*60);
+        config.planCalcScore().addActivityParams(airportActivity);
+
         return config;
     }
 }

@@ -1,0 +1,37 @@
+var calculateUtility = function (pop_emp, logsum, plz, areaType) {
+
+    b_log_pop_emp = 0.396578;
+    b_logsum = 0.255859;
+    b_is_80331 = 4.173256;
+    b_is_80333_80335 = 2.610293;
+    b_is_core = 1.900968;
+    b_is_medium = 1.797595;
+    b_is_town = 0.806586;
+
+    is_80331 = 0.;
+    is_80333_80335 = 0.;
+
+    if (plz == 80331){
+        is_80331 = 1.;
+    } else if (plz == 80333 || plz == 80335) {
+        is_80333_80335 = 1.;
+    }
+
+    is_core = 0.;
+    is_medium = 0.;
+    is_town = 0.;
+
+    if (areaType.name().equals("CORE_CITY")){
+        is_core = 1.;
+    } else if (areaType.name().equals("MEDIUM_SIZED_CITY")){
+        is_medium = 1.;
+    }else if (areaType.name().equals("TOWN")){
+        is_town = 1.;
+    }
+
+    utility = b_log_pop_emp * Math.log(pop_emp) + b_logsum * logsum + b_is_80331 * is_80331 +
+     b_is_80333_80335 * is_80333_80335 +
+     b_is_core * is_core + b_is_medium * is_medium + b_is_town * is_town;
+
+    return utility;
+}
