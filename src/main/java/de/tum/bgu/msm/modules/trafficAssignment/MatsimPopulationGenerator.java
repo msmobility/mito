@@ -102,6 +102,8 @@ public class MatsimPopulationGenerator {
             return "work";
         } else if (purpose.equals(Purpose.NHBO)){
             return "other";
+        } else if (purpose.equals(Purpose.AIRPORT)) {
+            return "airport";
         } else {
             return "home";
         }
@@ -120,4 +122,26 @@ public class MatsimPopulationGenerator {
             return "other";
         }
     }
+
+
+    public String getMatsimMode(Mode mitoMode){
+        switch (mitoMode) {
+            case autoDriver:
+                return TransportMode.car;
+            case bus:
+                return TransportMode.pt;
+            case tramOrMetro:
+                return TransportMode.pt;
+            case train:
+                return TransportMode.pt;
+            case walk:
+                return TransportMode.walk;
+            case bicycle:
+                return TransportMode.bike;
+            default:
+                return null;
+
+        }
+    }
+
 }

@@ -103,7 +103,9 @@ public class MitoTrip implements Id {
     }
 
     public boolean isHomeBased() {
-        return !this.getTripPurpose().equals(Purpose.NHBW) && !this.getTripPurpose().equals(Purpose.NHBO);
+        return !this.getTripPurpose().equals(Purpose.NHBW) &&
+                !this.getTripPurpose().equals(Purpose.NHBO) &&
+                !this.getTripPurpose().equals(Purpose.AIRPORT);
     }
 
     @Override

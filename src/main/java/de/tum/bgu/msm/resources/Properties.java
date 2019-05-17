@@ -83,4 +83,6 @@ public class Properties {
     public static final String ADD_AIRPORT_DEMAND = "add.airport.demand";
 
 
+    public static final String AIRPORT_Y = "airport.y";
+    public static final String AIRPORT_X = "airport.x";
 }

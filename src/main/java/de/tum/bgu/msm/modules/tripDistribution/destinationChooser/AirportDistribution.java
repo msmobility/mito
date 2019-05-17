@@ -8,20 +8,23 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 
 public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
 
     private static final Logger logger = Logger.getLogger(AirportDistribution.class);
+    private final MitoZone airportZone;
     Purpose purpose = Purpose.AIRPORT;
     private final DataSet dataSet;
 
-    private MitoZone airport;
+    private MicroLocation airport;
+
 
 
     protected AirportDistribution(long randomSeed, DataSet dataSet) {
         super(randomSeed);
         this.dataSet = dataSet;
-        this.airport = dataSet.getZones().get(Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE));
+        this.airportZone = dataSet.getZones().get(Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE));
     }
 
     public static AirportDistribution airportDistribution(DataSet dataSet) {
@@ -38,6 +41,19 @@ public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
             }
             if (hasTripsForPurpose(household)) {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+
+                    airport = new MicroLocation() {
+                        @Override
+                        public Coordinate getCoordinate() {
+                            return new Coordinate(Resources.INSTANCE.getInt(Properties.AIRPORT_X),
+                                    Resources.INSTANCE.getInt(Properties.AIRPORT_Y));
+                        }
+                        @Override
+                        public int getZoneId() {
+                            return airportZone.getZoneId();
+                        }
+                    };
+
                     if (MitoUtil.getRandomObject().nextDouble() < 0.5) {
                         trip.setTripOrigin(household.getHomeZone());
                         trip.setTripDestination(airport);

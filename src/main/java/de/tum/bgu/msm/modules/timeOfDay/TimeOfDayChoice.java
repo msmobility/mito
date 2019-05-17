@@ -49,7 +49,7 @@ public class TimeOfDayChoice extends Module {
         dataSet.getTrips().values().forEach(trip -> {
 
                     if (trip.getTripOrigin() != null && trip.getTripDestination() != null
-                            && trip.getTripMode() != null){
+                            && trip.getTripMode() != null) {
                         int departureTimeInMinutes;
                         if (trip.getTripPurpose().equals(Purpose.AIRPORT) &&
                                 trip.getTripOrigin().equals(dataSet.getZones().get(Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)))){
@@ -89,7 +89,6 @@ public class TimeOfDayChoice extends Module {
     private int chooseArrivalTime(MitoTrip mitoTrip) {
         return MitoUtil.select(arrivalMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
     }
-
 
 
     private int chooseDepartureTimeForReturnTrip(MitoTrip mitoTrip, int arrivalTime) {
