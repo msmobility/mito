@@ -12,8 +12,8 @@ public class AirportDestinationCalculator extends JavaScriptCalculator<Double> {
         super(reader);
     }
 
-    public double calculateUtilityOfThisZone(double popEmp, double logsum, int plz, AreaTypes.SGType areaType){
-        return calculate("calculateUtility", popEmp, logsum, plz, areaType);
+    public double calculateUtilityOfThisZone(double popEmp, double logsum, AreaTypes.SGType areaType){
+        return calculate("calculateUtility", popEmp, logsum, areaType);
 
     }
 }

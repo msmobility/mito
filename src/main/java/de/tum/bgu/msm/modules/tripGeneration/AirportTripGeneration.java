@@ -70,7 +70,7 @@ public class AirportTripGeneration {
             double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(airportZoneId, zoneId);
             double logsum = airportLogsumCalculator.calculateLogsumForThisZone(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour());
             int popEmp = popByZone.get(zoneId) + mitoZone.getTotalEmpl();
-            double probability = airportDestinationCalculator.calculateUtilityOfThisZone(popEmp, logsum, mitoZone.getPlz(), mitoZone.getAreaTypeSG());
+            double probability = airportDestinationCalculator.calculateUtilityOfThisZone(popEmp, logsum, mitoZone.getAreaTypeSG());
             zonalProbability.put(mitoZone.getId(), probability);
         }
         LOGGER.info("Assigned probabilities to zones");

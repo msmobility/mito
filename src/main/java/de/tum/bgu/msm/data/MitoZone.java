@@ -35,9 +35,6 @@ public class MitoZone implements Id, Location {
     private SimpleFeature shapeFeature;
 
 
-
-    private int plz;
-
     public MitoZone(int id, AreaTypes.SGType areaType) {
         this.zoneId = id;
         this.areaTypeSG = areaType;
@@ -170,12 +167,4 @@ public class MitoZone implements Id, Location {
         return zoneId;
     }
 
-
-    public int getPlz() {
-        return plz;
-    }
-
-    public void setPlz(int plz) {
-        this.plz = plz;
-    }
 }
