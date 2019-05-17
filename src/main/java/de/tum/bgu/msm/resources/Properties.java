@@ -85,4 +85,6 @@ public class Properties {
 
     public static final String AIRPORT_Y = "airport.y";
     public static final String AIRPORT_X = "airport.x";
+    public static final String MATSIM_NETWORK_MODES = "matsim.network.modes";
+    public static final String MATSIM_TELEPORTED_MODES = "matsim.teleported.modes";
 }

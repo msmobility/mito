@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.tum.bgu.msm.data.MitoTrip;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -98,7 +99,7 @@ public class TripCSVToMATSimPlan {
 		Purpose purpose = Purpose.valueOf(t.purpose);
 		boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
 
-		String firstActivityType = MatsimPopulationGenerator.getOriginActivity(purpose);
+		String firstActivityType = getOriginActivity(purpose);
 		Coord firstCoord = new Coord(t.originX, t.originY);
 
 		Activity firstAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
@@ -111,7 +112,7 @@ public class TripCSVToMATSimPlan {
 		firstLeg.setDepartureTime(t.departure_time);
 		plan.addLeg(firstLeg);
 
-		String secondActivityType = MatsimPopulationGenerator.getDestinationActivity(purpose);
+		String secondActivityType = getDestinationActivity(purpose);
 		Coord secondCoord = new Coord(t.destinationX, t.destinationY);
 
 		Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
@@ -120,7 +121,7 @@ public class TripCSVToMATSimPlan {
 
 		if (roundTrip)
 			secondAct.setEndTime(t.departure_time_return);
-		plan.addActivity(secondAct);
+			plan.addActivity(secondAct);
 
 		if (roundTrip) {
 			Leg secondLeg = factory.createLeg(mode);
@@ -136,6 +137,14 @@ public class TripCSVToMATSimPlan {
 		p.addPlan(plan);
 		p.setSelectedPlan(plan);
 		return p;
+	}
+
+	private static String getDestinationActivity(Purpose purpose) {
+		return "";
+	}
+
+	private static String getOriginActivity(Purpose purpose) {
+		return "";
 	}
 
 	private static String decodeMode(String encodedMode) {

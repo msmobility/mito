@@ -610,7 +610,7 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
     exp_time_train          = 3.946016;
 
     //distance is in minutes
-    beta_distance               = -0.00002 * 60
+    beta_distance               = -0.00002
     exp_distance_autoDriver     = 0;
     exp_distance_autoPassenger  = 1.939056;
     exp_distance_autoOther      = 4.649129;
