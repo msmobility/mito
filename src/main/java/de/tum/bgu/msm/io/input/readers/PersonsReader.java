@@ -23,8 +23,12 @@ public class PersonsReader extends AbstractCsvReader {
     private int posLicence = -1;
     private int posIncome = -1;
     private int posSchoolId = -1;
+    private int posDisability = -1;
 
     private int occupationCounter = 0;
+    private int mentalDisabilityCounter = 0;
+    private int physicalDisabilityCounter = 0;
+    private int withoutDisabilityCounter = 0;
 
     public PersonsReader(DataSet dataSet) {
         super(dataSet);
@@ -45,6 +49,11 @@ public class PersonsReader extends AbstractCsvReader {
             logger.warn("There are " + noIncomeHouseholds + " households with no income after reading all persons.");
         }
         logger.info("There are " + occupationCounter + " persons without occupation (student or worker).");
+        if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
+            logger.info("There are " + withoutDisabilityCounter + " persons without severe disabilities.");
+            logger.info("There are " + mentalDisabilityCounter + " persons with severe mental disability.");
+            logger.info("There are " + physicalDisabilityCounter + " persons with severe physical disability.");
+        }
     }
 
     @Override
@@ -59,6 +68,9 @@ public class PersonsReader extends AbstractCsvReader {
         posSchoolId = headerList.indexOf("schoolId");
         posLicence = headerList.indexOf("driversLicense");
         posIncome = headerList.indexOf("income");
+        if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
+            posDisability = headerList.indexOf("disability");
+        }
     }
 
     @Override
@@ -68,7 +80,7 @@ public class PersonsReader extends AbstractCsvReader {
         final int hhid = Integer.parseInt(record[posHhId]);
 
         if(!dataSet.getHouseholds().containsKey(hhid)) {
-            logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
+            //logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
             return;
         }
         MitoHousehold hh = dataSet.getHouseholds().get(hhid);
@@ -114,6 +126,23 @@ public class PersonsReader extends AbstractCsvReader {
         }
 
         MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
+        if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
+            Disability disability = Disability.valueOf(record[posDisability]);
+            pp.setDisability(disability);
+            switch (disability){
+                case WITHOUT:
+                    withoutDisabilityCounter++;
+                    break;
+                case PHYSICAL:
+                    physicalDisabilityCounter++;
+                    break;
+                case MENTAL:
+                    mentalDisabilityCounter++;
+                    break;
+                default:
+                    break;
+            }
+        }
 
         hh.addPerson(pp);
         dataSet.addPerson(pp);

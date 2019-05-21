@@ -18,6 +18,7 @@ public class DataSet {
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
+    private TravelDistances travelDistanceDisability;
 
     private double peakHour = Double.NaN;
 
@@ -33,6 +34,19 @@ public class DataSet {
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
+
+
+    private final Table<Purpose, Mode, Double> modeSharesByPurposeWithoutDisability
+            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
+
+    private final Table<Purpose, Mode, Double> modeSharesByPurposeMentalDisability
+            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
+
+    private final Table<Purpose, Mode, Double> modeSharesByPurposePhysicalDisability
+            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
+
+    private final Table<Purpose, Disability, Integer> tripsByPurposeByDisability
+            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Disability.values()));
 
 
     private int year;
@@ -215,5 +229,37 @@ public class DataSet {
 
     public void setMatsimTravelDisutility(TravelDisutility matsimTravelDisutility) {
         this.matsimTravelDisutility = matsimTravelDisutility;
+    }
+
+    public void addModeShareForPurposeWithoutDisability(Purpose purpose, Mode mode, Double share){
+        modeSharesByPurposeWithoutDisability.put(purpose, mode, share);
+    }
+
+    public Double getModeSharesByPurposeWithoutDisability(Purpose purpose, Mode mode) {
+        return modeSharesByPurposeWithoutDisability.get(purpose, mode);
+    }
+
+    public void addModeShareForPurposeMentalDisability(Purpose purpose, Mode mode, Double share){
+        modeSharesByPurposeMentalDisability.put(purpose, mode, share);
+    }
+
+    public Double getModeSharesByPurposeMentalDisability(Purpose purpose, Mode mode) {
+        return modeSharesByPurposeMentalDisability.get(purpose, mode);
+    }
+
+    public void addModeShareForPurposePhysicalDisability(Purpose purpose, Mode mode, Double share){
+        modeSharesByPurposePhysicalDisability.put(purpose, mode, share);
+    }
+
+    public Double getModeSharesByPurposePhysicalDisability(Purpose purpose, Mode mode) {
+        return modeSharesByPurposePhysicalDisability.get(purpose, mode);
+    }
+
+    public void addTripByPurposeByDisability(Purpose purpose, Disability disability, int trips){
+        tripsByPurposeByDisability.put(purpose, disability, trips++);
+    }
+
+    public int getTripsByPurposeByDisability(Purpose purpose, Disability disability){
+        return tripsByPurposeByDisability.get(purpose, disability);
     }
 }

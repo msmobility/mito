@@ -100,11 +100,11 @@ public class TravelDemandGenerator {
                 int dimension = dataSet.getZones().size();
                 OmxMatrixWriter.createOmxFile(fileName, dimension);
 
-                SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
+/*                SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
                 tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");
 
                 MatrixTravelDistances td = (MatrixTravelDistances) dataSet.getTravelDistancesAuto();
-                td.printOutDistanceSkim(fileName, "distanceByTime");
+                td.printOutDistanceSkim(fileName, "distanceByTime");*/
 
             } catch (ClassCastException e){
                 logger.info("Currently it is not possible to print out a matrix from an object which is not SkimTravelTime");

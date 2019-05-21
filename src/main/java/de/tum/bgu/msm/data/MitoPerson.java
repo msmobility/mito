@@ -22,6 +22,7 @@ public class MitoPerson implements Id {
     private final MitoOccupation occupation;
     private final int age;
     private final boolean driversLicense;
+    private Disability disability;
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
@@ -68,6 +69,15 @@ public class MitoPerson implements Id {
         if(trip.getPerson() != this) {
             trip.setPerson(this);
         }
+    }
+
+
+    public Disability getDisability() {
+        return disability;
+    }
+
+    public void setDisability(Disability disability) {
+        this.disability = disability;
     }
 
     @Override

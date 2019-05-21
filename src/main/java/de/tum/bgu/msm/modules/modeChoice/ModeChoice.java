@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -68,6 +69,120 @@ public class ModeChoice extends Module {
                 }
             }
         }
+
+        if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
+
+            //filter valid trips by purpose and without disabilities
+            Map<Purpose, List<MitoTrip>> tripsByPurposeWithoutDisability = dataSet.getTrips().values().stream()
+                    .filter(trip -> trip.getTripMode() != null)
+                    .filter(trip -> trip.getPerson().getDisability() == Disability.WITHOUT)
+                    .collect(Collectors.groupingBy(MitoTrip::getTripPurpose));
+
+
+            tripsByPurposeWithoutDisability.forEach((purpose, trips) -> {
+                final long totalTrips = trips.size();
+                trips.parallelStream()
+                        //group number of trips by mode
+                        .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
+                        //calculate and add share to data set table
+                        .forEach((mode, count) ->
+                                dataSet.addModeShareForPurposeWithoutDisability(purpose, mode, (double) count / totalTrips));
+            });
+
+            for (Map.Entry<Purpose, List<MitoTrip>> entry : tripsByPurposeWithoutDisability.entrySet()) {
+                Purpose key = entry.getKey();
+                dataSet.addTripByPurposeByDisability(key, Disability.WITHOUT, tripsByPurposeWithoutDisability.get(key).size());
+            }
+
+            for (Purpose purpose : Purpose.values()) {
+                logger.info("#################################################");
+                logger.info("Persons without disabilities performed " + dataSet.getTripsByPurposeByDisability(purpose,Disability.WITHOUT) + " " + purpose + " trips.");
+                for (Mode mode : Mode.values()) {
+                    Double share = dataSet.getModeSharesByPurposeWithoutDisability(purpose, mode);
+                    if (share != null) {
+                        logger.info(mode + " = " + share * 100 + "%");
+                    }
+                }
+            }
+
+            //filter valid trips by purpose and with mental disabilities
+            Map<Purpose, List<MitoTrip>> tripsByPurposeMentalDisability = dataSet.getTrips().values().stream()
+                    .filter(trip -> trip.getTripMode() != null)
+                    .filter(trip -> trip.getPerson().getDisability() == Disability.MENTAL)
+                    .collect(Collectors.groupingBy(MitoTrip::getTripPurpose));
+
+
+            tripsByPurposeMentalDisability.forEach((purpose, trips) -> {
+                final long totalTrips = trips.size();
+                trips.parallelStream()
+                        //group number of trips by mode
+                        .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
+                        //calculate and add share to data set table
+                        .forEach((mode, count) ->
+                                dataSet.addModeShareForPurposeMentalDisability(purpose, mode, (double) count / totalTrips));
+            });
+
+            for (Map.Entry<Purpose, List<MitoTrip>> entry : tripsByPurposeMentalDisability.entrySet()) {
+                Purpose key = entry.getKey();
+                dataSet.addTripByPurposeByDisability(key, Disability.MENTAL, tripsByPurposeMentalDisability.get(key).size());
+            }
+
+            for (Purpose purpose : Purpose.values()) {
+                logger.info("#################################################");
+                logger.info("Persons with mental disabilities performed " + dataSet.getTripsByPurposeByDisability(purpose,Disability.MENTAL) + " " + purpose + " trips.");
+                for (Mode mode : Mode.values()) {
+                    Double share = dataSet.getModeSharesByPurposeMentalDisability(purpose, mode);
+                    if (share != null) {
+                        logger.info(mode + " = " + share * 100 + "%");
+                    }
+                }
+            }
+
+
+            //filter valid trips by purpose and with mental disabilities
+            Map<Purpose, List<MitoTrip>> tripsByPurposePhysicalDisability = dataSet.getTrips().values().stream()
+                    .filter(trip -> trip.getTripMode() != null)
+                    .filter(trip -> trip.getPerson().getDisability() == Disability.PHYSICAL)
+                    .collect(Collectors.groupingBy(MitoTrip::getTripPurpose));
+
+
+            tripsByPurposePhysicalDisability.forEach((purpose, trips) -> {
+                final long totalTrips = trips.size();
+                trips.parallelStream()
+                        //group number of trips by mode
+                        .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
+                        //calculate and add share to data set table
+                        .forEach((mode, count) ->
+                                dataSet.addModeShareForPurposePhysicalDisability(purpose, mode, (double) count / totalTrips));
+            });
+
+/*            tripsByPurposePhysicalDisability.forEach((purpose, trips) -> {
+                final long totalTrips = trips.size();
+                trips.parallelStream()
+                        //group number of trips by mode
+                        .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
+                        //calculate and add share to data set table
+                        .forEach((mode, count) ->
+                                dataSet.addTripByPurposeByDisability(purpose, Disability.PHYSICAL, count));
+            });*/
+            for (Map.Entry<Purpose, List<MitoTrip>> entry : tripsByPurposePhysicalDisability.entrySet()) {
+                Purpose key = entry.getKey();
+                dataSet.addTripByPurposeByDisability(key, Disability.PHYSICAL, tripsByPurposePhysicalDisability.get(key).size());
+            }
+
+            for (Purpose purpose : Purpose.values()) {
+                logger.info("#################################################");
+                logger.info("Persons with physical disabilities performed " + dataSet.getTripsByPurposeByDisability(purpose,Disability.PHYSICAL) + " " + purpose + " trips.");
+                logger.info("Persons with physical disability. Mode shares for purpose " + purpose + ":");
+                for (Mode mode : Mode.values()) {
+                    Double share = dataSet.getModeSharesByPurposePhysicalDisability(purpose, mode);
+                    if (share != null) {
+                        logger.info(mode + " = " + share * 100 + "%");
+                    }
+                }
+            }
+        }
+
     }
 
     static class ModeChoiceByPurpose extends RandomizableConcurrentFunction<Void> {
@@ -83,12 +198,23 @@ public class ModeChoice extends Module {
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
-            if (includeAV) {
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoiceAV")), purpose);
+            if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
+                if (includeAV) {
+                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoiceAVDisability")), purpose);
+                } else {
+                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoiceDisability")), purpose);
+                }
             } else {
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoice")), purpose);
+                if (includeAV) {
+                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoiceAV")), purpose);
+                } else {
+                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoice")), purpose);
+
+                }
             }
         }
 

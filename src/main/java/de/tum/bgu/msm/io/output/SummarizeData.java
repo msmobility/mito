@@ -234,6 +234,29 @@ public class SummarizeData {
 
         PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
 
+        if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)){
+            SortedMultiset<Mode> modesWithoutDisability = TreeMultiset.create();
+            SortedMultiset<Mode> modesMentalDisability = TreeMultiset.create();
+            SortedMultiset<Mode> modesPhysicalDisability = TreeMultiset.create();
+            for (Mode mode: Mode.values()){
+                Double share = dataSet.getModeSharesByPurposeWithoutDisability(purpose, mode);
+                Double share1 = dataSet.getModeSharesByPurposeMentalDisability(purpose, mode);
+                Double share2 = dataSet.getModeSharesByPurposePhysicalDisability(purpose, mode);
+                if (share != null) {
+                    modesWithoutDisability.add(mode, (int) (dataSet.getModeSharesByPurposeWithoutDisability(purpose, mode) * 100));
+                }
+                if (share1 != null) {
+                    modesMentalDisability.add(mode, (int) (dataSet.getModeSharesByPurposeMentalDisability(purpose, mode) * 100));
+                }
+                if (share2 != null) {
+                    modesPhysicalDisability.add(mode, (int) (dataSet.getModeSharesByPurposePhysicalDisability(purpose, mode) * 100));
+                }
+            }
+            PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/withoutDisability" + purpose, modesWithoutDisability, "Persons without severe disability. Mode Choice " + purpose);
+            PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/mentalDisability" + purpose, modesMentalDisability, "Persons with severe mental disability. Mode Choice " + purpose);
+            PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/physicalDisability" + purpose, modesPhysicalDisability, "Persons with severe physical disability. Mode Choice " + purpose);
+        }
+
         Map<Double, Double> averageDistancesByZone = new HashMap<>();
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
             averageDistancesByZone.put(Double.valueOf(entry.getKey()), Stats.meanOf(entry.getValue()));

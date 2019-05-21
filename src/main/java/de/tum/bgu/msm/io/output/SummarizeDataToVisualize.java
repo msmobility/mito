@@ -243,6 +243,53 @@ public class SummarizeDataToVisualize {
             }
             resultFile(txt, scenarioName);
         }
+        if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
+            String text = "Trips_withoutDisability_";
+            for (Purpose purpose : Purpose.values()){
+                int trips = dataSet.getTripsByPurposeByDisability(purpose, Disability.WITHOUT);
+                text = text.concat("," + trips);
+            }
+            resultFile(text, scenarioName);
+            for (Mode mode : Mode.values()) {
+                String txt = "ModeShare_withoutDisability_";
+                txt = txt.concat(String.valueOf(mode));
+                for (Purpose purpose : Purpose.values()) {
+                    Double share = dataSet.getModeSharesByPurposeWithoutDisability(purpose, mode);
+                    txt = txt.concat("," + share);
+                }
+                resultFile(txt, scenarioName);
+            }
+            String text1 = "Trips_mentalDisability_";
+            for (Purpose purpose : Purpose.values()){
+                int trips = dataSet.getTripsByPurposeByDisability(purpose, Disability.MENTAL);
+                text1 = text1.concat("," + trips);
+            }
+            resultFile(text1, scenarioName);
+            for (Mode mode : Mode.values()) {
+                String txt = "ModeShare_mentalDisability_";
+                txt = txt.concat(String.valueOf(mode));
+                for (Purpose purpose : Purpose.values()) {
+                    Double share = dataSet.getModeSharesByPurposeMentalDisability(purpose, mode);
+                    txt = txt.concat("," + share);
+                }
+                resultFile(txt, scenarioName);
+            }
+            String text2 = "Trips_physicalDisability_";
+            for (Purpose purpose : Purpose.values()){
+                int trips = dataSet.getTripsByPurposeByDisability(purpose, Disability.PHYSICAL);
+                text2 = text2.concat("," + trips);
+            }
+            resultFile(text2, scenarioName);
+            for (Mode mode : Mode.values()) {
+                String txt = "ModeShare_physicalDisability_";
+                txt = txt.concat(String.valueOf(mode));
+                for (Purpose purpose : Purpose.values()) {
+                    Double share = dataSet.getModeSharesByPurposePhysicalDisability(purpose, mode);
+                    txt = txt.concat("," + share);
+                }
+                resultFile(txt, scenarioName);
+            }
+        }
     }
 
     /**

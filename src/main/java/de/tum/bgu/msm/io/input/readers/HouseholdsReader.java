@@ -40,16 +40,18 @@ public class HouseholdsReader extends AbstractCsvReader {
 
     @Override
     protected void processRecord(String[] record) {
-        int id = Integer.parseInt(record[posId]);
-        int taz = Integer.parseInt(record[posTaz]);
-        int autos = Integer.parseInt(record[posAutos]);
-        MitoZone zone = dataSet.getZones().get(taz);
-        if (zone == null) {
-            logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
-            return;
+        if (MitoUtil.getRandomObject().nextDouble() < 0.05) {
+            int id = Integer.parseInt(record[posId]);
+            int taz = Integer.parseInt(record[posTaz]);
+            int autos = Integer.parseInt(record[posAutos]);
+            MitoZone zone = dataSet.getZones().get(taz);
+            if (zone == null) {
+                logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
+                return;
+            }
+            MitoHousehold hh = new MitoHousehold(id, 0, autos, zone);
+            dataSet.addHousehold(hh);
+            zone.addHousehold();
         }
-        MitoHousehold hh = new MitoHousehold(id, 0, autos, zone);
-        dataSet.addHousehold(hh);
-        zone.addHousehold();
     }
 }
