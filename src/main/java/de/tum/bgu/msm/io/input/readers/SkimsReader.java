@@ -54,7 +54,7 @@ public class SkimsReader extends AbstractOmxReader {
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetro", Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM), "mat1", 1.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM), "mat1", 1.);
         if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
-            ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("carDisability", Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM_DISABILITY), "mat1", 1/60.);
+            ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("carDisability", Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM_DISABILITY), "mat1", 1.);
             ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("busDisability", Resources.INSTANCE.getString(Properties.BUS_TRAVEL_TIME_SKIM_DISABILITY), "mat1", 1.);
             ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetroDisability", Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM_DISABILITY), "mat1", 1.);
             ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("trainDisability", Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM_DISABILITY), "mat1", 1.);

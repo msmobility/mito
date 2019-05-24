@@ -1,6 +1,7 @@
 nestingCoefficient = 0.25;
 
 fuelCostEurosPerKm = 0.07;
+transitFareEurosPerKm = 0.12;
 
 VOT1500_HBW_HBE_autoD = 4.63;
 VOT5600_HBW_HBE_autoD = 8.94;
@@ -21,8 +22,6 @@ VOT7000_other_autoP = 11.30;
 VOT1500_other_transit = 5.06;
 VOT5600_other_transit = 9.78;
 VOT7000_other_transit = 13.29;
-
-scenario = 1;
 
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
@@ -47,77 +46,65 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
 
 
     disability = person.getDisability();
-    if (scenario == 1){
-    //scenario one: travel time for persons with disability
-        transitFareEurosPerKm = 0.12;
-       if (disability.name().equals("WITHOUT")){
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-        } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
-            travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-     } else if (scenario == 2){
-    //scenario two: travel time for persons with disability but cost zero to transit
+//scenario one: travel time for persons with disability
+/*    if (disability.name().equals("WITHOUT")){
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    } else {
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+        travelDistanceNMT = travelDistanceNMT * 1.5;
+    }
+//scenario two: travel time for persons with disability but cost zero to transit
         if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-            transitFareEurosPerKm = 0.12;
         } else {
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
             timeAutoP = timeAutoD;
             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
-            transitFareEurosPerKm = 0.0;
+            generalizedCostHBW      = [-0.0088, -0.0088, 0.0, 0.0, 0.0, 0.0, 0.0];
             travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 3){
-    //scenario three: same travel time with this paratransit service (as person without disability)
-         transitFareEurosPerKm = 0.12;
+        }*/
+//scenario three: same travel time with this paratransit service (as person without disability)
+
+/*         timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+         timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+         timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
             travelDistanceNMT = travelDistanceNMT * 1.5;
-         }
-    } else if (scenario == 4){
-    //scenario four: same travel time with this paratransit service (as person without disability)
-          if (disability.name().equals("WITHOUT")){
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-             timeAutoP = timeAutoD;
-            transitFareEurosPerKm = 0.12;
-          } else {
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-             timeAutoP = timeAutoD;
-             transitFareEurosPerKm = 0.0;
-             travelDistanceNMT = travelDistanceNMT * 1.5;
-          }
-    }
+         }*/
+
+         //scenario three: same travel time with this paratransit service (as person without disability)
+
+                  timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+                  timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+                  timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+                  if (disability.name().equals("WITHOUT")){
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+                     timeAutoP = timeAutoD;
+                  } else {
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+                     timeAutoP = timeAutoD;
+                     generalizedCostHBW      = [-0.0088, -0.0088, 0.0, 0.0, 0.0, 0.0, 0.0];
+                     travelDistanceNMT = travelDistanceNMT * 1.5;
+                  }
     income = hh.getIncome();
     age = person.getAge();
     gender = person.getMitoGender();
@@ -257,9 +244,22 @@ var calculateHBEProbabilities = function(hh, person, originZone, destinationZone
 
 
     disability = person.getDisability();
-    if (scenario == 1){
-    transitFareEurosPerKm = 0.12;
-    //scenario one: travel time for persons with disability
+//scenario one: travel time for persons with disability
+/*    if (disability.name().equals("WITHOUT")){
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    } else {
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+        travelDistanceNMT = travelDistanceNMT * 1.5;
+    }
+//scenario two: travel time for persons with disability but cost zero to transit
         if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
@@ -272,62 +272,37 @@ var calculateHBEProbabilities = function(hh, person, originZone, destinationZone
             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+            generalizedCostHBE  = [-0.0025, -0.0025, 0.0, 0.0, 0.0, 0.0, 0.0];
             travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 2){
-    //scenario two: travel time for persons with disability but cost zero to transit
-        if (disability.name().equals("WITHOUT")){
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-            transitFareEurosPerKm = 0.12;
-        } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
-            transitFareEurosPerKm = 0.0;
-            travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 3){
-    //scenario three: same travel time with this paratransit service (as person without disability)
-         transitFareEurosPerKm = 0.12;
+        }*/
+//scenario three: same travel time with this paratransit service (as person without disability)
+
+/*         timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+         timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+         timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
             travelDistanceNMT = travelDistanceNMT * 1.5;
-         }
-    } else if (scenario == 4){
-    //scenario three: same travel time with this paratransit service (as person without disability)
-          if (disability.name().equals("WITHOUT")){
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-             timeAutoP = timeAutoD;
-             transitFareEurosPerKm = 0.12;
-          } else {
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-             timeAutoP = timeAutoD;
-             transitFareEurosPerKm = 0.0;
-             travelDistanceNMT = travelDistanceNMT * 1.5;
-          }
-    }
+         }*/
+
+         //scenario three: same travel time with this paratransit service (as person without disability)
+
+                  timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+                  timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+                  timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+                  if (disability.name().equals("WITHOUT")){
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+                     timeAutoP = timeAutoD;
+                  } else {
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+                     timeAutoP = timeAutoD;
+                     generalizedCostHBE  = [-0.0025, -0.0025, 0.0, 0.0, 0.0, 0.0, 0.0];
+                     travelDistanceNMT = travelDistanceNMT * 1.5;
+                  }
     income = hh.getIncome();
     gender = person.getMitoGender();
     driversLicense = person.hasDriversLicense();
@@ -442,9 +417,22 @@ var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
     hhChildren = dataSet.getChildrenForHousehold(hh);
 
     disability = person.getDisability();
-     if (scenario == 1){
-     //scenario one: travel time for persons with disability
-        transitFareEurosPerKm = 0.12;
+//scenario one: travel time for persons with disability
+/*    if (disability.name().equals("WITHOUT")){
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    } else {
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+        travelDistanceNMT = travelDistanceNMT * 1.5;
+    }
+//scenario two: travel time for persons with disability but cost zero to transit
         if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
@@ -457,63 +445,37 @@ var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+            generalizedCostHBS_Sq   = [-0.0000068, -0.0000068, 0.0, 0.0, 0.0, -0.0, 0.0];
             travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 2){
-    //scenario two: travel time for persons with disability but cost zero to transit
-        if (disability.name().equals("WITHOUT")){
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-            transitFareEurosPerKm = 0.12;
-        } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
-            transitFareEurosPerKm = 0.0;
-            travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 3){
-    //scenario three: same travel time with this paratransit service (as person without disability)
-         transitFareEurosPerKm = 0.12;
+        }*/
+//scenario three: same travel time with this paratransit service (as person without disability)
+
+/*         timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+         timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+         timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
             travelDistanceNMT = travelDistanceNMT * 1.5;
-         }
-    } else if (scenario == 4){
-    //scenario three: same travel time with this paratransit service (as person without disability)
+         }*/
 
-          if (disability.name().equals("WITHOUT")){
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-             timeAutoP = timeAutoD;
-             transitFareEurosPerKm = 0.12;
-          } else {
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-             timeAutoP = timeAutoD;
-             transitFareEurosPerKm = 0.0;
-             travelDistanceNMT = travelDistanceNMT * 1.5;
-          }
-    }
+         //scenario three: same travel time with this paratransit service (as person without disability)
+
+                  timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+                  timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+                  timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+                  if (disability.name().equals("WITHOUT")){
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+                     timeAutoP = timeAutoD;
+                  } else {
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+                     timeAutoP = timeAutoD;
+                     generalizedCostHBS_Sq   = [-0.0000068, -0.0000068, 0.0, 0.0, 0.0, -0.0, 0.0];
+                     travelDistanceNMT = travelDistanceNMT * 1.5;
+                  }
     income = hh.getIncome();
     gender = person.getMitoGender();
     driversLicense = person.hasDriversLicense();
@@ -621,9 +583,22 @@ isMunichTripHBO         = [0.0, 0.14, 0.61, 1.25, 1.23, 1.25, 0.34];
 var calculateHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
     disability = person.getDisability();
-    if (scenario == 1){
-    //scenario one: travel time for persons with disability
-        transitFareEurosPerKm = 0.12;
+//scenario one: travel time for persons with disability
+/*    if (disability.name().equals("WITHOUT")){
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    } else {
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+        travelDistanceNMT = travelDistanceNMT * 1.5;
+    }
+//scenario two: travel time for persons with disability but cost zero to transit
         if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
@@ -636,63 +611,37 @@ var calculateHBOProbabilities = function(hh, person, originZone, destinationZone
             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+            generalizedCostHBO  = [-0.0012, -0.0012, 0.0, 0.0, 0.0, 0.0, 0.0];
             travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 2){
-    //scenario two: travel time for persons with disability but cost zero to transit
-        if (disability.name().equals("WITHOUT")){
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-            transitFareEurosPerKm = 0.12;
-        } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
-            transitFareEurosPerKm = 0.0;
-            travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 3){
-    //scenario three: same travel time with this paratransit service (as person without disability)
-         transitFareEurosPerKm = 0.12;
+        }*/
+//scenario three: same travel time with this paratransit service (as person without disability)
+
+/*         timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+         timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+         timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
             travelDistanceNMT = travelDistanceNMT * 1.5;
-         }
-    } else if (scenario == 4){
-    //scenario four: same travel time with this paratransit service (as person without disability)
+         }*/
 
-          if (disability.name().equals("WITHOUT")){
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-             timeAutoP = timeAutoD;
-             transitFareEurosPerKm = 0.12;
-          } else {
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-             timeAutoP = timeAutoD;
-             transitFareEurosPerKm = 0.0;
-             travelDistanceNMT = travelDistanceNMT * 1.5;
-          }
-    }
+         //scenario three: same travel time with this paratransit service (as person without disability)
+
+                  timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+                  timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+                  timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+                  if (disability.name().equals("WITHOUT")){
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+                     timeAutoP = timeAutoD;
+                  } else {
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+                     timeAutoP = timeAutoD;
+                     generalizedCostHBO  = [-0.0012, -0.0012, 0.0, 0.0, 0.0, 0.0, 0.0];
+                     travelDistanceNMT = travelDistanceNMT * 1.5;
+                  }
     income = hh.getIncome();
     gender = person.getMitoGender();
     driversLicense = person.hasDriversLicense();
@@ -799,9 +748,22 @@ tripLengthNHBW      = [0.0, 0.0, -0.28, 0.0, 0.0, 0.0, -1.54];
 var calculateNHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
     disability = person.getDisability();
-     if (scenario == 1){
-    ///scenario one: travel time for persons with disability
-         transitFareEurosPerKm = 0.12;
+///scenario one: travel time for persons with disability
+ /*    if (disability.name().equals("WITHOUT")){
+         timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+         timeAutoP = timeAutoD;
+         timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+         timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+         timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+     } else {
+         timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+         timeAutoP = timeAutoD;
+         timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
+         timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
+         timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+         travelDistanceNMT = travelDistanceNMT * 1.5;
+     }
+ //scenario two: travel time for persons with disability but cost zero to transit
          if (disability.name().equals("WITHOUT")){
              timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
              timeAutoP = timeAutoD;
@@ -814,63 +776,37 @@ var calculateNHBWProbabilities = function(hh, person, originZone, destinationZon
              timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
              timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
              timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+             generalizedCostNHBW = [-0.0034, -0.0034, 0.0, 0.0, 0.0, 0.0, 0.0];
              travelDistanceNMT = travelDistanceNMT * 1.5;
-         }
-     } else if (scenario == 2){
-     //scenario two: travel time for persons with disability but cost zero to transit
-         if (disability.name().equals("WITHOUT")){
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-             timeAutoP = timeAutoD;
-             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             transitFareEurosPerKm = 0.12;
-         } else {
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-             timeAutoP = timeAutoD;
-             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
-             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
-             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
-             transitFareEurosPerKm = 0.0;
-             travelDistanceNMT = travelDistanceNMT * 1.5;
-         }
-     } else if (scenario == 3){
-     //scenario three: same travel time with this paratransit service (as person without disability)
-          transitFareEurosPerKm = 0.12;
+         }*/
+ //scenario three: same travel time with this paratransit service (as person without disability)
+
+/*          timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+          timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+          timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
           if (disability.name().equals("WITHOUT")){
              timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
              timeAutoP = timeAutoD;
-                      timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                      timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                      timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
           } else {
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
              timeAutoP = timeAutoD;
-                      timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                      timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                      timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
              travelDistanceNMT = travelDistanceNMT * 1.5;
-          }
-    } else if (scenario == 4){
-    //scenario four: same travel time with this paratransit service (as person without disability) and free
+          }*/
 
-           if (disability.name().equals("WITHOUT")){
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-              timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-              timeAutoP = timeAutoD;
-              transitFareEurosPerKm = 0.12;
-           } else {
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-              timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-              timeAutoP = timeAutoD;
-              transitFareEurosPerKm = 0.0;
-              travelDistanceNMT = travelDistanceNMT * 1.5;
-           }
-    }
+          //scenario three: same travel time with this paratransit service (as person without disability)
+
+                   timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+                   timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+                   timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+                   if (disability.name().equals("WITHOUT")){
+                      timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+                      timeAutoP = timeAutoD;
+                   } else {
+                      timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+                      timeAutoP = timeAutoD;
+                      generalizedCostNHBW = [-0.0034, -0.0034, 0.0, 0.0, 0.0, 0.0, 0.0];
+                      travelDistanceNMT = travelDistanceNMT * 1.5;
+                   }
     income = hh.getIncome();
     age = person.getAge();
     driversLicense = person.hasDriversLicense();
@@ -898,9 +834,6 @@ var calculateNHBWProbabilities = function(hh, person, originZone, destinationZon
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
     }
 
-    if(person.getId()< 30){
-        System.out.println("Person " + person.getId() + " has gcBus of " + gcBus)
-    }
     utilityAutoD        = interceptNHBW[0] + ageNHBW[0]*age + driversLicenseNHBW[0]*driversLicense +
                           hhAutosNHBW[0]*hhAutos + distToRailStopNHBW[0]*distToRailStop + generalizedCostNHBW[0]*gcAutoD;
 
@@ -976,9 +909,22 @@ tripLengthNHBO          = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57];
 var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
     disability = person.getDisability();
-    if (scenario == 1){
-    //scenario one: travel time for persons with disability
-        transitFareEurosPerKm = 0.12;
+//scenario one: travel time for persons with disability
+/*    if (disability.name().equals("WITHOUT")){
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    } else {
+        timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+        timeAutoP = timeAutoD;
+        timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
+        timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
+        timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+        travelDistanceNMT = travelDistanceNMT * 1.5;
+    }
+//scenario two: travel time for persons with disability but cost zero to transit
         if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
@@ -991,62 +937,37 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
+            generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, 0.0, 0.0, 0.0, 0.0];
             travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 2){
-    //scenario two: travel time for persons with disability but cost zero to transit
-        if (disability.name().equals("WITHOUT")){
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-            transitFareEurosPerKm = 0.12;
-        } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-            timeAutoP = timeAutoD;
-            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "busDisability");
-            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "trainDisability");
-            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetroDisability");
-            transitFareEurosPerKm = 0.0;
-            travelDistanceNMT = travelDistanceNMT * 1.5;
-        }
-    } else if (scenario == 3){
-    //scenario three: same travel time with this paratransit service (as person without disability)
-         transitFareEurosPerKm = 0.12;
+        }*/
+//scenario three: same travel time with this paratransit service (as person without disability)
+
+/*         timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+         timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+         timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          } else {
-            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+            timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
             travelDistanceNMT = travelDistanceNMT * 1.5;
-         }
-    } else if (scenario == 4){
-    //scenario four: same travel time with this paratransit service (as person without disability)
-          if (disability.name().equals("WITHOUT")){
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
-             timeAutoP = timeAutoD;
-             generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0];
-          } else {
-                    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
-             timeAutoP = timeAutoD;
-             generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, 0.0, 0.0, 0.0, 0.0];
-             travelDistanceNMT = travelDistanceNMT * 1.5;
-          }
-    }
+         }*/
+
+         //scenario three: same travel time with this paratransit service (as person without disability)
+
+                  timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+                  timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+                  timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+                  if (disability.name().equals("WITHOUT")){
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+                     timeAutoP = timeAutoD;
+                  } else {
+                     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
+                     timeAutoP = timeAutoD;
+                     generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, 0.0, 0.0, 0.0, 0.0];
+                     travelDistanceNMT = travelDistanceNMT * 1.5;
+                  }
     income = hh.getIncome();
     gender = person.getMitoGender();
     driversLicense = person.hasDriversLicense();
