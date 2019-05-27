@@ -2,27 +2,27 @@ nestingCoefficient = 0.25;
 
 fuelCostEurosPerKm = 0.07;
 
-VOT1500_HBW_HBE_autoD = 4.63;
-VOT5600_HBW_HBE_autoD = 8.94;
-VOT7000_HBW_HBE_autoD = 12.15;
-VOT1500_HBW_HBE_autoP = 7.01;
-VOT5600_HBW_HBE_autoP = 13.56;
-VOT7000_HBW_HBE_autoP = 18.43;
-VOT1500_HBW_HBE_transit = 8.94;
-VOT5600_HBW_HBE_transit = 17.30;
-VOT7000_HBW_HBE_transit = 23.50;
+VOT1500_HBW_HBE_autoD = 4.63 / 60;
+VOT5600_HBW_HBE_autoD = 8.94 / 60;
+VOT7000_HBW_HBE_autoD = 12.15 / 60;
+VOT1500_HBW_HBE_autoP = 7.01 / 60;
+VOT5600_HBW_HBE_autoP = 13.56 / 60;
+VOT7000_HBW_HBE_autoP = 18.43 / 60;
+VOT1500_HBW_HBE_transit = 8.94 / 60;
+VOT5600_HBW_HBE_transit = 17.30 / 60;
+VOT7000_HBW_HBE_transit = 23.50 / 60;
 
-VOT1500_other_autoD = 3.26;
-VOT5600_other_autoD = 6.30;
-VOT7000_other_autoD = 8.56;
-VOT1500_other_autoP = 4.30;
-VOT5600_other_autoP = 8.31;
-VOT7000_other_autoP = 11.30;
-VOT1500_other_transit = 5.06;
-VOT5600_other_transit = 9.78;
-VOT7000_other_transit = 13.29;
+VOT1500_other_autoD = 3.26 / 60;
+VOT5600_other_autoD = 6.30 / 60;
+VOT7000_other_autoD = 8.56 / 60;
+VOT1500_other_autoP = 4.30 / 60;
+VOT5600_other_autoP = 8.31 / 60;
+VOT7000_other_autoP = 11.30 / 60;
+VOT1500_other_transit = 5.06 / 60;
+VOT5600_other_transit = 9.78 / 60;
+VOT7000_other_transit = 13.29 / 60;
 
-scenario = 1;
+scenario = 4;
 
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
@@ -88,19 +88,19 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
          if (disability.name().equals("WITHOUT")){
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+            timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+            timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+            timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
          } else {
             timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
             timeAutoP = timeAutoD;
-                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
-                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
-                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+             timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
             travelDistanceNMT = travelDistanceNMT * 1.5;
          }
     } else if (scenario == 4){
-    //scenario four: same travel time with this paratransit service (as person without disability)
+    //scenario four: same travel time with this paratransit service (as person without disability) and free
           if (disability.name().equals("WITHOUT")){
             timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
             timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
@@ -1035,15 +1035,15 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
              timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+             transitFareEurosPerKm = 0.12;
              timeAutoP = timeAutoD;
-             generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0];
           } else {
                     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
                     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
                     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
              timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "carDisability");
              timeAutoP = timeAutoD;
-             generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, 0.0, 0.0, 0.0, 0.0];
+             transitFareEurosPerKm = 0.0;
              travelDistanceNMT = travelDistanceNMT * 1.5;
           }
     }
