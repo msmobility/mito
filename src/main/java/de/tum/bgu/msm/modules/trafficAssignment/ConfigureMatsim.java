@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.trafficAssignment;
 
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
+import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.config.groups.StrategyConfigGroup;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
@@ -58,6 +59,29 @@ public class ConfigureMatsim {
         PlanCalcScoreConfigGroup.ActivityParams otherActivity = new PlanCalcScoreConfigGroup.ActivityParams("other");
         otherActivity.setTypicalDuration(1*60*60);
         config.planCalcScore().addActivityParams(otherActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams airportActivity = new PlanCalcScoreConfigGroup.ActivityParams("airport");
+        airportActivity.setTypicalDuration(1*60*60);
+        config.planCalcScore().addActivityParams(airportActivity);
+
+        PlansCalcRouteConfigGroup.ModeRoutingParams carPassengerParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("car_passenger");
+        carPassengerParams.setTeleportedModeFreespeedFactor(1.0);
+        config.plansCalcRoute().addModeRoutingParams(carPassengerParams);
+
+        PlansCalcRouteConfigGroup.ModeRoutingParams ptParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("pt");
+        ptParams.setBeelineDistanceFactor(1.5);
+        ptParams.setTeleportedModeSpeed(50/3.6);
+        config.plansCalcRoute().addModeRoutingParams(ptParams);
+
+        PlansCalcRouteConfigGroup.ModeRoutingParams bicycleParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("bike");
+        bicycleParams.setBeelineDistanceFactor(1.3);
+        bicycleParams.setTeleportedModeSpeed(15/3.6);
+        config.plansCalcRoute().addModeRoutingParams(bicycleParams);
+
+        PlansCalcRouteConfigGroup.ModeRoutingParams walkParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("walk");
+        walkParams.setBeelineDistanceFactor(1.3);
+        walkParams.setTeleportedModeSpeed(5/3.6);
+        config.plansCalcRoute().addModeRoutingParams(walkParams);
 
         return config;
     }

@@ -79,5 +79,12 @@ public class Properties {
     public static final String EXTERNAL_MATRIX_PKW_PWV = "external.matrix.pkw_pwv";
     public static final String EXTERNAL_MATRIX_SZM = "external.matrix.szm";
 
+    public static final String AIRPORT_ZONE = "airport.zone";
+    public static final String ADD_AIRPORT_DEMAND = "add.airport.demand";
 
+
+    public static final String AIRPORT_Y = "airport.y";
+    public static final String AIRPORT_X = "airport.x";
+    public static final String MATSIM_NETWORK_MODES = "matsim.network.modes";
+    public static final String MATSIM_TELEPORTED_MODES = "matsim.teleported.modes";
 }

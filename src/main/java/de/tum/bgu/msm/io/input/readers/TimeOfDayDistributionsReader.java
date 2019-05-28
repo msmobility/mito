@@ -15,8 +15,7 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
 
     private final EnumMap<Purpose, DoubleMatrix1D> arrivalTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, DoubleMatrix1D> durationCumProbByPurpose = new EnumMap<>(Purpose.class);
-    //private final DoubleMatrix2D arrivalMinuteCumProbByPurpose = new DenseDoubleMatrix2D(24*60+1, Purpose.values().length);
-    //private final DoubleMatrix2D durationMinuteCumProvByPurpose = new DenseDoubleMatrix2D(24*60+1, Purpose.values().length);
+    private final EnumMap<Purpose, DoubleMatrix1D> departureTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
 
     private int minuteIndex;
     private int hbe_arrival_index;
@@ -29,7 +28,8 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
     private int hbw_duration_index;
     private int nhbo_arrival_index;
     private int nhbw_arrival_index;
-
+    private int airport_arrival_index;
+    private int airport_deparure_index;
 
 
     public TimeOfDayDistributionsReader(DataSet dataSet) {
@@ -38,6 +38,7 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
         for (Purpose purpose : Purpose.values()) {
             arrivalTimeCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
             durationCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
+            departureTimeCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
         }
     }
 
@@ -54,6 +55,8 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
         hbw_duration_index = MitoUtil.findPositionInArray("duration_hbw", header);
         nhbo_arrival_index = MitoUtil.findPositionInArray("arrival_nhbo", header);
         nhbw_arrival_index = MitoUtil.findPositionInArray("arrival_nhbw", header);
+        airport_arrival_index = MitoUtil.findPositionInArray("arrival_airport", header);
+        airport_deparure_index = MitoUtil.findPositionInArray("departure_airport", header);
     }
 
     @Override
@@ -66,24 +69,23 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
         arrivalTimeCumProbByPurpose.get(Purpose.NHBO).setQuick(minute, Double.parseDouble(record[nhbo_arrival_index]));
         arrivalTimeCumProbByPurpose.get(Purpose.NHBW).setQuick(minute, Double.parseDouble(record[nhbw_arrival_index]));
 
-        durationCumProbByPurpose.get(Purpose.HBE).setQuick(minute,Double.parseDouble(record[hbe_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBO).setQuick(minute,Double.parseDouble(record[hbo_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBS).setQuick(minute,Double.parseDouble(record[hbs_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBW).setQuick(minute,Double.parseDouble(record[hbw_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_duration_index]));
 
+        if (Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)){
+            arrivalTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_arrival_index]));
+            departureTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_deparure_index]));
+        }
     }
 
     @Override
     public void read() {
         super.read(Resources.INSTANCE.getString(Properties.TIME_OF_DAY_DISTRIBUTIONS), ",");
-    }
-
-    public EnumMap<Purpose, DoubleMatrix1D> getArrivalMinuteCumProbByPurpose() {
-        return arrivalTimeCumProbByPurpose;
-    }
-
-    public EnumMap<Purpose, DoubleMatrix1D> getDurationMinuteCumProbByPurpose() {
-        return durationCumProbByPurpose;
+        dataSet.setArrivalMinuteCumProbByPurpose(arrivalTimeCumProbByPurpose);
+        dataSet.setDurationMinuteCumProbByPurpose(durationCumProbByPurpose);
+        dataSet.setDepartureMinuteCumProbByPurpose(departureTimeCumProbByPurpose);
     }
 
 

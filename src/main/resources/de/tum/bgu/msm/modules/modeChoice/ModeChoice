@@ -590,3 +590,74 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 }
+
+//AIRPORT
+
+var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+
+    asc_autoDriver      =  0.;
+    asc_autoPassenger   = -0.0657;
+    asc_autoOther       = -1.37275;
+    asc_bus             =  2.246879;
+    asc_train           =  2.992159;
+
+    //times are in minutes
+    beta_time               = -0.0002 * 60;
+    exp_time_autoDriver     = 10.44896;
+    exp_time_autoPassenger  = 10.44896;
+    exp_time_autoOther      = 10.44896;
+    exp_time_bus            = 0;
+    exp_time_train          = 3.946016;
+
+    //distance is in minutes
+    beta_distance               = -0.00002
+    exp_distance_autoDriver     = 0;
+    exp_distance_autoPassenger  = 1.939056;
+    exp_distance_autoOther      = 4.649129;
+    exp_distance_bus            = 9.662964;
+    exp_distance_train          = 7.706087;
+
+    //Order of variables in the return variable autoDriver, autoPassenger, autoOther, bus, train
+
+        u_autoDriver    = asc_autoDriver + exp_time_autoDriver * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+            exp_distance_autoDriver * Math.exp(beta_distance * travelDistanceAuto);
+        u_autoPassenger = asc_autoPassenger + exp_time_autoPassenger * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+            exp_distance_autoPassenger * Math.exp(beta_distance * travelDistanceAuto);
+        u_autoOther     = asc_autoOther + exp_time_autoOther * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+            exp_distance_autoOther * Math.exp(beta_distance * travelDistanceAuto);
+        u_bus           = asc_bus + exp_time_bus * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus")) +
+            exp_distance_bus * Math.exp(beta_distance * travelDistanceAuto);
+        u_train         = asc_train + exp_time_train * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train")) +
+            exp_distance_train * Math.exp(beta_distance * travelDistanceAuto);
+
+    return [Math.exp(u_autoDriver), Math.exp(u_autoDriver), Math.exp(u_autoOther), Math.exp(u_bus), Math.exp(u_train)];
+}
+
+
+var calculateAIRPORTProbabilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+
+        //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk]
+
+        utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour);
+
+        sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4];
+
+
+        probabilityAutoD = (utilities[0] + utilities[2]) / sum_u;
+        probabilityAutoP = utilities[1] / sum_u;
+        probabilityBus = utilities[3] / sum_u;
+        probabilityTrain = utilities[4] / sum_u;
+
+       return Java.to([probabilityAutoD, probabilityAutoP, 0., probabilityBus, probabilityTrain, 0., 0.], "double[]");
+}
+
+var returnLogsumAIRPORT = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
+
+        //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk]
+
+        utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour);
+
+        sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4];
+
+       return Math.log(sum_u);
+}

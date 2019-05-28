@@ -1,12 +1,10 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MicroLocation;
-import de.tum.bgu.msm.data.Mode;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import edu.emory.mathcs.utils.ConcurrencyUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -19,12 +17,27 @@ import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MatsimPopulationGenerator {
 
     private static final Logger logger = Logger.getLogger(MatsimPopulationGenerator.class);
+
+    Set<Mode> modeSet = new HashSet<>();
+
+    public MatsimPopulationGenerator() {
+        String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
+        String[] teleportedModes = Resources.INSTANCE.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
+        for (String mode : networkModes){
+            modeSet.add(Mode.valueOf(mode));
+        }
+        for (String mode : teleportedModes){
+            modeSet.add(Mode.valueOf(mode));
+        }
+    }
     //private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
 
 
@@ -34,18 +47,17 @@ public class MatsimPopulationGenerator {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
             zoneFeatureMap.put(zoneId,feature);
         }
-
         return zoneFeatureMap;
-
     }
 
-    public static Population generateMatsimPopulation(DataSet dataSet, Config config){
+    public Population generateMatsimPopulation(DataSet dataSet, Config config){
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
+        AtomicInteger assignedTripCounter = new AtomicInteger(0);
         AtomicInteger nonAssignedTripCounter = new AtomicInteger(0);
         dataSet.getTripSubsample().values().forEach(trip ->{
             try {
-                if (trip.getTripMode().equals(Mode.autoDriver)) {
+                if (modeSet.contains(trip.getTripMode())) {
                     Person person = factory.createPerson(Id.createPersonId(trip.getId()));
                     trip.setMatsimPerson(person);
 
@@ -53,7 +65,7 @@ public class MatsimPopulationGenerator {
                     person.addPlan(plan);
                     population.addPerson(person);
 
-                    String activityTypeAtOrigin = getOriginActivity(trip.getTripPurpose());
+                    String activityTypeAtOrigin = getOriginActivity(trip);
 
                     Coord originCoord;
                     if(trip.getTripOrigin() instanceof MicroLocation) {
@@ -66,9 +78,9 @@ public class MatsimPopulationGenerator {
                     originActivity.setEndTime(trip.getDepartureInMinutes() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                     plan.addActivity(originActivity);
 
-                    plan.addLeg(factory.createLeg(TransportMode.car));
+                    plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
 
-                    String activityTypeAtDestination = getDestinationActivity(trip.getTripPurpose());
+                    String activityTypeAtDestination = getDestinationActivity(trip);
 
                     Coord destinationCoord;
                     if(trip.getTripDestination() instanceof MicroLocation) {
@@ -81,7 +93,7 @@ public class MatsimPopulationGenerator {
                     if (trip.isHomeBased()) {
                         destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                         plan.addActivity(destinationActivity);
-                        plan.addLeg(factory.createLeg(TransportMode.car));
+                        plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
                     } else {
                         plan.addActivity(destinationActivity);
@@ -91,31 +103,56 @@ public class MatsimPopulationGenerator {
             } catch (Exception e){
                 nonAssignedTripCounter.incrementAndGet();
             }
+
+            if (ConcurrencyUtils.isPowerOf2(assignedTripCounter.incrementAndGet())){
+                logger.warn( assignedTripCounter.get()  + " MATSim agents created");
+            }
+
         });
         logger.warn( nonAssignedTripCounter.get()  + " trips do not have trip origin, destination or mode and cannot be assigned in MATSim");
         return population;
     }
 
 
-    public static String getOriginActivity(Purpose purpose){
+    public static String getOriginActivity(MitoTrip trip){
+        Purpose purpose = trip.getTripPurpose();
         if (purpose.equals(Purpose.NHBW)){
             return "work";
         } else if (purpose.equals(Purpose.NHBO)){
             return "other";
+        } else if (purpose.equals(Purpose.AIRPORT)) {
+            if (trip.getTripOrigin().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)){
+                return "airport";
+            } else {
+                return "home";
+            }
         } else {
             return "home";
         }
     }
 
-    public static String getDestinationActivity(Purpose purpose){
+    public static String getDestinationActivity(MitoTrip trip){
+        Purpose purpose = trip.getTripPurpose();
         if (purpose.equals(Purpose.HBW)){
             return "work";
         } else if (purpose.equals(Purpose.HBE)){
             return "education";
         } else if (purpose.equals(Purpose.HBS)){
             return "shopping";
+        } else if (purpose.equals(Purpose.AIRPORT)) {
+            if (trip.getTripDestination().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)) {
+                return "airport";
+            } else {
+                return "home";
+            }
         } else {
             return "other";
         }
     }
+
+
+
+
+
+
 }
