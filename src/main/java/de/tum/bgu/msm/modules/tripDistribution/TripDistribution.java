@@ -54,7 +54,10 @@ public final class TripDistribution extends Module {
     private void buildMatrices() {
         List<Callable<Pair<Purpose,IndexedDoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
         for (Purpose purpose : Purpose.values()) {
-            utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet));
+            if (!purpose.equals(Purpose.AIRPORT)){
+                //Distribution of trips to the airport does not need a matrix of weights
+                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet));
+            }
         }
         ConcurrentExecutor<Pair<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Pair<Purpose,IndexedDoubleMatrix2D>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);

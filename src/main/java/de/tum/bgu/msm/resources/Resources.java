@@ -20,14 +20,14 @@ public class Resources {
     }
 
     public static void initializeResources(String fileName) {
-        try (FileInputStream in = new FileInputStream(fileName)){
+        try (FileInputStream in = new FileInputStream(fileName)) {
             Properties properties = new Properties();
             properties.load(in);
             MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
             INSTANCE = new Resources(properties);
         } catch (IOException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
     public synchronized int getInt(String key) {
@@ -43,7 +43,11 @@ public class Resources {
     }
 
     public synchronized String[] getArray(String key, String[] defaultValue) {
-        return properties.getProperty(key).split(",");
+        if (properties.containsKey(key)) {
+            return properties.getProperty(key).split(",");
+        } else {
+            return defaultValue;
+        }
     }
 
     public synchronized boolean getBoolean(String key) {

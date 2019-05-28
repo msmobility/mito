@@ -64,6 +64,3 @@ var calculateNHBO = function (travelDistance, attraction) {
     return Math.exp(impedance) * attraction;
 }
 
-var calculateAIRPORT = function (travelDistance, attraction) {
-    return 1.;
-}

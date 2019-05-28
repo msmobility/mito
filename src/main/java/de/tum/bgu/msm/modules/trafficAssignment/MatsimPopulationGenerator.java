@@ -47,11 +47,7 @@ public class MatsimPopulationGenerator {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
             zoneFeatureMap.put(zoneId,feature);
         }
-
-
-
         return zoneFeatureMap;
-
     }
 
     public Population generateMatsimPopulation(DataSet dataSet, Config config){
