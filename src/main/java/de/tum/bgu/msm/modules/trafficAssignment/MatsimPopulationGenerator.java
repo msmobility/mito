@@ -29,8 +29,8 @@ public class MatsimPopulationGenerator {
     Set<Mode> modeSet = new HashSet<>();
 
     public MatsimPopulationGenerator() {
-        String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES);
-        String[] teleportedModes = Resources.INSTANCE.getArray(Properties.MATSIM_TELEPORTED_MODES);
+        String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
+        String[] teleportedModes = Resources.INSTANCE.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
         for (String mode : networkModes){
             modeSet.add(Mode.valueOf(mode));
         }

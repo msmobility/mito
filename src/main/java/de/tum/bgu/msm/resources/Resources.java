@@ -42,6 +42,10 @@ public class Resources {
         return properties.getProperty(key).split(",");
     }
 
+    public synchronized String[] getArray(String key, String[] defaultValue) {
+        return properties.getProperty(key).split(",");
+    }
+
     public synchronized boolean getBoolean(String key) {
         return Boolean.parseBoolean(properties.getProperty(key));
     }
