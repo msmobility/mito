@@ -3,9 +3,12 @@ package de.tum.bgu.msm.modules.tripDistribution;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import javafx.util.Pair;
@@ -14,6 +17,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,7 +54,10 @@ public final class TripDistribution extends Module {
     private void buildMatrices() {
         List<Callable<Pair<Purpose,IndexedDoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
         for (Purpose purpose : Purpose.values()) {
-            utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet));
+            if (!purpose.equals(Purpose.AIRPORT)){
+                //Distribution of trips to the airport does not need a matrix of weights
+                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet));
+            }
         }
         ConcurrentExecutor<Pair<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Pair<Purpose,IndexedDoubleMatrix2D>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);
@@ -72,6 +79,9 @@ public final class TripDistribution extends Module {
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
+        if (Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
+            nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));
+        }
         executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);
 
         logger.info("Distributed: " + distributedTripsCounter + ", failed: " + failedTripsCounter);

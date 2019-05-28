@@ -11,7 +11,8 @@ public enum Purpose implements Id {
     HBS,
     HBO,
     NHBW,
-    NHBO;
+    NHBO,
+    AIRPORT;
 
     @Override
     public int getId(){
