@@ -199,13 +199,9 @@ public class ModeChoice extends Module {
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
             if (Resources.INSTANCE.getBoolean(Properties.RUN_DISABILITY)) {
-                if (includeAV) {
-                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                            .getResourceAsStream("ModeChoiceAVDisability")), purpose);
-                } else {
-                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                             .getResourceAsStream("ModeChoiceDisability")), purpose);
-                }
+
             } else {
                 if (includeAV) {
                     this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()

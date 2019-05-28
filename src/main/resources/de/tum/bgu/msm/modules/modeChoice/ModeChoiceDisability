@@ -22,7 +22,7 @@ VOT1500_other_transit = 5.06 / 60;
 VOT5600_other_transit = 9.78 / 60;
 VOT7000_other_transit = 13.29 / 60;
 
-scenario = 4;
+scenario = 1;
 
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
