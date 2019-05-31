@@ -78,6 +78,8 @@ public class Properties {
     public static final String EXTERNAL_MATRIX_GV = "external.matrix.gv";
     public static final String EXTERNAL_MATRIX_PKW_PWV = "external.matrix.pkw_pwv";
     public static final String EXTERNAL_MATRIX_SZM = "external.matrix.szm";
+    public static final String EXTERNAL_BASE_YEAR = "external.base.year";
+    public static final String EXTERNAL_GROWTH_RATE = "external.growth.rate";
 
     public static final String AIRPORT_ZONE = "airport.zone";
     public static final String ADD_AIRPORT_DEMAND = "add.airport.demand";

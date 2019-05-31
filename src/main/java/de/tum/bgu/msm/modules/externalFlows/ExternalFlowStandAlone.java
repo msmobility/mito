@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.externalFlows;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -28,7 +29,9 @@ public class ExternalFlowStandAlone {
 
         float scalingFactor = 0.05f;
 
-        LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(new DataSet());
+        DataSet dataSet = new DataSet();
+        dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR, 2011));
+        LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
 
         Config config = ConfigUtils.createConfig();
         Scenario scenario = ScenarioUtils.createScenario(config);

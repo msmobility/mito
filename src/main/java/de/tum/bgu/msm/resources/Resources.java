@@ -34,6 +34,14 @@ public class Resources {
         return Integer.parseInt(properties.getProperty(key));
     }
 
+    public synchronized int getInt(String key, int defaultValue) {
+        if (properties.containsKey(key)) {
+            return Integer.parseInt(properties.getProperty(key));
+        } else {
+            return defaultValue;
+        }
+    }
+
     public synchronized String getString(String key) {
         return properties.getProperty(key);
     }
