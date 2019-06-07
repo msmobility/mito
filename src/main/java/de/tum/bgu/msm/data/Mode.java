@@ -14,7 +14,8 @@ public enum Mode implements Id {
     tramOrMetro,
     walk,
     privateAV,
-    sharedAV;
+    sharedAV,
+    uam; //Urban Air Mobility (Flying taxi)
 
     @Override
     public int getId(){
@@ -41,6 +42,8 @@ public enum Mode implements Id {
                 return privateAV;
             case 8:
                 return sharedAV;
+            case 9:
+                return uam;
             default:
                 throw new RuntimeException("Mode for code " + code + "not specified.");
         }

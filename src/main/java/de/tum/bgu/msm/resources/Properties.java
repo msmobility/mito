@@ -39,14 +39,19 @@ public class Properties {
 
     public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
 
+    public static final String PT_ACCESS_TIME_SKIM = "pt.accessTime";
+    public static final String UAM_ACCESS_TIME_SKIM = "uam.accessTime";
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";
     public static final String TRAIN_TRAVEL_TIME_SKIM = "train.travelTime";
+    public static final String UAM_TRAVEL_TIME_SKIM = "uam.travelTime";
     public static final String AUTO_TRAVEL_DISTANCE_SKIM = "auto.travelDistance";
     public static final String NMT_TRAVEL_DISTANCE_SKIM = "nmt.travelDistance";
+    public static final String UAM_TRAVEL_COST_SKIM = "uam.travelCost";
     public static final String AREA_TYPES_AND_RAIL_DISTANCE = "areaTypes.distToRailStop";
 
     public static final String AUTONOMOUS_VEHICLE_CHOICE = "include.AVchoice";
+    public static final String UAM_CHOICE = "include.UAMchoice";
 
     public static final String CREATE_CHARTS = "charts";
     public static final String PRINT_MICRO_DATA = "micro.data";
@@ -87,4 +92,8 @@ public class Properties {
     public static final String AIRPORT_X = "airport.x";
     public static final String MATSIM_NETWORK_MODES = "matsim.network.modes";
     public static final String MATSIM_TELEPORTED_MODES = "matsim.teleported.modes";
+
+
+    public static final String UAM_BOARDINGTIME = "uam.boardingTime";
+    public static final String UAM_COST = "uam.cost";
 }

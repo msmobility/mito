@@ -16,6 +16,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.CoordUtils;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -78,13 +80,127 @@ public class SummarizeData {
         pwp.close();
     }
 
+    public static void writeOutUAMTrips(DataSet dataSet, String scenarioName) {
+        String outputSubDirectory = "scenOutput/" + scenarioName + "/";
+
+        LOGGER.info("  Writing uam trips file");
+        String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/UAMtrips.csv";
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
+        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,departure_time,departure_time_return");
+        for (MitoTrip trip : dataSet.getTrips().values()) {
+            if (trip.getTripMode() == Mode.uam) {
+                pwh.print(trip.getId());
+                pwh.print(",");
+                Location origin = trip.getTripOrigin();
+                String originId = "null";
+                if (origin != null) {
+                    originId = String.valueOf(origin.getZoneId());
+                }
+                pwh.print(originId);
+                pwh.print(",");
+
+                if (origin instanceof MicroLocation) {
+                    pwh.print(((MicroLocation) origin).getCoordinate().x);
+                    pwh.print(",");
+                    pwh.print(((MicroLocation) origin).getCoordinate().y);
+                    pwh.print(",");
+                } else {
+                    if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
+                            origin != null) {
+                        Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                        pwh.print(coordinate.getX());
+                        pwh.print(",");
+                        pwh.print(coordinate.getY());
+                        pwh.print(",");
+                    } else {
+                        pwh.print("null");
+                        pwh.print(",");
+                        pwh.print("null");
+                        pwh.print(",");
+                    }
+                }
+
+                Location destination = trip.getTripDestination();
+                String destinationId = "null";
+                if (destination != null) {
+                    destinationId = String.valueOf(destination.getZoneId());
+                }
+                pwh.print(destinationId);
+                pwh.print(",");
+                if (destination instanceof MicroLocation) {
+                    pwh.print(((MicroLocation) destination).getCoordinate().x);
+                    pwh.print(",");
+                    pwh.print(((MicroLocation) destination).getCoordinate().y);
+                    pwh.print(",");
+                } else {
+                    if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
+                            destination != null) {
+                        Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                        pwh.print(coordinate.getX());
+                        pwh.print(",");
+                        pwh.print(coordinate.getY());
+                        pwh.print(",");
+                    } else {
+                        pwh.print("null");
+                        pwh.print(",");
+                        pwh.print("null");
+                        pwh.print(",");
+                    }
+                }
+
+                pwh.print(trip.getTripPurpose());
+                pwh.print(",");
+                pwh.print(trip.getPerson().getId());
+                pwh.print(",");
+                if (origin != null && destination != null) {
+                    double distance = dataSet.getTravelDistancesNMT().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                    pwh.print(distance);
+                    pwh.print(",");
+                    double timeAuto = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "car");
+                    pwh.print(timeAuto);
+                    pwh.print(",");
+                    double timeBus = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "bus");
+                    pwh.print(timeBus);
+                    pwh.print(",");
+                    double timeTrain = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "train");
+                    pwh.print(timeTrain);
+                    pwh.print(",");
+                    double timeTramMetro = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "tramMetro");
+                    pwh.print(timeTramMetro);
+                    pwh.print(",");
+                    double uam = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "uam");
+                    pwh.print(uam);
+                    pwh.print(",");
+                    double uamCost = dataSet.getTravelCostUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                    pwh.print(uamCost);
+                } else {
+                    pwh.print("NA,NA,NA,NA,NA,NA,NA");
+                }
+                pwh.print(",");
+                pwh.print(trip.getTripMode());
+                pwh.print(",");
+                pwh.print(trip.getDepartureInMinutes());
+                int departureOfReturnTrip = trip.getDepartureInMinutesReturnTrip();
+                if (departureOfReturnTrip != -1) {
+                    pwh.print(",");
+                    pwh.println(departureOfReturnTrip);
+                } else {
+                    pwh.print(",");
+                    pwh.println("NA");
+                }
+
+            }
+        }
+        pwh.close();
+    }
+
     public static void writeOutTrips(DataSet dataSet, String scenarioName) {
         String outputSubDirectory = "scenOutput/" + scenarioName + "/";
 
         LOGGER.info("  Writing trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
+        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,departure_time,departure_time_return");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -150,7 +266,7 @@ public class SummarizeData {
             pwh.print(trip.getPerson().getId());
             pwh.print(",");
             if(origin != null && destination != null) {
-                double distance = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                double distance = dataSet.getTravelDistancesNMT().getTravelDistance(origin.getZoneId(), destination.getZoneId());
                 pwh.print(distance);
                 pwh.print(",");
                 double timeAuto = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "car");
@@ -164,8 +280,14 @@ public class SummarizeData {
                 pwh.print(",");
                 double timeTramMetro = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "tramMetro");
                 pwh.print(timeTramMetro);
+                pwh.print(",");
+                double uam = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "uam");
+                pwh.print(uam);
+                pwh.print(",");
+                double uamCost = dataSet.getTravelCostUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                pwh.print(uamCost);
             } else {
-                pwh.print("NA,NA,NA,NA,NA");
+                pwh.print("NA,NA,NA,NA,NA,NA,NA");
             }
             pwh.print(",");
             pwh.print(trip.getTripMode());
@@ -190,6 +312,7 @@ public class SummarizeData {
 
         List<Double> travelTimes = new ArrayList<>();
         List<Double> travelDistances = new ArrayList<>();
+        List<Double> uamTravelDistances = new ArrayList<>();
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
         Multiset<MitoZone> tripsByZone = HashMultiset.create();
         SortedMultiset<Mode> modes = TreeMultiset.create();
@@ -199,11 +322,32 @@ public class SummarizeData {
                 modes.add(mode, (int) (dataSet.getModeShareForPurpose(purpose, mode) * 100));
             }
         }
+
+        //UAM trip distribution
+        for (MitoTrip trip : dataSet.getTrips().values()) {
+            if(trip.getTripMode() == Mode.uam){
+                final Location tripOrigin = trip.getTripOrigin();
+                if (trip.getTripPurpose() == purpose && tripOrigin != null && trip.getTripDestination() != null) {
+                    double travelDistance = dataSet.getTravelDistancesNMT().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
+                    uamTravelDistances.add(travelDistance);
+                }
+            }
+        }
+
+        double[] uamTravelDistancesArray = new double[uamTravelDistances.size()];
+        int i= 0;
+        for(Double value: uamTravelDistances) {
+            uamTravelDistancesArray[i] = value;
+            i++;
+        }
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/uamTripDistanceDistribution"+ purpose, uamTravelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 400, 0, 100);
+
+
         for (MitoTrip trip : dataSet.getTrips().values()) {
             final Location tripOrigin = trip.getTripOrigin();
             if (trip.getTripPurpose() == purpose && tripOrigin != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination(), dataSet.getPeakHour(), "car"));
-                double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
+                double travelDistance = dataSet.getTravelDistancesNMT().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
                 travelDistances.add(travelDistance);
                 tripsByZone.add(dataSet.getZones().get(tripOrigin.getZoneId()));
                 if(distancesByZone.containsKey(tripOrigin.getZoneId())){
@@ -217,7 +361,7 @@ public class SummarizeData {
         }
 
         double[] travelTimesArray = new double[travelTimes.size()];
-        int i = 0;
+        i = 0;
         for (Double value : travelTimes) {
             travelTimesArray[i] = value;
             i++;
@@ -251,6 +395,32 @@ public class SummarizeData {
         }
         pw.close();
         ScatterPlot.createScatterPlot(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistancePlot"+purpose, averageDistancesByZone, "Average Trip Distances by MitoZone", "MitoZone Id", "Average Trip Distance");
+
+    }
+
+    private static void writeUAMCharts(DataSet dataSet, String scenarioName) {
+        String outputSubDirectory = "scenOutput/" + scenarioName + "/";
+
+        List<Double> uamTravelDistances = new ArrayList<>();
+
+        //UAM trip distribution
+        for (MitoTrip trip : dataSet.getTrips().values()) {
+            if(trip.getTripMode() == Mode.uam){
+                final Location tripOrigin = trip.getTripOrigin();
+                if (tripOrigin != null && trip.getTripDestination() != null) {
+                    double travelDistance = dataSet.getTravelDistancesNMT().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
+                    uamTravelDistances.add(travelDistance);
+                }
+            }
+        }
+
+        double[] uamTravelDistancesArray = new double[uamTravelDistances.size()];
+        int i= 0;
+        for(Double value: uamTravelDistances) {
+            uamTravelDistancesArray[i] = value;
+            i++;
+        }
+        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/uamTripDistanceDistribution_allPurpose", uamTravelDistancesArray, "UAM Travel Distances Distribution - All Purpose", "Distance", "Frequency", 400, 0, 100);
 
     }
 

@@ -69,7 +69,7 @@ driversLicense = person.hasDriversLicense();
 hhSize = hh.getHhSize();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
-areaType = originZone.getAreaTypeHBWModeChoice();
+areaType = originZone.getAreaTypeSG();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD;
@@ -684,7 +684,7 @@ gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
-areaType = originZone.getAreaTypeNHBOModeChoice();
+areaType = originZone.getAreaTypeR();
 
 if(income/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD

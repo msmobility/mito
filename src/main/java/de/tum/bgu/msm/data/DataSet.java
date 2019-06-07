@@ -3,6 +3,7 @@ package de.tum.bgu.msm.data;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
+import de.tum.bgu.msm.data.accessTimes.AccessTimes;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import org.matsim.core.router.util.TravelDisutility;
@@ -13,12 +14,14 @@ import java.util.*;
 public class DataSet {
 
     private TravelTimes travelTimes;
+    private AccessTimes accessTimes;
 
     private TravelTime matsimTravelTime;
     private TravelDisutility matsimTravelDisutility;
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
+    private TravelDistances travelCostUAM;
 
     private double peakHour = Double.NaN;
 
@@ -33,6 +36,9 @@ public class DataSet {
 
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
+            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
+
+    private final Table<Purpose, Mode, Double> modeCountByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
 
@@ -198,6 +204,14 @@ public class DataSet {
         return modeSharesByPurpose.get(purpose, mode);
     }
 
+    public void addModeCountForPurpose(Purpose purpose, Mode mode, Double count){
+        modeCountByPurpose.put(purpose, mode, count);
+    }
+
+    public Double getModeCountForPurpose(Purpose purpose, Mode mode){
+        return modeCountByPurpose.get(purpose, mode);
+    }
+
     public int getYear() {
         return year;
     }
@@ -244,5 +258,21 @@ public class DataSet {
 
     public void setDepartureMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose) {
         this.departureMinuteCumProbByPurpose = departureMinuteCumProbByPurpose;
+    }
+
+    public AccessTimes getAccessTimes() {
+        return accessTimes;
+    }
+
+    public void setAccessTimes(AccessTimes accessTimes) {
+        this.accessTimes = accessTimes;
+    }
+
+    public TravelDistances getTravelCostUAM() {
+        return travelCostUAM;
+    }
+
+    public void setTravelCostUAM(TravelDistances travelCostUAM) {
+        this.travelCostUAM = travelCostUAM;
     }
 }

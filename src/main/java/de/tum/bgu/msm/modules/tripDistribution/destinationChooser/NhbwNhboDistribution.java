@@ -42,7 +42,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private final Map<Integer, MitoZone> zonesCopy;
     private double mean;
-
+    private final double[] destinationProbabilities;
     private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, MitoOccupationStatus relatedMitoOccupationStatus,
                                  EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities, DataSet dataSet) {
         super(MitoUtil.getRandomObject().nextLong());
@@ -54,6 +54,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         this.zonesCopy = new HashMap<>(dataSet.getZones());
         this.travelTimes = dataSet.getTravelTimes();
         this.peakHour = dataSet.getPeakHour();
+        this.destinationProbabilities = new double[baseProbabilities.get(purpose).columns()];
     }
 
     public static NhbwNhboDistribution nhbw(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites, DataSet dataSet) {
@@ -158,14 +159,15 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private MitoZone findDestination(int origin) {
         final IndexedDoubleMatrix1D row = baseProbabilities.get(purpose).viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
-        IntStream.range(0, baseProbs.length).parallel().forEach(i -> {
+        IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
             //divide travel time by 2 as home based trips' budget account for the return trip as well
             double diff = travelTimes.getTravelTime(zonesCopy.get(origin), zonesCopy.get(row.getIdForInternalIndex(i)), peakHour, "car") - mean;
             double factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
-            baseProbs[i] = baseProbs[i] * factor;
+            destinationProbabilities[i] = baseProbs[i]* factor;
+            //destinationProbabilities[i] = baseProbs[i]*(1 + factor);
         });
 
-        int destinationInternalId = MitoUtil.select(baseProbs, random);
+        int destinationInternalId = MitoUtil.select(destinationProbabilities, random);
         return zonesCopy.get(row.getIdForInternalIndex(destinationInternalId));
     }
 

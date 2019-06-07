@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.accessTimes.AccessTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.util.js.JavaScriptCalculator;
 
@@ -30,5 +31,21 @@ public class ModeChoiceJSCalculator extends JavaScriptCalculator<double[]>{
                 travelDistanceAuto,
                 travelDistanceNMT,
                 peakHour);
+    }
+
+    public double[] calculateProbabilitiesUAM(MitoHousehold household, MitoPerson person, MitoZone origin,
+                                              MitoZone destination, TravelTimes travelTimes, AccessTimes accessTimes, double travelDistanceAuto,
+                                              double travelDistanceNMT, double travelCostUAM, double peakHour, double boardingTime, double uamCost){
+        return super.calculate(function,
+                household,
+                person,
+                origin,
+                destination,
+                travelTimes,
+                accessTimes,
+                travelDistanceAuto,
+                travelDistanceNMT,
+                travelCostUAM,
+                peakHour,boardingTime,uamCost);
     }
 }

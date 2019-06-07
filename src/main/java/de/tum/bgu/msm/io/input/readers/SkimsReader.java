@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.io.input.readers;
 
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.accessTimes.AccessTimes;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.AbstractOmxReader;
@@ -21,6 +23,7 @@ public class SkimsReader extends AbstractOmxReader {
     public void read() {
         LOGGER.info("Reading skims");
         readTravelTimeSkims();
+        readAccessTimeSkims();
         readTravelDistances();
     }
 
@@ -48,6 +51,12 @@ public class SkimsReader extends AbstractOmxReader {
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bus", Resources.INSTANCE.getString(Properties.BUS_TRAVEL_TIME_SKIM), "mat1", 1.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetro", Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM), "mat1", 1.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM), "mat1", 1.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("uam", Resources.INSTANCE.getString(Properties.UAM_TRAVEL_TIME_SKIM), "total_time", 1.);
+    }
+
+    private void readAccessTimeSkims() {
+        dataSet.getAccessTimes().readSkim("transit", Resources.INSTANCE.getString(Properties.PT_ACCESS_TIME_SKIM), "mat1", 1.);
+        //dataSet.getAccessTimes().readSkim("uam", Resources.INSTANCE.getString(Properties.UAM_Access_TIME_SKIM), "mat1", 1.);
     }
 
     private void readTravelDistances(){
@@ -55,5 +64,7 @@ public class SkimsReader extends AbstractOmxReader {
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
         IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
+        IndexedDoubleMatrix2D costSkimUAM = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.UAM_TRAVEL_COST_SKIM),"cost", 1.);
+        dataSet.setTravelCostUAM(new MatrixTravelDistances(costSkimUAM));
     }
 }

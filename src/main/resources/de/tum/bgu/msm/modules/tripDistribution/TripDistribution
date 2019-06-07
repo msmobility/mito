@@ -57,7 +57,7 @@ var calculateNHBW = function (travelDistance, attraction) {
 }
 
 var calculateNHBO = function (travelDistance, attraction) {
-    if(attraction == 0) {
+    if(attraction == 0.) {
         return 0.;
     }
     impedance = impedanceParamNhbo * Math.exp(travelDistanceParamNhbo * travelDistance);
