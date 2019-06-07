@@ -1,0 +1,237 @@
+var calculate = function (purpose, areaType, retirees, females, youngAdults, workers, cars,
+householdSize, HBW, HBE, HBS, HBO, NHBW, NHBO, economicStatus) {
+
+if(purpose == "Total") {
+    intercept = 4.49998;
+    youngAdultsParam = 0.03757;
+    carsParam = 0;
+    wbScale = 0.713;
+    workersParam = -0.04597;
+    femalesParam = 0.03008;
+    retireesParam = 0;
+    hbwParam = 0;
+        hboParam = 0;
+        hbeParam = 0;
+        hbsParam = 0;
+        nhbwParam = 0;
+        nhboParam = 0;
+
+    if(householdSize == 2) {
+        householdSizeParam= 0.51166;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.75898;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.99853;
+    } else if(householdSize >4) {
+        householdSizeParam = 0.99853;
+    } else {
+        householdSizeParam = 0;
+    }
+
+
+    if (economicStatus == 2){
+        economicStatusParam = 0.04661;
+    } else if(economicStatus == 3) {
+        economicStatusParam = 0.05872;
+    } else if(economicStatus == 4) {
+        economicStatusParam = 0.13071;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0.19962;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    if(areaType == 20) {
+        area = -0.07733;
+    } else if(areaType == 30) {
+        area = -0.09308;
+    } else if(areaType == 40) {
+        area = -0.11378;
+    } else {
+        area = 0;
+    }
+
+} else if(purpose == "HBO") {
+
+    intercept = 4.0951;
+    youngAdultsParam = 0.0885;
+    workersParam = 0.0203;
+    carsParam = -0.0225;
+    wbScale = 0.899;
+    hbwParam = -0.2404;
+    hboParam = 0.2850;
+    hbeParam = -0.1792;
+    hbsParam = -0.1544;
+    nhbwParam = -0.0770;
+    nhboParam = -0.0175;
+    femalesParam = 0;
+    retireesParam = 0;
+
+    if(householdSize == 2) {
+        householdSizeParam = 0.2939;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.3022;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.3931;
+    } else if(householdSize > 4 ) {
+        householdSizeParam = 0.4893;
+    } else {
+        householdSizeParam = 0;
+    }
+
+    if(economicStatus == 5) {
+        economicStatusParam = 0.0449;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    if(areaType == 20) {
+        area = -0.1474;
+    } else if(areaType == 30) {
+        area = -0.1594;
+    } else if(areaType == 40) {
+        area = -0.1133;
+    } else {
+        area = 0;
+    }
+
+} else if(purpose == "HBS") {
+    intercept = 2.751;
+    youngAdultsParam = 0;
+    workersParam = 0;
+    carsParam = 0;
+    wbScale = 0.814;
+    hbwParam = -0.065;
+    hboParam = -0.062;
+    hbeParam = -0.046;
+    hbsParam = 0.599;
+    nhbwParam = -0.045;
+    nhboParam = 0;
+    femalesParam = 0.139;
+    retireesParam = 0.118;
+
+    if(householdSize == 3) {
+        householdSizeParam = 0.080;
+    } else {
+        householdSizeParam = 0;
+    }
+
+    if(economicStatus == 2) {
+        economicStatusParam = 0.142;
+    } else if(economicStatus == 4) {
+        economicStatusParam = -0.051;
+    } else if(economicStatus == 5) {
+        economicStatusParam = -0.065;
+    } else {
+        economicStatusParam = 0;
+    }
+
+   if(areaType == 30) {
+        area = -0.136;
+    } else if(areaType == 40) {
+        area = 0.046;
+    } else {
+        area = 0;
+    }
+
+} else if(purpose == "NHBW") {
+    intercept = 2.921;
+    youngAdultsParam = 0.075;
+    workersParam = 0;
+    carsParam = 0;
+    wbScale = 0.812;
+    hbwParam = -0.155;
+    hboParam = -0.021;
+    hbeParam = 0;
+    hbsParam = -0.067;
+    nhbwParam = 0.317;
+    nhboParam = 0;
+    femalesParam = -0.09;
+    retireesParam = 0;
+    area = 0;
+
+    if(householdSize == 2) {
+        householdSizeParam = 0.225;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.308;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.420;
+    } else if(householdSize >= 5) {
+        householdSizeParam = 0.441;
+    } else {
+        householdSizeParam = 0;
+    }
+
+    if(economicStatus == 4) {
+        economicStatusParam = 0.13;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0.19;
+    } else {
+        economicStatusParam = 0;
+    }
+
+} else if(purpose == "NHBO") {
+    intercept = 3.8296;
+    youngAdultsParam = -0.0650;
+    workersParam = -0.0300;
+    carsParam = 0;
+    wbScale = 1.01;
+    femalesParam = 0;
+    retireesParam = 0;
+    hbwParam = 0;
+    hboParam = 0;
+    hbeParam = 0;
+    hbsParam = 0;
+    nhbwParam = 0;
+    nhboParam = 0;
+
+    if(householdSize == 2) {
+        householdSizeParam = 0.3254;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.2757;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.3463;
+    } else if(householdSize >= 5) {
+        householdSizeParam = 0.3463;
+    } else {
+        householdSizeParam = 0;
+    }
+
+    if(economicStatus == 4) {
+        economicStatusParam = 0.0796;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0.1930;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    if(areaType == 40) {
+        area = -0.1028;
+    } else {
+        area = 0;
+    }
+
+} else {
+      throw "Undefined purpose given!"
+}
+
+femalesImpact = females * femalesParam;
+youngAdultsImpact = youngAdults * youngAdultsParam;
+retireesImpact = retirees * retireesParam;
+workersImpact = workers * workersParam;
+carsImpact = cars * carsParam;
+hbwImpact = HBW * hbwParam;
+hbeImpact = HBE * hbeParam;
+hbsImpact = HBS * hbsParam;
+hboImpact = HBO * hboParam;
+nhbwImpact = NHBW * nhbwParam;
+nhboImpact = NHBO * nhboParam;
+
+
+utility = intercept + householdSizeParam + area + femalesImpact + economicStatusParam +
+    youngAdultsImpact + retireesImpact + workersImpact + carsImpact +
+    hbwImpact + hbeImpact + hbsImpact + hboImpact + nhbwImpact + nhboImpact;
+
+result = Math.pow(-Math.log(0.5), 1./wbScale) * Math.exp(utility);
+return result;
+};
