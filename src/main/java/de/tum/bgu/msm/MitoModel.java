@@ -1,17 +1,25 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.accessibility.Accessibility;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.apache.commons.math.stat.Frequency;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 import org.matsim.households.Household;
 
-import java.util.Random;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 /**
  * Implements the Microsimulation Transport Orchestrator (MITO)
@@ -120,4 +128,153 @@ public final class MitoModel {
     public void setRandomNumberGenerator(Random random) {
         MitoUtil.initializeRandomNumber(random);
     }
+
+    public void calculateAccessibility(){
+        long startTime = System.currentTimeMillis();
+        logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
+
+        Accessibility acc = new Accessibility(dataSet);
+        acc.run();
+
+        printOutline(startTime);
+    }
+
+    public void obtainTripLengthDistribution(){
+        logger.info("Obtaining trip length distributions");
+        Frequency commuteDistance = new Frequency();
+        Frequency commuteTime = new Frequency();
+        Frequency studentDistance = new Frequency();
+        Frequency studentTime = new Frequency();
+        Frequency collegeDistance = new Frequency();
+        Frequency collegeTime = new Frequency();
+        int tripid = 1;
+        double peakHour = dataSet.getPeakHour();
+        for (MitoHousehold hh : dataSet.getHouseholds().values()){
+            for (MitoPerson pp : hh.getPersons().values()) {
+                if (pp.getMitoOccupationStatus().equals(MitoOccupationStatus.WORKER)) {
+                    MitoZone home = hh.getHomeZone();
+                    MitoZone destination = pp.getOccupation().getOccupationZone();
+                    long tripTime = (long) dataSet.getTravelTimes().getTravelTime(home, destination, peakHour, "car");
+                    commuteTime.addValue(tripTime);
+                    long tripDistance = (long) dataSet.getTravelDistancesAuto().getTravelDistance(home.getId(), destination.getId());
+                    commuteDistance.addValue(tripDistance);
+
+                    MitoTrip tt = new MitoTrip(tripid, Purpose.HBW);
+                    tt.setTripOrigin(home);
+                    tt.setTripDestination(destination);
+                    tt.setPerson(pp);
+                    dataSet.addTrip(tt);
+                    tripid++;
+                }
+                if (pp.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)) {
+                    MitoZone home = hh.getHomeZone();
+                    MitoZone destination = pp.getOccupation().getOccupationZone();
+                    long tripTime = (long) dataSet.getTravelTimes().getTravelTime(home, destination, peakHour, "car");
+                    long tripDistance = (long) dataSet.getTravelDistancesAuto().getTravelDistance(home.getId(), destination.getId());
+                    if (pp.getAge() < 18) {
+                        studentTime.addValue(tripTime);
+                        studentDistance.addValue(tripDistance);
+                    } else {
+                        collegeTime.addValue(tripTime);
+                        collegeDistance.addValue(tripDistance);
+                    }
+                    MitoTrip tt = new MitoTrip(tripid, Purpose.HBE);
+                    dataSet.addTrip(tt);
+                    tripid++;
+                    tt.setTripOrigin(home);
+                    tt.setTripDestination(destination);
+                    tt.setPerson(pp);
+                }
+            }
+        }
+        summarizeTrips();
+        summarizeFlows(commuteTime, "microData/interimData/tripLengthDistributionWorkTime.csv");
+        summarizeFlows(collegeDistance, "microData/interimData/tripLengthDistributionWorkDistance.csv");
+        summarizeFlows(studentTime, "microData/interimData/tripLengthDistributionSchoolTime.csv");
+        summarizeFlows(studentDistance, "microData/interimData/tripLengthDistributionSchoolDistance.csv");
+        summarizeFlows(collegeTime, "microData/interimData/tripLengthDistributionCollegeTime.csv");
+        summarizeFlows(collegeDistance, "microData/interimData/tripLengthDistributionCollegeDistance.csv");
+
+    }
+
+    private void summarizeTrips() {
+        String outputSubDirectory = "microData/interimData/";
+
+        logger.info("  Writing trips file");
+        String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "trips.csv";
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
+        pwh.println("id,origin,destination,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro");
+        for (MitoTrip trip : dataSet.getTrips().values()) {
+            pwh.print(trip.getId());
+            pwh.print(",");
+            Location origin = trip.getTripOrigin();
+            String originId = "null";
+            if(origin != null) {
+                originId = String.valueOf(origin.getZoneId());
+            }
+            pwh.print(originId);
+            pwh.print(",");
+
+
+            Location destination = trip.getTripDestination();
+            String destinationId = "null";
+            if(destination != null) {
+                destinationId = String.valueOf(destination.getZoneId());
+            }
+            pwh.print(destinationId);
+            pwh.print(",");
+
+            pwh.print(trip.getTripPurpose());
+            pwh.print(",");
+            pwh.print(trip.getPerson().getId());
+            pwh.print(",");
+            if(origin != null && destination != null) {
+                double distance = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                pwh.print(distance);
+                pwh.print(",");
+                double timeAuto = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "car");
+                pwh.print(timeAuto);
+                pwh.print(",");
+                double timeBus = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "bus");
+                pwh.print(timeBus);
+                pwh.print(",");
+                double timeTrain = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "train");
+                pwh.print(timeTrain);
+                pwh.print(",");
+                double timeTramMetro = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "tramMetro");
+                pwh.println(timeTramMetro);
+            } else {
+                pwh.println("NA,NA,NA,NA,NA");
+            }
+
+
+        }
+        pwh.close();
+    }
+
+    private void summarizeFlows(Frequency travelTimes, String fileName){
+        //to obtain the trip length distribution
+        int[] timeThresholds1 = new int[79];
+        double[] frequencyTT1 = new double[79];
+        for (int row = 0; row < timeThresholds1.length; row++) {
+            timeThresholds1[row] = row + 1;
+            frequencyTT1[row] = travelTimes.getCumPct(timeThresholds1[row]);
+        }
+        writeVectorToCSV(timeThresholds1, frequencyTT1, fileName);
+
+    }
+
+    private void writeVectorToCSV(int[] thresholds, double[] frequencies, String outputFile){
+        try {
+            PrintWriter pw = new PrintWriter(new FileWriter(outputFile, true));
+            pw.println("threshold,frequency");
+            for (int i = 0; i< thresholds.length; i++) {
+                pw.println(thresholds[i] + "," + frequencies[i]);
+            }
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

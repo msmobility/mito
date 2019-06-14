@@ -80,6 +80,7 @@ public class Properties {
     public static final String EXTERNAL_MATRIX_SZM = "external.matrix.szm";
 
     public static final String RUN_DISABILITY = "run.disability";
+    public static final String RUN_ACCESSIBILITY = "run.disability";
     public static final String BUS_TRAVEL_TIME_SKIM_DISABILITY = "bus.travelTime.disability";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM_DISABILITY = "tramMetro.travelTime.disability";
     public static final String TRAIN_TRAVEL_TIME_SKIM_DISABILITY = "train.travelTime.disability";

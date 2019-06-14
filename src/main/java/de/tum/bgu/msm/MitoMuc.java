@@ -1,5 +1,7 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 

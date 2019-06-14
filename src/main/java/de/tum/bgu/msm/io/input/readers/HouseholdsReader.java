@@ -40,7 +40,7 @@ public class HouseholdsReader extends AbstractCsvReader {
 
     @Override
     protected void processRecord(String[] record) {
-        if (MitoUtil.getRandomObject().nextDouble() < 0.05) {
+        //if (MitoUtil.getRandomObject().nextDouble() < 0.05) {
             int id = Integer.parseInt(record[posId]);
             int taz = Integer.parseInt(record[posTaz]);
             int autos = Integer.parseInt(record[posAutos]);
@@ -52,6 +52,6 @@ public class HouseholdsReader extends AbstractCsvReader {
             MitoHousehold hh = new MitoHousehold(id, 0, autos, zone);
             dataSet.addHousehold(hh);
             zone.addHousehold();
-        }
+        //}
     }
 }
