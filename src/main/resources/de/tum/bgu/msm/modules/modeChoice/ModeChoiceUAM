@@ -301,11 +301,11 @@ probabilityBicycle = probabilityBicycle;
 probabilityWalk = probabilityWalk;
 probabilityAFT = probabilityAFT;
 
-//print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
-//probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
-//+ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
-//probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
-//+ ";");
+print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
+probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
++ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
+probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
++ ";");
 
 
 return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV, probabilityAFT], "double[]");
@@ -325,7 +325,7 @@ generalizedCostHBE  = [-0.0025, -0.0025, 0.0, -0.0025, -0.0025, -0.0025, 0.0];
 tripLengthHBE       = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.71];
 isMunichTripHBE         = [0.0, 0.02, 0.25, 0.07, 0.08, 0.06, -0.49];
 
-var calculateHBEProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakhour,boardingTime,flyingTaxiFareEurosPerKm){
+var calculateHBEProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
 
 //Stage 1: MITO nested logit model
 timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
@@ -544,11 +544,11 @@ probabilityBicycle = probabilityBicycle;
 probabilityWalk = probabilityWalk;
 probabilityAFT = probabilityAFT;
 
-//print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
-//probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
-//+ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
-//probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
-//+ ";");
+print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
+probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
++ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
+probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
++ ";");
 
 return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV, probabilityAFT], "double[]");
 
@@ -568,7 +568,7 @@ generalizedCostHBS_Sq   = [-0.0000068, -0.0000068, 0.0, -0.0000068, -0.0000068, 
 tripLengthHBS           = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.46];
 isMunichTripHBS         = [0.0, 0.05, 1.16, 1.35, 1.32, 1.36, 1.94];
 
-var calculateHBSProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakhour,boardingTime,flyingTaxiFareEurosPerKm){
+var calculateHBSProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
 
 //Stage 1: MITO nested logit model
 var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
@@ -816,7 +816,7 @@ generalizedCostHBO  = [-0.0012, -0.0012, 0.0, -0.0012, -0.0012, -0.0012, 0.0];
 tripLengthHBO       = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.68];
 isMunichTripHBO         = [0.0, 0.14, 0.61, 1.25, 1.23, 1.25, 0.34];
 
-var calculateHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakhour,boardingTime,flyingTaxiFareEurosPerKm){
+var calculateHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
 
 //Stage 1: MITO nested logit model
 timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
@@ -1063,7 +1063,7 @@ distToRailStopNHBW  = [0.0, 0.0, 0.0, -0.24, 0.0, -0.16, -0.37];
 generalizedCostNHBW = [-0.0034, -0.0034, 0.0, -0.0034, -0.0034, -0.0034, 0.0];
 tripLengthNHBW      = [0.0, 0.0, -0.28, 0.0, 0.0, 0.0, -1.54];
 
-var calculateNHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakhour,boardingTime,flyingTaxiFareEurosPerKm){
+var calculateNHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
 
 //Stage 1: MITO nested logit model
 timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
@@ -1301,7 +1301,7 @@ ruralNHBO               = [0.0, 0.0, 0.0, -0.70, -0.91, -1.12, 0.0];
 generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0];
 tripLengthNHBO          = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57];
 
-var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakhour,boardingTime,flyingTaxiFareEurosPerKm){
+var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
 
 //Stage 1: MITO Nested Logit Model
 timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
