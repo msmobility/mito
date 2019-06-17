@@ -301,11 +301,11 @@ probabilityBicycle = probabilityBicycle;
 probabilityWalk = probabilityWalk;
 probabilityAFT = probabilityAFT;
 
-print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
-probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
-+ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
-probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
-+ ";");
+//print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
+//probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
+//+ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
+//probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
+//+ ";");
 
 
 return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV, probabilityAFT], "double[]");
@@ -544,11 +544,11 @@ probabilityBicycle = probabilityBicycle;
 probabilityWalk = probabilityWalk;
 probabilityAFT = probabilityAFT;
 
-print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
-probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
-+ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
-probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
-+ ";");
+//print(probabilityAutoNest + ";" + probabilityPrivateAV + ";" + probabilityAutoD + ";" +
+//probabilityAutoP + ";" + probabilityTransitNest + ";" + probabilitySharedAV + ";" + probabilityBus + ";"
+//+ probabilityTrain + ";" + probabilityTramMetro + ";" + probabilityBicycle + ";" + probabilityWalk + ";" +
+//probabilityAFT + ";" + probabilityAuto + ";" + probabilityTransit + ";" + probabilityAT
+//+ ";");
 
 return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV, probabilityAFT], "double[]");
 
