@@ -9,22 +9,17 @@ import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.*;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.geometry.CoordUtils;
-import org.matsim.vehicles.Vehicle;
-import org.matsim.vehicles.VehicleUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +35,6 @@ public class CarSkimUpdater {
     private TravelDisutility travelDisutility;
     private TravelTime travelTime;
     private DataSet dataSet;
-    private final Vehicle VEHICLE = VehicleUtils.getFactory().createVehicle(Id.create("theVehicle", Vehicle.class), VehicleUtils.getDefaultVehicleType());
-    private final Person PERSON = PopulationUtils.getFactory().createPerson(Id.create("thePerson", Person.class));
 
 
     public CarSkimUpdater(Controler controler,
@@ -79,7 +72,6 @@ public class CarSkimUpdater {
 
         long startTime2 = System.currentTimeMillis();
 
-        IndexedDoubleMatrix2D skim = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
         final int partitionSize = (int) ((double) dataSet.getZones().size() / Runtime.getRuntime().availableProcessors()) + 1;
         logger.info("Intended size of all of partititons = " + partitionSize);
         Iterable<List<MitoZone>> partitions = Iterables.partition(dataSet.getZones().values(), partitionSize);
@@ -118,8 +110,6 @@ public class CarSkimUpdater {
                             }
                             carTravelTimeMatrix.setIndexed(origin.getId(), destination.getId(), travelTime);
                             carDistanceMatrix.setIndexed(origin.getId(), destination.getId(), distance / 1000.);
-
-                            skim.setIndexed(origin.getZoneId(), destination.getZoneId(), travelTime);
                         }
                     }
                 } catch (Exception e) {
