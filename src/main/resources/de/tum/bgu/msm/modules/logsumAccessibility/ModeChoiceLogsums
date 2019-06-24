@@ -86,7 +86,8 @@ var calculateHBWProbabilities = function(originZone, destinationZone, travelTime
                           mediumSizedCityHBW[0]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[0]*(areaType.name().equals("TOWN")) +
                           ruralHBW[0]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[0]*gcAutoD;
+                          generalizedCostHBW[0]*gcAutoD +
+                          isMunichTripHBW[0]*isMunichTrip;
 
     utilityAutoP        = interceptHBW[1] + ageHBW[1]*age + maleHBW[1]*(gender) +
                           driversLicenseHBW[1]*driversLicense + hhSizeHBW[1]*hhSize + hhAutosHBW[1]*hhAutos +
@@ -94,7 +95,8 @@ var calculateHBWProbabilities = function(originZone, destinationZone, travelTime
                           mediumSizedCityHBW[1]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[1]*(areaType.name().equals("TOWN")) +
                           ruralHBW[1]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[1]*gcAutoP;
+                          generalizedCostHBW[1]*gcAutoP +
+                          isMunichTripHBW[1]*isMunichTrip;
 
     utilityBicycle      = interceptHBW[2] + ageHBW[2]*age + maleHBW[2]*(gender) +
                           driversLicenseHBW[2]*driversLicense + hhSizeHBW[2]*hhSize + hhAutosHBW[2]*hhAutos +
@@ -102,7 +104,8 @@ var calculateHBWProbabilities = function(originZone, destinationZone, travelTime
                           mediumSizedCityHBW[2]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[2]*(areaType.name().equals("TOWN")) +
                           ruralHBW[2]*(areaType.name().equals("RURAL")) +
-                          tripLengthHBW[2]*travelDistanceNMT;
+                          tripLengthHBW[2]*travelDistanceNMT+
+                          isMunichTripHBW[2]*isMunichTrip;;
 
     utilityBus          = interceptHBW[3] + ageHBW[3]*age + maleHBW[3]*(gender) +
                           driversLicenseHBW[3]*driversLicense + hhSizeHBW[3]*hhSize + hhAutosHBW[3]*hhAutos +
@@ -110,7 +113,8 @@ var calculateHBWProbabilities = function(originZone, destinationZone, travelTime
                           mediumSizedCityHBW[3]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[3]*(areaType.name().equals("TOWN")) +
                           ruralHBW[3]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[3]*gcBus;
+                          generalizedCostHBW[3]*gcBus +
+                          isMunichTripHBW[3]*isMunichTrip;;
 
     utilityTrain        = interceptHBW[4] + ageHBW[4]*age + maleHBW[4]*(gender) +
                           driversLicenseHBW[4]*driversLicense + hhSizeHBW[4]*hhSize + hhAutosHBW[4]*hhAutos +
@@ -118,7 +122,8 @@ var calculateHBWProbabilities = function(originZone, destinationZone, travelTime
                           mediumSizedCityHBW[4]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[4]*(areaType.name().equals("TOWN")) +
                           ruralHBW[4]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[4]*gcTrain;
+                          generalizedCostHBW[4]*gcTrain +
+                          isMunichTripHBW[4]*isMunichTrip;;
 
     utilityTramMetro    = interceptHBW[5] + ageHBW[5]*age + maleHBW[5]*(gender) +
                           driversLicenseHBW[5]*driversLicense + hhSizeHBW[5]*hhSize + hhAutosHBW[5]*hhAutos +
@@ -126,7 +131,8 @@ var calculateHBWProbabilities = function(originZone, destinationZone, travelTime
                           mediumSizedCityHBW[5]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[5]*(areaType.name().equals("TOWN")) +
                           ruralHBW[5]*(areaType.name().equals("RURAL")) +
-                          generalizedCostHBW[5]*gcTramMetro;
+                          generalizedCostHBW[5]*gcTramMetro +
+                          isMunichTripHBW[5]*isMunichTrip;;
 
     utilityWalk         = interceptHBW[6] + ageHBW[6]*age + maleHBW[6]*(gender) +
                           driversLicenseHBW[6]*driversLicense + hhSizeHBW[6]*hhSize + hhAutosHBW[6]*hhAutos +
@@ -134,13 +140,13 @@ var calculateHBWProbabilities = function(originZone, destinationZone, travelTime
                           mediumSizedCityHBW[6]*(areaType.name().equals("MEDIUM_SIZED_CITY")) +
                           townHBW[6]*(areaType.name().equals("TOWN")) +
                           ruralHBW[6]*(areaType.name().equals("RURAL")) +
-                          tripLengthHBW[6]*travelDistanceNMT;
+                          tripLengthHBW[6]*travelDistanceNMT +
+                          isMunichTripHBW[6]*isMunichTrip;;
 
      
-            expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
-            expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
-            expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
-
+    expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
 
     return expsumTopLevel;
 
@@ -194,41 +200,36 @@ var calculateHBEProbabilities = function(originZone, destinationZone, travelTime
     }
 
     utilityAutoD        = interceptHBE[0] + maleHBE[0]*(gender) + driversLicenseHBE[0]*driversLicense +
-                          hhAutosHBE[0]*hhAutos + distToRailStopHBE[0]*distToRailStop + generalizedCostHBE[0]*gcAutoD;
+                          hhAutosHBE[0]*hhAutos + distToRailStopHBE[0]*distToRailStop + generalizedCostHBE[0]*gcAutoD +
+                          isMunichTripHBE[0]*isMunichTrip;
 
     utilityAutoP        = interceptHBE[1] + maleHBE[1]*(gender) + driversLicenseHBE[1]*driversLicense +
-                          hhAutosHBE[1]*hhAutos + distToRailStopHBE[1]*distToRailStop + generalizedCostHBE[1]*gcAutoP;
+                          hhAutosHBE[1]*hhAutos + distToRailStopHBE[1]*distToRailStop + generalizedCostHBE[1]*gcAutoP +
+                          isMunichTripHBE[1]*isMunichTrip;
 
     utilityBicycle      = interceptHBE[2] + maleHBE[2]*(gender) + driversLicenseHBE[2]*driversLicense +
-                          hhAutosHBE[2]*hhAutos + distToRailStopHBE[2]*distToRailStop + tripLengthHBE[2]*travelDistanceNMT;
+                          hhAutosHBE[2]*hhAutos + distToRailStopHBE[2]*distToRailStop + tripLengthHBE[2]*travelDistanceNMT +
+                          isMunichTripHBE[2]*isMunichTrip;
 
     utilityBus          = interceptHBE[3] + maleHBE[3]*(gender) + driversLicenseHBE[3]*driversLicense +
-                          hhAutosHBE[3]*hhAutos + distToRailStopHBE[3]*distToRailStop + generalizedCostHBE[3]*gcBus;
+                          hhAutosHBE[3]*hhAutos + distToRailStopHBE[3]*distToRailStop + generalizedCostHBE[3]*gcBus +
+                          isMunichTripHBE[3]*isMunichTrip;
 
     utilityTrain        = interceptHBE[4] + maleHBE[4]*(gender) + driversLicenseHBE[4]*driversLicense +
-                          hhAutosHBE[4]*hhAutos + distToRailStopHBE[4]*distToRailStop + generalizedCostHBE[4]*gcTrain;
+                          hhAutosHBE[4]*hhAutos + distToRailStopHBE[4]*distToRailStop + generalizedCostHBE[4]*gcTrain +
+                          isMunichTripHBE[4]*isMunichTrip;
 
     utilityTramMetro    = interceptHBE[5] + maleHBE[5]*(gender) + driversLicenseHBE[5]*driversLicense +
-                          hhAutosHBE[5]*hhAutos + distToRailStopHBE[5]*distToRailStop + generalizedCostHBE[5]*gcTramMetro;
+                          hhAutosHBE[5]*hhAutos + distToRailStopHBE[5]*distToRailStop + generalizedCostHBE[5]*gcTramMetro +
+                          isMunichTripHBE[5]*isMunichTrip;
 
     utilityWalk         = interceptHBE[6] + maleHBE[6]*(gender) + driversLicenseHBE[6]*driversLicense +
-                          hhAutosHBE[6]*hhAutos + distToRailStopHBE[6]*distToRailStop + tripLengthHBE[6]*travelDistanceNMT;
+                          hhAutosHBE[6]*hhAutos + distToRailStopHBE[6]*distToRailStop + tripLengthHBE[6]*travelDistanceNMT +
+                          isMunichTripHBE[6]*isMunichTrip;
 
-    logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
-    logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
-
-    probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityBicycle = Math.exp(utilityBicycle) / (Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
-    probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
-
-     
-            expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
-            expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
-            expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+    expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
 
         return expsumTopLevel;
 }
@@ -284,36 +285,43 @@ var calculateHBSProbabilities = function(originZone, destinationZone, travelTime
 
     utilityAutoD        = interceptHBS[0] + maleHBS[0]*(gender) + driversLicenseHBS[0]*driversLicense +
                           hhAutosHBS[0]*hhAutos + distToRailStopHBS[0]*distToRailStop + hhChildrenHBS[0]*hhChildren +
-                          generalizedCostHBS_Sq[0]*Math.pow(gcAutoD,2);
+                          generalizedCostHBS_Sq[0]*Math.pow(gcAutoD,2) +
+                          isMunichTripHBS[0]*isMunichTrip;
 
     utilityAutoP        = interceptHBS[1] + maleHBS[1]*(gender) + driversLicenseHBS[1]*driversLicense +
                           hhAutosHBS[1]*hhAutos + distToRailStopHBS[1]*distToRailStop + hhChildrenHBS[1]*hhChildren +
-                          generalizedCostHBS_Sq[1]*Math.pow(gcAutoP,2);
+                          generalizedCostHBS_Sq[1]*Math.pow(gcAutoP,2) +
+                          isMunichTripHBS[1]*isMunichTrip;
 
     utilityBicycle      = interceptHBS[2] + maleHBS[2]*(gender) + driversLicenseHBS[2]*driversLicense +
                           hhAutosHBS[2]*hhAutos + distToRailStopHBS[2]*distToRailStop + hhChildrenHBS[2]*hhChildren +
-                          tripLengthHBS[2]*travelDistanceNMT;
+                          tripLengthHBS[2]*travelDistanceNMT +
+                          isMunichTripHBS[2]*isMunichTrip;
 
     utilityBus          = interceptHBS[3] + maleHBS[3]*(gender) + driversLicenseHBS[3]*driversLicense +
                           hhAutosHBS[3]*hhAutos + distToRailStopHBS[3]*distToRailStop + hhChildrenHBS[3]*hhChildren +
-                          generalizedCostHBS_Sq[3]*Math.pow(gcBus,2);
+                          generalizedCostHBS_Sq[3]*Math.pow(gcBus,2) +
+                          isMunichTripHBS[3]*isMunichTrip;
 
     utilityTrain        = interceptHBS[4] + maleHBS[4]*(gender) + driversLicenseHBS[4]*driversLicense +
                           hhAutosHBS[4]*hhAutos + distToRailStopHBS[4]*distToRailStop + hhChildrenHBS[4]*hhChildren +
-                          generalizedCostHBS_Sq[4]*Math.pow(gcTrain,2);
+                          generalizedCostHBS_Sq[4]*Math.pow(gcTrain,2) +
+                          isMunichTripHBS[4]*isMunichTrip;
 
     utilityTramMetro    = interceptHBS[5] + maleHBS[5]*(gender) + driversLicenseHBS[5]*driversLicense +
                           hhAutosHBS[5]*hhAutos + distToRailStopHBS[5]*distToRailStop + hhChildrenHBS[5]*hhChildren +
-                          generalizedCostHBS_Sq[5]*Math.pow(gcTramMetro,2);
+                          generalizedCostHBS_Sq[5]*Math.pow(gcTramMetro,2) +
+                          isMunichTripHBS[5]*isMunichTrip;
 
     utilityWalk         = interceptHBS[6] + maleHBS[6]*(gender) + driversLicenseHBS[6]*driversLicense +
                           hhAutosHBS[6]*hhAutos + distToRailStopHBS[6]*distToRailStop + hhChildrenHBS[6]*hhChildren +
-                          tripLengthHBS[6]*travelDistanceNMT;
+                          tripLengthHBS[6]*travelDistanceNMT +
+                          isMunichTripHBS[6]*isMunichTrip;
 
      
-            expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
-            expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
-            expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+    expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
 
 
     return expsumTopLevel;
@@ -371,36 +379,43 @@ var calculateHBOProbabilities = function(originZone, destinationZone, travelTime
 
     utilityAutoD        = interceptHBO[0] + maleHBO[0]*(gender) + driversLicenseHBO[0]*driversLicense +
                           hhAutosHBO[0]*hhAutos + hhSizeHBO[0]*hhSize + distToRailStopHBO[0]*distToRailStop +
-                          generalizedCostHBO[0]*gcAutoD;
+                          generalizedCostHBO[0]*gcAutoD +
+                          isMunichTripHBO[0]*isMunichTrip;
 
     utilityAutoP        = interceptHBO[1] + maleHBO[1]*(gender) + driversLicenseHBO[1]*driversLicense +
                           hhAutosHBO[1]*hhAutos + hhSizeHBO[1]*hhSize + distToRailStopHBO[1]*distToRailStop +
-                          generalizedCostHBO[1]*gcAutoP;
+                          generalizedCostHBO[1]*gcAutoP +
+                          isMunichTripHBO[1]*isMunichTrip;
 
     utilityBicycle      = interceptHBO[2] + maleHBO[2]*(gender) + driversLicenseHBO[2]*driversLicense +
                           hhAutosHBO[2]*hhAutos + hhSizeHBO[2]*hhSize + distToRailStopHBO[2]*distToRailStop +
-                          tripLengthHBO[2]*travelDistanceNMT;
+                          tripLengthHBO[2]*travelDistanceNMT +
+                          isMunichTripHBO[2]*isMunichTrip;
 
     utilityBus          = interceptHBO[3] + maleHBO[3]*(gender) + driversLicenseHBO[3]*driversLicense +
                           hhAutosHBO[3]*hhAutos + hhSizeHBO[3]*hhSize + distToRailStopHBO[3]*distToRailStop +
-                          generalizedCostHBO[3]*gcBus;
+                          generalizedCostHBO[3]*gcBus +
+                          isMunichTripHBO[3]*isMunichTrip;
 
     utilityTrain        = interceptHBO[4] + maleHBO[4]*(gender) + driversLicenseHBO[4]*driversLicense +
                           hhAutosHBO[4]*hhAutos + hhSizeHBO[4]*hhSize + distToRailStopHBO[4]*distToRailStop +
-                          generalizedCostHBO[4]*gcTrain;
+                          generalizedCostHBO[4]*gcTrain +
+                          isMunichTripHBO[4]*isMunichTrip;
 
     utilityTramMetro    = interceptHBO[5] + maleHBO[5]*(gender) + driversLicenseHBO[5]*driversLicense +
                           hhAutosHBO[5]*hhAutos + hhSizeHBO[5]*hhSize + distToRailStopHBO[5]*distToRailStop +
-                          generalizedCostHBO[5]*gcTramMetro;
+                          generalizedCostHBO[5]*gcTramMetro +
+                          isMunichTripHBO[5]*isMunichTrip;
 
     utilityWalk         = interceptHBO[6] + maleHBO[6]*(gender) + driversLicenseHBO[6]*driversLicense +
                           hhAutosHBO[6]*hhAutos + hhSizeHBO[6]*hhSize + distToRailStopHBO[6]*distToRailStop +
-                          tripLengthHBO[6]*travelDistanceNMT;
+                          tripLengthHBO[6]*travelDistanceNMT +
+                          isMunichTripHBO[6]*isMunichTrip;
 
      
-            expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
-            expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
-            expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+    expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
 
 
     return expsumTopLevel;
@@ -431,7 +446,6 @@ var calculateNHBWProbabilities = function(originZone, destinationZone, travelTim
     driversLicense = 0.915;
     hhAutos = 1.327;
     distToRailStop = originZone.getDistanceToNearestRailStop();
-    isMunichTrip = originZone.isMunichZone();
 
     if(income/12 <= 1500){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
@@ -475,9 +489,9 @@ var calculateNHBWProbabilities = function(originZone, destinationZone, travelTim
                           hhAutosNHBW[6]*hhAutos + distToRailStopNHBW[6]*distToRailStop + tripLengthNHBW[6]*travelDistanceNMT;
 
      
-            expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
-            expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
-            expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+    expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
 
     return expsumTopLevel;
 
@@ -511,7 +525,6 @@ var calculateNHBOProbabilities = function(originZone, destinationZone, travelTim
     hhAutos = 1.217;
     distToRailStop = originZone.getDistanceToNearestRailStop();
     areaType = originZone.getAreaTypeR();
-    isMunichTrip = originZone.isMunichZone();
 
     if(income/12 <= 1500){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
@@ -568,9 +581,9 @@ var calculateNHBOProbabilities = function(originZone, destinationZone, travelTim
                           agglomerationUrbanNHBO[6]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
                           ruralNHBO[6]*(areaType.name().equals("RURAL")) + tripLengthNHBO[6]*travelDistanceNMT;
 
-        expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
-        expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
-        expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+    expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
 
 
     return expsumTopLevel;

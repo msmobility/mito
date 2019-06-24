@@ -1,7 +1,5 @@
-package de.tum.bgu.msm.modules.accessibility;
+package de.tum.bgu.msm.modules.logsumAccessibility;
 
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;

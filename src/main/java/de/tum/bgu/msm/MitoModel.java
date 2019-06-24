@@ -3,22 +3,19 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
-import de.tum.bgu.msm.modules.accessibility.Accessibility;
+import de.tum.bgu.msm.modules.logsumAccessibility.Accessibility;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.commons.math.stat.Frequency;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Coord;
-import org.matsim.core.utils.geometry.CoordUtils;
-import org.matsim.households.Household;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -133,6 +130,15 @@ public final class MitoModel {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
+        logger.info("Running Module: Trip Generation");
+        TripGeneration tg = new TripGeneration(dataSet);
+        tg.run();
+        if (dataSet.getTrips().isEmpty()) {
+            logger.warn("No trips created. End of program.");
+            return;
+        }
+
+        logger.info("Running Module: Logsum-based Accessibility Calculation");
         Accessibility acc = new Accessibility(dataSet);
         acc.run();
 

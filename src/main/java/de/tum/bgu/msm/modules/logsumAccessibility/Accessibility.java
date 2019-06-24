@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.modules.accessibility;
+package de.tum.bgu.msm.modules.logsumAccessibility;
 
 
 import com.google.common.math.LongMath;
@@ -33,7 +33,7 @@ public class Accessibility extends Module {
 
     @Override
     public void run() {
-        logger.info(" Calculating accessibility");
+        logger.info(" Calculating logsumAccessibility");
         initializeMatrices();
         accessibilityByOrigin();
         printAccessibilityValues();
@@ -59,7 +59,6 @@ public class Accessibility extends Module {
     private void accessibilityByOrigin(){
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         for (Purpose purpose : Purpose.values()) {
-            //Purpose purpose = Purpose.HBW;
             executor.addTaskToQueue(new AccessibilityByOrigin(purpose, dataSet));
         }
         executor.execute();
@@ -67,39 +66,7 @@ public class Accessibility extends Module {
 
     private void printAccessibilityValues(){
         String outputSubDirectory = "skims/";
-        /*for (Purpose purpose : Purpose.values()) {
-        //Purpose purpose = Purpose.HBW;
-            logger.info("Logsums for purpose " + purpose + ":");
-*//*            String filePath =  Resources.INSTANCE.getString(de.tum.bgu.msm.resources.Properties.BASE_DIRECTORY) + "/" + "skims/logsum_" + purpose + ".omx";
-            String matrixName = "mat1";
-            OmxMatrixWriter.createOmxFile(fileName, dimension);
-            OmxMatrixWriter.createOmxSkimMatrix(matricesByPurpose.get(purpose),
-                    filePath,
-                    matrixName);*//*
-
-
-
-            logger.info("  Writing logsums file");
-            String filehh = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory +  purpose + "_logsum.csv";
-            PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
-            pwh.println("purpose,origin,destination,logsum");
-            for (MitoZone origin : dataSet.getZones().values()) {
-                for (MitoZone destination : dataSet.getZones().values()) {
-                    pwh.print(purpose);
-                    pwh.print(",");
-                    pwh.print(origin.getId());
-                    pwh.print(",");
-                    pwh.print(destination.getId());
-                    pwh.print(",");
-                    pwh.println(matricesByPurpose.get(purpose).getIndexed(origin.getId(), destination.getId()));
-                }
-            }
-            pwh.close();
-
-
-        }*/
-
-        logger.info("  Writing accessibility file");
+        logger.info("  Writing logsumAccessibility file");
         String fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory +  "accessibilities.csv";
         PrintWriter pwha = MitoUtil.openFileForSequentialWriting(fileaa, false);
         pwha.println("origin");
@@ -133,7 +100,7 @@ public class Accessibility extends Module {
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
             this.calculator = new AccessibilityJSCalculator(new InputStreamReader(this.getClass()
-                    .getResourceAsStream("ModeChoiceAveragePerson")), purpose);
+                    .getResourceAsStream("ModeChoiceLogsums")), purpose);
         }
 
         public Void call(){
@@ -152,7 +119,7 @@ public class Accessibility extends Module {
                     counter++;
                     accessibilityForPurpose.put(origin.getId(), accessibility);
                     if (LongMath.isPowerOfTwo(counter)) {
-                        logger.info("Logsum calculation completed at " +  counter + " zones.");
+                        logger.info("Logsum calculation of purpose "  + purpose + " completed at " +  counter + " zones.");
                     }
                 }
                 accessibilitiesByPurpose.put(purpose, accessibilityForPurpose);
