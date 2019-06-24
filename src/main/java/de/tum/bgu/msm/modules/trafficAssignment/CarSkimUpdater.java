@@ -136,6 +136,7 @@ public class CarSkimUpdater {
     private void assignIntrazonals(int numberOfNeighbours, float maximumMinutes, float proportionOfTime) {
         int nonIntrazonalCounter = 0;
         for (int i = 1; i < carTravelTimeMatrix.columns(); i++) {
+            int i_id = carTravelTimeMatrix.getIdForInternalColumnIndex(i);
             double[] minTimeValues = new double[numberOfNeighbours];
             double[] minDistValues = new double[numberOfNeighbours];
             for (int k = 0; k < numberOfNeighbours; k++) {
@@ -144,16 +145,18 @@ public class CarSkimUpdater {
             }
             //find the  n closest neighbors - the lower travel time values in the matrix column
             for (int j = 1; j < carTravelTimeMatrix.rows(); j++) {
+                int j_id = carTravelTimeMatrix.getIdForInternalRowIndex(j);
                 int minimumPosition = 0;
                 while (minimumPosition < numberOfNeighbours) {
-                    if (minTimeValues[minimumPosition] > carTravelTimeMatrix.getIndexed(i, j) && carTravelTimeMatrix.getIndexed(i, j) != 0) {
+                    if (minTimeValues[minimumPosition] > carTravelTimeMatrix.getIndexed(i_id, j_id) && carTravelTimeMatrix.getIndexed(i_id, j_id) != 0) {
                         for (int k = numberOfNeighbours - 1; k > minimumPosition; k--) {
                             minTimeValues[k] = minTimeValues[k - 1];
                             minDistValues[k] = minDistValues[k - 1];
 
                         }
-                        minTimeValues[minimumPosition] = carTravelTimeMatrix.getIndexed(i, j);
-                        minDistValues[minimumPosition] = carDistanceMatrix.getIndexed(i, j);
+                        minTimeValues[minimumPosition] = carTravelTimeMatrix.getIndexed(i_id, j_id);
+                        minDistValues[minimumPosition] = carDistanceMatrix.getIndexed(i_id, j_id);
+
                         break;
                     }
                     minimumPosition++;
@@ -170,8 +173,9 @@ public class CarSkimUpdater {
 
             //fill with the calculated value the cells with zero
             for (int j = 1; j < carTravelTimeMatrix.rows(); j++) {
-                if (carTravelTimeMatrix.getIndexed(i, j) == 0) {
-                    carTravelTimeMatrix.setIndexed(i, j, globalMinTime);
+                int j_id = carTravelTimeMatrix.getIdForInternalColumnIndex(j);
+                if (carTravelTimeMatrix.getIndexed(i_id, j_id) == 0) {
+                    carTravelTimeMatrix.setIndexed(i_id, j_id, globalMinTime);
                     carDistanceMatrix.setIndexed(i, j, globalMinDist);
                     if (i != j) {
                         nonIntrazonalCounter++;
