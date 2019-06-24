@@ -5,17 +5,13 @@ import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import org.matsim.core.router.util.TravelDisutility;
-import org.matsim.core.router.util.TravelTime;
+import org.matsim.core.controler.Controler;
 
 import java.util.*;
 
 public class DataSet {
 
     private TravelTimes travelTimes;
-
-    private TravelTime matsimTravelTime;
-    private TravelDisutility matsimTravelDisutility;
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
@@ -41,6 +37,7 @@ public class DataSet {
     private EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose;
     private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
     private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
+    private Controler matsimControler;
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
@@ -206,20 +203,12 @@ public class DataSet {
         this.year = year;
     }
 
-    public TravelTime getMatsimTravelTime() {
-        return matsimTravelTime;
+    public Controler getMatsimControler() {
+        return matsimControler;
     }
 
-    public void setMatsimTravelTime(TravelTime matsimTravelTime) {
-        this.matsimTravelTime = matsimTravelTime;
-    }
-
-    public TravelDisutility getMatsimTravelDisutility() {
-        return matsimTravelDisutility;
-    }
-
-    public void setMatsimTravelDisutility(TravelDisutility matsimTravelDisutility) {
-        this.matsimTravelDisutility = matsimTravelDisutility;
+    public void setMatsimControler(Controler matsimControler) {
+        this.matsimControler = matsimControler;
     }
 
     public EnumMap<Purpose, DoubleMatrix1D> getArrivalMinuteCumProbByPurpose() {
