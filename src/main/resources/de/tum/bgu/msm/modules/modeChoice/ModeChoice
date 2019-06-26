@@ -3,25 +3,25 @@ nestingCoefficient = 0.25;
 fuelCostEurosPerKm = 0.07;
 transitFareEurosPerKm = 0.12;
 
-VOT1500_HBW_HBE_autoD = 4.63;
-VOT5600_HBW_HBE_autoD = 8.94;
-VOT7000_HBW_HBE_autoD = 12.15;
-VOT1500_HBW_HBE_autoP = 7.01;
-VOT5600_HBW_HBE_autoP = 13.56;
-VOT7000_HBW_HBE_autoP = 18.43;
-VOT1500_HBW_HBE_transit = 8.94;
-VOT5600_HBW_HBE_transit = 17.30;
-VOT7000_HBW_HBE_transit = 23.50;
+VOT1500_HBW_HBE_autoD = 4.63/60;
+VOT5600_HBW_HBE_autoD = 8.94/60;
+VOT7000_HBW_HBE_autoD = 12.15/60;
+VOT1500_HBW_HBE_autoP = 7.01/60;
+VOT5600_HBW_HBE_autoP = 13.56/60;
+VOT7000_HBW_HBE_autoP = 18.43/60;
+VOT1500_HBW_HBE_transit = 8.94/60;
+VOT5600_HBW_HBE_transit = 17.30/60;
+VOT7000_HBW_HBE_transit = 23.50/60;
 
-VOT1500_other_autoD = 3.26;
-VOT5600_other_autoD = 6.30;
-VOT7000_other_autoD = 8.56;
-VOT1500_other_autoP = 4.30;
-VOT5600_other_autoP = 8.31;
-VOT7000_other_autoP = 11.30;
-VOT1500_other_transit = 5.06;
-VOT5600_other_transit = 9.78;
-VOT7000_other_transit = 13.29;
+VOT1500_other_autoD = 3.26/60;
+VOT5600_other_autoD = 6.30/60;
+VOT7000_other_autoD = 8.56/60;
+VOT1500_other_autoP = 4.30/60;
+VOT5600_other_autoP = 8.31/60;
+VOT7000_other_autoP = 11.30/60;
+VOT1500_other_transit = 5.06/60;
+VOT5600_other_transit = 9.78/60;
+VOT7000_other_transit = 13.29/60;
 
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
@@ -142,7 +142,8 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
                           tripLengthHBW[6]*travelDistanceNMT +
                           isMunichTripHBW[6]*isMunichTrip;
 
-    logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+    //Option 1:
+    /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
     logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient)
         + Math.exp(utilityTramMetro/nestingCoefficient));
 
@@ -152,7 +153,34 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
     probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));*/
+
+    //Option 2:
+    expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+
+    if(expsumNestAuto > 0) {
+        probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+        probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+    }
+    else {
+        probabilityAutoD = 0.0;
+        probabilityAutoP = 0.0;
+    }
+    if(expsumNestTransit > 0) {
+        probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+        probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+        probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+    }
+    else {
+        probabilityBus = 0.0;
+        probabilityTrain = 0.0;
+        probabilityTramMetro = 0.0;
+    }
+    probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
+    probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
+
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain,
         probabilityTramMetro, probabilityWalk], "double[]");
@@ -236,7 +264,9 @@ var calculateHBEProbabilities = function(hh, person, originZone, destinationZone
                           hhAutosHBE[6]*hhAutos + distToRailStopHBE[6]*distToRailStop + tripLengthHBE[6]*travelDistanceNMT +
                           isMunichTripHBE[6]*isMunichTrip;
 
-    logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+    // Option 1 :
+
+    /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
     logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
 
     probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
@@ -245,7 +275,33 @@ var calculateHBEProbabilities = function(hh, person, originZone, destinationZone
     probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));*/
+
+    //Option 2:
+        expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+        expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+        expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+
+        if(expsumNestAuto > 0) {
+            probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+            probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+        }
+        else {
+            probabilityAutoD = 0.0;
+            probabilityAutoP = 0.0;
+        }
+        if(expsumNestTransit > 0) {
+            probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+        }
+        else {
+            probabilityBus = 0.0;
+            probabilityTrain = 0.0;
+            probabilityTramMetro = 0.0;
+        }
+        probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
+        probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 }
@@ -329,7 +385,9 @@ var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
                           hhAutosHBS[6]*hhAutos + distToRailStopHBS[6]*distToRailStop + hhChildrenHBS[6]*hhChildren +
                           tripLengthHBS[6]*travelDistanceNMT + isMunichTripHBS[6]*isMunichTrip;
 
-    logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+    // Option 1:
+
+    /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
     logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
 
     probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
@@ -338,7 +396,33 @@ var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
     probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));*/
+
+    //Option 2:
+        expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+        expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+        expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+
+        if(expsumNestAuto > 0) {
+            probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+            probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+        }
+        else {
+            probabilityAutoD = 0.0;
+            probabilityAutoP = 0.0;
+        }
+        if(expsumNestTransit > 0) {
+            probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+        }
+        else {
+            probabilityBus = 0.0;
+            probabilityTrain = 0.0;
+            probabilityTramMetro = 0.0;
+        }
+        probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
+        probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 
@@ -421,7 +505,9 @@ var calculateHBOProbabilities = function(hh, person, originZone, destinationZone
                           hhAutosHBO[6]*hhAutos + hhSizeHBO[6]*hhSize + distToRailStopHBO[6]*distToRailStop +
                           tripLengthHBO[6]*travelDistanceNMT + isMunichTripHBO[6]*isMunichTrip;
 
-    logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+     //Option 1:
+
+    /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
     logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
 
     probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
@@ -430,7 +516,33 @@ var calculateHBOProbabilities = function(hh, person, originZone, destinationZone
     probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));*/
+
+    //Option 2:
+        expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+        expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+        expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+
+        if(expsumNestAuto > 0) {
+            probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+            probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+        }
+        else {
+            probabilityAutoD = 0.0;
+            probabilityAutoP = 0.0;
+        }
+        if(expsumNestTransit > 0) {
+            probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+        }
+        else {
+            probabilityBus = 0.0;
+            probabilityTrain = 0.0;
+            probabilityTramMetro = 0.0;
+        }
+        probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
+        probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 
@@ -502,7 +614,10 @@ var calculateNHBWProbabilities = function(hh, person, originZone, destinationZon
     utilityWalk         = interceptNHBW[6] + ageNHBW[6]*age + driversLicenseNHBW[6]*driversLicense +
                           hhAutosNHBW[6]*hhAutos + distToRailStopNHBW[6]*distToRailStop + tripLengthNHBW[6]*travelDistanceNMT;
 
-    logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+
+    //Option 1:
+
+    /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
     logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
 
     probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
@@ -511,7 +626,33 @@ var calculateNHBWProbabilities = function(hh, person, originZone, destinationZon
     probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));*/
+
+    //Option 2:
+        expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+        expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+        expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+
+        if(expsumNestAuto > 0) {
+            probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+            probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+        }
+        else {
+            probabilityAutoD = 0.0;
+            probabilityAutoP = 0.0;
+        }
+        if(expsumNestTransit > 0) {
+            probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+        }
+        else {
+            probabilityBus = 0.0;
+            probabilityTrain = 0.0;
+            probabilityTramMetro = 0.0;
+        }
+        probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
+        probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 
@@ -599,7 +740,9 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
                           agglomerationUrbanNHBO[6]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
                           ruralNHBO[6]*(areaType.name().equals("RURAL")) + tripLengthNHBO[6]*travelDistanceNMT;
 
-    logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
+     //Option 1:
+
+    /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
     logsumTransit = Math.log(Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient));
 
     probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / ( Math.exp(utilityAutoD/nestingCoefficient)+Math.exp(utilityAutoP/nestingCoefficient))) * (Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
@@ -608,7 +751,34 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
     probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
     probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / ( Math.exp(utilityBus/nestingCoefficient)+Math.exp(utilityTrain/nestingCoefficient)+Math.exp(utilityTramMetro/nestingCoefficient))) * ( Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit)));
-    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
+    probabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));*/
+
+
+    //Option 2:
+        expsumNestAuto = Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
+        expsumNestTransit = Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
+        expsumTopLevel = Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*Math.log(expsumNestTransit));
+
+        if(expsumNestAuto > 0) {
+            probabilityAutoD = ( Math.exp(utilityAutoD/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+            probabilityAutoP = ( Math.exp(utilityAutoP/nestingCoefficient) / expsumNestAuto) * (Math.exp(nestingCoefficient*Math.log(expsumNestAuto)) / expsumTopLevel);
+        }
+        else {
+            probabilityAutoD = 0.0;
+            probabilityAutoP = 0.0;
+        }
+        if(expsumNestTransit > 0) {
+            probabilityBus = ( Math.exp(utilityBus/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTrain = ( Math.exp(utilityTrain/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTramMetro = (Math.exp(utilityTramMetro/nestingCoefficient) / expsumNestTransit) * ( Math.exp(nestingCoefficient*Math.log(expsumNestTransit)) / expsumTopLevel);
+        }
+        else {
+            probabilityBus = 0.0;
+            probabilityTrain = 0.0;
+            probabilityTramMetro = 0.0;
+        }
+        probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
+        probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk], "double[]");
 }

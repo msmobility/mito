@@ -84,6 +84,7 @@ gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhSize = hh.getHhSize();
 hhAutos = hh.getAutos();
+//hhAVAutos = hh.getAVAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 areaType = originZone.getAreaTypeSG();
 isMunichTrip = originZone.isMunichZone();
@@ -179,9 +180,17 @@ utilityWalk         = interceptHBW[6] + ageHBW[6]*age + maleHBW[6]*(gender.name(
                       townOrRuralCommunityHBW[6]*(areaType.name().equals("HBW_townOrRural")) +
                       tripLengthHBW[6]*travelDistanceNMT + isMunichTripHBW[6]*isMunichTrip;
 
-utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//if (hhAVAutos > 0){
+//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//} else {
+//        utilityAVP = Number.NEGATIVE_INFINITY;
+//}
+
+utilityAVP = Number.NEGATIVE_INFINITY;
 
 utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+
+//utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBW[7]*timeUAM + travelCostHBW[7]*costUAM - generalizedCostHBW[4]*gcTrain;
 
@@ -316,9 +325,17 @@ utilityTramMetro    = interceptHBE[5] + maleHBE[5]*(gender.name().equals("MALE")
 utilityWalk         = interceptHBE[6] + maleHBE[6]*(gender.name().equals("MALE")) + driversLicenseHBE[6]*driversLicense +
                       hhAutosHBE[6]*hhAutos + distToRailStopHBE[6]*distToRailStop + tripLengthHBE[6]*travelDistanceNMT + isMunichTripHBE[6]*isMunichTrip;
 
-utilityAVP          = utilityAutoD + generalizedCostHBE[0]*(gcPrivateAV - gcAutoD);
+//if (hhAVAutos > 0){
+//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//} else {
+//        utilityAVP = Number.NEGATIVE_INFINITY;
+//}
 
-utilityAVS          = utilityBus + generalizedCostHBE[3]*(gcSharedAV - gcBus);
+utilityAVP = Number.NEGATIVE_INFINITY;
+
+utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+
+//utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBE[7]*timeUAM + travelCostHBE[7]*costUAM - generalizedCostHBE[4]*gcTrain;
 
@@ -474,9 +491,17 @@ utilityWalk         = interceptHBS[6] + maleHBS[6]*(gender.name().equals("MALE")
                       hhAutosHBS[6]*hhAutos + distToRailStopHBS[6]*distToRailStop + hhChildrenHBS[6]*hhChildren + 
                       tripLengthHBS[6]*travelDistanceNMT + isMunichTripHBS[6]*isMunichTrip;
 
-utilityAVP          = utilityAutoD + generalizedCostHBS_Sq[0]*(gcPrivateAV - gcAutoD);
+//if (hhAVAutos > 0){
+//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//} else {
+//        utilityAVP = Number.NEGATIVE_INFINITY;
+//}
 
-utilityAVS          = utilityBus + generalizedCostHBS_Sq[3]*(gcSharedAV - gcBus);
+utilityAVP = Number.NEGATIVE_INFINITY;
+
+utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+
+//utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBS[7]*timeUAM + travelCostHBS[7]*costUAM - generalizedCostHBS_Sq[4]*gcTrain;
 
@@ -623,9 +648,17 @@ utilityWalk         = interceptHBO[6] + maleHBO[6]*(gender.name().equals("MALE")
                       hhAutosHBO[6]*hhAutos + hhSizeHBO[6]*hhSize + distToRailStopHBO[6]*distToRailStop + 
                       tripLengthHBO[6]*travelDistanceNMT + isMunichTripHBO[6]*isMunichTrip;
 
-utilityAVP          = utilityAutoD + generalizedCostHBO[0]*(gcPrivateAV - gcAutoD);
+//if (hhAVAutos > 0){
+//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//} else {
+//        utilityAVP = Number.NEGATIVE_INFINITY;
+//}
 
-utilityAVS          = utilityBus + generalizedCostHBO[3]*(gcSharedAV - gcBus);
+utilityAVP = Number.NEGATIVE_INFINITY;
+
+utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+
+//utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBO[7]*timeUAM + travelCostHBO[7]*costUAM - generalizedCostHBO[4]*gcTrain;
 
@@ -761,9 +794,17 @@ utilityTramMetro    = interceptNHBW[5] + ageNHBW[5]*age + driversLicenseNHBW[5]*
 utilityWalk         = interceptNHBW[6] + ageNHBW[6]*age + driversLicenseNHBW[6]*driversLicense +
                       hhAutosNHBW[6]*hhAutos + distToRailStopNHBW[6]*distToRailStop + tripLengthNHBW[6]*travelDistanceNMT;
 
-utilityAVP          = utilityAutoD + generalizedCostNHBW[0]*(gcPrivateAV - gcAutoD);
+//if (hhAVAutos > 0){
+//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//} else {
+//        utilityAVP = Number.NEGATIVE_INFINITY;
+//}
 
-utilityAVS          = utilityBus + generalizedCostNHBW[3]*(gcSharedAV - gcBus);
+utilityAVP = Number.NEGATIVE_INFINITY;
+
+utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+
+//utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeNHBW[7]*timeUAM + travelCostNHBW[7]*costUAM - generalizedCostNHBW[4]*gcTrain;
 
@@ -915,9 +956,17 @@ utilityWalk         = interceptNHBO[6] + maleNHBO[6]*(gender.name().equals("MALE
                       agglomerationUrbanNHBO[6]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
                       ruralNHBO[6]*(areaType.name().equals("NHBO_rural")) + tripLengthNHBO[6]*travelDistanceNMT;
 
-utilityAVP          = utilityAutoD + generalizedCostNHBO_Sq[0]*(gcPrivateAV - gcAutoD);
+//if (hhAVAutos > 0){
+//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//} else {
+//        utilityAVP = Number.NEGATIVE_INFINITY;
+//}
 
-utilityAVS          = utilityBus + generalizedCostNHBO_Sq[3]*(gcSharedAV - gcBus);
+utilityAVP = Number.NEGATIVE_INFINITY;
+
+utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+
+//utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeNHBO[7]*timeUAM + travelCostNHBO[7]*costUAM - generalizedCostNHBO_Sq[4]*gcTrain;
 
