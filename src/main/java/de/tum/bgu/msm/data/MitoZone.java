@@ -13,6 +13,7 @@ import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Created by Nico on 7/7/2017.
@@ -32,6 +33,8 @@ public class MitoZone implements Id, Location {
 
     private float distanceToNearestRailStop;
     private SimpleFeature shapeFeature;
+
+    private Map<Purpose, Float> accessibility;
 
     public MitoZone(int id, AreaTypes.SGType areaType) {
         this.zoneId = id;
@@ -130,6 +133,14 @@ public class MitoZone implements Id, Location {
             }
         }
         return sum;
+    }
+
+    public Map<Purpose, Float> getAccessibility() {
+        return accessibility;
+    }
+
+    public void setAccessibility(Map<Purpose, Float> accessibility) {
+        this.accessibility = accessibility;
     }
 
     @Override

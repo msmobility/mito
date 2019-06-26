@@ -8,6 +8,7 @@ public class Properties {
     public static final String RANDOM_SEED = "random.seed";
 
     public static final String REMOVE_TRIPS_AT_BORDER = "reduce.trips.at.outer.border";
+    public static final String TRIP_GENERATION_POISSON = "run.trip.generation.poisson";
 
     public static final String AUTO_PEAK_SKIM = "auto.peak.travelTime";
     public static final String JOBS = "job.file.ascii";
@@ -20,6 +21,8 @@ public class Properties {
     public static final String ECONOMIC_STATUS = "economic.status.definition";
     public static final String TRANSIT_PEAK_SKIM = "transit.peak.travelTime";
     public static final String ZONES = "zonal.data.file";
+    public static final String ACCESSIBILITY_BY_PURPOSE = "accessibility.data.file";
+
 
     public static final String TRAVEL_SURVEY_HOUSEHOLDS = "household.travel.survey.hh";
     public static final String TRAVEL_SURVEY_TRIPS = "household.travel.survey.trips";

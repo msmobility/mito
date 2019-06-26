@@ -50,6 +50,8 @@ public class TravelDemandGenerator {
         PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
         personTripAssignment.run();
 
+        SummarizeData.writeOutTrips(dataSet, Resources.INSTANCE.getString(Properties.SCENARIO_NAME));
+
         logger.info("Running Module: Travel Time Budget Calculation");
         TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
         ttb.run();

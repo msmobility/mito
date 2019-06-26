@@ -84,6 +84,9 @@ public final class MitoModel {
         if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
+        if (Resources.INSTANCE.getBoolean(Properties.TRIP_GENERATION_POISSON)){
+            new AccessibilityZonesReader(dataSet).read();
+        }
         new JobReader(dataSet, config.getJobTypeFactory()).read();
         new SchoolsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();

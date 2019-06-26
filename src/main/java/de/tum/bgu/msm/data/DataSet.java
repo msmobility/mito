@@ -199,6 +199,14 @@ public class DataSet {
         return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
     }
 
+    public static int getRestrictedMobility(MitoHousehold household) {
+        if ((int) household.getPersons().values().stream().filter(person ->
+                person.getDisability().equals(Disability.WITHOUT)).count() != household.getHhSize()){
+            return 1;
+        }
+        return 0;
+    }
+
     public void addModeShareForPurpose(Purpose purpose, Mode mode, Double share){
         modeSharesByPurpose.put(purpose, mode, share);
     }

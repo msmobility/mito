@@ -1,0 +1,316 @@
+var calculateHBWProbabilities = function (purpose, householdSize, females, youngAdults, retirees, workers, restrictedMobility, cars,
+HBW, HBS, HBO, NHBW, NHBO, distanceToTransit, economicStatus) {
+
+
+    intercept = -1.4725;
+    if(householdSize == 2) {
+        householdSizeParam= 0.1464274;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.1166063;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.0864284;
+    } else if(householdSize >4) {
+        householdSizeParam = 0;
+    } else {
+        householdSizeParam = 0;
+    }
+    femalesParam = 0;
+    youngAdultsParam = 0;
+    retireesParam = -0.7987528;
+    workersParam = 0.6046021;
+    if (restrictedMobility == 1){
+        restrictedMobilityParam = -0.2272708;
+    } else {
+        restrictedMobilityParam = 0;
+    }
+    carsParam = 0;
+    accessibilityImpact = HBW * (-0.0011323);
+    distanceToTransitParam = 0;
+    if(economicStatus == 2) {
+        economicStatusParam = 0;
+    } else if(economicStatus == 3) {
+        economicStatusParam = 0.1188057;
+    } else if(economicStatus == 4) {
+        economicStatusParam = 0.1405453;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0.1050952;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    femalesImpact = females * femalesParam;
+    youngAdultsImpact = youngAdults * youngAdultsParam;
+    retireesImpact = retirees * retireesParam;
+    workersImpact = workers * workersParam;
+    carsImpact = cars * carsParam;
+    distanceToTransitImpact = distanceToTransit * distanceToTransitParam;
+
+    meanPoisson = intercept + householdSizeParam + femalesImpact + youngAdultsImpact + retireesImpact + workersImpact +
+        restrictedMobilityParam + carsImpact + accessibilityImpact + distanceToTransitImpact + economicStatusParam;
+
+
+    expMeanPoisson = Math.exp(meanPoisson);
+    return expMeanPoisson;
+
+}
+
+var calculateHBEProbabilities = function (purpose, householdSize, females, youngAdults, retirees, workers, restrictedMobility, cars,
+HBW, HBS, HBO, NHBW, NHBO, distanceToTransit, economicStatus) {
+
+    intercept = -2.37249;
+    if(householdSize == 2) {
+        householdSizeParam= -1.08118;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.43523;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.89191;
+    } else if(householdSize >4) {
+        householdSizeParam = 0.97327;
+    } else {
+        householdSizeParam = 0;
+    }
+    femalesParam = 0.58684;
+    youngAdultsParam = -0.1484;
+    retireesParam = -1.59355;
+    workersParam = 0.08071;
+    if (restrictedMobility == 1){
+        restrictedMobilityParam = -0.26104;
+    } else {
+        restrictedMobilityParam = 0;
+    }
+    carsParam = 0.05637;
+    accessibilityImpact = 0;
+    distanceToTransitParam = 0;
+    if(economicStatus == 2) {
+        economicStatusParam = 0;
+    } else if(economicStatus == 3) {
+        economicStatusParam = -0.19044;
+    } else if(economicStatus == 4) {
+        economicStatusParam = -0.28517;
+    } else if(economicStatus == 5) {
+        economicStatusParam = -0.42895;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    femalesImpact = females * femalesParam;
+    youngAdultsImpact = youngAdults * youngAdultsParam;
+    retireesImpact = retirees * retireesParam;
+    workersImpact = workers * workersParam;
+    carsImpact = cars * carsParam;
+    distanceToTransitImpact = distanceToTransit * distanceToTransitParam;
+
+    meanPoisson = intercept + householdSizeParam + femalesImpact + youngAdultsImpact + retireesImpact + workersImpact +
+        restrictedMobilityParam + carsImpact + accessibilityImpact + distanceToTransitImpact + economicStatusParam;
+
+
+    expMeanPoisson = Math.exp(meanPoisson);
+    return expMeanPoisson;
+
+}
+
+var calculateHBSProbabilities = function (purpose, householdSize, females, youngAdults, retirees, workers, restrictedMobility, cars,
+HBW, HBS, HBO, NHBW, NHBO, distanceToTransit, economicStatus) {
+
+    intercept = -1.028;
+    if(householdSize == 2) {
+        householdSizeParam= 0.372;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.4194;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.4357;
+    } else if(householdSize >4) {
+        householdSizeParam = 0.5324;
+    } else {
+        householdSizeParam = 0;
+    }
+    femalesParam = 0.09276;
+    youngAdultsParam = 0.1419;
+    retireesParam = 0.1417;
+    workersParam = -0.1247;
+    if (restrictedMobility == 1){
+        restrictedMobilityParam = -0.05063;
+    } else {
+        restrictedMobilityParam = 0;
+    }
+    carsParam = 0.04601;
+    accessibilityImpact = HBS * 0.00174;
+    distanceToTransitParam = -0.0000562;
+    if(economicStatus == 2) {
+        economicStatusParam = 0.150;
+    } else if(economicStatus == 3) {
+        economicStatusParam = 0.1309;
+    } else if(economicStatus == 4) {
+        economicStatusParam = 0.148;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    femalesImpact = females * femalesParam;
+    youngAdultsImpact = youngAdults * youngAdultsParam;
+    retireesImpact = retirees * retireesParam;
+    workersImpact = workers * workersParam;
+    carsImpact = cars * carsParam;
+    distanceToTransitImpact = distanceToTransit * distanceToTransitParam;
+
+    meanPoisson = intercept + householdSizeParam + femalesImpact + youngAdultsImpact + retireesImpact + workersImpact +
+        restrictedMobilityParam + carsImpact + accessibilityImpact + distanceToTransitImpact + economicStatusParam;
+
+
+    expMeanPoisson = Math.exp(meanPoisson);
+    return expMeanPoisson;
+
+
+}
+
+var calculateHBOProbabilities = function (purpose, householdSize, females, youngAdults, retirees, workers, restrictedMobility, cars,
+HBW, HBS, HBO, NHBW, NHBO, distanceToTransit, economicStatus) {
+
+    intercept = -0.04137;
+    if(householdSize == 2) {
+        householdSizeParam= 0.1873;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.4097;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.6596;
+    } else if(householdSize >4) {
+        householdSizeParam = 0.6839;
+    } else {
+        householdSizeParam = 0;
+    }
+    femalesParam = 0.2978;
+    youngAdultsParam = -0.04292;
+    retireesParam = 0.03674;
+    workersParam = -0.1089;
+    restrictedMobilityParam = 0;
+    carsParam = 0.114;
+    accessibilityImpact = HBO * (-0.002001);
+    distanceToTransitParam = -0.00002775;
+    if(economicStatus == 2) {
+        economicStatusParam = 0.;
+    } else if(economicStatus == 3) {
+        economicStatusParam = -0.04053;
+    } else if(economicStatus == 4) {
+        economicStatusParam = 0;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0;
+    } else {
+        economicStatusParam = 0;
+    }
+
+
+    femalesImpact = females * femalesParam;
+    youngAdultsImpact = youngAdults * youngAdultsParam;
+    retireesImpact = retirees * retireesParam;
+    workersImpact = workers * workersParam;
+    carsImpact = cars * carsParam;
+    distanceToTransitImpact = distanceToTransit * distanceToTransitParam;
+
+    meanPoisson = intercept + householdSizeParam + femalesImpact + youngAdultsImpact + retireesImpact + workersImpact +
+        restrictedMobilityParam + carsImpact + accessibilityImpact + distanceToTransitImpact + economicStatusParam;
+
+
+    expMeanPoisson = Math.exp(meanPoisson);
+    return expMeanPoisson;
+
+}
+
+var calculateNHBWProbabilities = function (purpose, householdSize, females, youngAdults, retirees, workers, restrictedMobility, cars,
+HBW, HBS, HBO, NHBW, NHBO, distanceToTransit, economicStatus) {
+
+    intercept = -2.836;
+    if(householdSize >4) {
+        householdSizeParam = 0.2934;
+    } else {
+        householdSizeParam = 0;
+    }
+    femalesParam = 0.03779;
+    youngAdultsParam = -0.1444;
+    retireesParam = -1.085;
+    workersParam = 0.504;
+    if (restrictedMobility == 1){
+        restrictedMobilityParam = -0.256;
+    } else {
+        restrictedMobilityParam = 0;
+    }
+    carsParam = 0;
+    accessibilityImpact = NHBW * 0.00623;
+    distanceToTransitParam = -0.00004297;
+    if(economicStatus == 2) {
+        economicStatusParam = 0.2384;
+    } else if(economicStatus == 3) {
+        economicStatusParam = 0.5283;
+    } else if(economicStatus == 4) {
+        economicStatusParam = 0.7998;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0.9658;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    femalesImpact = females * femalesParam;
+    youngAdultsImpact = youngAdults * youngAdultsParam;
+    retireesImpact = retirees * retireesParam;
+    workersImpact = workers * workersParam;
+    carsImpact = cars * carsParam;
+    distanceToTransitImpact = distanceToTransit * distanceToTransitParam;
+
+    meanPoisson = intercept + householdSizeParam + femalesImpact + youngAdultsImpact + retireesImpact + workersImpact +
+        restrictedMobilityParam + carsImpact + accessibilityImpact + distanceToTransitImpact + economicStatusParam;
+
+
+    expMeanPoisson = Math.exp(meanPoisson);
+    return expMeanPoisson;
+
+}
+
+var calculateNHBOProbabilities = function (purpose, householdSize, females, youngAdults, retirees, workers, restrictedMobility, cars,
+HBW, HBS, HBO, NHBW, NHBO, distanceToTransit, economicStatus) {
+    intercept = -0.9202;
+    if(householdSize == 2) {
+        householdSizeParam= 0.2371;
+    } else if(householdSize == 3) {
+        householdSizeParam = 0.4153;
+    } else if(householdSize == 4) {
+        householdSizeParam = 0.5425;
+    } else if(householdSize >4) {
+        householdSizeParam = 0.4157;
+    } else {
+        householdSizeParam = 0;
+    }
+    femalesParam = 0.3350;
+    youngAdultsParam = 0;
+    retireesParam = -0.06558;
+    workersParam = -0.1883;
+    restrictedMobilityParam = 0;
+    carsParam = 0.09902;
+    accessibilityImpact = NHBO * 0.002500;
+    distanceToTransitParam = -0.00002087;
+    if(economicStatus == 2) {
+        economicStatusParam = 0.1576;
+    } else if(economicStatus == 3) {
+        economicStatusParam = 0.2013;
+    } else if(economicStatus == 4) {
+        economicStatusParam = 0.3270;
+    } else if(economicStatus == 5) {
+        economicStatusParam = 0.3940;
+    } else {
+        economicStatusParam = 0;
+    }
+
+    femalesImpact = females * femalesParam;
+    youngAdultsImpact = youngAdults * youngAdultsParam;
+    retireesImpact = retirees * retireesParam;
+    workersImpact = workers * workersParam;
+    carsImpact = cars * carsParam;
+    distanceToTransitImpact = distanceToTransit * distanceToTransitParam;
+
+    meanPoisson = intercept + householdSizeParam + femalesImpact + youngAdultsImpact + retireesImpact + workersImpact +
+        restrictedMobilityParam + carsImpact + accessibilityImpact + distanceToTransitImpact + economicStatusParam;
+
+    expMeanPoisson = Math.exp(meanPoisson);
+    return expMeanPoisson;
+
+}

@@ -2,7 +2,10 @@ package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 /**
@@ -30,8 +33,13 @@ public class TripGeneration extends Module {
     }
 
     private void generateRawTrips() {
-        RawTripGenerator rawTripGenerator = new RawTripGenerator(dataSet);
-        rawTripGenerator.run();
+        if (!Resources.INSTANCE.getBoolean(Properties.TRIP_GENERATION_POISSON)) {
+            RawTripGenerator rawTripGenerator = new RawTripGenerator(dataSet);
+            rawTripGenerator.run();
+        } else {
+            TripsByPurposeGeneratorAccessibility rawTripGenerator = new TripsByPurposeGeneratorAccessibility(dataSet);
+            rawTripGenerator.run();
+        }
     }
 
     private void calculateAttractions() {

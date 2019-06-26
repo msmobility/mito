@@ -6,9 +6,9 @@ import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 
 /**
- * Implements the Transport in Microsimulation Orchestrator (TIMO)
- * @author Rolf Moeckel
- * Created on Feb 12, 2017 in Munich, Germany
+ * Implements the Transport in Microsimulation Orchestrator (MITO) to calculate logsum-based accessibilities
+ * @author Ana Moreno
+ * Created on Jun 24, 2019 in Munich, Germany
  *
  */
 class MitoAccessibilityMuc {
