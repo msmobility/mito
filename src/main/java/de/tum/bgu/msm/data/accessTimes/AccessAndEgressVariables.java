@@ -23,7 +23,7 @@ public class AccessAndEgressVariables {
 	private final ConcurrentMap<String, ConcurrentMap<AccessVariable, IndexedDoubleMatrix2D>> matricesByMode = new ConcurrentHashMap<>();
 
     public final void readSkim(final String mode, final AccessVariable type, final String file, final String matrixName, final double factor) {
-        LOGGER.info("Reading " + type + " skim of " + type.toString());
+        LOGGER.info("Reading " + type + " skim of " + mode);
         final OmxFile omx = new OmxFile(file);
         omx.openReadOnly();
         final Set<String> lookupNames = omx.getLookupNames();
