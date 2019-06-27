@@ -6,6 +6,8 @@ import de.tum.bgu.msm.io.input.readers.ExternalFlowMatrixReader;
 import de.tum.bgu.msm.io.input.readers.ExternalZonesReader;
 import de.tum.bgu.msm.io.input.readers.LongDistanceTimeOfDayDistributionReader;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
@@ -70,9 +72,16 @@ public class LongDistanceTraffic extends Module {
             for (int originId : matrix.rowKeySet()) {
                 for (int destId : matrix.columnKeySet()) {
                     if (matrix.contains(originId, destId)) {
-                        addFlow(originId, destId, matrix.get(originId, destId));
-                        countTotals(originId, destId, matrix.get(originId, destId), type);
-                        long trips = getNumberOfTripsFromDecimal(matrix.get(originId, destId),scalingFactor);
+                        float numberOfTripsFloat = matrix.get(originId, destId);
+
+                        double relativeGrowth = Math.pow( 1 +
+                                Resources.INSTANCE.getDouble(Properties.EXTERNAL_GROWTH_RATE, 0.006),
+                                dataSet.getYear() - Resources.INSTANCE.getInt(Properties.EXTERNAL_BASE_YEAR, 2011));
+                        numberOfTripsFloat = numberOfTripsFloat * (float) relativeGrowth;
+
+                        addFlow(originId, destId, numberOfTripsFloat);
+                        countTotals(originId, destId, numberOfTripsFloat, type);
+                        long trips = getNumberOfTripsFromDecimal(numberOfTripsFloat,scalingFactor);
                         for (long trip = 0; trip < trips; trip++) {
                             Plan matsimPlan = matsimPopulationFactory.createPlan();
                             Person matsimPerson = matsimPopulationFactory.createPerson(Id.createPersonId(ExternalFlowType.getPrefixForType(type) + personId));

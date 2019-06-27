@@ -6,13 +6,10 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.core.controler.Controler;
-import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -96,9 +93,6 @@ public class TrafficAssignment extends Module {
 
         CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
         skimUpdater.run();
-
-        final TravelTime linkTravelTimes = controler.getLinkTravelTimes();
-        dataSet.setMatsimTravelTime(linkTravelTimes);
-        dataSet.setMatsimTravelDisutility( controler.getTravelDisutilityFactory().createTravelDisutility(linkTravelTimes));
-    }
+        dataSet.setMatsimControler(controler);
+       }
 }

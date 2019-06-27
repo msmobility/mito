@@ -9,22 +9,17 @@ import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.network.Node;
-import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.*;
 import org.matsim.core.router.util.LeastCostPathCalculator;
 import org.matsim.core.router.util.TravelDisutility;
 import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.utils.geometry.CoordUtils;
-import org.matsim.vehicles.Vehicle;
-import org.matsim.vehicles.VehicleUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +35,6 @@ public class CarSkimUpdater {
     private TravelDisutility travelDisutility;
     private TravelTime travelTime;
     private DataSet dataSet;
-    private final Vehicle VEHICLE = VehicleUtils.getFactory().createVehicle(Id.create("theVehicle", Vehicle.class), VehicleUtils.getDefaultVehicleType());
-    private final Person PERSON = PopulationUtils.getFactory().createPerson(Id.create("thePerson", Person.class));
 
 
     public CarSkimUpdater(Controler controler,
@@ -79,7 +72,6 @@ public class CarSkimUpdater {
 
         long startTime2 = System.currentTimeMillis();
 
-        IndexedDoubleMatrix2D skim = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
         final int partitionSize = (int) ((double) dataSet.getZones().size() / Runtime.getRuntime().availableProcessors()) + 1;
         logger.info("Intended size of all of partititons = " + partitionSize);
         Iterable<List<MitoZone>> partitions = Iterables.partition(dataSet.getZones().values(), partitionSize);
@@ -118,8 +110,6 @@ public class CarSkimUpdater {
                             }
                             carTravelTimeMatrix.setIndexed(origin.getId(), destination.getId(), travelTime);
                             carDistanceMatrix.setIndexed(origin.getId(), destination.getId(), distance / 1000.);
-
-                            skim.setIndexed(origin.getZoneId(), destination.getZoneId(), travelTime);
                         }
                     }
                 } catch (Exception e) {
@@ -146,6 +136,7 @@ public class CarSkimUpdater {
     private void assignIntrazonals(int numberOfNeighbours, float maximumMinutes, float proportionOfTime) {
         int nonIntrazonalCounter = 0;
         for (int i = 1; i < carTravelTimeMatrix.columns(); i++) {
+            int i_id = carTravelTimeMatrix.getIdForInternalColumnIndex(i);
             double[] minTimeValues = new double[numberOfNeighbours];
             double[] minDistValues = new double[numberOfNeighbours];
             for (int k = 0; k < numberOfNeighbours; k++) {
@@ -154,16 +145,18 @@ public class CarSkimUpdater {
             }
             //find the  n closest neighbors - the lower travel time values in the matrix column
             for (int j = 1; j < carTravelTimeMatrix.rows(); j++) {
+                int j_id = carTravelTimeMatrix.getIdForInternalRowIndex(j);
                 int minimumPosition = 0;
                 while (minimumPosition < numberOfNeighbours) {
-                    if (minTimeValues[minimumPosition] > carTravelTimeMatrix.getIndexed(i, j) && carTravelTimeMatrix.getIndexed(i, j) != 0) {
+                    if (minTimeValues[minimumPosition] > carTravelTimeMatrix.getIndexed(i_id, j_id) && carTravelTimeMatrix.getIndexed(i_id, j_id) != 0) {
                         for (int k = numberOfNeighbours - 1; k > minimumPosition; k--) {
                             minTimeValues[k] = minTimeValues[k - 1];
                             minDistValues[k] = minDistValues[k - 1];
 
                         }
-                        minTimeValues[minimumPosition] = carTravelTimeMatrix.getIndexed(i, j);
-                        minDistValues[minimumPosition] = carDistanceMatrix.getIndexed(i, j);
+                        minTimeValues[minimumPosition] = carTravelTimeMatrix.getIndexed(i_id, j_id);
+                        minDistValues[minimumPosition] = carDistanceMatrix.getIndexed(i_id, j_id);
+
                         break;
                     }
                     minimumPosition++;
@@ -180,8 +173,9 @@ public class CarSkimUpdater {
 
             //fill with the calculated value the cells with zero
             for (int j = 1; j < carTravelTimeMatrix.rows(); j++) {
-                if (carTravelTimeMatrix.getIndexed(i, j) == 0) {
-                    carTravelTimeMatrix.setIndexed(i, j, globalMinTime);
+                int j_id = carTravelTimeMatrix.getIdForInternalColumnIndex(j);
+                if (carTravelTimeMatrix.getIndexed(i_id, j_id) == 0) {
+                    carTravelTimeMatrix.setIndexed(i_id, j_id, globalMinTime);
                     carDistanceMatrix.setIndexed(i, j, globalMinDist);
                     if (i != j) {
                         nonIntrazonalCounter++;
