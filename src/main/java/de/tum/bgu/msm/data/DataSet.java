@@ -3,9 +3,10 @@ package de.tum.bgu.msm.data;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
-import de.tum.bgu.msm.data.accessTimes.AccessTimes;
+import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.data.waitingTimes.WaitingTimes;
 import org.matsim.core.controler.Controler;
 
 import java.util.*;
@@ -13,11 +14,13 @@ import java.util.*;
 public class DataSet {
 
     private TravelTimes travelTimes;
-    private AccessTimes accessTimes;
+    private AccessAndEgressVariables accessAndEgressVariables;
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
     private TravelDistances travelCostUAM;
+
+    private WaitingTimes waitingTimes;
 
     private double peakHour = Double.NaN;
 
@@ -249,12 +252,12 @@ public class DataSet {
         this.departureMinuteCumProbByPurpose = departureMinuteCumProbByPurpose;
     }
 
-    public AccessTimes getAccessTimes() {
-        return accessTimes;
+    public AccessAndEgressVariables getAccessAndEgressVariables() {
+        return accessAndEgressVariables;
     }
 
-    public void setAccessTimes(AccessTimes accessTimes) {
-        this.accessTimes = accessTimes;
+    public void setAccessAndEgressVariables(AccessAndEgressVariables accessAndEgressVariables) {
+        this.accessAndEgressVariables = accessAndEgressVariables;
     }
 
     public TravelDistances getTravelCostUAM() {
@@ -263,5 +266,13 @@ public class DataSet {
 
     public void setTravelCostUAM(TravelDistances travelCostUAM) {
         this.travelCostUAM = travelCostUAM;
+    }
+
+    public void setWaitingTimes(WaitingTimes waitingTimes) {
+        this.waitingTimes = waitingTimes;
+    }
+
+    public WaitingTimes getWaitingTimes() {
+        return waitingTimes;
     }
 }

@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.accessTimes.AccessTimes;
+import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
@@ -12,7 +12,6 @@ import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -140,7 +139,7 @@ public class ModeChoice extends Module {
         private final DataSet dataSet;
         private final ModeChoiceJSCalculator calculator;
         private final TravelTimes travelTimes;
-        private final AccessTimes accessTimes;
+        private final AccessAndEgressVariables accessAndEgressVariables;
         private int countTripsSkipped;
 
         ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, boolean includeAV, boolean includeUAM) {
@@ -148,7 +147,7 @@ public class ModeChoice extends Module {
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
-            this.accessTimes = dataSet.getAccessTimes();
+            this.accessAndEgressVariables = dataSet.getAccessAndEgressVariables();
             if (includeAV) {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoiceAV")), purpose);
@@ -195,11 +194,11 @@ public class ModeChoice extends Module {
             if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)){
                 final double travelCostUAM = dataSet.getTravelCostUAM().getTravelDistance(originId,
                         destinationId);
-                double boardingTime = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_BOARDINGTIME));
+                double processingTime = dataSet.getWaitingTimes().getWaitingTime(trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
                 double uamCost = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST));
-                System.out.println(boardingTime+","+uamCost);
-                return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessTimes, travelDistanceAuto,
-                        travelDistanceNMT, travelCostUAM, dataSet.getPeakHour(),boardingTime,uamCost);
+                //System.out.println(boardingTime+","+uamCost);
+                return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
+                        travelDistanceNMT, travelCostUAM, dataSet.getPeakHour(),processingTime,uamCost);
             }else {
                 return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                         travelDistanceNMT, dataSet.getPeakHour());

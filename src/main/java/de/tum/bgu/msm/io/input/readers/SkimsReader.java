@@ -1,8 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.accessTimes.AccessTimes;
+import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.AbstractOmxReader;
@@ -55,7 +54,7 @@ public class SkimsReader extends AbstractOmxReader {
     }
 
     private void readAccessTimeSkims() {
-        dataSet.getAccessTimes().readSkim("transit", Resources.INSTANCE.getString(Properties.PT_ACCESS_TIME_SKIM), "mat1", 1.);
+        dataSet.getAccessAndEgressVariables().readSkim("transit", AccessAndEgressVariables.AccessVariable.ACCESS_T_MIN,  Resources.INSTANCE.getString(Properties.PT_ACCESS_TIME_SKIM), "mat1", 1.);
         //dataSet.getAccessTimes().readSkim("uam", Resources.INSTANCE.getString(Properties.UAM_Access_TIME_SKIM), "mat1", 1.);
     }
 
@@ -64,7 +63,8 @@ public class SkimsReader extends AbstractOmxReader {
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
         IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM),"distanceByDistance", 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
-        IndexedDoubleMatrix2D costSkimUAM = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.UAM_TRAVEL_COST_SKIM),"cost", 1.);
+        //todo temporally we read cost and in the mode choice scripts we divided by 5 to use it as distance. In the future, read directly flying distance
+        IndexedDoubleMatrix2D costSkimUAM = super.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.UAM_TRAVEL_COST_SKIM),"cost", 1);
         dataSet.setTravelCostUAM(new MatrixTravelDistances(costSkimUAM));
     }
 }

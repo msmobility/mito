@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.accessTimes.AccessTimes;
+import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -51,7 +51,7 @@ public class ModeChoiceTest {
             }
         });
 
-        dataSet.setAccessTimes(new AccessTimes() {
+        dataSet.setAccessAndEgressVariables(new AccessAndEgressVariables() {
             @Override
             public double getAccessTime(Location origin, Location destination, String mode) {
                 return 10.;

@@ -14,14 +14,16 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class AccessTimes {
+public class AccessAndEgressVariables {
 
-    private final static Logger LOGGER = Logger.getLogger(AccessTimes.class);
+    private final static Logger LOGGER = Logger.getLogger(AccessAndEgressVariables.class);
 
-	private final ConcurrentMap<String, IndexedDoubleMatrix2D> matricesByMode = new ConcurrentHashMap<>();
+    public enum AccessVariable {ACCESS_T_MIN, ACCESS_DIST_KM, EGRESS_T_MIN, EGRESS_DIST_KM, ACCESS_VERTIPORT, EGRESS_VERTIPORT}
 
-    public final void readSkim(final String mode, final String file, final String matrixName, final double factor) {
-        LOGGER.info("Reading " + mode + " skim");
+	private final ConcurrentMap<String, ConcurrentMap<AccessVariable, IndexedDoubleMatrix2D>> matricesByMode = new ConcurrentHashMap<>();
+
+    public final void readSkim(final String mode, final AccessVariable type, final String file, final String matrixName, final double factor) {
+        LOGGER.info("Reading " + type + " skim of " + type.toString());
         final OmxFile omx = new OmxFile(file);
         omx.openReadOnly();
         final Set<String> lookupNames = omx.getLookupNames();
@@ -42,13 +44,35 @@ public class AccessTimes {
 
         final OmxMatrix timeOmxSkimTransit = omx.getMatrix(matrixName);
         final IndexedDoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, lookup, factor);
-        matricesByMode.put(mode, skim);
+        matricesByMode.putIfAbsent(mode, new ConcurrentHashMap<>());
+        matricesByMode.get(mode).put(type, skim);
         omx.close();
     }
 
+    /**
+     * returns the access time in minutes for the mode
+     * @param origin
+     * @param destination
+     * @param mode
+     * @return
+     */
 	public double getAccessTime(Location origin, Location destination, String mode) {
 		int originZone = origin.getZoneId();
 		int destinationZone = destination.getZoneId();
-		return matricesByMode.get(mode).getIndexed(originZone, destinationZone);
+		return matricesByMode.get(mode).get(AccessVariable.ACCESS_T_MIN).getIndexed(originZone, destinationZone);
 	}
+
+    /**
+     * returns a generic access or egress variable
+     * @param origin
+     * @param destination
+     * @param mode
+     * @param variable
+     * @return
+     */
+    public double getAccessVariable(Location origin, Location destination, String mode, AccessVariable variable) {
+        int originZone = origin.getZoneId();
+        int destinationZone = destination.getZoneId();
+        return matricesByMode.get(mode).get(variable).getIndexed(originZone, destinationZone);
+    }
 }
