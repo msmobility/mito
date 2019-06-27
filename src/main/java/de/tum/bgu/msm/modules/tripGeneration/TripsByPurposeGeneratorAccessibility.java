@@ -84,7 +84,7 @@ class TripsByPurposeGeneratorAccessibility extends Module {
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.calculator = new TripGenerationAccessibilityJSCalculator(new InputStreamReader(
-                    this.getClass().getResourceAsStream("TripGenerationAccessibilityCalc")), purpose);
+                    this.getClass().getResourceAsStream("TripGenerationAccessibilityCalcWorkday")), purpose);
         }
 
         @Override
