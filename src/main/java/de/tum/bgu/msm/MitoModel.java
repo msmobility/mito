@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.accessTimes.AccessTimes;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -54,9 +55,9 @@ public final class MitoModel {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         MitoModel model = new MitoModel(dataSet, scenarioName);
-        new SkimsReader(dataSet).readSkimDistancesAuto();
-        new SkimsReader(dataSet).readSkimDistancesNMT();
         new SkimsReader(dataSet).readOnlyTransitTravelTimes();
+        new SkimsReader(dataSet).readSkimDistancesNMT();
+        new SkimsReader(dataSet).readSkimDistancesAuto();
         model.readAdditionalData();
         return model;
     }
@@ -72,18 +73,19 @@ public final class MitoModel {
     }
 
     private void readStandAlone(ImplementationConfig config) {
-        dataSet.setTravelTimes(new SkimTravelTimes());
         dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR));
         new ZonesReader(dataSet).read();
         if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
-        new SkimsReader(dataSet).read();
         new JobReader(dataSet, config.getJobTypeFactory()).read();
         new SchoolsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
         new HouseholdsCoordReader(dataSet).read();
         new PersonsReader(dataSet).read();
+        dataSet.setTravelTimes(new SkimTravelTimes());
+        dataSet.setAccessTimes(new AccessTimes());
+        new SkimsReader(dataSet).read();
         readAdditionalData();
     }
 
@@ -91,6 +93,8 @@ public final class MitoModel {
         new TripAttractionRatesReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
+        new TimeOfDayDistributionsReader(dataSet).read();
+
     }
 
     private void printOutline(long startTime) {

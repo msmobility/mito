@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.data;
 
+import org.matsim.api.core.v01.TransportMode;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -12,7 +14,8 @@ public enum Mode implements Id {
     tramOrMetro,
     walk,
     privateAV,
-    sharedAV;
+    sharedAV,
+    uam; //Urban Air Mobility (Flying taxi)
 
     @Override
     public int getId(){
@@ -39,8 +42,33 @@ public enum Mode implements Id {
                 return privateAV;
             case 8:
                 return sharedAV;
+            case 9:
+                return uam;
             default:
                 throw new RuntimeException("Mode for code " + code + "not specified.");
         }
+    }
+
+    public static String getMatsimMode(Mode mitoMode){
+        switch (mitoMode) {
+            case autoDriver:
+                return TransportMode.car;
+            case autoPassenger:
+                return "car_passenger";
+            case bus:
+                return TransportMode.pt;
+            case tramOrMetro:
+                return TransportMode.pt;
+            case train:
+                return TransportMode.pt;
+            case walk:
+                return TransportMode.walk;
+            case bicycle:
+                return TransportMode.bike;
+            default:
+                return null;
+
+        }
+
     }
 }

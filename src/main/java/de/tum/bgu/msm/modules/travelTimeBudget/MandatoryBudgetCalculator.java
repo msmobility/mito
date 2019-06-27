@@ -47,8 +47,8 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
             for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                 if (specifiedByOccupation(trip)) {
                     //Multiply by 2, as the budget should contain the return trip of home based trips as well
-                    budget += 2 * travelTimes.getTravelTime(household.getHomeZone().getId(),
-                            trip.getPerson().getOccupation().getZoneId(), timeOfDay, TransportMode.car);
+                    budget += 2 * travelTimes.getTravelTime(household.getHomeZone(),
+                            trip.getPerson().getOccupation(), timeOfDay, TransportMode.car);
                 } else {
                     budget += defaultBudget;
                     defaultBudgeted ++;

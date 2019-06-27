@@ -1,16 +1,23 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.core.controler.Controler;
+import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class TrafficAssignment extends Module {
 
@@ -18,7 +25,7 @@ public class TrafficAssignment extends Module {
     private Config matsimConfig;
     private MutableScenario matsimScenario;
     private String outputSubDirectory;
-    private final double SILO_SAMPLING_RATE = 1.0;
+    private final double SILO_SAMPLING_RATE = 1.;
 
     public TrafficAssignment(DataSet dataSet, String scenarioName) {
         super(dataSet);
@@ -53,11 +60,28 @@ public class TrafficAssignment extends Module {
 
         matsimConfig.qsim().setStuckTime(10);
         matsimConfig.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
-        matsimConfig.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Math.pow(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)), 0.75));
+        matsimConfig.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+
+
+        String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
+        Set<String> networkModesSet = new HashSet<>();
+
+        for (String mode : networkModes){
+            String matsimMode = Mode.getMatsimMode(Mode.valueOf(mode));
+            if (!networkModesSet.contains(matsimMode)){
+                networkModesSet.add(matsimMode);
+            }
+        }
+
+        matsimConfig.plansCalcRoute().setNetworkModes(networkModesSet);
+
+
+
     }
 
     private void createPopulation() {
-        Population population = MatsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig);
+        MatsimPopulationGenerator matsimPopulationGenerator = new MatsimPopulationGenerator();
+        Population population = matsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig);
         if (Resources.INSTANCE.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
             LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
             population = longDistanceTraffic.addLongDistancePlans(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)), population);
@@ -73,5 +97,8 @@ public class TrafficAssignment extends Module {
         CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
         skimUpdater.run();
 
+        final TravelTime linkTravelTimes = controler.getLinkTravelTimes();
+        dataSet.setMatsimTravelTime(linkTravelTimes);
+        dataSet.setMatsimTravelDisutility( controler.getTravelDisutilityFactory().createTravelDisutility(linkTravelTimes));
     }
 }

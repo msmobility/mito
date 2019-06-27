@@ -5,6 +5,7 @@ import de.tum.bgu.msm.DummyZone;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,20 +51,19 @@ public class ModeChoiceCalculatorTest {
         	}
 
 			@Override
-			public double getTravelTime(int origin, int destination, double timeOfDay_s, String mode) {
-				switch(mode) {
-        		case "car": return 15.;
-        		case "bus": return 30.;
-        		case "tramMetro": return 25;
-        		case "train": return 40.;
-        		default: return 0;
-        		}
-			}
-
-			@Override
 			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
 				return 0;
 			}
+
+            @Override
+            public IndexedDoubleMatrix2D getPeakSkim(String mode) {
+                return null;
+            }
+
+            @Override
+            public TravelTimes duplicate() {
+                return null;
+            }
         }, 5., 5., 0);
         for(int i = 0; i < result.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);

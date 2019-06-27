@@ -5,6 +5,7 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,8 +25,8 @@ public class PersonTripAssignment extends Module {
     @Override
     public void run() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            for(Purpose purpose: Purpose.values()) {
-                for(Iterator<MitoTrip> iterator = household.getTripsForPurpose(purpose).listIterator(); iterator.hasNext(); ) {
+            for (Purpose purpose : Purpose.values()) {
+                for (Iterator<MitoTrip> iterator = household.getTripsForPurpose(purpose).listIterator(); iterator.hasNext(); ) {
                     MitoTrip trip = iterator.next();
                     Map<MitoPerson, Double> probabilitiesByPerson = getProbabilityByPersonForTrip(household, trip);
                     if (probabilitiesByPerson != null && !probabilitiesByPerson.isEmpty()) {
@@ -53,9 +54,13 @@ public class PersonTripAssignment extends Module {
             assignNHBW(household, probabilitiesByPerson);
         } else if (purpose == NHBO) {
             assignNHBO(household, probabilitiesByPerson);
+        } else if (purpose == AIRPORT) {
+            assignAIRPORT(household, probabilitiesByPerson);
         }
         return probabilitiesByPerson;
     }
+
+
 
     private void selectPersonForTrip(MitoTrip trip, Map<MitoPerson, Double> probabilitiesByPerson) {
         MitoPerson selectedPerson = MitoUtil.select(probabilitiesByPerson);
@@ -135,9 +140,23 @@ public class PersonTripAssignment extends Module {
         }
     }
 
+    private void assignAIRPORT(MitoHousehold household, Map<MitoPerson,Double> probabilitiesByPerson) {
+        //by now we assign all the trips to the airport to residents, with the uniform probability for all hh
+        //members. Consider improvement: assign them long-distance travelers' based on socio-demographic attributes.
+        fillEquallyDistributedAmongAdults(household, probabilitiesByPerson);
+    }
+
     private void fillEquallyDistributed(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
         for (MitoPerson person : household.getPersons().values()) {
             probabilitiesByPerson.put(person, 1.);
+        }
+    }
+
+    private void fillEquallyDistributedAmongAdults(MitoHousehold household, Map<MitoPerson, Double> probabilitiesByPerson) {
+        for (MitoPerson person : household.getPersons().values()) {
+            if (person.getAge() > 17) {
+                probabilitiesByPerson.put(person, 1.);
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ public class TravelTimeBudgetModule extends Module {
 
     public TravelTimeBudgetModule(DataSet dataSet) {
         super(dataSet);
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
+        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalcNew"));
         travelTimeCalc = new TravelTimeBudgetJSCalculator(reader);
     }
 
