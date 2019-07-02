@@ -1,17 +1,12 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.resources.Properties;
