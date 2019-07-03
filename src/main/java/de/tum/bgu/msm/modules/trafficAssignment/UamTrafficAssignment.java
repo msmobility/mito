@@ -4,7 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import net.bhl.matsim.uam.run.RunUAMScenario;
+//import net.bhl.matsim.uam.run.RunUAMScenario;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,9 +22,9 @@ public class UamTrafficAssignment extends TrafficAssignment {
 	@Override
 	protected void configMatsim() {
 		String[] args = { "--config-path \"\"", "--city Munich" };
-		RunUAMScenario.parseArguments(args);
-		matsimConfig = RunUAMScenario.initialiseConfig();
-		
+		//RunUAMScenario.parseArguments(args);
+		//matsimConfig = RunUAMScenario.initialiseConfig();
+
 		// UAM parameters
 		matsimConfig.getModules().get("uam").addParam("inputFile", Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
 		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,pt");
@@ -72,7 +72,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 	}
 
 	protected void runMatsim() {
-		RunUAMScenario.initialiseControler().run();
+		//RunUAMScenario.initialiseControler().run();
 
 		CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
 		skimUpdater.run();
