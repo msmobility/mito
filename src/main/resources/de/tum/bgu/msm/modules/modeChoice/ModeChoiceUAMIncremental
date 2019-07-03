@@ -78,7 +78,7 @@ timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"
 if(timeUAM < 10000){
 timeUAM = timeUAM/60 + boardingTime;
 }
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 age = person.getAge();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
@@ -89,7 +89,7 @@ areaType = originZone.getAreaTypeSG();
 isMunichTrip = originZone.isMunichZone();
 
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
@@ -102,7 +102,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
@@ -115,7 +115,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW
   }else{
         costUAM = travelCostUAM;
   }
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit;
@@ -247,14 +247,14 @@ timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"
 if(timeUAM < 10000){
 timeUAM = timeUAM/60 + boardingTime;
 }
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 isMunichTrip = originZone.isMunichZone();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
@@ -267,7 +267,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
@@ -280,7 +280,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit;
@@ -398,14 +398,14 @@ timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"
 if(timeUAM < 10000){
 timeUAM = timeUAM/60 + boardingTime;
 }
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 isMunichTrip = originZone.isMunichZone();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit;
@@ -418,7 +418,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit;
@@ -431,7 +431,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit;
@@ -546,7 +546,7 @@ timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"
 if(timeUAM < 10000){
 timeUAM = timeUAM/60 + boardingTime;
 }
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
@@ -554,7 +554,7 @@ hhSize = hh.getHhSize();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 isMunichTrip = originZone.isMunichZone();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit;
@@ -567,7 +567,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit;
@@ -580,7 +580,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit;
@@ -693,13 +693,13 @@ timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"
 if(timeUAM < 10000){
 timeUAM = timeUAM/60 + boardingTime;
 }
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 age = person.getAge();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit;
@@ -712,7 +712,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit;
@@ -725,7 +725,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit;
@@ -832,14 +832,14 @@ timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"
 if(timeUAM < 10000){
 timeUAM = timeUAM/60 + boardingTime;
 }
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 areaType = originZone.getAreaTypeR();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit;
@@ -852,7 +852,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit;
@@ -865,7 +865,7 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_oth
     }else{
         costUAM = travelCostUAM;
     }
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit;
