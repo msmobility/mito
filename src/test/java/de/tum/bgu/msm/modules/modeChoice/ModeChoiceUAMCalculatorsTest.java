@@ -7,14 +7,11 @@ import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ModeChoiceUAMCalculatorsTest {
@@ -22,23 +19,32 @@ public class ModeChoiceUAMCalculatorsTest {
 
     private Map<String, ModeChoiceJSCalculator> calculators = new HashMap<>();
 
-    @Before
-    public void setup() {
-        Resources.initializeResources("./testInput/test.properties");
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAM"));
-        calculators.put("ModeChoiceUAM", new ModeChoiceJSCalculator(reader, Purpose.HBS));
-        reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAMIncremental"));
-        calculators.put("ModeChoiceUAMIncremental", new ModeChoiceJSCalculator(reader, Purpose.HBS));
-        reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAMIncrementalNoAVs.txt"));
-        calculators.put("ModeChoiceUAMIncrementalNoAVs.txt" ,new ModeChoiceJSCalculator(reader, Purpose.HBS));
+    @Test
+    public void test(){
+        for (Purpose purpose : Purpose.values()){
+            if (!purpose.equals(Purpose.AIRPORT)){
+                setupThisPurpose(purpose);
+                testThisPurpose(purpose);
+            }
+
+        }
     }
 
-    @Test
-    public void test() {
+    public void setupThisPurpose(Purpose purpose) {
+        Resources.initializeResources("./testInput/test.properties");
+        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAM"));
+        calculators.put("ModeChoiceUAM", new ModeChoiceJSCalculator(reader, purpose));
+        reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAMIncremental"));
+        calculators.put("ModeChoiceUAMIncremental", new ModeChoiceJSCalculator(reader, purpose));
+        reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAMIncrementalNoAVs.txt"));
+        calculators.put("ModeChoiceUAMIncrementalNoAVs.txt" ,new ModeChoiceJSCalculator(reader, purpose));
+    }
+
+    public void testThisPurpose(Purpose purpose) {
         MitoZone zone = DummyZone.dummy;
         zone.setDistanceToNearestRailStop(0.5f);
         zone.setShapeFeature(new MyFeature(false));
-        //origin.setAreaTypeHBWModeChoice(AreaType.HBW_mediumSizedCity);
+        zone.setAreaTypeR(AreaTypes.RType.AGGLOMERATION);
         MitoHousehold hh = new MitoHousehold(1, 2000, 1, null);
         MitoPerson pp = new MitoPerson(1, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
         hh.addPerson(pp);
@@ -89,7 +95,7 @@ public class ModeChoiceUAMCalculatorsTest {
                 }
             }, 50., 50, 100., 8., 20., 4);
 
-            System.out.println("#####Calculator" + calculatorName + "#####");
+            System.out.println("#####Calculator" + calculatorName + "##### Purpose " + purpose.toString() + "######");
             for (int i = 0; i < result.length; i++) {
                 System.out.println("Mode " + Mode.valueOf(i) + " with probability " + result[i]);
             }
