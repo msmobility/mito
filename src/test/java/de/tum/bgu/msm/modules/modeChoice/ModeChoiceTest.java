@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.data.waitingTimes.WaitingTimes;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
@@ -30,7 +31,8 @@ public class ModeChoiceTest {
         dataSet.setTravelDistancesNMT((origin, destination) -> 1);
         dataSet.setTravelCostUAM((origin, destination) -> 1.2);
         dataSet.setTravelTimes(new TravelTimes() {
-			@Override
+
+            @Override
 			public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
 				return 10.;
 			}
@@ -57,6 +59,13 @@ public class ModeChoiceTest {
                 return 10.;
             }
         });
+
+        dataSet.setWaitingTimes(new WaitingTimes(){
+            @Override
+            public double getWaitingTime(Location origin, Location destination, String mode) {
+                return 5;
+            }
+        });
         fillDataSet();
     }
 
@@ -76,9 +85,13 @@ public class ModeChoiceTest {
         MitoZone zone1 = new MitoZone(1, AreaTypes.SGType.CORE_CITY);
         zone1.setDistanceToNearestRailStop(0.5f);
         zone1.setAreaTypeR(AreaTypes.RType.URBAN);
+        zone1.setShapeFeature(new MyFeature(true));
         trip1.setTripOrigin(zone1);
+
+
         MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY);
         zone2.setAreaTypeR(AreaTypes.RType.URBAN);
+        zone2.setShapeFeature(new MyFeature(true));
         trip1.setTripDestination(zone2);
 
         household1 = new MitoHousehold(1, 24000, 1, zone1);
@@ -96,9 +109,11 @@ public class ModeChoiceTest {
         MitoZone zone3 = new MitoZone(3, AreaTypes.SGType.CORE_CITY);
         zone3.setDistanceToNearestRailStop(0.5f);
         zone3.setAreaTypeR(AreaTypes.RType.URBAN);
+        zone3.setShapeFeature(new MyFeature(true));
         trip2.setTripOrigin(zone3);
         MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY);
         zone4.setAreaTypeR(AreaTypes.RType.URBAN);
+        zone4.setShapeFeature(new MyFeature(true));
         trip2.setTripDestination(zone4);
 
         household2 = new MitoHousehold(2, 24000, 1, zone3);
@@ -111,4 +126,5 @@ public class ModeChoiceTest {
         dataSet.addPerson(person2);
 
     }
+
 }

@@ -17,7 +17,15 @@ public class ModeChoiceCalculatorTest {
 
     private ModeChoiceJSCalculator calculator;
 
-    private final double[] reference = new double[]{0.35258741,0.21025060,0.07781168,0.01532404,0.00755559,0.01247863,0.00364841,0.35258208,0.01560092};
+    private final double[] reference = new double[]{0.4104862335019519,
+            0.04737661812592914,
+            0.0745563964450754,
+            0.012142093739147075,
+            0.0048338138977189445,
+            0.01353338321691506,
+            0.014462452935472239,
+            0.41047388033750554,
+            0.012135127800284829};
 
     @Before
     public void setup() {
@@ -30,8 +38,9 @@ public class ModeChoiceCalculatorTest {
     public void test() {
         MitoZone zone = DummyZone.dummy;
         zone.setDistanceToNearestRailStop(0.5f);
+        zone.setShapeFeature(new MyFeature(false));
         //origin.setAreaTypeHBWModeChoice(AreaType.HBW_mediumSizedCity);
-        MitoHousehold hh = new MitoHousehold(1, 20000, 1, null);
+        MitoHousehold hh = new MitoHousehold(1, 2000, 1, null);
         MitoPerson pp = new MitoPerson(1, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
         hh.addPerson(pp);
         MitoTrip trip = new MitoTrip(1, Purpose.HBS);
@@ -39,21 +48,26 @@ public class ModeChoiceCalculatorTest {
         trip.setTripDestination(zone);
 
         double[] result = calculator.calculateProbabilities(hh, pp, zone, zone, new TravelTimes() {
-        	@Override
-        	public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
-        		switch(mode) {
-        		case "car": return 15.;
-        		case "bus": return 30.;
-        		case "tramMetro": return 25;
-        		case "train": return 40.;
-        		default: return 0;
-        		}
-        	}
+            @Override
+            public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
+                switch (mode) {
+                    case "car":
+                        return 15.;
+                    case "bus":
+                        return 30.;
+                    case "tramMetro":
+                        return 25;
+                    case "train":
+                        return 40.;
+                    default:
+                        return 0;
+                }
+            }
 
-			@Override
-			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
-				return 0;
-			}
+            @Override
+            public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
+                return 0;
+            }
 
             @Override
             public IndexedDoubleMatrix2D getPeakSkim(String mode) {
@@ -65,7 +79,7 @@ public class ModeChoiceCalculatorTest {
                 return null;
             }
         }, 5., 5., 0);
-        for(int i = 0; i < result.length; i++) {
+        for (int i = 0; i < result.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
         }
 
