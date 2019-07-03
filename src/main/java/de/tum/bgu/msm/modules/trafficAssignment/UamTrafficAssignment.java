@@ -9,6 +9,7 @@ import net.bhl.matsim.uam.run.RunUAMScenario;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 
 public class UamTrafficAssignment extends TrafficAssignment {
@@ -21,7 +22,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 
 	@Override
 	protected void configMatsim() {
-		String[] args = { "--config-path \"\"", "--city Munich" };
+		String[] args = { "--city", "Munich" };
 		RunUAMScenario.parseArguments(args);
 		matsimConfig = RunUAMScenario.initialiseConfig();
 
@@ -69,6 +70,8 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		}
 
 		matsimConfig.plansCalcRoute().setNetworkModes(networkModesSet);
+		
+		ConfigUtils.writeConfig(matsimConfig, "C:\\Users\\Raoul\\Downloads\\config.xml");
 	}
 
 	protected void runMatsim() {
