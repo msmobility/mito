@@ -63,7 +63,7 @@ var calculateHBWProbabilities = function(hh, person, originZone, destinationZone
     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 age = person.getAge();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
@@ -73,12 +73,13 @@ distToRailStop = originZone.getDistanceToNearestRailStop();
 areaType = originZone.getAreaTypeSG();
 isMunichTrip = originZone.isMunichZone();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD;
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP;
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
 gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
 gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit;
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
 } else if (income/12 > 1500 && income/12 <= 5600){
@@ -87,6 +88,7 @@ gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_au
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
 gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
 gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit;
+} else if (monthlyIncome_EUR/12 > 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
 } else if (income/12 > 5600){
@@ -254,14 +256,14 @@ var calculateHBEProbabilities = function(hh, person, originZone, destinationZone
     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 isMunichTrip = originZone.isMunichZone();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
@@ -270,6 +272,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
 } else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
@@ -278,6 +281,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
 } else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit
@@ -327,13 +331,13 @@ baseProbabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logs
 baseProbabilityAutoNest = Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 baseProbabilityTransitNest = Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_HBW_HBE_sharedAV; // change in VOT and cost
 }
@@ -416,14 +420,14 @@ hhChildren = dataSet.getChildrenForHousehold(hh);
     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 isMunichTrip = originZone.isMunichZone();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
@@ -432,6 +436,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
@@ -440,6 +445,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
@@ -496,13 +502,13 @@ baseProbabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logs
 baseProbabilityAutoNest = Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 baseProbabilityTransitNest = Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
 }
@@ -582,14 +588,14 @@ var calculateHBOProbabilities = function(hh, person, originZone, destinationZone
     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 hhSize = hh.getHhSize();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
@@ -598,6 +604,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
@@ -606,6 +613,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
@@ -663,13 +671,13 @@ baseProbabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logs
 baseProbabilityAutoNest = Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 baseProbabilityTransitNest = Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
 }
@@ -747,13 +755,13 @@ var calculateNHBWProbabilities = function(hh, person, originZone, destinationZon
     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 age = person.getAge();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
@@ -762,6 +770,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
@@ -770,6 +779,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
@@ -820,13 +830,13 @@ baseProbabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logs
 baseProbabilityAutoNest = Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 baseProbabilityTransitNest = Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
 }
@@ -907,14 +917,14 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
-income = hh.getIncome();
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
 driversLicense = person.hasDriversLicense();
 hhAutos = hh.getAutos();
 distToRailStop = originZone.getDistanceToNearestRailStop();
 areaType = originZone.getAreaTypeR();
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
@@ -923,6 +933,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
@@ -931,6 +942,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
 } else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
 gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
 gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
@@ -996,13 +1008,13 @@ baseProbabilityWalk = Math.exp(utilityWalk) / ( Math.exp(nestingCoefficient*logs
 baseProbabilityAutoNest = Math.exp(nestingCoefficient*logsumAuto) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 baseProbabilityTransitNest = Math.exp(nestingCoefficient*logsumTransit) / ( Math.exp(nestingCoefficient*logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient*logsumTransit));
 
-if(income/12 <= 1500){
+if(monthlyIncome_EUR/12 <= 1500){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 1500 && income/12 <= 5600){
+} else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
-} else if (income/12 > 5600){
+} else if (monthlyIncome_EUR/12 > 5600){
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
 }
