@@ -27,7 +27,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig = RunUAMScenario.initialiseConfig();
 
 		// UAM parameters
-		matsimConfig.getModules().get("uam").addParam("inputFile", Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
+		matsimConfig.getModules().get("uam").addParam("inputUAMFile", Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
 		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,pt");
 		matsimConfig.getModules().get("uam").addParam("parallelRouters", "16");
 		matsimConfig.getModules().get("uam").addParam("searchRadius", "99999");
