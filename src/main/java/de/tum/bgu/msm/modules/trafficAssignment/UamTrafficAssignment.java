@@ -71,11 +71,12 @@ public class UamTrafficAssignment extends TrafficAssignment {
 
 		matsimConfig.plansCalcRoute().setNetworkModes(networkModesSet);
 		
-		ConfigUtils.writeConfig(matsimConfig, "C:\\Users\\Raoul\\Downloads\\config.xml");
+		// TODO just for testing, remove later
+		//ConfigUtils.writeConfig(matsimConfig, "C:\\Users\\Raoul\\Downloads\\config.xml");
 	}
 
 	protected void runMatsim() {
-		//RunUAMScenario.initialiseControler().run();
+		RunUAMScenario.initialiseControler().run();
 
 		CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
 		skimUpdater.run();
