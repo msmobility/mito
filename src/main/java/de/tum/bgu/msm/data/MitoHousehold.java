@@ -17,7 +17,7 @@ public class MitoHousehold implements Id, MicroLocation {
     private static final Logger logger = Logger.getLogger(MitoHousehold.class);
 
     private final int hhId;
-    private int income;
+    private int monthlyIncome_EUR;
     private int economicStatus;
     private final int autos;
     private final MitoZone homeZone;
@@ -28,9 +28,9 @@ public class MitoHousehold implements Id, MicroLocation {
 
     private final Map<Integer, MitoPerson> persons  = new HashMap<>();
 
-    public MitoHousehold(int id, int income, int autos, MitoZone homeZone) {
+    public MitoHousehold(int id, int monthlyIncome_EUR, int autos, MitoZone homeZone) {
         this.hhId = id;
-        this.income = income;
+        this.monthlyIncome_EUR = monthlyIncome_EUR;
         this.autos = autos;
         this.homeZone = homeZone;
     }
@@ -44,12 +44,12 @@ public class MitoHousehold implements Id, MicroLocation {
         return persons.size();
     }
 
-    public int getIncome() {
-        return income;
+    public int getMonthlyIncome_EUR() {
+        return monthlyIncome_EUR;
     }
 
     public void addIncome(int inc) {
-        income += inc;
+        monthlyIncome_EUR += inc;
     }
 
     public int getAutos() {

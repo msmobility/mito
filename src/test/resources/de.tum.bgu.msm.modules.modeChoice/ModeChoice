@@ -47,7 +47,7 @@ var calculateHBWProbabilities = function(hh, person, trip, travelTimes, travelDi
     timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
-    income = hh.getIncome();
+    monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     age = person.getAge();
     gender = person.getGender();
     driversLicense = person.hasDriversLicense();
@@ -56,19 +56,19 @@ var calculateHBWProbabilities = function(hh, person, trip, travelTimes, travelDi
     distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
     areaType = trip.getTripOrigin().getAreaTypeHBWModeChoice();
 
-    if(income/12 <= 1500){
+    if(monthlyIncome_EUR/12 <= 1500){
         gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD
         gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP
         gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
         gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
         gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
-    } else if (income/12 > 1500 && income/12 <= 5600){
+    } else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
         gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoD
         gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoP
         gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
         gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
         gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
-    } else if (income/12 > 5600){
+    } else if (monthlyIncome_EUR/12 > 5600){
         gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoD
         gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoP
         gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit
@@ -163,25 +163,25 @@ var calculateHBEProbabilities = function(hh, person, trip, travelTimes, travelDi
     timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
 
-    income = hh.getIncome();
+    monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getGender();
     driversLicense = person.hasDriversLicense();
     hhAutos = hh.getAutos();
     distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
 
-    if(income/12 <= 1500){
+    if(monthlyIncome_EUR/12 <= 1500){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_HBW_HBE_transit
-    } else if (income/12 > 1500 && income/12 <= 5600){
+    } else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_HBW_HBE_transit
-    } else if (income/12 > 5600){
+    } else if (monthlyIncome_EUR/12 > 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_HBW_HBE_transit
@@ -247,25 +247,25 @@ var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
     timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
-    income = hh.getIncome();
+    monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getGender();
     driversLicense = person.hasDriversLicense();
     hhAutos = hh.getAutos();
     distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
 
-    if(income/12 <= 1500){
+    if(monthlyIncome_EUR/12 <= 1500){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
-    } else if (income/12 > 1500 && income/12 <= 5600){
+    } else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
-    } else if (income/12 > 5600){
+    } else if (monthlyIncome_EUR/12 > 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
@@ -336,26 +336,26 @@ var calculateHBOProbabilities = function(hh, person, trip, travelTimes, travelDi
     timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
-    income = hh.getIncome();
+    monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getGender();
     driversLicense = person.hasDriversLicense();
     hhAutos = hh.getAutos();
     hhSize = hh.getHhSize();
     distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
 
-    if(income/12 <= 1500){
+    if(monthlyIncome_EUR/12 <= 1500){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
-    } else if (income/12 > 1500 && income/12 <= 5600){
+    } else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
-    } else if (income/12 > 5600){
+    } else if (monthlyIncome_EUR/12 > 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
@@ -425,25 +425,25 @@ var calculateNHBWProbabilities = function(hh, person, trip, travelTimes, travelD
     timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
-    income = hh.getIncome();
+    monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     age = person.getAge();
     driversLicense = person.hasDriversLicense();
     hhAutos = hh.getAutos();
     distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
 
-    if(income/12 <= 1500){
+    if(monthlyIncome_EUR/12 <= 1500){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
-    } else if (income/12 > 1500 && income/12 <= 5600){
+    } else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
-    } else if (income/12 > 5600){
+    } else if (monthlyIncome_EUR/12 > 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit
@@ -507,26 +507,26 @@ var calculateNHBOProbabilities = function(hh, person, trip, travelTimes, travelD
     timeBus = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "bus");
     timeTrain = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "train");
     timeTramMetro = travelTimes.getTravelTime(trip.getTripOrigin().getId(), trip.getTripDestination().getId(), peakHour, "tramMetro");
-    income = hh.getIncome();
+    monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getGender();
     driversLicense = person.hasDriversLicense();
     hhAutos = hh.getAutos();
     distToRailStop = trip.getTripOrigin().getDistanceToNearestRailStop();
     areaType = trip.getTripOrigin().getAreaTypeNHBOModeChoice();
 
-    if(income/12 <= 1500){
+    if(monthlyIncome_EUR/12 <= 1500){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500_other_transit
-    } else if (income/12 > 1500 && income/12 <= 5600){
+    } else if (monthlyIncome_EUR/12 > 1500 && monthlyIncome_EUR/12 <= 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTrain = timeTrain + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
     gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600_other_transit
-    } else if (income/12 > 5600){
+    } else if (monthlyIncome_EUR/12 > 5600){
     gcAutoD = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoD
     gcAutoP = timeAutoP + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_autoP
     gcBus = timeBus + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000_other_transit

@@ -184,7 +184,7 @@ if(purpose == "Total") {
 }
 
 incomeScale = -0.5;
-scaledIncome = Math.pow(income, incomeScale);
+scaledIncome = Math.pow(monthlyIncome_EUR, incomeScale);
 utility = intercept
 + householdSizeParam
 + area
