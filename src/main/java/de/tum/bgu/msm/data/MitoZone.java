@@ -147,9 +147,7 @@ public class MitoZone implements Id, Location {
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) shapeFeature.getDefaultGeometry());
-        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
-        Point p = MGC.coordinate2Point(coordinate);
-        return new Coordinate(p.getX(), p.getY());
+        return randomPointsBuilder.getGeometry().getCoordinates()[0];
     }
 
     @Override

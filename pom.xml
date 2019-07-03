@@ -175,9 +175,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+		    <groupId>org.locationtech.jts</groupId>
+		    <artifactId>jts-core</artifactId>
+		    <version>1.15.0</version>
+		</dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <matsimVersion>11.0</matsimVersion>
+        <matsimVersion>0.10.1</matsimVersion>
     </properties>
 </project>

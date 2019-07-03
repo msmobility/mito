@@ -45,8 +45,7 @@ public class ExternalFlowZone {
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) feature.getDefaultGeometry());
-        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
-        Point p = MGC.coordinate2Point(coordinate);
-        return new Coord(p.getX(), p.getY());
+        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];        
+        return new Coord(coordinate.x, coordinate.y);
     }
 }

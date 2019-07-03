@@ -8,6 +8,7 @@ import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
@@ -62,7 +63,8 @@ public class CarSkimUpdater {
         dataSet.getZones().values().stream().parallel().forEach(mitoZone -> {
             nodesByZone.put(mitoZone.getId(), new LinkedList<>());
             for (int i = 0; i < NUMBER_OF_CALC_POINTS; i++) { // Several points in a given origin zone
-                Coord originCoord = CoordUtils.createCoord(mitoZone.getRandomCoord());
+            	Coordinate rand = mitoZone.getRandomCoord();
+                Coord originCoord = CoordUtils.createCoord(rand.x, rand.y);
                 Node originNode = NetworkUtils.getNearestLink(network, originCoord).getToNode();
                 nodesByZone.get(mitoZone.getId()).add(originNode);
             }
