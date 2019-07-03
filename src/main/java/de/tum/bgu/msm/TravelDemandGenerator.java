@@ -23,6 +23,8 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.commons.math.stat.descriptive.summary.Sum;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.TransportMode;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
