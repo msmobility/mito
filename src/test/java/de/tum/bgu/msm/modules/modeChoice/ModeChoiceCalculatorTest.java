@@ -17,7 +17,7 @@ public class ModeChoiceCalculatorTest {
 
     private ModeChoiceJSCalculator calculator;
 
-    private final double[] reference = new double[]{0.35258741,0.21025060,0.07781168,0.01532404,0.00755559,0.01247863,0.00364841,0.35258208,0.01560092};
+    private final double[] reference = new double[]{0.35258741,0.21025060,0.07781168,0.01532404,0.00755559,0.01247863,0.00364841,0.35258208,0.015602413198211748};
 
     @Before
     public void setup() {
