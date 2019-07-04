@@ -326,14 +326,14 @@ utilityWalk         = interceptHBE[6] + maleHBE[6]*(gender.name().equals("MALE")
                       hhAutosHBE[6]*hhAutos + distToRailStopHBE[6]*distToRailStop + tripLengthHBE[6]*travelDistanceNMT + isMunichTripHBE[6]*isMunichTrip;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostHBE[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+utilityAVS          = utilityBus + generalizedCostHBE[3]*(gcSharedAV - gcBus);
 
 //utilityAVS = Number.NEGATIVE_INFINITY;
 
@@ -492,14 +492,14 @@ utilityWalk         = interceptHBS[6] + maleHBS[6]*(gender.name().equals("MALE")
                       tripLengthHBS[6]*travelDistanceNMT + isMunichTripHBS[6]*isMunichTrip;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostHBS_Sq[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+utilityAVS          = utilityBus + generalizedCostHBS_Sq[3]*(gcSharedAV - gcBus);
 
 //utilityAVS = Number.NEGATIVE_INFINITY;
 
@@ -649,14 +649,14 @@ utilityWalk         = interceptHBO[6] + maleHBO[6]*(gender.name().equals("MALE")
                       tripLengthHBO[6]*travelDistanceNMT + isMunichTripHBO[6]*isMunichTrip;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostHBO[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+utilityAVS          = utilityBus + generalizedCostHBO[3]*(gcSharedAV - gcBus);
 
 //utilityAVS = Number.NEGATIVE_INFINITY;
 
@@ -795,14 +795,14 @@ utilityWalk         = interceptNHBW[6] + ageNHBW[6]*age + driversLicenseNHBW[6]*
                       hhAutosNHBW[6]*hhAutos + distToRailStopNHBW[6]*distToRailStop + tripLengthNHBW[6]*travelDistanceNMT;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostNHBW[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+utilityAVS          = utilityBus + generalizedCostNHBW[3]*(gcSharedAV - gcBus);
 
 //utilityAVS = Number.NEGATIVE_INFINITY;
 
@@ -957,14 +957,14 @@ utilityWalk         = interceptNHBO[6] + maleNHBO[6]*(gender.name().equals("MALE
                       ruralNHBO[6]*(areaType.name().equals("NHBO_rural")) + tripLengthNHBO[6]*travelDistanceNMT;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostNHBO_Sq[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+utilityAVS          = utilityBus + generalizedCostNHBO_Sq[3]*(gcSharedAV - gcBus);
 
 //utilityAVS = Number.NEGATIVE_INFINITY;
 
