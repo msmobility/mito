@@ -7,20 +7,31 @@ import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
+import org.apache.commons.collections.map.HashedMap;
 import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ModeChoiceUAMCalculatorsTest {
 
 
     private Map<String, ModeChoiceJSCalculator> calculators = new HashMap<>();
+    private Map<String, Double> uamShares = new HashMap<>();
+    private List<String> calculatorNames = new ArrayList<>();
 
     @Test
     public void test(){
+        calculatorNames.add("ModeChoiceUAM");
+        calculatorNames.add("ModeChoiceUAMIncremental");
+        calculatorNames.add("ModeChoiceUAMIncrementalNoAVs.txt");
+
         for (Purpose purpose : Purpose.values()){
             if (!purpose.equals(Purpose.AIRPORT)){
                 setupThisPurpose(purpose);
@@ -32,12 +43,10 @@ public class ModeChoiceUAMCalculatorsTest {
 
     public void setupThisPurpose(Purpose purpose) {
         Resources.initializeResources("./testInput/test.properties");
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAM"));
-        calculators.put("ModeChoiceUAM", new ModeChoiceJSCalculator(reader, purpose));
-        reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAMIncremental"));
-        calculators.put("ModeChoiceUAMIncremental", new ModeChoiceJSCalculator(reader, purpose));
-        reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceUAMIncrementalNoAVs.txt"));
-        calculators.put("ModeChoiceUAMIncrementalNoAVs.txt" ,new ModeChoiceJSCalculator(reader, purpose));
+        for (String str : calculatorNames){
+            Reader reader = new InputStreamReader(this.getClass().getResourceAsStream(str));
+            calculators.put(str, new ModeChoiceJSCalculator(reader, purpose));
+        }
     }
 
     public void testThisPurpose(Purpose purpose) {
@@ -96,8 +105,12 @@ public class ModeChoiceUAMCalculatorsTest {
             }, 50., 50, 100., 8., 20., 4);
 
             System.out.println("#####Calculator" + calculatorName + "##### Purpose " + purpose.toString() + "######");
+
+
+
+            NumberFormat formatter = new DecimalFormat("#0.00");
             for (int i = 0; i < result.length; i++) {
-                System.out.println("Mode " + Mode.valueOf(i) + " with probability " + result[i]);
+                System.out.println("Mode " + Mode.valueOf(i).toString() + "\t" + formatter.format(result[i]*100) + "%");
             }
         }
 
