@@ -9,12 +9,11 @@ import net.bhl.matsim.uam.run.RunUAMScenario;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 
 public class UamTrafficAssignment extends TrafficAssignment {
-
-	private static Controler controler;
+	
+	private int numberOfThreads = 16;
 
 	public UamTrafficAssignment(DataSet dataSet, String scenarioName) {
 		super(dataSet, scenarioName);
@@ -27,9 +26,10 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig = RunUAMScenario.initialiseConfig();
 
 		// UAM parameters
-		matsimConfig.getModules().get("uam").addParam("inputUAMFile", Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
+		matsimConfig.getModules().get("uam").addParam("inputUAMFile",
+				Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
 		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,pt");
-		matsimConfig.getModules().get("uam").addParam("parallelRouters", "16");
+		matsimConfig.getModules().get("uam").addParam("parallelRouters", "" + numberOfThreads);
 		matsimConfig.getModules().get("uam").addParam("searchRadius", "99999");
 		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
 		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINTRAVELTIME");
@@ -43,9 +43,9 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				+ outputSubDirectory + "/trafficAssignment");
 		matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
 
-		matsimConfig.qsim().setNumberOfThreads(16);
-		matsimConfig.global().setNumberOfThreads(16);
-		matsimConfig.parallelEventHandling().setNumberOfThreads(16);
+		matsimConfig.qsim().setNumberOfThreads(numberOfThreads);
+		matsimConfig.global().setNumberOfThreads(numberOfThreads);
+		matsimConfig.parallelEventHandling().setNumberOfThreads(numberOfThreads);
 		matsimConfig.qsim().setUsingThreadpool(false);
 
 		matsimConfig.controler().setLastIteration(Resources.INSTANCE.getInt(Properties.MATSIM_ITERATIONS));
@@ -70,13 +70,11 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		}
 
 		matsimConfig.plansCalcRoute().setNetworkModes(networkModesSet);
-		
-		// TODO just for testing, remove later
-		//ConfigUtils.writeConfig(matsimConfig, "C:\\Users\\Raoul\\Downloads\\config.xml");
 	}
 
 	protected void runMatsim() {
-		RunUAMScenario.initialiseControler().run();
+		Controler controler = RunUAMScenario.initialiseControler();
+		controler.run();
 
 		CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
 		skimUpdater.run();
