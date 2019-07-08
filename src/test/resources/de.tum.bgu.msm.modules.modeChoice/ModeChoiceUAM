@@ -47,9 +47,9 @@ interceptFlatHBS            = [0.0, 0.8, 2.16, -1.91];
 interceptFlatHBO            = [0.0, 0.15, 2.16, -1.91];
 interceptFlatNHBW            = [0.0, 0.72, 2.16, -1.91];
 interceptFlatNHBO            = [0.0, 0.95, 2.16, -1.91];
-travelCostFlat           = [-1.12, -1.98, -3.13, -0.509];
-travelTimeFlat           = [-0.678, -0.893, -1.16, -1.00];
-accessTimeFlat           = [-0.655, 0.0, 0.0, 0.0];
+travelCostFlat           = [-0.112, -0.198, -0.313, -0.0509];
+travelTimeFlat           = [-0.0678, -0.0893, -0.116, -0.100];
+accessTimeFlat           = [-0.0655, 0.0, 0.0, 0.0];
 age46To55Flat            = [0.0, 0.0, -0.603, -0.603];
 age56To65Flat            = [0.0, -1.14, -0.603, -0.603];
 ageAbove65Flat           = [0.0, -3.02, 0.0, -3.02];
@@ -240,10 +240,10 @@ utilityTransit        = interceptFlatHBW[0] + travelCostFlat[0]*travelCostTransi
                       age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
                       occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[0];
 
 utilityAuto           = interceptFlatHBW[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
@@ -251,10 +251,10 @@ utilityAuto           = interceptFlatHBW[1] + travelCostFlat[1]*travelCostAuto +
                       age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
                       occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[1];
 
 utilityAT           = interceptFlatHBW[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
@@ -262,10 +262,10 @@ utilityAT           = interceptFlatHBW[2] + travelCostFlat[2]*travelCostAT + tra
                       age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
                       occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[2];
 
 utilityAFT           = interceptFlatHBW[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
@@ -273,10 +273,10 @@ utilityAFT           = interceptFlatHBW[3] + travelCostFlat[3]*travelCostAFT + t
                       age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
                       occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[3];
 
 
@@ -482,10 +482,10 @@ utilityTransit        = interceptFlatHBE[0] + travelCostFlat[0]*travelCostTransi
                       age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
                       occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[0];
 
 utilityAuto           = interceptFlatHBE[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
@@ -493,10 +493,10 @@ utilityAuto           = interceptFlatHBE[1] + travelCostFlat[1]*travelCostAuto +
                       age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
                       occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[1];
 
 utilityAT           = interceptFlatHBE[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
@@ -504,10 +504,10 @@ utilityAT           = interceptFlatHBE[2] + travelCostFlat[2]*travelCostAT + tra
                       age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
                       occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[2];
 
 utilityAFT           = interceptFlatHBE[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
@@ -515,10 +515,10 @@ utilityAFT           = interceptFlatHBE[3] + travelCostFlat[3]*travelCostAFT + t
                       age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
                       occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[3];
 
 
@@ -730,10 +730,10 @@ utilityTransit        = interceptFlatHBS[0] + travelCostFlat[0]*travelCostTransi
                       age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
                       occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
 
 utilityAuto           = interceptFlatHBS[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
@@ -741,10 +741,10 @@ utilityAuto           = interceptFlatHBS[1] + travelCostFlat[1]*travelCostAuto +
                       age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
                       occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
 
 utilityAT           = interceptFlatHBS[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
@@ -752,10 +752,10 @@ utilityAT           = interceptFlatHBS[2] + travelCostFlat[2]*travelCostAT + tra
                       age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
                       occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
 
 utilityAFT           = interceptFlatHBS[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
@@ -763,10 +763,10 @@ utilityAFT           = interceptFlatHBS[3] + travelCostFlat[3]*travelCostAFT + t
                       age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
                       occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
 
 
@@ -979,10 +979,10 @@ utilityTransit        = interceptFlatHBO[0] + travelCostFlat[0]*travelCostTransi
                       age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
                       occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
 
 utilityAuto           = interceptFlatHBO[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
@@ -990,10 +990,10 @@ utilityAuto           = interceptFlatHBO[1] + travelCostFlat[1]*travelCostAuto +
                       age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
                       occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
 
 utilityAT           = interceptFlatHBO[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
@@ -1001,10 +1001,10 @@ utilityAT           = interceptFlatHBO[2] + travelCostFlat[2]*travelCostAT + tra
                       age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
                       occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
 
 utilityAFT           = interceptFlatHBO[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
@@ -1012,10 +1012,10 @@ utilityAFT           = interceptFlatHBO[3] + travelCostFlat[3]*travelCostAFT + t
                       age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
                       occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
 
 
@@ -1216,10 +1216,10 @@ utilityTransit        = interceptFlatNHBW[0] + travelCostFlat[0]*travelCostTrans
                       age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
                       occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
 
 utilityAuto           = interceptFlatNHBW[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
@@ -1227,10 +1227,10 @@ utilityAuto           = interceptFlatNHBW[1] + travelCostFlat[1]*travelCostAuto 
                       age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
                       occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
 
 utilityAT           = interceptFlatNHBW[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
@@ -1238,10 +1238,10 @@ utilityAT           = interceptFlatNHBW[2] + travelCostFlat[2]*travelCostAT + tr
                       age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
                       occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
 
 utilityAFT           = interceptFlatNHBW[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
@@ -1249,10 +1249,10 @@ utilityAFT           = interceptFlatNHBW[3] + travelCostFlat[3]*travelCostAFT + 
                       age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
                       occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
 
 
@@ -1470,10 +1470,10 @@ utilityTransit        = interceptFlatNHBO[0] + travelCostFlat[0]*travelCostTrans
                       age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
                       occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
 
 utilityAuto           = interceptFlatNHBO[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
@@ -1481,10 +1481,10 @@ utilityAuto           = interceptFlatNHBO[1] + travelCostFlat[1]*travelCostAuto 
                       age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
                       occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
 
 utilityAT           = interceptFlatNHBO[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
@@ -1492,10 +1492,10 @@ utilityAT           = interceptFlatNHBO[2] + travelCostFlat[2]*travelCostAT + tr
                       age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
                       occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
 
 utilityAFT           = interceptFlatNHBO[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
@@ -1503,10 +1503,10 @@ utilityAFT           = interceptFlatNHBO[3] + travelCostFlat[3]*travelCostAFT + 
                       age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
                       occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
                       occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
-                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (age <= 1000)) +
-                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (age <= 2000)) +
-                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (age <= 3000)) +
-                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (age <= 7000)) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
                       incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
 
 
