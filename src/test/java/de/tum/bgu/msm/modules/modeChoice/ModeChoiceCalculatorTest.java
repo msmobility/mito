@@ -17,7 +17,7 @@ public class ModeChoiceCalculatorTest {
 
     private ModeChoiceJSCalculator calculator;
 
-    private final double[] reference = new double[]{0.35258741,0.21025060,0.07781168,0.01532404,0.00755559,0.01247863,0.00364841,0.35258208,0.01560092};
+    private final double[] reference = new double[]{0.35258741,0.21025060,0.07781168,0.01532404,0.00755559,0.01247863,0.00364841,0.35258208,0.015602413198211748};
 
     @Before
     public void setup() {
@@ -50,10 +50,16 @@ public class ModeChoiceCalculatorTest {
         		}
         	}
 
-			@Override
-			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
-				return 0;
-			}
+            @Override
+            public double getTravelTimeFromRegion(Region origin, Zone destination, double timeOfDay_s, String mode) {
+                return 0;
+            }
+
+            @Override
+            public double getTravelTimeToRegion(Zone origin, Region destination, double timeOfDay_s, String mode) {
+                return 0;
+            }
+
 
             @Override
             public IndexedDoubleMatrix2D getPeakSkim(String mode) {

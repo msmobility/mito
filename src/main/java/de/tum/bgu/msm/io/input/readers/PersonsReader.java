@@ -37,7 +37,7 @@ public class PersonsReader extends AbstractCsvReader {
         super.read(fileName, ",");
         int noIncomeHouseholds = 0;
         for(MitoHousehold household: dataSet.getHouseholds().values()) {
-            if(household.getIncome() == 0) {
+            if(household.getMonthlyIncome_EUR() == 0) {
                 noIncomeHouseholds++;
             }
         }
@@ -86,8 +86,9 @@ public class PersonsReader extends AbstractCsvReader {
 
         final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
 
-        int income = Integer.parseInt(record[posIncome]);
-        hh.addIncome(income);
+        //mito uses monthly income, while SILO uses annual income
+        int monthlyIncome_EUR = Integer.parseInt(record[posIncome])/12;
+        hh.addIncome(monthlyIncome_EUR);
 
         MitoOccupation occupation = null;
 

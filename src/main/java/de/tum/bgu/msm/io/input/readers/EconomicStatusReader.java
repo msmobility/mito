@@ -118,7 +118,7 @@ public class EconomicStatusReader extends AbstractCsvReader {
         // im Haushalt wurde eine Person mit dem Faktor 1, alle weiteren Personen ab 15
         // Jahren mit dem Faktor 0,5 gewichtet.
         float weightedHhSize = MitoUtil.rounder(Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f), 1);
-        String incomeCategory = getMidIncomeCategory(hh.getIncome());
+        String incomeCategory = getMidIncomeCategory(hh.getMonthlyIncome_EUR());
         return economicStatusDefinition.get(weightedHhSize+"_"+incomeCategory);
     }
 
@@ -148,9 +148,18 @@ public class EconomicStatusReader extends AbstractCsvReader {
 
     private void assignEconomicStatusToAllHouseholds() {
         logger.info("  Assigning economic status to all households");
+        Map<Integer, Integer> economicStatusCounts = new HashMap<>();
         for (MitoHousehold hh: dataSet.getHouseholds().values()) {
             hh.setEconomicStatus(getEconomicStatus(hh));
+            int economicStatus = hh.getEconomicStatus();
+            economicStatusCounts.putIfAbsent(economicStatus,0);
+            economicStatusCounts.put(economicStatus, economicStatusCounts.get(economicStatus) + 1);
         }
+
+        for (int es : economicStatusCounts.keySet()){
+            logger.warn("Economic status: " + es + " count: " + economicStatusCounts.get(es));
+        }
+        logger.info("Assigned economic status to all households");
     }
 }
 
