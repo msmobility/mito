@@ -4,11 +4,11 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.shape.random.RandomPointsBuilder;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
 

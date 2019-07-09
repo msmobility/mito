@@ -119,7 +119,9 @@ public class TravelDemandGenerator {
                 OmxMatrixWriter.createOmxFile(fileName, dimension);
 
                 SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
-                tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");
+                /* TODO fix Exception in thread "main" java.lang.IllegalArgumentException: Matrix dimension ([4924, 4924]) does not match file dimensions ([4953, 4953])
+            	at omx.OmxFile.addMatrix(OmxFile.java:247) */
+                // tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");
 
                 MatrixTravelDistances td = (MatrixTravelDistances) dataSet.getTravelDistancesAuto();
                 td.printOutDistanceSkim(fileName, "distanceByTime");

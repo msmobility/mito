@@ -6,7 +6,7 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
 import org.apache.log4j.Logger;
-import org.locationtech.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
