@@ -13,6 +13,8 @@ jobs:
         skip_cleanup: true
         on:
           tags: true
+          all_branches: true
+
 env:
   global:
     - export MAVEN_OPTS="-Xmx2500m"
