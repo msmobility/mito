@@ -30,9 +30,9 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
 		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,pt");
 		matsimConfig.getModules().get("uam").addParam("parallelRouters", "" + numberOfThreads);
-		matsimConfig.getModules().get("uam").addParam("searchRadius", "99999");
+		matsimConfig.getModules().get("uam").addParam("searchRadius", "50000");
 		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
-		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINTRAVELTIME");
+		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINDISTANCE");
 		matsimConfig.getModules().get("uam").addParam("ptSimulation", "false");
 
 		matsimConfig = ConfigureMatsim.configureMatsim(matsimConfig);
