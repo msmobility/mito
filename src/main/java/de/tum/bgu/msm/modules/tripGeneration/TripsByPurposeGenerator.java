@@ -72,7 +72,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Pair<Purpos
 //			trips.add(trip);
 //		}
 			// TODO for testing only remove later - RR
-            if (trip != null && random.nextDouble() < 0.01) {
+            if (trip != null && random.nextDouble() < 0.001) {
 				trips.add(trip);
 			}
         }
