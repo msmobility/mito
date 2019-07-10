@@ -71,9 +71,6 @@ public class TrafficAssignment extends Module {
         }
 
         matsimConfig.plansCalcRoute().setNetworkModes(networkModesSet);
-
-
-
     }
 
     private void createPopulation() {
