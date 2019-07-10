@@ -59,7 +59,6 @@ public class TrafficAssignment extends Module {
         matsimConfig.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
         matsimConfig.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
 
-
         String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
         Set<String> networkModesSet = new HashSet<>();
 
