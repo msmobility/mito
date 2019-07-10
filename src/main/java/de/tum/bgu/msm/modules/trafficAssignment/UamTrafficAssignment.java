@@ -23,7 +23,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 	protected void configMatsim() {
 		String[] args = { "--city", "Munich" };
 		RunUAMScenario.parseArguments(args);
-		matsimConfig = RunUAMScenario.initialiseConfig();
+		matsimConfig = RunUAMScenario.createConfig();
 
 		// UAM parameters
 		matsimConfig.getModules().get("uam").addParam("inputUAMFile",
@@ -73,7 +73,8 @@ public class UamTrafficAssignment extends TrafficAssignment {
 	}
 
 	protected void runMatsim() {
-		Controler controler = RunUAMScenario.initialiseControler();
+		RunUAMScenario.setScenario(matsimScenario);
+		Controler controler = RunUAMScenario.createControler();
 		controler.run();
 
 		CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
