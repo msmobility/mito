@@ -65,6 +65,8 @@ public enum Mode implements Id {
                 return TransportMode.walk;
             case bicycle:
                 return TransportMode.bike;
+            case uam:
+            	return "uam";
             default:
                 return null;
 
