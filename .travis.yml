@@ -3,6 +3,14 @@ jdk:
   - oraclejdk8
 script: mvn test -Dhdf5lib-absolute-path=`pwd`/lib/linux64/libjhdf5.so --fail-at-end --batch-mode -Dmatsim.preferLocalDtds=true 
 #-Dmaven.test.redirectTestOutputToFile
+- stage: GitHub Release
+    script: skip
+    deploy:
+    provider: releases
+    api_key: "$GITHUB_OAUTH_TOKEN"
+    skip_cleanup: true
+    on:
+    tags: true
 env:
   global:
     - export MAVEN_OPTS="-Xmx2500m"
