@@ -15,7 +15,13 @@ public enum Mode implements Id {
     walk,
     privateAV,
     sharedAV,
-    uam; //Urban Air Mobility (Flying taxi)
+    uam,//Urban Air Mobility (Flying taxi)
+
+    //for testing Mengying's model
+    auto,
+    transit,
+    autonomousTaxi,
+    flyingTaxi;
 
     @Override
     public int getId(){
@@ -71,4 +77,20 @@ public enum Mode implements Id {
         }
 
     }
+
+    //for testing Mengying's model
+//    public static Mode valueOf(int code){
+//        switch (code){
+//            case 0:
+//                return auto;
+//            case 1:
+//                return transit;
+//            case 2:
+//                return autonomousTaxi;
+//            case 3:
+//                return flyingTaxi;
+//            default:
+//                throw new RuntimeException("Mode for code " + code + "not specified.");
+//        }
+//    }
 }

@@ -16,8 +16,8 @@ public class WaitingTimes {
      * @return
      */
     public double getWaitingTime(Location origin, Location destination, String mode) {
-        if (mode.equals(Mode.uam)){
-            return Resources.INSTANCE.getInt(Properties.UAM_BOARDINGTIME);
+        if (mode.equalsIgnoreCase(Mode.uam.toString())){
+            return Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 0);
         } else {
             return 0;
         }

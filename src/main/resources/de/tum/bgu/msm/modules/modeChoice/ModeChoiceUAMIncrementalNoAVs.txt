@@ -812,7 +812,7 @@ utilityWalk         = interceptNHBW[6] + ageNHBW[6]*age + driversLicenseNHBW[6]*
                       hhAutosNHBW[6]*hhAutos + distToRailStopNHBW[6]*distToRailStop + tripLengthNHBW[6]*travelDistanceNMT;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostNHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
