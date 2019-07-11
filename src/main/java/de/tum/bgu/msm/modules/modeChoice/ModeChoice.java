@@ -194,7 +194,7 @@ public class ModeChoice extends Module {
             if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)){
                 final double travelCostUAM = dataSet.getTravelCostUAM().getTravelDistance(originId,
                         destinationId);
-                double processingTime = dataSet.getWaitingTimes().getWaitingTime(trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
+                double processingTime = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_BOARDINGTIME));//dataSet.getWaitingTimes().getWaitingTime(trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
                 double uamCost = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST));
                 //System.out.println(boardingTime+","+uamCost);
                 return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,

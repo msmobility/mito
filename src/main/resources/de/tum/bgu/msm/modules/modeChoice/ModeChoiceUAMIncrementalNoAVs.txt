@@ -186,13 +186,18 @@ utilityWalk         = interceptHBW[6] + ageHBW[6]*age + maleHBW[6]*(gender.name(
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
+//utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+//utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
 
-//utilityAVS = Number.NEGATIVE_INFINITY;
+utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBW[7]*timeUAM + travelCostHBW[7]*costUAM - generalizedCostHBW[4]*gcTrain;
+
+//utilityUAM = Number.NEGATIVE_INFINITY;
+
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -326,18 +331,22 @@ utilityWalk         = interceptHBE[6] + maleHBE[6]*(gender.name().equals("MALE")
                       hhAutosHBE[6]*hhAutos + distToRailStopHBE[6]*distToRailStop + tripLengthHBE[6]*travelDistanceNMT + isMunichTripHBE[6]*isMunichTrip;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostHBE[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
+//utilityAVP          = utilityAutoD + generalizedCostHBE[0]*(gcPrivateAV - gcAutoD);
+
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+//utilityAVS          = utilityBus + generalizedCostHBE[3]*(gcSharedAV - gcBus);
 
-//utilityAVS = Number.NEGATIVE_INFINITY;
+utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBE[7]*timeUAM + travelCostHBE[7]*costUAM - generalizedCostHBE[4]*gcTrain;
+
+//utilityUAM = Number.NEGATIVE_INFINITY;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -492,18 +501,22 @@ utilityWalk         = interceptHBS[6] + maleHBS[6]*(gender.name().equals("MALE")
                       tripLengthHBS[6]*travelDistanceNMT + isMunichTripHBS[6]*isMunichTrip;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostHBS_Sq[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
+//utilityAVP          = utilityAutoD + generalizedCostHBS_Sq[0]*(gcPrivateAV - gcAutoD);
+
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+//utilityAVS          = utilityBus + generalizedCostHBS_Sq[3]*(gcSharedAV - gcBus);
 
-//utilityAVS = Number.NEGATIVE_INFINITY;
+utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBS[7]*timeUAM + travelCostHBS[7]*costUAM - generalizedCostHBS_Sq[4]*gcTrain;
+
+//utilityUAM = Number.NEGATIVE_INFINITY;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -649,18 +662,22 @@ utilityWalk         = interceptHBO[6] + maleHBO[6]*(gender.name().equals("MALE")
                       tripLengthHBO[6]*travelDistanceNMT + isMunichTripHBO[6]*isMunichTrip;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostHBO[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
+//utilityAVP          = utilityAutoD + generalizedCostHBO[0]*(gcPrivateAV - gcAutoD);
+
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+//utilityAVS          = utilityBus + generalizedCostHBO[3]*(gcSharedAV - gcBus);
 
-//utilityAVS = Number.NEGATIVE_INFINITY;
+utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeHBO[7]*timeUAM + travelCostHBO[7]*costUAM - generalizedCostHBO[4]*gcTrain;
+
+//utilityUAM = Number.NEGATIVE_INFINITY;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -795,18 +812,22 @@ utilityWalk         = interceptNHBW[6] + ageNHBW[6]*age + driversLicenseNHBW[6]*
                       hhAutosNHBW[6]*hhAutos + distToRailStopNHBW[6]*distToRailStop + tripLengthNHBW[6]*travelDistanceNMT;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostNHBW[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
+//utilityAVP          = utilityAutoD + generalizedCostNHBW[0]*(gcPrivateAV - gcAutoD);
+
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+//utilityAVS          = utilityBus + generalizedCostNHBW[3]*(gcSharedAV - gcBus);
 
-//utilityAVS = Number.NEGATIVE_INFINITY;
+utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeNHBW[7]*timeUAM + travelCostNHBW[7]*costUAM - generalizedCostNHBW[4]*gcTrain;
+
+//utilityUAM = Number.NEGATIVE_INFINITY;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -957,18 +978,22 @@ utilityWalk         = interceptNHBO[6] + maleNHBO[6]*(gender.name().equals("MALE
                       ruralNHBO[6]*(areaType.name().equals("NHBO_rural")) + tripLengthNHBO[6]*travelDistanceNMT;
 
 //if (hhAVAutos > 0){
-//        utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
+//        utilityAVP          = utilityAutoD + generalizedCostNHBO_Sq[0]*(gcPrivateAV - gcAutoD);
 //} else {
 //        utilityAVP = Number.NEGATIVE_INFINITY;
 //}
 
+//utilityAVP          = utilityAutoD + generalizedCostNHBO_Sq[0]*(gcPrivateAV - gcAutoD);
+
 utilityAVP = Number.NEGATIVE_INFINITY;
 
-utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
+//utilityAVS          = utilityBus + generalizedCostNHBO_Sq[3]*(gcSharedAV - gcBus);
 
-//utilityAVS = Number.NEGATIVE_INFINITY;
+utilityAVS = Number.NEGATIVE_INFINITY;
 
 utilityUAM          = utilityTrain + travelTimeNHBO[7]*timeUAM + travelCostNHBO[7]*costUAM - generalizedCostNHBO_Sq[4]*gcTrain;
+
+//utilityUAM = Number.NEGATIVE_INFINITY;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);

@@ -788,10 +788,10 @@ var calculateNHBOProbabilities = function(hh, person, originZone, destinationZon
 var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour){
 
     asc_autoDriver      =  0.;
-    asc_autoPassenger   = -0.0657;
+    asc_autoPassenger   = -0.0657 + 2.76;
     asc_autoOther       = -1.37275;
-    asc_bus             =  2.246879;
-    asc_train           =  2.992159;
+    asc_bus             =  2.246879 - 3.09;
+    asc_train           =  2.992159 -1.29;
 
     //times are in minutes
     beta_time               = -0.0002 * 60;
@@ -822,7 +822,7 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
         u_train         = asc_train + exp_time_train * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train")) +
             exp_distance_train * Math.exp(beta_distance * travelDistanceAuto);
 
-    return [Math.exp(u_autoDriver), Math.exp(u_autoDriver), Math.exp(u_autoOther), Math.exp(u_bus), Math.exp(u_train)];
+    return [Math.exp(u_autoDriver), Math.exp(u_autoPassenger), Math.exp(u_autoOther), Math.exp(u_bus), Math.exp(u_train)];
 }
 
 
