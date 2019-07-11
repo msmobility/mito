@@ -153,7 +153,7 @@ public class ModeChoice extends Module {
                         .getResourceAsStream("ModeChoiceAV")), purpose);
             } else if (includeUAM) {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoiceUAM")), purpose);
+                        .getResourceAsStream("ModeChoiceUAMIncremental")), purpose);
             } else{
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoice")), purpose);

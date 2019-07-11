@@ -1022,7 +1022,8 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
 }
 
 
-var calculateAIRPORTProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm){
+var calculateAIRPORTProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes,
+ travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm){
 
 
         //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, sharedAV, privateAV, TramMetro, Walk, privateAV, sharedAV, UAM]
