@@ -976,10 +976,10 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
     asc_autoDriver      = 0. ;
     asc_autoPassenger   = -0.0657 + 2.76;
     asc_bus             = 2.246879 - 3.09;
-    asc_train           = 2.992159 - 1.29
+    asc_train           = 2.992159 - 1.29;
     asc_privateAV       = 0. ;
     asc_sharedAV        =  -1.37275;
-    asc_uam             =  2.992159;
+    asc_uam             =  2.992159 - 1.29;
 
     //times are in minutes
     beta_time               = -0.0002 * 60;
@@ -1015,7 +1015,7 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
         u_privateAV     = u_autoDriver;
         u_sharedAV      = asc_sharedAV + exp_time_sharedAV * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
              exp_distance_sharedAV * Math.exp(beta_distance * travelDistanceAuto);
-        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
+        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam")/60)) +
              exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
 
     return [Math.exp(u_autoDriver), Math.exp(u_autoPassenger), Math.exp(u_bus), Math.exp(u_train), Math.exp(u_privateAV), Math.exp(u_sharedAV), Math.exp(u_uam)];
@@ -1028,7 +1028,7 @@ var calculateAIRPORTProbabilities = function(hh, person, originZone, destination
 
         //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, sharedAV, privateAV, TramMetro, Walk, privateAV, sharedAV, UAM]
         //calculate utilities for each mode
-        utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, uamFareEurosPerKm, boardingTime);
+        utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour,  boardingTime, uamFareEurosPerKm);
 
         sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
 
