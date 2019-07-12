@@ -15,13 +15,13 @@ public enum Mode implements Id {
     walk,
     privateAV,
     sharedAV,
-    uam,//Urban Air Mobility (Flying taxi)
+    uam;//Urban Air Mobility (Flying taxi)
 
     //for testing Mengying's model
-    auto,
-    transit,
-    autonomousTaxi,
-    flyingTaxi;
+//    auto,
+//    transit,
+//    autonomousTaxi,
+//    flyingTaxi;
 
     @Override
     public int getId(){
