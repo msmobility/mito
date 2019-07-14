@@ -13,7 +13,7 @@ import org.matsim.core.controler.Controler;
 
 public class UamTrafficAssignment extends TrafficAssignment {
 	
-	private int numberOfThreads = 16;
+	private int numberOfThreads = 4;
 
 	public UamTrafficAssignment(DataSet dataSet, String scenarioName) {
 		super(dataSet, scenarioName);
@@ -28,9 +28,9 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		// UAM parameters
 		matsimConfig.getModules().get("uam").addParam("inputUAMFile",
 				Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
-		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,pt");
+		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car");
 		matsimConfig.getModules().get("uam").addParam("parallelRouters", "" + numberOfThreads);
-		matsimConfig.getModules().get("uam").addParam("searchRadius", "50000");
+		matsimConfig.getModules().get("uam").addParam("searchRadius", "15000");
 		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
 		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINDISTANCE");
 		matsimConfig.getModules().get("uam").addParam("ptSimulation", "false");

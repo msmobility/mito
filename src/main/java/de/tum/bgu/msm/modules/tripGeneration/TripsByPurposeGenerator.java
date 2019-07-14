@@ -68,11 +68,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Pair<Purpos
         int numberOfTrips  = selectNumberOfTrips(tripFrequencies);
         for (int i = 0; i < numberOfTrips; i++) {
             MitoTrip trip = createTrip(hh);
-//			if (trip != null) {
-//			trips.add(trip);
-//		}
-			// TODO for testing only remove later - RR
-            if (trip != null && i < 10) {
+			if (trip != null) {
 				trips.add(trip);
 			}
         }
