@@ -46,6 +46,8 @@ public class ModeChoiceJSCalculator extends JavaScriptCalculator<double[]>{
                 travelDistanceAuto,
                 travelDistanceNMT,
                 travelCostUAM,
-                peakHour,boardingTime,uamCost);
+                peakHour,
+                boardingTime,
+                uamCost);
     }
 }

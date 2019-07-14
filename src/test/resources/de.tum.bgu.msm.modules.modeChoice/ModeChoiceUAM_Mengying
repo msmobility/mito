@@ -1,0 +1,536 @@
+// Mengying model Beta coefficients for modes in the order:[Transit, Auto, AutonomousTaxi, AutonomousFlyingTaxi]
+interceptFlatHBW            = [0.0, -0.55, 2.16, -1.91];
+interceptFlatHBE            = [0.0, -3.7, 2.16, -1.91];
+interceptFlatHBS            = [0.0, 0.8, 2.16, -1.91];
+interceptFlatHBO            = [0.0, 0.15, 2.16, -1.91];
+interceptFlatNHBW            = [0.0, 0.72, 2.16, -1.91];
+interceptFlatNHBO            = [0.0, 0.95, 2.16, -1.91];
+travelCostFlat           = [-0.112, -0.198, -0.313, -0.0509];
+travelTimeFlat           = [-0.0678, -0.0893, -0.116, -0.100];
+accessTimeFlat           = [-0.0655, 0.0, 0.0, 0.0];
+age46To55Flat            = [0.0, 0.0, -0.603, -0.603];
+age56To65Flat            = [0.0, -1.14, -0.603, -0.603];
+ageAbove65Flat           = [0.0, -3.02, 0.0, -3.02];
+occupationStudentFlat    = [0.0, 0.766, 0.0, 1.03];
+occupationOtherFlat      = [0.0, 0.902, 0.0, 0.0];
+noHhAutoFlat               = [0.0, -1.76, -0.644, -1.42];
+isCommutingTripFlat      = [0.0, -0.504, -0.468, -0.583];
+income500To1000Flat      = [0.0, 0.0, 0.0, -0.0413];
+income1000To2000Flat     = [0.0, 0.0, 0.0, -0.0413];
+income2000To3000Flat     = [0.0, 0.0, 0.0, -0.0413];
+income6000To7000Flat     = [0.0, 0.0, 0.0, 0.314];
+incomeAbove7000Flat      = [0.0, 0.830, 1.30, 0.421];
+
+fuelCostEurosPerKm = 0.07;
+transitFareEurosPerKm = 0.12;
+sharedAVCostEurosPerKm = 1.2;
+///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
+
+var calculateHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
+
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
+age = person.getAge();
+hhAutos = hh.getAutos();
+
+travelCostAuto = travelDistanceAuto*fuelCostEurosPerKm;
+travelCostTransit = travelDistanceAuto*transitFareEurosPerKm;
+travelCostAT = travelDistanceAuto*sharedAVCostEurosPerKm;
+if(travelCostUAM<10000){
+   travelCostAFT = (travelCostUAM/5*flyingTaxiFareEurosPerKm);
+}else{
+   travelCostAFT = travelCostUAM;
+}
+travelTimeAuto = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+travelTimeTransit = Math.min(timeBus,timeTrain,timeTramMetro);
+travelTimeAT = travelTimeAuto;
+travelTimeAFT = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if(travelTimeAFT < 10000){
+travelTimeAFT = travelTimeAFT/60 + boardingTime;
+}
+accessTimeTransit = accessTimes.getAccessTime(originZone, destinationZone, "transit");
+occupation = person.getMitoOccupationStatus();
+
+utilityTransit        = interceptFlatHBW[0] + travelCostFlat[0]*travelCostTransit + travelTimeFlat[0]*travelTimeTransit +
+                      accessTimeFlat[0]*accessTimeTransit + age46To55Flat[0]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
+                      occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[0];
+
+utilityAuto           = interceptFlatHBW[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
+                      age46To55Flat[1]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
+                      occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[1];
+
+utilityAT           = interceptFlatHBW[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
+                      age46To55Flat[2]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
+                      occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[2];
+
+utilityAFT           = interceptFlatHBW[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
+                      age46To55Flat[3]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
+                      occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[3];
+
+
+sumExponentialUtility = Math.exp(utilityAuto) + Math.exp(utilityTransit) + Math.exp(utilityAT) + Math.exp(utilityAFT);
+probabilityAuto =  (Math.exp(utilityAuto) / sumExponentialUtility);
+probabilityTransit =  (Math.exp(utilityTransit) / sumExponentialUtility);
+probabilityAT =  (Math.exp(utilityAT) / sumExponentialUtility);
+probabilityAFT =  (Math.exp(utilityAFT) / sumExponentialUtility);
+
+return Java.to([probabilityAuto,probabilityTransit,probabilityAT,probabilityAFT], "double[]");
+
+}
+
+
+///////////////////////////////////////////////// HBE Mode Choice /////////////////////////////////////////////////////
+
+var calculateHBEProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
+
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
+hhAutos = hh.getAutos();
+age = person.getAge();
+
+travelCostAuto = travelDistanceAuto*fuelCostEurosPerKm;
+travelCostTransit = travelDistanceAuto*transitFareEurosPerKm;
+travelCostAT = travelDistanceAuto*sharedAVCostEurosPerKm;
+if(travelCostUAM<10000){
+   travelCostAFT = (travelCostUAM/5*flyingTaxiFareEurosPerKm);
+}else{
+   travelCostAFT = travelCostUAM;
+}
+travelTimeAuto = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+travelTimeTransit = Math.min(timeBus,timeTrain,timeTramMetro);
+travelTimeAT = travelTimeAuto;
+travelTimeAFT = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if(travelTimeAFT < 10000){
+travelTimeAFT = travelTimeAFT/60 + boardingTime;
+}
+accessTimeTransit = accessTimes.getAccessTime(originZone, destinationZone, "transit");
+occupation = person.getMitoOccupationStatus();
+
+utilityTransit        = interceptFlatHBE[0] + travelCostFlat[0]*travelCostTransit + travelTimeFlat[0]*travelTimeTransit +
+                      accessTimeFlat[0]*accessTimeTransit + age46To55Flat[0]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
+                      occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[0];
+
+utilityAuto           = interceptFlatHBE[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
+                      age46To55Flat[1]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
+                      occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[1];
+
+utilityAT           = interceptFlatHBE[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
+                      age46To55Flat[2]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
+                      occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[2];
+
+utilityAFT           = interceptFlatHBE[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
+                      age46To55Flat[3]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
+                      occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000) + isCommutingTripFlat[3];
+
+
+sumExponentialUtility = Math.exp(utilityAuto) + Math.exp(utilityTransit) + Math.exp(utilityAT) + Math.exp(utilityAFT);
+probabilityAuto =  (Math.exp(utilityAuto) / sumExponentialUtility);
+probabilityTransit =  (Math.exp(utilityTransit) / sumExponentialUtility);
+probabilityAT =  (Math.exp(utilityAT) / sumExponentialUtility);
+probabilityAFT =  (Math.exp(utilityAFT) / sumExponentialUtility);
+
+return Java.to([probabilityAuto, probabilityTransit, probabilityAT, probabilityAFT], "double[]");
+
+}
+
+
+///////////////////////////////////////////////// HBS Mode Choice /////////////////////////////////////////////////////
+
+var calculateHBSProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
+
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
+hhAutos = hh.getAutos();
+age = person.getAge();
+
+travelCostAuto = travelDistanceAuto*fuelCostEurosPerKm;
+travelCostTransit = travelDistanceAuto*transitFareEurosPerKm;
+travelCostAT = travelDistanceAuto*sharedAVCostEurosPerKm;
+if(travelCostUAM<10000){
+   travelCostAFT = (travelCostUAM/5*flyingTaxiFareEurosPerKm);
+}else{
+   travelCostAFT = travelCostUAM;
+}
+travelTimeAuto = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+travelTimeTransit = Math.min(timeBus,timeTrain,timeTramMetro);
+travelTimeAT = travelTimeAuto;
+travelTimeAFT = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if(travelTimeAFT < 10000){
+travelTimeAFT = travelTimeAFT/60 + boardingTime;
+}
+accessTimeTransit = accessTimes.getAccessTime(originZone, destinationZone, "transit");
+occupation = person.getMitoOccupationStatus();
+
+utilityTransit        = interceptFlatHBS[0] + travelCostFlat[0]*travelCostTransit + travelTimeFlat[0]*travelTimeTransit +
+                      accessTimeFlat[0]*accessTimeTransit + age46To55Flat[0]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
+                      occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
+
+utilityAuto           = interceptFlatHBS[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
+                      age46To55Flat[1]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
+                      occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
+
+utilityAT           = interceptFlatHBS[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
+                      age46To55Flat[2]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
+                      occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
+
+utilityAFT           = interceptFlatHBS[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
+                      age46To55Flat[3]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
+                      occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
+
+
+sumExponentialUtility = Math.exp(utilityAuto) + Math.exp(utilityTransit) + Math.exp(utilityAT) + Math.exp(utilityAFT);
+probabilityAuto =  (Math.exp(utilityAuto) / sumExponentialUtility);
+probabilityTransit =  (Math.exp(utilityTransit) / sumExponentialUtility);
+probabilityAT =  (Math.exp(utilityAT) / sumExponentialUtility);
+probabilityAFT =  (Math.exp(utilityAFT) / sumExponentialUtility);
+
+return Java.to([probabilityAuto, probabilityTransit, probabilityAT, probabilityAFT], "double[]");
+
+}
+
+
+///////////////////////////////////////////////// HBO Mode Choice /////////////////////////////////////////////////////
+
+var calculateHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
+
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
+hhAutos = hh.getAutos();
+age = person.getAge();
+
+travelCostAuto = travelDistanceAuto*fuelCostEurosPerKm;
+travelCostTransit = travelDistanceAuto*transitFareEurosPerKm;
+travelCostAT = travelDistanceAuto*sharedAVCostEurosPerKm;
+if(travelCostUAM<10000){
+   travelCostAFT = (travelCostUAM/5*flyingTaxiFareEurosPerKm);
+}else{
+   travelCostAFT = travelCostUAM;
+}
+travelTimeAuto = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+travelTimeTransit = Math.min(timeBus,timeTrain,timeTramMetro);
+travelTimeAT = travelTimeAuto;
+travelTimeAFT = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if(travelTimeAFT < 10000){
+travelTimeAFT = travelTimeAFT/60 + boardingTime;
+}
+accessTimeTransit = accessTimes.getAccessTime(originZone, destinationZone, "transit");
+occupation = person.getMitoOccupationStatus();
+
+utilityTransit        = interceptFlatHBO[0] + travelCostFlat[0]*travelCostTransit + travelTimeFlat[0]*travelTimeTransit +
+                      accessTimeFlat[0]*accessTimeTransit + age46To55Flat[0]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
+                      occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
+
+utilityAuto           = interceptFlatHBO[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
+                      age46To55Flat[1]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
+                      occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
+
+utilityAT           = interceptFlatHBO[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
+                      age46To55Flat[2]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
+                      occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
+
+utilityAFT           = interceptFlatHBO[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
+                      age46To55Flat[3]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
+                      occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
+
+
+sumExponentialUtility = Math.exp(utilityAuto) + Math.exp(utilityTransit) + Math.exp(utilityAT) + Math.exp(utilityAFT);
+probabilityAuto =  (Math.exp(utilityAuto) / sumExponentialUtility);
+probabilityTransit =  (Math.exp(utilityTransit) / sumExponentialUtility);
+probabilityAT =  (Math.exp(utilityAT) / sumExponentialUtility);
+probabilityAFT =  (Math.exp(utilityAFT) / sumExponentialUtility);
+
+
+return Java.to([probabilityAuto, probabilityTransit, probabilityAT,  probabilityAFT], "double[]");
+
+}
+
+
+///////////////////////////////////////////////// NHBW Mode Choice /////////////////////////////////////////////////////
+
+var calculateNHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
+
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
+age = person.getAge();
+hhAutos = hh.getAutos();
+
+travelCostAuto = travelDistanceAuto*fuelCostEurosPerKm;
+travelCostTransit = travelDistanceAuto*transitFareEurosPerKm;
+travelCostAT = travelDistanceAuto*sharedAVCostEurosPerKm;
+if(travelCostUAM<10000){
+   travelCostAFT = (travelCostUAM/5*flyingTaxiFareEurosPerKm);
+}else{
+   travelCostAFT = travelCostUAM;
+}
+travelTimeAuto = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+travelTimeTransit = Math.min(timeBus,timeTrain,timeTramMetro);
+travelTimeAT = travelTimeAuto;
+travelTimeAFT = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if(travelTimeAFT < 10000){
+travelTimeAFT = travelTimeAFT/60 + boardingTime;
+}
+accessTimeTransit = accessTimes.getAccessTime(originZone, destinationZone, "transit");
+occupation = person.getMitoOccupationStatus();
+
+utilityTransit        = interceptFlatNHBW[0] + travelCostFlat[0]*travelCostTransit + travelTimeFlat[0]*travelTimeTransit +
+                      accessTimeFlat[0]*accessTimeTransit + age46To55Flat[0]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
+                      occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
+
+utilityAuto           = interceptFlatNHBW[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
+                      age46To55Flat[1]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
+                      occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
+
+utilityAT           = interceptFlatNHBW[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
+                      age46To55Flat[2]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
+                      occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
+
+utilityAFT           = interceptFlatNHBW[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
+                      age46To55Flat[3]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
+                      occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
+
+
+sumExponentialUtility = Math.exp(utilityAuto) + Math.exp(utilityTransit) + Math.exp(utilityAT) + Math.exp(utilityAFT);
+probabilityAuto =  (Math.exp(utilityAuto) / sumExponentialUtility);
+probabilityTransit =  (Math.exp(utilityTransit) / sumExponentialUtility);
+probabilityAT =  (Math.exp(utilityAT) / sumExponentialUtility);
+probabilityAFT =  (Math.exp(utilityAFT) / sumExponentialUtility);
+
+return Java.to([probabilityAuto, probabilityTransit, probabilityAT, probabilityAFT], "double[]");
+
+}
+
+///////////////////////////////////////////////// NHBO Mode Choice /////////////////////////////////////////////////////
+
+var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour,boardingTime,flyingTaxiFareEurosPerKm){
+
+monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
+hhAutos = hh.getAutos();
+age = person.getAge();
+
+
+travelCostAuto = travelDistanceAuto*fuelCostEurosPerKm;
+travelCostTransit = travelDistanceAuto*transitFareEurosPerKm;
+travelCostAT = travelDistanceAuto*sharedAVCostEurosPerKm;
+if(travelCostUAM<10000){
+   travelCostAFT = (travelCostUAM/5*flyingTaxiFareEurosPerKm);
+}else{
+   travelCostAFT = travelCostUAM;
+}
+travelTimeAuto = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+travelTimeTransit = Math.min(timeBus,timeTrain,timeTramMetro);
+travelTimeAT = travelTimeAuto;
+travelTimeAFT = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if(travelTimeAFT < 10000){
+travelTimeAFT = travelTimeAFT/60 + boardingTime;
+}
+accessTimeTransit = accessTimes.getAccessTime(originZone, destinationZone, "transit");
+occupation = person.getMitoOccupationStatus();
+
+utilityTransit        = interceptFlatNHBO[0] + travelCostFlat[0]*travelCostTransit + travelTimeFlat[0]*travelTimeTransit +
+                      accessTimeFlat[0]*accessTimeTransit + age46To55Flat[0]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[0]*((age >= 56) && (age <= 65)) + ageAbove65Flat[0]*((age > 65)) +
+                      occupationStudentFlat[0]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[0]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[0]*(hhAutos == 0) + income500To1000Flat[0]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[0]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[0]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[0]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[0]*(monthlyIncome_EUR > 7000);
+
+utilityAuto           = interceptFlatNHBO[1] + travelCostFlat[1]*travelCostAuto + travelTimeFlat[1]*travelTimeAuto +
+                      age46To55Flat[1]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[1]*((age >= 56) && (age <= 65)) + ageAbove65Flat[1]*((age > 65)) +
+                      occupationStudentFlat[1]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[1]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[1]*(hhAutos == 0) + income500To1000Flat[1]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[1]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[1]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[1]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[1]*(monthlyIncome_EUR > 7000);
+
+utilityAT           = interceptFlatNHBO[2] + travelCostFlat[2]*travelCostAT + travelTimeFlat[2]*travelTimeAT +
+                      age46To55Flat[2]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[2]*((age >= 56) && (age <= 65)) + ageAbove65Flat[2]*((age > 65)) +
+                      occupationStudentFlat[2]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[2]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[2]*(hhAutos == 0) + income500To1000Flat[2]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[2]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[2]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[2]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[2]*(monthlyIncome_EUR > 7000);
+
+utilityAFT           = interceptFlatNHBO[3] + travelCostFlat[3]*travelCostAFT + travelTimeFlat[3]*travelTimeAFT +
+                      age46To55Flat[3]*((age >= 46) && (age <= 55)) +
+                      age56To65Flat[3]*((age >= 56) && (age <= 65)) + ageAbove65Flat[3]*((age > 65)) +
+                      occupationStudentFlat[3]*(occupation.name().equals("STUDENT")) +
+                      occupationOtherFlat[3]*(occupation.name().equals("UNEMPLOYED")) +
+                      noHhAutoFlat[3]*(hhAutos == 0) + income500To1000Flat[3]*((monthlyIncome_EUR > 500) && (monthlyIncome_EUR <= 1000)) +
+                      income1000To2000Flat[3]*((monthlyIncome_EUR > 1000) && (monthlyIncome_EUR <= 2000)) +
+                      income2000To3000Flat[3]*((monthlyIncome_EUR > 2000) && (monthlyIncome_EUR <= 3000)) +
+                      income6000To7000Flat[3]*((monthlyIncome_EUR > 6000) && (monthlyIncome_EUR <= 7000)) +
+                      incomeAbove7000Flat[3]*(monthlyIncome_EUR > 7000);
+
+
+sumExponentialUtility = Math.exp(utilityAuto) + Math.exp(utilityTransit) + Math.exp(utilityAT) + Math.exp(utilityAFT);
+probabilityAuto =  (Math.exp(utilityAuto) / sumExponentialUtility);
+probabilityTransit =  (Math.exp(utilityTransit) / sumExponentialUtility);
+probabilityAT =  (Math.exp(utilityAT) / sumExponentialUtility);
+probabilityAFT =  (Math.exp(utilityAFT) / sumExponentialUtility);
+
+
+return Java.to([probabilityAuto, probabilityTransit, probabilityAT, probabilityAFT], "double[]");
+
+}

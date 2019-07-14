@@ -14,4 +14,8 @@ public class AirportLogsumCalculator extends JavaScriptCalculator<Double> {
     public double calculateLogsumForThisZone(MitoZone origin, MitoZone destination, TravelTimes travelTimes, double travelDistanceAuto, double peak_hour_s){
         return calculate("returnLogsumAIRPORT", null, null, origin, destination, travelTimes, travelDistanceAuto, null, peak_hour_s);
     }
+
+    public double calculateLogsumForThisZoneUAM(MitoZone origin, MitoZone destination, TravelTimes travelTimes, double travelDistanceAuto, double peak_hour_s, double boardingTime, double uamCost){
+        return calculate("returnLogsumAIRPORT", null, null, origin, destination, travelTimes, travelDistanceAuto, null, peak_hour_s, boardingTime, uamCost);
+    }
 }

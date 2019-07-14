@@ -132,51 +132,51 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_HBW
 
 utilityAutoD        = interceptHBW[0] + ageHBW[0]*age + maleHBW[0]*(gender.name().equals("MALE")) + 
                       driversLicenseHBW[0]*driversLicense + hhSizeHBW[0]*hhSize + hhAutosHBW[0]*hhAutos + 
-                      distToRailStopHBW[0]*distToRailStop + coreCityHBW[0]*(areaType.name().equals("HBW_coreCity")) + 
-                      mediumSizedCityHBW[0]*(areaType.name().equals("HBW_mediumSizedCity")) + 
-                      townOrRuralCommunityHBW[0]*(areaType.name().equals("HBW_townOrRural")) +
+                      distToRailStopHBW[0]*distToRailStop + coreCityHBW[0]*(areaType.name().equals("CORE_CITY")) + 
+                      mediumSizedCityHBW[0]*(areaType.name().equals("MEDIUM_SIZE_CITY")) + 
+                      townOrRuralCommunityHBW[0]*(areaType.name().equals("TOWN")|| areaType.name().equals("RURAL")) +
                       generalizedCostHBW[0]*gcAutoD + isMunichTripHBW[0]*isMunichTrip;
 
 utilityAutoP        = interceptHBW[1] + ageHBW[1]*age + maleHBW[1]*(gender.name().equals("MALE")) + 
                       driversLicenseHBW[1]*driversLicense + hhSizeHBW[1]*hhSize + hhAutosHBW[1]*hhAutos + 
-                      distToRailStopHBW[1]*distToRailStop + coreCityHBW[1]*(areaType.name().equals("HBW_coreCity")) +
-                      mediumSizedCityHBW[1]*(areaType.name().equals("HBW_mediumSizedCity")) + 
-                      townOrRuralCommunityHBW[1]*(areaType.name().equals("HBW_townOrRural")) +
+                      distToRailStopHBW[1]*distToRailStop + coreCityHBW[1]*(areaType.name().equals("CORE_CITY")) +
+                      mediumSizedCityHBW[1]*(areaType.name().equals("MEDIUM_SIZE_CITY")) + 
+                      townOrRuralCommunityHBW[1]*(areaType.name().equals("TOWN")|| areaType.name().equals("RURAL")) +
                       generalizedCostHBW[1]*gcAutoP + isMunichTripHBW[1]*isMunichTrip;
 
 utilityBicycle      = interceptHBW[2] + ageHBW[2]*age + maleHBW[2]*(gender.name().equals("MALE")) + 
                       driversLicenseHBW[2]*driversLicense + hhSizeHBW[2]*hhSize + hhAutosHBW[2]*hhAutos + 
-                      distToRailStopHBW[2]*distToRailStop + coreCityHBW[2]*(areaType.name().equals("HBW_coreCity")) +
-                      mediumSizedCityHBW[2]*(areaType.name().equals("HBW_mediumSizedCity")) + 
-                      townOrRuralCommunityHBW[2]*(areaType.name().equals("HBW_townOrRural")) +
+                      distToRailStopHBW[2]*distToRailStop + coreCityHBW[2]*(areaType.name().equals("CORE_CITY")) +
+                      mediumSizedCityHBW[2]*(areaType.name().equals("MEDIUM_SIZE_CITY")) + 
+                      townOrRuralCommunityHBW[2]*(areaType.name().equals("TOWN") || areaType.name().equals("RURAL")) +
                       tripLengthHBW[2]*travelDistanceNMT + isMunichTripHBW[2]*isMunichTrip;
 
 utilityBus          = interceptHBW[3] + ageHBW[3]*age + maleHBW[3]*(gender.name().equals("MALE")) + 
                       driversLicenseHBW[3]*driversLicense + hhSizeHBW[3]*hhSize + hhAutosHBW[3]*hhAutos + 
-                      distToRailStopHBW[3]*distToRailStop + coreCityHBW[3]*(areaType.name().equals("HBW_coreCity")) +
-                      mediumSizedCityHBW[3]*(areaType.name().equals("HBW_mediumSizedCity")) + 
-                      townOrRuralCommunityHBW[3]*(areaType.name().equals("HBW_townOrRural")) +
+                      distToRailStopHBW[3]*distToRailStop + coreCityHBW[3]*(areaType.name().equals("CORE_CITY")) +
+                      mediumSizedCityHBW[3]*(areaType.name().equals("MEDIUM_SIZE_CITY")|| areaType.name().equals("RURAL")) +
+                      townOrRuralCommunityHBW[3]*(areaType.name().equals("TOWN")) +
                       generalizedCostHBW[3]*gcBus + isMunichTripHBW[3]*isMunichTrip;
 
 utilityTrain        = interceptHBW[4] + ageHBW[4]*age + maleHBW[4]*(gender.name().equals("MALE")) + 
                       driversLicenseHBW[4]*driversLicense + hhSizeHBW[4]*hhSize + hhAutosHBW[4]*hhAutos + 
-                      distToRailStopHBW[4]*distToRailStop + coreCityHBW[4]*(areaType.name().equals("HBW_coreCity")) +
-                      mediumSizedCityHBW[4]*(areaType.name().equals("HBW_mediumSizedCity")) + 
-                      townOrRuralCommunityHBW[4]*(areaType.name().equals("HBW_townOrRural")) +
+                      distToRailStopHBW[4]*distToRailStop + coreCityHBW[4]*(areaType.name().equals("CORE_CITY")) +
+                      mediumSizedCityHBW[4]*(areaType.name().equals("MEDIUM_SIZE_CITY")|| areaType.name().equals("RURAL")) +
+                      townOrRuralCommunityHBW[4]*(areaType.name().equals("TOWN")) +
                       generalizedCostHBW[4]*gcTrain + isMunichTripHBW[4]*isMunichTrip;
 
 utilityTramMetro    = interceptHBW[5] + ageHBW[5]*age + maleHBW[5]*(gender.name().equals("MALE")) + 
                       driversLicenseHBW[5]*driversLicense + hhSizeHBW[5]*hhSize + hhAutosHBW[5]*hhAutos + 
-                      distToRailStopHBW[5]*distToRailStop + coreCityHBW[5]*(areaType.name().equals("HBW_coreCity")) +
-                      mediumSizedCityHBW[5]*(areaType.name().equals("HBW_mediumSizedCity")) + 
-                      townOrRuralCommunityHBW[5]*(areaType.name().equals("HBW_townOrRural")) +
+                      distToRailStopHBW[5]*distToRailStop + coreCityHBW[5]*(areaType.name().equals("CORE_CITY")) +
+                      mediumSizedCityHBW[5]*(areaType.name().equals("MEDIUM_SIZE_CITY")) + 
+                      townOrRuralCommunityHBW[5]*(areaType.name().equals("TOWN")|| areaType.name().equals("RURAL")) +
                       generalizedCostHBW[5]*gcTramMetro + isMunichTripHBW[5]*isMunichTrip;
 
 utilityWalk         = interceptHBW[6] + ageHBW[6]*age + maleHBW[6]*(gender.name().equals("MALE")) + 
                       driversLicenseHBW[6]*driversLicense + hhSizeHBW[6]*hhSize + hhAutosHBW[6]*hhAutos + 
-                      distToRailStopHBW[6]*distToRailStop + coreCityHBW[6]*(areaType.name().equals("HBW_coreCity")) +
-                      mediumSizedCityHBW[6]*(areaType.name().equals("HBW_mediumSizedCity")) + 
-                      townOrRuralCommunityHBW[6]*(areaType.name().equals("HBW_townOrRural")) +
+                      distToRailStopHBW[6]*distToRailStop + coreCityHBW[6]*(areaType.name().equals("CORE_CITY")) +
+                      mediumSizedCityHBW[6]*(areaType.name().equals("MEDIUM_SIZE_CITY")) + 
+                      townOrRuralCommunityHBW[6]*(areaType.name().equals("TOWN")|| areaType.name().equals("RURAL")) +
                       tripLengthHBW[6]*travelDistanceNMT + isMunichTripHBW[6]*isMunichTrip;
 
 utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAutoD);
@@ -821,7 +821,7 @@ tripLengthNHBO          = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57, 0.0];
 travelTimeNHBO           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.000025];
 travelCostNHBO           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.000008];
 
-var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime,uamFareEurosPerKm){
+var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm){
 
 timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
 timeAutoP = timeAutoD;
@@ -882,38 +882,38 @@ gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_oth
 
 utilityAutoD        = interceptNHBO[0] + maleNHBO[0]*(gender.name().equals("MALE")) + driversLicenseNHBO[0]*driversLicense + 
                       hhAutosNHBO[0]*hhAutos + distToRailStopNHBO[0]*distToRailStop + 
-                      agglomerationUrbanNHBO[0]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
-                      ruralNHBO[0]*(areaType.name().equals("NHBO_rural")) + generalizedCostNHBO_Sq[0]*Math.pow(gcAutoD,2);
+                      agglomerationUrbanNHBO[0]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
+                      ruralNHBO[0]*(areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[0]*Math.pow(gcAutoD,2);
 
 utilityAutoP        = interceptNHBO[1] + maleNHBO[1]*(gender.name().equals("MALE")) + driversLicenseNHBO[1]*driversLicense + 
                       hhAutosNHBO[1]*hhAutos + distToRailStopNHBO[1]*distToRailStop + 
-                      agglomerationUrbanNHBO[1]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
-                      ruralNHBO[1]*(areaType.name().equals("NHBO_rural")) + generalizedCostNHBO_Sq[1]*Math.pow(gcAutoP,2);
+                      agglomerationUrbanNHBO[1]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
+                      ruralNHBO[1]*(areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[1]*Math.pow(gcAutoP,2);
 
 utilityBicycle      = interceptNHBO[2] + maleNHBO[2]*(gender.name().equals("MALE")) + driversLicenseNHBO[2]*driversLicense + 
                       hhAutosNHBO[2]*hhAutos + distToRailStopNHBO[2]*distToRailStop + 
-                      agglomerationUrbanNHBO[2]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
-                      ruralNHBO[2]*(areaType.name().equals("NHBO_rural")) + tripLengthNHBO[2]*travelDistanceNMT;
+                      agglomerationUrbanNHBO[2]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
+                      ruralNHBO[2]*(areaType.name().equals("RURAL")) + tripLengthNHBO[2]*travelDistanceNMT;
 
 utilityBus          = interceptNHBO[3] + maleNHBO[3]*(gender.name().equals("MALE")) + driversLicenseNHBO[3]*driversLicense + 
                       hhAutosNHBO[3]*hhAutos + distToRailStopNHBO[3]*distToRailStop + 
-                      agglomerationUrbanNHBO[3]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
-                      ruralNHBO[3]*(areaType.name().equals("NHBO_rural")) + generalizedCostNHBO_Sq[3]*Math.pow(gcBus,2);
+                      agglomerationUrbanNHBO[3]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
+                      ruralNHBO[3]*(areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[3]*Math.pow(gcBus,2);
 
 utilityTrain        = interceptNHBO[4] + maleNHBO[4]*(gender.name().equals("MALE")) + driversLicenseNHBO[4]*driversLicense + 
                       hhAutosNHBO[4]*hhAutos + distToRailStopNHBO[4]*distToRailStop + 
-                      agglomerationUrbanNHBO[4]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
-                      ruralNHBO[4]*(areaType.name().equals("NHBO_rural")) + generalizedCostNHBO_Sq[4]*Math.pow(gcTrain,2);
+                      agglomerationUrbanNHBO[4]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
+                      ruralNHBO[4]*(areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[4]*Math.pow(gcTrain,2);
 
 utilityTramMetro    = interceptNHBO[5] + maleNHBO[5]*(gender.name().equals("MALE")) + driversLicenseNHBO[5]*driversLicense + 
                       hhAutosNHBO[5]*hhAutos + distToRailStopNHBO[5]*distToRailStop + 
-                      agglomerationUrbanNHBO[5]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
-                      ruralNHBO[5]*(areaType.name().equals("NHBO_rural")) + generalizedCostNHBO_Sq[5]*Math.pow(gcTramMetro,2);
+                      agglomerationUrbanNHBO[5]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
+                      ruralNHBO[5]*(areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[5]*Math.pow(gcTramMetro,2);
 
 utilityWalk         = interceptNHBO[6] + maleNHBO[6]*(gender.name().equals("MALE")) + driversLicenseNHBO[6]*driversLicense + 
                       hhAutosNHBO[6]*hhAutos + distToRailStopNHBO[6]*distToRailStop + 
-                      agglomerationUrbanNHBO[6]*(areaType.name().equals("NHBO_agglomeration")+areaType.name().equals("NHBO_urban")) +
-                      ruralNHBO[6]*(areaType.name().equals("NHBO_rural")) + tripLengthNHBO[6]*travelDistanceNMT;
+                      agglomerationUrbanNHBO[6]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
+                      ruralNHBO[6]*(areaType.name().equals("RURAL")) + tripLengthNHBO[6]*travelDistanceNMT;
 
 utilityAVP          = utilityAutoD + generalizedCostNHBO_Sq[0]*(gcPrivateAV - gcAutoD);
 
@@ -966,4 +966,90 @@ probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
 return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV, probabilityUAM], "double[]");
 
+}
+
+
+//AIRPORT
+
+var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, boardingTime, uamFareEurosPerKm){
+
+    asc_autoDriver      = 0. ;
+    asc_autoPassenger   = -0.0657 + 2.76;
+    asc_bus             = 2.246879 - 3.09;
+    asc_train           = 2.992159 - 1.29;
+    asc_privateAV       = 0. ;
+    asc_sharedAV        =  -1.37275;
+    asc_uam             =  2.992159 - 1.29;
+
+    //times are in minutes
+    beta_time               = -0.0002 * 60;
+    exp_time_autoDriver     = 10.44896;
+    exp_time_autoPassenger  = 10.44896;
+    exp_time_bus            = 0;
+    exp_time_train          = 3.946016;
+    exp_time_privateAV      = 10.44896;
+    exp_time_sharedAV       = 10.44896;
+    exp_time_uam            = 3.946016;
+
+    //distance is in minutes
+    beta_distance               = -0.00002
+    exp_distance_autoDriver     = 0;
+    exp_distance_autoPassenger  = 1.939056;
+    exp_distance_bus            = 9.662964;
+    exp_distance_train          = 7.706087;
+    exp_distance_privateAV      = 0;
+    exp_distance_sharedAV       = 4.649129;
+    exp_distance_uam            = 7.706087;
+
+
+    //Order of variables in the return variable autoDriver, autoPassenger bus, train, privateAV, sharedAV, uam
+
+        u_autoDriver    = asc_autoDriver + exp_time_autoDriver * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+            exp_distance_autoDriver * Math.exp(beta_distance * travelDistanceAuto);
+        u_autoPassenger = asc_autoPassenger + exp_time_autoPassenger * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+            exp_distance_autoPassenger * Math.exp(beta_distance * travelDistanceAuto);
+        u_bus           = asc_bus + exp_time_bus * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus")) +
+            exp_distance_bus * Math.exp(beta_distance * travelDistanceAuto);
+        u_train         = asc_train + exp_time_train * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train")) +
+            exp_distance_train * Math.exp(beta_distance * travelDistanceAuto);
+        u_privateAV     = u_autoDriver;
+        u_sharedAV      = asc_sharedAV + exp_time_sharedAV * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+             exp_distance_sharedAV * Math.exp(beta_distance * travelDistanceAuto);
+        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam")/60)) +
+             exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
+
+    return [Math.exp(u_autoDriver), Math.exp(u_autoPassenger), Math.exp(u_bus), Math.exp(u_train), Math.exp(u_privateAV), Math.exp(u_sharedAV), Math.exp(u_uam)];
+}
+
+
+var calculateAIRPORTProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes,
+ travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm){
+
+
+        //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, sharedAV, privateAV, TramMetro, Walk, privateAV, sharedAV, UAM]
+        //calculate utilities for each mode
+        utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour,  boardingTime, uamFareEurosPerKm);
+
+        sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
+
+        probabilityAutoD = utilities[0] / sum_u;
+        probabilityAutoP = utilities[1] / sum_u;
+        probabilityBus = utilities[2] / sum_u;
+        probabilityTrain = utilities[3] / sum_u;
+        probabilityPrivateAV = utilities[4] / sum_u;
+        probabilitySharedAV = utilities[5] / sum_u;
+        probabilityUAM = utilities[6] / sum_u;
+
+       return Java.to([probabilityAutoD, probabilityAutoP, 0., probabilityBus, probabilityTrain, 0., 0., probabilityPrivateAV, probabilitySharedAV, probabilityUAM], "double[]");
+
+}
+
+var returnLogsumAIRPORT = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, boardingTime, uamFareEurosPerKm){
+
+        //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk, privateAV, sharedAV, UAM]
+        utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, boardingTime, uamFareEurosPerKm);
+
+        sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
+
+       return Math.log(sum_u);
 }
