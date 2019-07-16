@@ -84,9 +84,15 @@ public class ModeChoiceUAMCalculatorsTest {
                 }
 
                 @Override
-                public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
+                public double getTravelTimeFromRegion(Region origin, Zone destination, double timeOfDay_s, String mode) {
                     return 0;
                 }
+
+                @Override
+                public double getTravelTimeToRegion(Zone origin, Region destination, double timeOfDay_s, String mode) {
+                    return 0;
+                }
+
 
                 @Override
                 public IndexedDoubleMatrix2D getPeakSkim(String mode) {

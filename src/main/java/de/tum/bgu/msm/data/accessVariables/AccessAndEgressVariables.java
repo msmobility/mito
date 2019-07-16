@@ -75,4 +75,9 @@ public class AccessAndEgressVariables {
         int destinationZone = destination.getZoneId();
         return matricesByMode.get(mode).get(variable).getIndexed(originZone, destinationZone);
     }
+
+    public void setExternally(IndexedDoubleMatrix2D matrix, String mode, AccessVariable variable){
+        matricesByMode.putIfAbsent(mode, new ConcurrentHashMap<>());
+        matricesByMode.get(mode).put(variable, matrix);
+    }
 }

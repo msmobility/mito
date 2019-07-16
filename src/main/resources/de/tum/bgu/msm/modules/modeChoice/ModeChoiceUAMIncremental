@@ -76,7 +76,7 @@ timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tr
 timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
 if(timeUAM < 10000){
-timeUAM = timeUAM/60 + boardingTime;
+timeUAM = timeUAM + boardingTime;
 }
 monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 age = person.getAge();
@@ -98,7 +98,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT1500_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT1500_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -111,7 +111,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
   if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT5600_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT5600_HBW_HBE_uam;
   }else{
         costUAM = travelCostUAM;
   }
@@ -124,7 +124,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_HBW_HBE_sharedAV; // change in VOT and cost
   if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT7000_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT7000_HBW_HBE_uam;
   }else{
         costUAM = travelCostUAM;
   }
@@ -245,7 +245,7 @@ timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tr
 timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
 if(timeUAM < 10000){
-timeUAM = timeUAM/60 + boardingTime;
+timeUAM = timeUAM + boardingTime;
 }
 monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
@@ -263,7 +263,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT1500_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT1500_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -276,7 +276,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT5600_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT5600_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -289,7 +289,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_HBW_HBE_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_HBW_HBE_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT7000_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT7000_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -396,7 +396,7 @@ timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tr
 timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
 if(timeUAM < 10000){
-timeUAM = timeUAM/60 + boardingTime;
+timeUAM = timeUAM + boardingTime;
 }
 monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
@@ -414,7 +414,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT1500_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT1500_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -427,7 +427,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT5600_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT5600_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -440,7 +440,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT7000_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT7000_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -544,7 +544,7 @@ timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tr
 timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
 if(timeUAM < 10000){
-timeUAM = timeUAM/60 + boardingTime;
+timeUAM = timeUAM + boardingTime;
 }
 monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
@@ -563,7 +563,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT1500_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT1500_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -576,7 +576,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT5600_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT5600_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -589,7 +589,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT7000_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT7000_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -691,7 +691,7 @@ timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tr
 timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
 if(timeUAM < 10000){
-timeUAM = timeUAM/60 + boardingTime;
+timeUAM = timeUAM + boardingTime;
 }
 monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 age = person.getAge();
@@ -708,7 +708,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT1500_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT1500_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -721,7 +721,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT5600_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT5600_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -734,7 +734,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT7000_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT7000_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -830,7 +830,7 @@ timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tr
 timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
 timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
 if(timeUAM < 10000){
-timeUAM = timeUAM/60 + boardingTime;
+timeUAM = timeUAM + boardingTime;
 }
 monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
 gender = person.getMitoGender();
@@ -848,7 +848,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT1500
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT1500_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT1500_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT1500_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT1500_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -861,7 +861,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT5600
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT5600_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT5600_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT5600_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT5600_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -874,7 +874,7 @@ gcTramMetro = timeTramMetro + (travelDistanceAuto*transitFareEurosPerKm)/VOT7000
 gcPrivateAV = timeAutoD + (travelDistanceAuto*fuelCostEurosPerKm)/VOT7000_other_privateAV; // change only in VOT
 gcSharedAV = timeAutoD + (travelDistanceAuto*sharedAVCostEurosPerKm)/VOT7000_other_sharedAV; // change in VOT and cost
     if(travelCostUAM<10000){
-        costUAM = (travelCostUAM/5*uamFareEurosPerKm)/VOT7000_HBW_HBE_uam;
+        costUAM = (travelCostUAM)/VOT7000_HBW_HBE_uam;
     }else{
         costUAM = travelCostUAM;
     }
@@ -1015,7 +1015,7 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
         u_privateAV     = u_autoDriver;
         u_sharedAV      = asc_sharedAV + exp_time_sharedAV * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
              exp_distance_sharedAV * Math.exp(beta_distance * travelDistanceAuto);
-        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam")/60)) +
+        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
              exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
 
     return [Math.exp(u_autoDriver), Math.exp(u_autoPassenger), Math.exp(u_bus), Math.exp(u_train), Math.exp(u_privateAV), Math.exp(u_sharedAV), Math.exp(u_uam)];

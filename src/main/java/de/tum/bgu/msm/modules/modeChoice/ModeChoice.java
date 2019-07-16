@@ -180,10 +180,17 @@ public class ModeChoice extends Module {
         }
 
         double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
+
+
+
+
             if (trip.getTripOrigin() == null || trip.getTripDestination() == null) {
                 countTripsSkipped++;
                 return null;
             }
+
+            int zone = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
+
             final int originId = trip.getTripOrigin().getZoneId();
             final int destinationId = trip.getTripDestination().getZoneId();
             final MitoZone origin = dataSet.getZones().get(originId);
@@ -193,13 +200,21 @@ public class ModeChoice extends Module {
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
             if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)){
-                final double travelCostUAM = dataSet.getTravelCostUAM().getTravelDistance(originId,
+                final double flyingDistanceUAM_km = dataSet.getFlyingDistanceUAM().getTravelDistance(originId,
                         destinationId);
-                double processingTime = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_BOARDINGTIME));//dataSet.getWaitingTimes().getWaitingTime(trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
-                double uamCost = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST));
-                //System.out.println(boardingTime+","+uamCost);
+                final double uamFare_eurkm = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST));
+
+                //todo car costs hard coded to 0.07!!!!!
+                final double uamCost_eur = flyingDistanceUAM_km * uamFare_eurkm +
+                        dataSet.getAccessAndEgressVariables().
+                                getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.ACCESS_DIST_KM) * 0.07 +
+                        dataSet.getAccessAndEgressVariables().
+                                getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
+
+                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
+
                 return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
-                        travelDistanceNMT, travelCostUAM, dataSet.getPeakHour(),processingTime,uamCost);
+                        travelDistanceNMT, uamCost_eur, dataSet.getPeakHour(),processingTime_min,uamFare_eurkm);
             }else {
                 return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                         travelDistanceNMT, dataSet.getPeakHour());

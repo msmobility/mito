@@ -16,8 +16,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.CoordUtils;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -173,7 +171,7 @@ public class SummarizeData {
                     double uam = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "uam");
                     pwh.print(uam);
                     pwh.print(",");
-                    double uamCost = dataSet.getTravelCostUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                    double uamCost = dataSet.getFlyingDistanceUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId());
                     pwh.print(uamCost);
                 } else {
                     pwh.print("NA,NA,NA,NA,NA,NA,NA");
@@ -288,7 +286,7 @@ public class SummarizeData {
                 double uam = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "uam");
                 pwh.print(uam);
                 pwh.print(",");
-                double uamCost = dataSet.getTravelCostUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                double uamCost = dataSet.getFlyingDistanceUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId());
                 pwh.print(uamCost);
             } else {
                 pwh.print("NA,NA,NA,NA,NA,NA,NA");
