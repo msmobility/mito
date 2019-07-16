@@ -29,7 +29,7 @@ public class ModeChoiceTest {
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1);
         dataSet.setTravelDistancesNMT((origin, destination) -> 1);
-        dataSet.setTravelCostUAM((origin, destination) -> 1.2);
+        dataSet.setFlyingDistanceUAM((origin, destination) -> 1.2);
         dataSet.setTravelTimes(new TravelTimes() {
 
             @Override

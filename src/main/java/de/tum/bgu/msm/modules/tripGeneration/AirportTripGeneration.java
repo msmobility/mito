@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceJSCalculator;
@@ -23,6 +24,7 @@ public class AirportTripGeneration {
     private int counter = 0;
     private final static Logger LOGGER = Logger.getLogger(AirportTripGeneration.class);
     private final int airportZoneId;
+    private final Location airport;
     private AirportNumberOfTripsCalculator numberOfTripsCalculator;
     private AirportDestinationCalculator airportDestinationCalculator;
     private AirportLogsumCalculator airportLogsumCalculator;
@@ -31,6 +33,7 @@ public class AirportTripGeneration {
         this.dataSet = dataSet;
         this.TRIP_ID_COUNTER.set(dataSet.getTrips().size());
         this.airportZoneId = Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE);
+        this.airport = dataSet.getZones().get(airportZoneId);
         this.numberOfTripsCalculator = new AirportNumberOfTripsCalculator(new InputStreamReader(this.getClass().getResourceAsStream("AirportTripRateCalc")));
         this.airportDestinationCalculator = new AirportDestinationCalculator(new InputStreamReader(TripDistribution.class.getResourceAsStream("AirportTripDistribution")));
         if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)) {
@@ -81,9 +84,20 @@ public class AirportTripGeneration {
             double logsum;
 
             if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)){
-                double processingTime = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_BOARDINGTIME));//dataSet.getWaitingTimes().getWaitingTime(trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
-                double uamCost = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST));
-                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour(), processingTime, uamCost);
+                final double flyingDistanceUAM_km = dataSet.getFlyingDistanceUAM().getTravelDistance(airportZoneId,
+                        zoneId);
+                final double uamFare_eurkm = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST));
+
+                //todo car costs hard coded to 0.07!!!!!
+                final double uamCost_eur = flyingDistanceUAM_km * uamFare_eurkm +
+                        dataSet.getAccessAndEgressVariables().
+                                getAccessVariable(airport, dataSet.getZones().get(zoneId), "uam", AccessAndEgressVariables.AccessVariable.ACCESS_DIST_KM) * 0.07 +
+                        dataSet.getAccessAndEgressVariables().
+                                getAccessVariable(airport, dataSet.getZones().get(zoneId), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
+
+                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(airport, dataSet.getZones().get(zoneId), Mode.uam.toString());
+
+                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour(), processingTime_min, uamCost_eur);
 
             }else {
                 logsum= airportLogsumCalculator.calculateLogsumForThisZone(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour());

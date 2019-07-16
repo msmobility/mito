@@ -18,7 +18,7 @@ public class DataSet {
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
-    private TravelDistances travelCostUAM;
+    private TravelDistances flyingDistanceUAM;
 
     private WaitingTimes waitingTimes;
 
@@ -260,12 +260,12 @@ public class DataSet {
         this.accessAndEgressVariables = accessAndEgressVariables;
     }
 
-    public TravelDistances getTravelCostUAM() {
-        return travelCostUAM;
+    public TravelDistances getFlyingDistanceUAM() {
+        return flyingDistanceUAM;
     }
 
-    public void setTravelCostUAM(TravelDistances travelCostUAM) {
-        this.travelCostUAM = travelCostUAM;
+    public void setFlyingDistanceUAM(TravelDistances travelCostUAM) {
+        this.flyingDistanceUAM = travelCostUAM;
     }
 
     public void setWaitingTimes(WaitingTimes waitingTimes) {
