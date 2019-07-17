@@ -30,6 +30,7 @@ public final class TripDistribution extends Module {
 
     public final static AtomicInteger distributedTripsCounter = new AtomicInteger(0);
     public final static AtomicInteger failedTripsCounter = new AtomicInteger(0);
+    public final static AtomicInteger tripsRemovedDueToNoBudget = new AtomicInteger(0);
 
     public final static AtomicInteger randomOccupationDestinationTrips = new AtomicInteger(0);
     public final static AtomicInteger completelyRandomNhbTrips = new AtomicInteger(0);
@@ -49,6 +50,8 @@ public final class TripDistribution extends Module {
 
         logger.info("Distributing trips for households...");
         distributeTrips();
+
+        logger.warn("Trips removed since there are no budget in the household for their purpose: " + tripsRemovedDueToNoBudget.get());
     }
 
     private void buildMatrices() {

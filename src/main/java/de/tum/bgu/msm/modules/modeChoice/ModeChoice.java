@@ -180,9 +180,6 @@ public class ModeChoice extends Module {
 
         double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
 
-
-
-
             if (trip.getTripOrigin() == null || trip.getTripDestination() == null) {
                 countTripsSkipped++;
                 return null;

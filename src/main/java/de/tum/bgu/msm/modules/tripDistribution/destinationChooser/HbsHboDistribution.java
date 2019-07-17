@@ -82,6 +82,11 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                         TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
                 } else {
+                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        dataSet.removeTrip(trip.getTripId());
+                        TripDistribution.tripsRemovedDueToNoBudget.incrementAndGet();
+                    }
+                    household.getTripsForPurpose(purpose).removeAll(household.getTripsForPurpose(purpose));
                     TripDistribution.failedTripsCounter.incrementAndGet();
                 }
             }
