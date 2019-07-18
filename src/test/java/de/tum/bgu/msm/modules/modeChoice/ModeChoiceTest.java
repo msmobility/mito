@@ -29,7 +29,7 @@ public class ModeChoiceTest {
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1);
         dataSet.setTravelDistancesNMT((origin, destination) -> 1);
-        dataSet.setTravelCostUAM((origin, destination) -> 1.2);
+        dataSet.setFlyingDistanceUAM((origin, destination) -> 1.2);
         dataSet.setTravelTimes(new TravelTimes() {
 
             @Override
@@ -37,10 +37,16 @@ public class ModeChoiceTest {
 				return 10.;
 			}
 
-			@Override
-			public double getTravelTimeToRegion(Location origin, Region destination, double timeOfDay_s, String mode) {
-				return 0;
-			}
+            @Override
+            public double getTravelTimeFromRegion(Region origin, Zone destination, double timeOfDay_s, String mode) {
+                return 0;
+            }
+
+            @Override
+            public double getTravelTimeToRegion(Zone origin, Region destination, double timeOfDay_s, String mode) {
+                return 0;
+            }
+
 
             @Override
             public IndexedDoubleMatrix2D getPeakSkim(String mode) {

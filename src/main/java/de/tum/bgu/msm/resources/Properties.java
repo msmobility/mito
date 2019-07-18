@@ -44,7 +44,7 @@ public class Properties {
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";
     public static final String TRAIN_TRAVEL_TIME_SKIM = "train.travelTime";
-    public static final String UAM_TRAVEL_TIME_SKIM = "uam.travelTime";
+    public static final String UAM_SKIM = "uam.travelTime";
     public static final String AUTO_TRAVEL_DISTANCE_SKIM = "auto.travelDistance";
     public static final String NMT_TRAVEL_DISTANCE_SKIM = "nmt.travelDistance";
     public static final String UAM_TRAVEL_COST_SKIM = "uam.travelCost";
@@ -98,8 +98,13 @@ public class Properties {
 
     public static final String UAM_BOARDINGTIME = "uam.boardingTime";
     public static final String UAM_COST = "uam.cost";
+    public static final String UAM_SPEED_KMH = "uam.speed.kmh" ;
     
     public static final String RUN_UAM_MATSIM = "run.uam.matsim";
     public static final String UAM_VEHICLES = "uam.vehicles";
+
+    public static final String UAM_DETOUR_FACTOR = "uam.detour.factor";
+    public static final String UAM_TAKEOFF_MIN = "uam.takeoff.time";
+    public static final String UAM_LANDING_MIN = "uam.landing.time";
 
 }
