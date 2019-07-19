@@ -973,12 +973,12 @@ return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabil
 
 var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, boardingTime, uamFareEurosPerKm){
 
-    asc_autoDriver      = 0. ;
-    asc_autoPassenger   = -0.0657 + 1.23;
-    asc_bus             = 2.246879 - 3.77;
-    asc_train           = 2.992159 - 2.12;
+    asc_autoDriver = 0. ;
+    asc_autoPassenger = -0.0657 - 1.120;
+    asc_bus             =  2.246879 -5.946;
+    asc_train           = 2.992159 -4.392;
     asc_privateAV       = 0. ;
-    asc_sharedAV        =  -1.37275;
+    asc_sharedAV        =   -1.37275 - 2.606;
     asc_uam             =  2.992159 - 2.12;
 
     //times are in minutes
