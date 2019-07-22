@@ -9,10 +9,11 @@ import net.bhl.matsim.uam.run.RunUAMScenario;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.controler.Controler;
 
 public class UamTrafficAssignment extends TrafficAssignment {
-	
+
 	private int numberOfThreads = 4;
 
 	public UamTrafficAssignment(DataSet dataSet, String scenarioName) {
@@ -34,7 +35,28 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
 		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINDISTANCE");
 		matsimConfig.getModules().get("uam").addParam("ptSimulation", "false");
-
+		
+		// UAM planCalcScore activities
+		ConfigGroup uamInteractionParam = matsimConfig.getModules().get("planCalcScore").createParameterSet("activityParams");
+		uamInteractionParam.addParam("activityType", "uam_interaction");
+		uamInteractionParam.addParam("scoringThisActivityAtAll", "false");
+		matsimConfig.getModules().get("planCalcScore").addParameterSet(uamInteractionParam);
+		
+		// UAM planCalcScore modes
+		String[] modeScores = { "uam",
+				"access_uam_walk", "egress_uam_walk",
+				"access_uam_car", "egress_uam_car",
+				"access_uam_bike", "egress_uam_bike" };
+		for (String modeScore : modeScores) {
+			ConfigGroup modeParam = matsimConfig.getModules().get("planCalcScore").createParameterSet("modeParams");
+			modeParam.addParam("mode", modeScore);
+			modeParam.addParam("constant", "0.0");
+			modeParam.addParam("marginalUtilityOfDistance_util_m", "0.0");
+			modeParam.addParam("marginalUtilityOfTraveling_util_hr", "0.0");
+			modeParam.addParam("monetaryDistanceRate", "0.0");
+			matsimConfig.getModules().get("planCalcScore").addParameterSet(modeParam);
+		}
+		
 		matsimConfig = ConfigureMatsim.configureMatsim(matsimConfig);
 
 		String runId = "mito_assignment";
@@ -59,7 +81,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
 
 		String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES,
-				new String[] { "autoDriver", "uam" });
+				new String[] { "autoDriver" });
 		Set<String> networkModesSet = new HashSet<>();
 
 		for (String mode : networkModes) {

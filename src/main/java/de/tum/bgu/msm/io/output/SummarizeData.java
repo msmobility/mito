@@ -12,7 +12,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
 import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
-import org.locationtech.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.CoordUtils;
 

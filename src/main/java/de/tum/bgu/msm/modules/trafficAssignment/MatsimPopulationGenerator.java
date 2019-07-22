@@ -81,8 +81,7 @@ public class MatsimPopulationGenerator {
                     originActivity.setEndTime(trip.getDepartureInMinutes() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                     plan.addActivity(originActivity);
 
-                    //plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
-                    plan.addLeg(factory.createLeg("uam")); // TODO FOR TESTING ONLY REMOVE LATER - RR
+                    plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
 
