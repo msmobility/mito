@@ -31,7 +31,7 @@ public class AirportTripGeneration {
 
     public AirportTripGeneration(DataSet dataSet) {
         this.dataSet = dataSet;
-        this.TRIP_ID_COUNTER.set(dataSet.getTrips().size());
+        this.TRIP_ID_COUNTER.set(dataSet.getTrips().keySet().stream().max(Integer::compareTo).get());
         this.airportZoneId = Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE);
         this.airport = dataSet.getZones().get(airportZoneId);
         this.numberOfTripsCalculator = new AirportNumberOfTripsCalculator(new InputStreamReader(this.getClass().getResourceAsStream("AirportTripRateCalc")));
