@@ -7,7 +7,7 @@ import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
-import org.apache.commons.collections.map.HashedMap;
+//import org.apache.commons.collections.map.HashedMap;
 import org.junit.Test;
 
 import java.io.InputStreamReader;

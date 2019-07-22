@@ -86,7 +86,8 @@ public class UamTrafficAssignment extends TrafficAssignment {
 
 		for (String mode : networkModes) {
 			String matsimMode = Mode.getMatsimMode(Mode.valueOf(mode));
-			if (!networkModesSet.contains(matsimMode)) {
+			//do not add uam as network mode, even if it is assigned
+			if (!networkModesSet.contains(matsimMode) && !matsimMode.equals("uam")) {
 				networkModesSet.add(matsimMode);
 			}
 		}
@@ -102,6 +103,11 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
 		skimUpdater.run();
 		dataSet.setMatsimControler(controler);
+
+		//WaitingTimesUpdater waitingTimesUpdater = new WaitingTimesUpdater(dataSet);
+		//waitingTimesUpdater.run();
+
+
 	}
 
 }
