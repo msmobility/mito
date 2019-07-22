@@ -104,8 +104,12 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		skimUpdater.run();
 		dataSet.setMatsimControler(controler);
 
-		//WaitingTimesUpdater waitingTimesUpdater = new WaitingTimesUpdater(dataSet);
-		//waitingTimesUpdater.run();
+		WaitingTimesUpdater waitingTimesUpdater = new WaitingTimesUpdater(dataSet);
+
+		int lastIteration = matsimConfig.controler().getLastIteration();
+		String fileName = matsimConfig.controler().getOutputDirectory() + "/ITERS/it." + lastIteration + "/" +
+		matsimConfig.controler().getRunId() + "." + lastIteration + ".uamdemand.csv";
+		//waitingTimesUpdater.run(fileName);
 
 
 	}

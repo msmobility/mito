@@ -95,7 +95,7 @@ public class AirportTripGeneration {
                         dataSet.getAccessAndEgressVariables().
                                 getAccessVariable(airport, dataSet.getZones().get(zoneId), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
 
-                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(airport, dataSet.getZones().get(zoneId), Mode.uam.toString());
+                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(null, airport, dataSet.getZones().get(zoneId), Mode.uam.toString(), 0.);
 
                 logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour(), processingTime_min, uamCost_eur);
 
