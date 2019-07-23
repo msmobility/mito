@@ -33,7 +33,8 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig.getModules().get("uam").addParam("parallelRouters", "" + numberOfThreads);
 		matsimConfig.getModules().get("uam").addParam("searchRadius", "15000");
 		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
-		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINDISTANCE");
+		// Possible strategies: MAXUTILITY, MAXACCESSUTILITY, MINTRAVELTIME, MINACCESSTRAVELTIME, MINDISTANCE, MINACCESSDISTANCE
+		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINACCESSDISTANCE");
 		matsimConfig.getModules().get("uam").addParam("ptSimulation", "false");
 		
 		// UAM planCalcScore activities
