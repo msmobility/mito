@@ -13,8 +13,7 @@ public enum Mode implements Id {
     train,
     tramOrMetro,
     walk,
-    privateAV,
-    sharedAV;
+    TNC;
 
     @Override
     public int getId(){
@@ -38,9 +37,7 @@ public enum Mode implements Id {
             case 6:
                 return walk;
             case 7:
-                return privateAV;
-            case 8:
-                return sharedAV;
+                return TNC;
             default:
                 throw new RuntimeException("Mode for code " + code + "not specified.");
         }

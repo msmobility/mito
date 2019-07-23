@@ -99,6 +99,7 @@ public class ModeChoice extends Module {
         private final Purpose purpose;
         private final DataSet dataSet;
         private final ModeChoiceJSCalculator calculator;
+        private final ModeChoiceJSCalculator calculatorTNC;
         private final TravelTimes travelTimes;
         private int countTripsSkipped;
 
@@ -107,12 +108,21 @@ public class ModeChoice extends Module {
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
-            if (includeAV) {
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoiceAV")), purpose);
-            } else {
+            boolean includeTNC = true;
+            if (includeTNC){
+                this.calculatorTNC = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                        .getResourceAsStream("ModeChoiceTNC")), purpose);
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoice")), purpose);
+            } else {
+                if (includeAV) {
+                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoiceAV")), purpose);
+                } else {
+                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoice")), purpose);
+                }
+                this.calculatorTNC = null;
             }
         }
 
@@ -145,8 +155,19 @@ public class ModeChoice extends Module {
                     destinationId);
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
-            return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
-                    travelDistanceNMT, dataSet.getPeakHour());
+            if (origin.isMunichZone()){
+                if (destination.isMunichZone()){
+                    return calculatorTNC.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
+                            travelDistanceNMT, dataSet.getPeakHour());
+                } else {
+                    return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
+                            travelDistanceNMT, dataSet.getPeakHour());
+                }
+            } else {
+                return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
+                        travelDistanceNMT, dataSet.getPeakHour());
+            }
+
         }
 
         private void chooseMode(MitoTrip trip, double[] probabilities) {
