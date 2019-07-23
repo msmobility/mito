@@ -14,6 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
 
+/**
+ * Updates the waiting time object after collecting data from the uam_extension. Works with the uam_extention only, as it needs
+ * the uam_demand.csv files of the last MATSim iteration.
+ */
 public class WaitingTimesUpdater {
 
     private final static Logger logger = Logger.getLogger(WaitingTimes.class);
@@ -74,7 +78,7 @@ public class WaitingTimesUpdater {
     private void printOutTimes(String outputFileName) {
         try {
             PrintWriter pw = new PrintWriter(new File(outputFileName));
-            pw.println("station,zone,time_s,waitingTime_s");
+            pw.println("station,zone,time_s,waitingTime_min");
             for (int zone : zonesToStationMap.keySet()) {
                 String station = zonesToStationMap.get(zone);
                 for (int interval : averageWaitingTimesByUAMStationAndTime_min.get(station).keySet()) {

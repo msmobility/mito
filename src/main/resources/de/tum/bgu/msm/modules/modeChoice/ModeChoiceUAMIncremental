@@ -979,7 +979,7 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
     asc_train           = 2.992159 -4.392;
     asc_privateAV       = 0. ;
     asc_sharedAV        =   -1.37275 - 2.606;
-    asc_uam             =  2.992159 - 2.12;
+    asc_uam             =  2.992159 - 4.392;
 
     //times are in minutes
     beta_time               = -0.0002 * 60;

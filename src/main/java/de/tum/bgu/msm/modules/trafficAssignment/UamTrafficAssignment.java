@@ -12,6 +12,9 @@ import java.util.Set;
 import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.controler.Controler;
 
+/**
+ * MATSim assignment model using the uam_extension (developed by BHL and not available yet as open-source)
+ */
 public class UamTrafficAssignment extends TrafficAssignment {
 
 	private int numberOfThreads = 4;
@@ -105,14 +108,12 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		skimUpdater.run();
 		dataSet.setMatsimControler(controler);
 
+		//update waiting times of UAM mode.
 		WaitingTimesUpdater waitingTimesUpdater = new WaitingTimesUpdater(dataSet);
-
 		int lastIteration = matsimConfig.controler().getLastIteration();
 		String inputFileName = matsimConfig.controler().getOutputDirectory() + "/ITERS/it." + lastIteration + "/" +
 		matsimConfig.controler().getRunId() + "." + lastIteration + ".uamdemand.csv";
-
 		String outputFileName = matsimConfig.controler().getOutputDirectory() + "/vertiportWaitingTimes.csv";
-
 		waitingTimesUpdater.run(inputFileName, outputFileName);
 
 

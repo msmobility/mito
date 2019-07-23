@@ -6,17 +6,11 @@ import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 
+/**
+ * Waiting times uniform for all trips and all locations of the study area
+ */
 public class UniformWaitingTimes implements WaitingTimes {
 
-
-    /**
-     * returns the sum of waiting time and processing time
-     * @param origin
-     * @param destination
-     * @param mode
-     * @param timeOfDay_s
-     * @return
-     */
     @Override
     public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode, double timeOfDay_s) {
         if (mode.equalsIgnoreCase(Mode.uam.toString())){
