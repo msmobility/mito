@@ -19,10 +19,12 @@ public abstract class TrafficAssignment extends Module {
 	protected MutableScenario matsimScenario;
 	protected String outputSubDirectory;
 	protected final double SILO_SAMPLING_RATE = 1;
+	protected final int iteration;
 
-	protected TrafficAssignment(DataSet dataSet, String scenarioName) {
+	protected TrafficAssignment(DataSet dataSet, String scenarioName, int iteration) {
 		super(dataSet);
 		this.scenarioName = scenarioName;
+		this.iteration = iteration;
 	}
 
 	@Override

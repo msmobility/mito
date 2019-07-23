@@ -11,7 +11,10 @@ import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -130,6 +133,30 @@ public class ModeChoice extends Module {
 //                k_autoPassenger + "," + k_bicycle +
 //                "," + k_bus + "," + k_train + "," + k_metro + "," +
 //                k_walk );
+
+
+    }
+
+    public void printModalShares(int iteration, String scenarioName) {
+        String fileName = "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/modeChoice/modalShares" + iteration + ".csv";
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new File(fileName));
+            pw.println("iteraiton,purpose,mode,share");
+            for (Purpose purpose : Purpose.values()){
+                for (Mode mode : Mode.values()){
+                    StringBuilder sb = new StringBuilder();
+                    double share = dataSet.getModeShareForPurpose(purpose, mode);
+                    sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(share);
+                    pw.println();
+                }
+            }
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
 
     }

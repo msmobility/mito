@@ -16,8 +16,8 @@ public class UamTrafficAssignment extends TrafficAssignment {
 
 	private int numberOfThreads = 4;
 
-	public UamTrafficAssignment(DataSet dataSet, String scenarioName) {
-		super(dataSet, scenarioName);
+	public UamTrafficAssignment(DataSet dataSet, String scenarioName, int iteration) {
+		super(dataSet, scenarioName, iteration);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		String runId = "mito_assignment";
 		matsimConfig.controler().setRunId(runId);
 		matsimConfig.controler().setOutputDirectory(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/"
-				+ outputSubDirectory + "/trafficAssignment");
+				+ outputSubDirectory + "/trafficAssignment/" + iteration  + "/");
 		matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
 
 		matsimConfig.qsim().setNumberOfThreads(numberOfThreads);

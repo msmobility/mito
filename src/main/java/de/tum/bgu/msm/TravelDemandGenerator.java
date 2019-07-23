@@ -67,38 +67,45 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
+        int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
 
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        ModeChoice modeChoice = new ModeChoice(dataSet);
-        modeChoice.run();
+        for (int iteration= 0; iteration< iterations; iteration++) {
+            logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+            ModeChoice modeChoice = new ModeChoice(dataSet);
+            modeChoice.run();
+            modeChoice.printModalShares(iteration, scenarioName);
 
-        boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
-        if (runTimeOfDayChoice) {
-            logger.info("Running time of day choice");
-            TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
-            timeOfDayChoice.run();
-        }
-
-        boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
-        if (runTimeOfDayChoice && runScaling) {
-            logger.info("Running trip scaling");
-            TripScaling tripScaling = new TripScaling(dataSet);
-            tripScaling.run();
-        }
-
-        boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
-        boolean useUamMatsim = Resources.INSTANCE.getBoolean(Properties.RUN_UAM_MATSIM, false);
-        if (runTimeOfDayChoice && runScaling && runAssignment) {
-            logger.info("Running traffic assignment in MATsim");
-            TrafficAssignment trafficAssignment;
-            if (!useUamMatsim) {
-            	trafficAssignment = new DefaultTrafficAssignment(dataSet, scenarioName);
-            } else {
-            	trafficAssignment = new UamTrafficAssignment(dataSet, scenarioName);
+            boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
+            if (runTimeOfDayChoice) {
+                logger.info("Running time of day choice");
+                TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
+                timeOfDayChoice.run();
             }
 
-            trafficAssignment.run();
+            boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
+            if (runTimeOfDayChoice && runScaling) {
+                logger.info("Running trip scaling");
+                TripScaling tripScaling = new TripScaling(dataSet);
+                tripScaling.run();
+            }
+
+            boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
+            boolean useUamMatsim = Resources.INSTANCE.getBoolean(Properties.RUN_UAM_MATSIM, false);
+            if (runTimeOfDayChoice && runScaling && runAssignment) {
+                logger.info("Running traffic assignment in MATsim");
+                TrafficAssignment trafficAssignment;
+                if (!useUamMatsim) {
+                    trafficAssignment = new DefaultTrafficAssignment(dataSet, scenarioName, iteration);
+                } else {
+                    trafficAssignment = new UamTrafficAssignment(dataSet, scenarioName, iteration);
+                }
+
+                trafficAssignment.run();
+            }
         }
+
+
+
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);

@@ -23,6 +23,7 @@ public class WaitingTimesUpdater {
     private static final int INTERVAL_S = 60 * 15;
     private static final int NUMBER_OF_INTERVALS = 24 * 60 * 60 / INTERVAL_S;
     private final Map<Integer, String> zonesToStationMap;
+    private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble("uam.boardingTime", 13) * 60;
 
     public WaitingTimesUpdater(DataSet dataSet) {
         this.dataSet = dataSet;
@@ -147,7 +148,9 @@ public class WaitingTimesUpdater {
                 while (interval < arrivalAtStationTime_s) {
                     interval += INTERVAL_S;
                 }
-                waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(waitingTimeAtOrigStation_s + waitingTimeAtDestStation_s);
+                double totalProcessingTime = waitingTimeAtOrigStation_s + waitingTimeAtDestStation_s;
+                totalProcessingTime = Math.max(totalProcessingTime, MINIMUM_WAITING_TIME_S);
+                waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(totalProcessingTime);
             }
         }
 
