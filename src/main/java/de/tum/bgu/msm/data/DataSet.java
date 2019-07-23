@@ -31,7 +31,7 @@ public class DataSet {
     private final Map<Integer, MitoJob> jobs = new LinkedHashMap<>();
 
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
-    private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
+    private Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
@@ -274,5 +274,9 @@ public class DataSet {
 
     public WaitingTimes getWaitingTimes() {
         return waitingTimes;
+    }
+
+    public void emptyTripSubsample() {
+        tripSubsample = new LinkedHashMap<>();
     }
 }

@@ -36,12 +36,12 @@ public class TripScaling extends Module {
 
     @Override
     public void run() {
-
         scaleTrips();
     }
 
-    private void scaleTrips() {
 
+    private void scaleTrips() {
+        dataSet.emptyTripSubsample();
         dataSet.getTrips().values().forEach(trip -> {
             if (trip.getTripMode() != null) {
                 if (MitoUtil.getRandomObject().nextDouble() < tripScalingFactors.get(trip.getTripMode())) {

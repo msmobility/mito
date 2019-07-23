@@ -19,7 +19,7 @@ public class WaitingTimesUpdater {
     private final static Logger logger = Logger.getLogger(WaitingTimes.class);
     private final DataSet dataSet;
     private final Map<String, Map<Integer, List<Double>>> waitingTimesByUAMStationAndTime;
-    private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime;
+    private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private static final int INTERVAL_S = 60 * 15;
     private static final int NUMBER_OF_INTERVALS = 24 * 60 * 60 / INTERVAL_S;
     private final Map<Integer, String> zonesToStationMap;
@@ -28,7 +28,7 @@ public class WaitingTimesUpdater {
     public WaitingTimesUpdater(DataSet dataSet) {
         this.dataSet = dataSet;
         waitingTimesByUAMStationAndTime = new LinkedHashMap<>();
-        averageWaitingTimesByUAMStationAndTime = new LinkedHashMap<>();
+        averageWaitingTimesByUAMStationAndTime_min = new LinkedHashMap<>();
         zonesToStationMap = new LinkedHashMap<>();
         new StationToZoneConversionReader(dataSet).read();
     }
@@ -46,11 +46,11 @@ public class WaitingTimesUpdater {
 
     private void initializeMap() {
         for (String station : zonesToStationMap.values()) {
-            waitingTimesByUAMStationAndTime.put(station, new HashMap<>());
-            averageWaitingTimesByUAMStationAndTime.put(station, new HashMap<>());
+            waitingTimesByUAMStationAndTime.put(station, new TreeMap<>());
+            averageWaitingTimesByUAMStationAndTime_min.put(station, new TreeMap<>());
             for (int intervalIndex = 0; intervalIndex < NUMBER_OF_INTERVALS; intervalIndex++) {
                 waitingTimesByUAMStationAndTime.get(station).put(intervalIndex * INTERVAL_S, new ArrayList<>());
-                averageWaitingTimesByUAMStationAndTime.get(station).put(intervalIndex * INTERVAL_S, 0.);
+                averageWaitingTimesByUAMStationAndTime_min.get(station).put(intervalIndex * INTERVAL_S, 0.);
             }
         }
     }
@@ -61,7 +61,11 @@ public class WaitingTimesUpdater {
                 if (!waitingTimesByUAMStationAndTime.get(station).get(interval).isEmpty()) {
                     double averageWaitingTime = waitingTimesByUAMStationAndTime.get(station).get(interval).
                             stream().mapToDouble(a -> a).average().getAsDouble();
-                    averageWaitingTimesByUAMStationAndTime.get(station).put(interval, averageWaitingTime);
+                    averageWaitingTime = Math.max(averageWaitingTime, MINIMUM_WAITING_TIME_S);
+
+                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, averageWaitingTime/60);
+                } else {
+                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, MINIMUM_WAITING_TIME_S/60);
                 }
             }
         }
@@ -73,14 +77,14 @@ public class WaitingTimesUpdater {
             pw.println("station,zone,time_s,waitingTime_s");
             for (int zone : zonesToStationMap.keySet()) {
                 String station = zonesToStationMap.get(zone);
-                for (int interval : averageWaitingTimesByUAMStationAndTime.get(station).keySet()) {
+                for (int interval : averageWaitingTimesByUAMStationAndTime_min.get(station).keySet()) {
                     pw.print(station);
                     pw.print(",");
                     pw.print(zone);
                     pw.print(",");
                     pw.print(interval);
                     pw.print(",");
-                    pw.print(averageWaitingTimesByUAMStationAndTime.get(station).get(interval));
+                    pw.print(averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval));
                     pw.println();
                 }
             }
@@ -94,7 +98,7 @@ public class WaitingTimesUpdater {
     private void updateWaitingTimes() {
         StationDependentWaitingTimes stationDependentWaitingTimes =
                 new StationDependentWaitingTimes(dataSet.getAccessAndEgressVariables(),
-                        averageWaitingTimesByUAMStationAndTime, zonesToStationMap);
+                        averageWaitingTimesByUAMStationAndTime_min, zonesToStationMap);
 
         dataSet.setWaitingTimes(stationDependentWaitingTimes);
         logger.info("Watiting times updated after running the MATSim uam_extension");
@@ -149,7 +153,6 @@ public class WaitingTimesUpdater {
                     interval += INTERVAL_S;
                 }
                 double totalProcessingTime = waitingTimeAtOrigStation_s + waitingTimeAtDestStation_s;
-                totalProcessingTime = Math.max(totalProcessingTime, MINIMUM_WAITING_TIME_S);
                 waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(totalProcessingTime);
             }
         }

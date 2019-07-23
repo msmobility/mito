@@ -70,6 +70,7 @@ public class TravelDemandGenerator {
         int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
 
         for (int iteration= 0; iteration< iterations; iteration++) {
+
             logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
             ModeChoice modeChoice = new ModeChoice(dataSet);
             modeChoice.run();
@@ -102,10 +103,8 @@ public class TravelDemandGenerator {
 
                 trafficAssignment.run();
             }
+            logger.info("Iteration " + iteration + " completed. Feedback waiting times to re-run mode choice");
         }
-
-
-
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);

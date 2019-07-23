@@ -112,29 +112,6 @@ public class ModeChoice extends Module {
 
         logger.info("UAM share: " + uam/this.dataSet.getTrips().values().size());
 
-
-        //auxiliar code for calibration
-//        double shareAutoDriver = 0.15;
-//        double shareAutoPassenger = 0.43;
-//        double shareNonMotorized = 0.0;
-//        double shareMetro = 0.0;
-//        double shareBus = 0.03;
-//        double shareTrain = 1 - shareAutoDriver - shareAutoPassenger - shareNonMotorized - shareMetro - shareBus;
-//
-//        double k_autoDriver = shareAutoDriver - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoDriver);
-//        double k_autoPassenger = shareAutoPassenger - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoPassenger);
-//        double k_bicycle = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bicycle);
-//        double k_walk = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.walk);
-//        double k_bus = shareBus - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bus);
-//        double k_metro = shareMetro - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.tramOrMetro);
-//        double k_train = shareTrain - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.train);
-//
-//        logger.info(k_autoDriver + "," +
-//                k_autoPassenger + "," + k_bicycle +
-//                "," + k_bus + "," + k_train + "," + k_metro + "," +
-//                k_walk );
-
-
     }
 
     public void printModalShares(int iteration, String scenarioName) {
@@ -149,9 +126,9 @@ public class ModeChoice extends Module {
                     StringBuilder sb = new StringBuilder();
                     Double share = dataSet.getModeShareForPurpose(purpose, mode);
                     if(share != null){
-                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(share);
+                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(share);
                     } else {
-                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(0);
+                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(0.);
                     }
                     pw.println(sb);
                 }
@@ -217,8 +194,6 @@ public class ModeChoice extends Module {
                 return null;
             }
 
-            int zone = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
-
             final int originId = trip.getTripOrigin().getZoneId();
             final int destinationId = trip.getTripDestination().getZoneId();
             final MitoZone origin = dataSet.getZones().get(originId);
@@ -239,11 +214,11 @@ public class ModeChoice extends Module {
                         dataSet.getAccessAndEgressVariables().
                                 getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
 
-                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(null, trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString(),0.);
+                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(trip, trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString(),0.);
 
                 return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
                         travelDistanceNMT, uamCost_eur, dataSet.getPeakHour(),processingTime_min,uamFare_eurkm);
-            }else {
+            } else {
                 return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                         travelDistanceNMT, dataSet.getPeakHour());
             }
