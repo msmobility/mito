@@ -107,9 +107,12 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		WaitingTimesUpdater waitingTimesUpdater = new WaitingTimesUpdater(dataSet);
 
 		int lastIteration = matsimConfig.controler().getLastIteration();
-		String fileName = matsimConfig.controler().getOutputDirectory() + "/ITERS/it." + lastIteration + "/" +
+		String inputFileName = matsimConfig.controler().getOutputDirectory() + "/ITERS/it." + lastIteration + "/" +
 		matsimConfig.controler().getRunId() + "." + lastIteration + ".uamdemand.csv";
-		//waitingTimesUpdater.run(fileName);
+
+		String outputFileName = matsimConfig.controler().getOutputDirectory() + "/vertiportWaitingTimes.csv";
+
+		waitingTimesUpdater.run(inputFileName, outputFileName);
 
 
 	}

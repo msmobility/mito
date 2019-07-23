@@ -9,6 +9,9 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class WaitingTimesUpdater {
@@ -30,10 +33,11 @@ public class WaitingTimesUpdater {
     }
 
 
-    public void run(String fileName) {
+    public void run(String inputFileName, String outputFileName) {
         initializeMap();
-        readWaitingTimes(fileName);
+        readWaitingTimes(inputFileName);
         aggregateMap();
+        printOutTimes(outputFileName);
         updateWaitingTimes();
 
     }
@@ -62,6 +66,28 @@ public class WaitingTimesUpdater {
         }
     }
 
+    private void printOutTimes(String outputFileName) {
+        try {
+            PrintWriter pw = new PrintWriter(new File(outputFileName));
+            pw.println("station,zone,time_s,waitingTime_s");
+            for (int zone : zonesToStationMap.keySet()) {
+                String station = zonesToStationMap.get(zone);
+                for (int interval : waitingTimesByUAMStationAndTime.get(station).keySet()) {
+                    pw.print(station);
+                    pw.print(",");
+                    pw.print(zone);
+                    pw.print(",");
+                    pw.print(interval);
+                    pw.print(",");
+                    pw.print(waitingTimesByUAMStationAndTime.get(station).get(interval));
+                    pw.println();
+                }
+            }
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void updateWaitingTimes() {
         StationDependentWaitingTimes stationDependentWaitingTimes =
@@ -142,7 +168,7 @@ public class WaitingTimesUpdater {
 
         @Override
         protected void processHeader(String[] header) {
-            stationNameIndex = MitoUtil.findPositionInArray("station_id", header);
+            stationNameIndex = MitoUtil.findPositionInArray("originStationId", header);
             zoneIndex = MitoUtil.findPositionInArray("Zone", header);
 
         }
@@ -152,7 +178,7 @@ public class WaitingTimesUpdater {
             String station = record[stationNameIndex];
             int zoneId = Integer.parseInt(record[zoneIndex]);
 
-            if (zonesToStationMap.containsKey(zoneId)){
+            if (zonesToStationMap.containsKey(zoneId)) {
                 throw new RuntimeException("This version is not compatible with having more that one vertiport per zone");
             } else {
                 zonesToStationMap.put(zoneId, station);
