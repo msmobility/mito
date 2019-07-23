@@ -17,6 +17,7 @@ public class DataSet {
     private TravelDisutility matsimTravelDisutility;
 
     private TravelDistances travelDistancesAuto;
+    private TravelDistances travelDistancesUAM;
     private TravelDistances travelDistancesNMT;
     private TravelDistances travelDistanceDisability;
 
@@ -55,9 +56,13 @@ public class DataSet {
 
     public TravelDistances getTravelDistancesNMT(){return this.travelDistancesNMT;}
 
+    public TravelDistances getTravelDistancesUAM(){return this.travelDistancesUAM;}
+
     public void setTravelDistancesAuto(TravelDistances travelDistancesAuto){this.travelDistancesAuto = travelDistancesAuto;}
 
     public void setTravelDistancesNMT(TravelDistances travelDistancesNMT){this.travelDistancesNMT = travelDistancesNMT;}
+
+    public void setTravelDistancesUAM(TravelDistances travelDistancesUAM){this.travelDistancesUAM = travelDistancesUAM;}
 
     public TravelTimes getTravelTimes() {
         return this.travelTimes;

@@ -27,4 +27,17 @@ public class AccessibilityJSCalculator extends JavaScriptCalculator<Double> {
                 travelDistanceNMT,
                 peakHour);
     }
+
+    public double calculateProbabilities(MitoZone origin,
+                                         MitoZone destination, TravelTimes travelTimes, double travelDistanceAuto,
+                                         double travelDistanceNMT, double travelDistanceUAM, double peakHour){
+        return super.calculate(function,
+                origin,
+                destination,
+                travelTimes,
+                travelDistanceAuto,
+                travelDistanceNMT,
+                travelDistanceUAM,
+                peakHour);
+    }
 }

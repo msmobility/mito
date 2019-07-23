@@ -67,7 +67,16 @@ public class Accessibility extends Module {
     private void printAccessibilityValues(){
         String outputSubDirectory = "skims/";
         logger.info("  Writing logsumAccessibility file");
-        String fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory +  "accessibilities.csv";
+        String fileaa = "";
+        if (Resources.INSTANCE.getBoolean(Properties.RUN_UAM)){
+            if (Resources.INSTANCE.getBoolean(Properties.RUN_AVS)) {
+                fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "accessibilitiesUAM_V2.csv";
+            } else {
+                fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "accessibilitiesUAMnoAVS_V2.csv";
+            }
+        } else {
+            fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory +  "accessibilitiesBase_v2.csv";
+        }
         PrintWriter pwha = MitoUtil.openFileForSequentialWriting(fileaa, false);
         pwha.println("origin");
         for (Purpose purpose : Purpose.values()) {
@@ -99,8 +108,18 @@ public class Accessibility extends Module {
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
-            this.calculator = new AccessibilityJSCalculator(new InputStreamReader(this.getClass()
-                    .getResourceAsStream("ModeChoiceLogsums")), purpose);
+            if (Resources.INSTANCE.getBoolean(Properties.RUN_UAM)) {
+                if (Resources.INSTANCE.getBoolean(Properties.RUN_AVS)) {
+                    this.calculator = new AccessibilityJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoiceLogsumsUAM")), purpose);
+                } else {
+                    this.calculator = new AccessibilityJSCalculator(new InputStreamReader(this.getClass()
+                            .getResourceAsStream("ModeChoiceLogsumsUAMnoAV")), purpose);
+                }
+            } else {
+                this.calculator = new AccessibilityJSCalculator(new InputStreamReader(this.getClass()
+                        .getResourceAsStream("ModeChoiceLogsumsUAMnoAVnoUAM")), purpose);
+            }
         }
 
         public Void call(){
@@ -137,7 +156,14 @@ public class Accessibility extends Module {
                     destinationId);
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
-            return calculator.calculateProbabilities(origin, destination, travelTimes, travelDistanceAuto, travelDistanceNMT, dataSet.getPeakHour());
+            if (Resources.INSTANCE.getBoolean(Properties.RUN_UAM)) {
+                final double travelDistanceUAM = dataSet.getTravelDistancesUAM().getTravelDistance(originId,
+                        destinationId);
+                return calculator.calculateProbabilities(origin, destination, travelTimes, travelDistanceAuto, travelDistanceNMT,
+                        travelDistanceUAM, dataSet.getPeakHour());
+            } else {
+                return calculator.calculateProbabilities(origin, destination, travelTimes, travelDistanceAuto, travelDistanceNMT, dataSet.getPeakHour());
+            }
         }
 
     }
