@@ -147,9 +147,13 @@ public class ModeChoice extends Module {
             for (Purpose purpose : Purpose.values()){
                 for (Mode mode : Mode.values()){
                     StringBuilder sb = new StringBuilder();
-                    double share = dataSet.getModeShareForPurpose(purpose, mode);
-                    sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(share);
-                    pw.println();
+                    Double share = dataSet.getModeShareForPurpose(purpose, mode);
+                    if(share != null){
+                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(share);
+                    } else {
+                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(0);
+                    }
+                    pw.println(sb);
                 }
             }
             pw.close();
