@@ -27,7 +27,7 @@ public class TripGeneration extends Module {
     @Override
     public void run() {
         logger.info("  Started microscopic trip generation model.");
-        //generateRawTrips();
+        generateRawTrips();
         if (addAirportDemand){
             generateAirportTrips();
         }
