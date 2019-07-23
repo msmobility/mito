@@ -75,7 +75,7 @@ public final class TripDistribution extends Module {
         homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(HBE), dataSet));
         executor.submitTasksAndWaitForCompletion(homeBasedTasks);
 
-
+        executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
