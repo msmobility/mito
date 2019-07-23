@@ -72,18 +72,19 @@ public class WaitingTimesUpdater {
             pw.println("station,zone,time_s,waitingTime_s");
             for (int zone : zonesToStationMap.keySet()) {
                 String station = zonesToStationMap.get(zone);
-                for (int interval : waitingTimesByUAMStationAndTime.get(station).keySet()) {
+                for (int interval : averageWaitingTimesByUAMStationAndTime.get(station).keySet()) {
                     pw.print(station);
                     pw.print(",");
                     pw.print(zone);
                     pw.print(",");
                     pw.print(interval);
                     pw.print(",");
-                    pw.print(waitingTimesByUAMStationAndTime.get(station).get(interval));
+                    pw.print(averageWaitingTimesByUAMStationAndTime.get(station).get(interval));
                     pw.println();
                 }
             }
             pw.close();
+            logger.info("Print out average waiting times at vertiports");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -140,11 +141,13 @@ public class WaitingTimesUpdater {
                 String origStation = record[origStationIndex];
                 double arrivalAtStationTime_s = Double.parseDouble(record[t0Index]);
                 double waitingTimeAtOrigStation_s = Double.parseDouble(record[t1Index]) - arrivalAtStationTime_s;
+                double landingTime = Double.parseDouble(record[t2Index]);
+                double waitingTimeAtDestStation_s = Double.parseDouble(record[t3Index]) - landingTime;
                 int interval = 0;
                 while (interval < arrivalAtStationTime_s) {
                     interval += INTERVAL_S;
                 }
-                waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(waitingTimeAtOrigStation_s);
+                waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(waitingTimeAtOrigStation_s + waitingTimeAtDestStation_s);
             }
         }
 
