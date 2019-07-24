@@ -31,7 +31,11 @@ public class AirportTripGeneration {
 
     public AirportTripGeneration(DataSet dataSet) {
         this.dataSet = dataSet;
-        this.TRIP_ID_COUNTER.set(dataSet.getTrips().keySet().stream().max(Integer::compareTo).get());
+        if (dataSet.getTrips().isEmpty()){
+            this.TRIP_ID_COUNTER.set(0);
+        } else {
+            this.TRIP_ID_COUNTER.set(dataSet.getTrips().keySet().stream().max(Integer::compareTo).get());
+        }
         this.airportZoneId = Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE);
         this.airport = dataSet.getZones().get(airportZoneId);
         this.numberOfTripsCalculator = new AirportNumberOfTripsCalculator(new InputStreamReader(this.getClass().getResourceAsStream("AirportTripRateCalc")));
@@ -97,7 +101,7 @@ public class AirportTripGeneration {
 
                 final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(airport, dataSet.getZones().get(zoneId), Mode.uam.toString());
 
-                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour(), processingTime_min, uamCost_eur);
+                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, uamCost_eur, dataSet.getPeakHour(), processingTime_min, uamFare_eurkm);
 
             }else {
                 logsum= airportLogsumCalculator.calculateLogsumForThisZone(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour());
