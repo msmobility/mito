@@ -101,7 +101,7 @@ public class AirportTripGeneration {
 
                 final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(null, airport, dataSet.getZones().get(zoneId), Mode.uam.toString(), 0.);
 
-                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour(), processingTime_min, uamCost_eur);
+                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, uamCost_eur, dataSet.getPeakHour(), processingTime_min, uamFare_eurkm);
 
             }else {
                 logsum= airportLogsumCalculator.calculateLogsumForThisZone(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour());
