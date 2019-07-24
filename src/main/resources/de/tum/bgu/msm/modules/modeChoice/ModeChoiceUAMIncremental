@@ -47,6 +47,9 @@ VOT1500_other_uam = 4.68/60;//TBD
 VOT5600_other_uam = 9.05/60;//TBD
 VOT7000_other_uam = 12.3/60;//TBD
 
+timeRatioUamToTrain = 1.4749;
+costRatioUamToTrain = 0.4545;
+
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order:[AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk, uam]
@@ -62,8 +65,6 @@ mediumSizedCityHBW      = [0.0, 0.0, -0.29, -0.70, -0.75, -1.05, -0.59, -0.75];
 townOrRuralCommunityHBW = [0.0, 0.071, -0.39, -0.86, -0.88, -1.22, -0.89, -0.88];
 generalizedCostHBW      = [-0.0088, -0.0088, 0.0, -0.0088, -0.0088, -0.0088, 0.0, -0.0088];
 tripLengthHBW           = [0.0, 0.0, -0.32, 0.0, 0.0, 0.0, -2.02, 0.0];
-travelTimeHBW           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0130];
-travelCostHBW           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0040];
 isMunichTripHBW         = [0.0, 0.04, 0.63, 0.77, 0.76, 0.77, 2.32, 0.76];
 
 
@@ -183,7 +184,7 @@ utilityAVP          = utilityAutoD + generalizedCostHBW[0]*(gcPrivateAV - gcAuto
 
 utilityAVS          = utilityBus + generalizedCostHBW[3]*(gcSharedAV - gcBus);
 
-utilityUAM          = utilityTrain + travelTimeHBW[7]*timeUAM + travelCostHBW[7]*costUAM - generalizedCostHBW[4]*gcTrain;
+utilityUAM          = utilityTrain + timeRatioUamToTrain*generalizedCostHBW[4]*timeUAM + costRatioUamToTrain*generalizedCostHBW[4]*costUAM - generalizedCostHBW[4]*gcTrain;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -233,8 +234,6 @@ hhAutosHBE          = [0.0, -0.11, -0.56, -0.52, -0.56, -0.70, -0.68, -0.56];
 distToRailStopHBE   = [0.0, 0.0, 0.0, -0.28, -0.26, -0.46, 0.0, -0.26];
 generalizedCostHBE  = [-0.0025, -0.0025, 0.0, -0.0025, -0.0025, -0.0025, 0.0, -0.0025];
 tripLengthHBE       = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.71, 0.0];
-travelTimeHBE           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0037];
-travelCostHBE           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0011];
 isMunichTripHBE         = [0.0, 0.02, 0.25, 0.07, 0.08, 0.06, -0.49, 0.08];
 
 var calculateHBEProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime,uamFareEurosPerKm){
@@ -320,7 +319,7 @@ utilityAVP          = utilityAutoD + generalizedCostHBE[0]*(gcPrivateAV - gcAuto
 
 utilityAVS          = utilityBus + generalizedCostHBE[3]*(gcSharedAV - gcBus);
 
-utilityUAM          = utilityTrain + travelTimeHBE[7]*timeUAM + travelCostHBE[7]*costUAM - generalizedCostHBE[4]*gcTrain;
+utilityUAM          = utilityTrain + timeRatioUamToTrain*generalizedCostHBE[4]*timeUAM + costRatioUamToTrain*generalizedCostHBE[4]*costUAM - generalizedCostHBE[4]*gcTrain;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -381,8 +380,6 @@ distToRailStopHBS       = [0.0, 0.0, 0.0, -0.87, -0.68, -1.02, 0.0, -0.68];
 hhChildrenHBS           = [0.0, -0.051, 0.0, 0.0, 0.0, 0.0, -0.17, 0.0];
 generalizedCostHBS_Sq   = [-0.0000068, -0.0000068, 0.0, -0.0000068, -0.0000068, -0.0000068, 0.0, -0.0000068];
 tripLengthHBS           = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.46,0.0];
-travelTimeHBS           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0000100];
-travelCostHBS           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0000031];
 isMunichTripHBS         = [0.0, 0.05, 1.16, 1.35, 1.32, 1.36, 1.94, 1.32];
 
 var calculateHBSProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT,travelCostUAM, peakHour, boardingTime,uamFareEurosPerKm){
@@ -474,11 +471,11 @@ utilityWalk         = interceptHBS[6] + maleHBS[6]*(gender.name().equals("MALE")
                       hhAutosHBS[6]*hhAutos + distToRailStopHBS[6]*distToRailStop + hhChildrenHBS[6]*hhChildren + 
                       tripLengthHBS[6]*travelDistanceNMT + isMunichTripHBS[6]*isMunichTrip;
 
-utilityAVP          = utilityAutoD + generalizedCostHBS_Sq[0]*(gcPrivateAV - gcAutoD);
+utilityAVP          = utilityAutoD + generalizedCostHBS_Sq[0]*(Math.pow(gcPrivateAV,2) - Math.pow(gcAutoD,2));
 
-utilityAVS          = utilityBus + generalizedCostHBS_Sq[3]*(gcSharedAV - gcBus);
+utilityAVS          = utilityBus + generalizedCostHBS_Sq[3]*(Math.pow(gcSharedAV,2) - Math.pow(gcBus,2));
 
-utilityUAM          = utilityTrain + travelTimeHBS[7]*timeUAM + travelCostHBS[7]*costUAM - generalizedCostHBS_Sq[4]*gcTrain;
+utilityUAM          = utilityTrain +  generalizedCostHBS_Sq[4]*Math.pow((timeRatioUamToTrain*timeUAM + costRatioUamToTrain*costUAM),2) - generalizedCostHBS_Sq[4]*Math.pow(gcTrain,2);
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -531,8 +528,6 @@ hhSizeHBO           = [0.0, 0.0, 0.0, -0.11, -0.11, -0.15, -0.19, -0.11];
 distToRailStopHBO   = [0.0, 0.0, 0.0, -0.61, -0.57, -0.58, -0.065,-0.57];
 generalizedCostHBO  = [-0.0012, -0.0012, 0.0, -0.0012, -0.0012, -0.0012, 0.0, -0.0012];
 tripLengthHBO       = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.68, 0.0];
-travelTimeHBO           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0018];
-travelCostHBO           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0005];
 isMunichTripHBO         = [0.0, 0.14, 0.61, 1.25, 1.23, 1.25, 0.34, 1.23];
 
 var calculateHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT,travelCostUAM, peakHour, boardingTime,uamFareEurosPerKm){
@@ -627,7 +622,7 @@ utilityAVP          = utilityAutoD + generalizedCostHBO[0]*(gcPrivateAV - gcAuto
 
 utilityAVS          = utilityBus + generalizedCostHBO[3]*(gcSharedAV - gcBus);
 
-utilityUAM          = utilityTrain + travelTimeHBO[7]*timeUAM + travelCostHBO[7]*costUAM - generalizedCostHBO[4]*gcTrain;
+utilityUAM          = utilityTrain + timeRatioUamToTrain*generalizedCostHBO[4]*timeUAM + costRatioUamToTrain*generalizedCostHBO[4]*costUAM - generalizedCostHBO[4]*gcTrain;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -679,8 +674,6 @@ hhAutosNHBW         = [0.0, -0.11, -1.12, -1.23, -1.44, -1.52, -0.47, -1.44];
 distToRailStopNHBW  = [0.0, 0.0, 0.0, -0.24, 0.0, -0.16, -0.37, 0.0];
 generalizedCostNHBW = [-0.0034, -0.0034, 0.0, -0.0034, -0.0034, -0.0034, 0.0, -0.0034];
 tripLengthNHBW      = [0.0, 0.0, -0.28, 0.0, 0.0, 0.0, -1.54, 0.0];
-travelTimeNHBW          = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0050];
-travelCostNHBW           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0015];
 
 var calculateNHBWProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime,uamFareEurosPerKm){
 
@@ -765,7 +758,7 @@ utilityAVP          = utilityAutoD + generalizedCostNHBW[0]*(gcPrivateAV - gcAut
 
 utilityAVS          = utilityBus + generalizedCostNHBW[3]*(gcSharedAV - gcBus);
 
-utilityUAM          = utilityTrain + travelTimeNHBW[7]*timeUAM + travelCostNHBW[7]*costUAM - generalizedCostNHBW[4]*gcTrain;
+utilityUAM          = utilityTrain + timeRatioUamToTrain*generalizedCostNHBW[4]*timeUAM + costRatioUamToTrain*generalizedCostNHBW[4]*costUAM - generalizedCostNHBW[4]*gcTrain;
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -818,8 +811,6 @@ agglomerationUrbanNHBO  = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 ruralNHBO               = [0.0, 0.0, 0.0, -0.70, -0.91, -1.12, 0.0, -0.91];
 generalizedCostNHBO_Sq  = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0, -0.000017];
 tripLengthNHBO          = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57, 0.0];
-travelTimeNHBO           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.000025];
-travelCostNHBO           = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.000008];
 
 var calculateNHBOProbabilities = function(hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm){
 
@@ -915,11 +906,11 @@ utilityWalk         = interceptNHBO[6] + maleNHBO[6]*(gender.name().equals("MALE
                       agglomerationUrbanNHBO[6]*(areaType.name().equals("AGGLOMERATION")+areaType.name().equals("URBAN")) +
                       ruralNHBO[6]*(areaType.name().equals("RURAL")) + tripLengthNHBO[6]*travelDistanceNMT;
 
-utilityAVP          = utilityAutoD + generalizedCostNHBO_Sq[0]*(gcPrivateAV - gcAutoD);
+utilityAVP          = utilityAutoD + generalizedCostNHBO_Sq[0]*(Math.pow(gcPrivateAV,2) - Math.pow(gcAutoD,2));
 
-utilityAVS          = utilityBus + generalizedCostNHBO_Sq[3]*(gcSharedAV - gcBus);
+utilityAVS          = utilityBus + generalizedCostNHBO_Sq[3]*(Math.pow(gcSharedAV,2) - Math.pow(gcBus,2));
 
-utilityUAM          = utilityTrain + travelTimeNHBO[7]*timeUAM + travelCostNHBO[7]*costUAM - generalizedCostNHBO_Sq[4]*gcTrain;
+utilityUAM          = utilityTrain + generalizedCostNHBO_Sq[4]*Math.pow((timeRatioUamToTrain*timeUAM + costRatioUamToTrain*costUAM),2) - generalizedCostNHBO_Sq[4]*Math.pow(gcTrain,2);
 
 expsumNestAuto = Math.exp(utilityAVP/nestingCoefficient) + Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient);
 expsumNestTransit = Math.exp(utilityUAM/nestingCoefficient) + Math.exp(utilityAVS/nestingCoefficient) + Math.exp(utilityBus/nestingCoefficient) + Math.exp(utilityTrain/nestingCoefficient) + Math.exp(utilityTramMetro/nestingCoefficient);
@@ -989,7 +980,7 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
     exp_time_train          = 3.946016;
     exp_time_privateAV      = 10.44896;
     exp_time_sharedAV       = 10.44896;
-    exp_time_uam            = 3.946016;
+    exp_time_uam            = 10.44896;
 
     //distance is in minutes
     beta_distance               = -0.00002
@@ -999,7 +990,7 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
     exp_distance_train          = 7.706087;
     exp_distance_privateAV      = 0;
     exp_distance_sharedAV       = 4.649129;
-    exp_distance_uam            = 7.706087;
+    exp_distance_uam            = 4.649129;
 
 
     //Order of variables in the return variable autoDriver, autoPassenger bus, train, privateAV, sharedAV, uam
@@ -1015,9 +1006,10 @@ var calculateAIRPORTUtilities = function(hh, person, originZone, destinationZone
         u_privateAV     = u_autoDriver;
         u_sharedAV      = asc_sharedAV + exp_time_sharedAV * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
              exp_distance_sharedAV * Math.exp(beta_distance * travelDistanceAuto);
-        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
-             exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
-
+        //u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
+             //exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
+        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 0.8621 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
+             exp_distance_uam * Math.exp(beta_distance * 0.1626 * travelDistanceAuto * uamFareEurosPerKm/sharedAVCostEurosPerKm);
     return [Math.exp(u_autoDriver), Math.exp(u_autoPassenger), Math.exp(u_bus), Math.exp(u_train), Math.exp(u_privateAV), Math.exp(u_sharedAV), Math.exp(u_uam)];
 }
 
