@@ -120,7 +120,7 @@ public class ModeChoice extends Module {
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new File(fileName));
-            pw.println("iteraiton,purpose,mode,share");
+            pw.println("iteration,purpose,mode,share");
             for (Purpose purpose : Purpose.values()){
                 for (Mode mode : Mode.values()){
                     StringBuilder sb = new StringBuilder();
