@@ -4,7 +4,6 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceJSCalculator;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -99,7 +98,7 @@ public class AirportTripGeneration {
                         dataSet.getAccessAndEgressVariables().
                                 getAccessVariable(airport, dataSet.getZones().get(zoneId), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
 
-                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(null, airport, dataSet.getZones().get(zoneId), Mode.uam.toString(), 0.);
+                final double processingTime_min = dataSet.getTotalHandlingTimes().getWaitingTime(null, airport, dataSet.getZones().get(zoneId), Mode.uam.toString(), 0.);
 
                 logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, uamCost_eur, dataSet.getPeakHour(), processingTime_min, uamFare_eurkm);
 

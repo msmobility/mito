@@ -10,14 +10,14 @@ import java.util.Map;
 /**
  * Waiting times that depend on the station (UAM vertiport) and time interval of the day.
  */
-public class StationDependentWaitingTimes implements WaitingTimes {
+public class StationDependentTotalHandlingTimes implements TotalHandlingTimes {
 
 
     private final AccessAndEgressVariables accessAndEgressVariables;
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private final Map<Integer, String> zonesToStationMap;
 
-    public StationDependentWaitingTimes(AccessAndEgressVariables accessAndEgressVariables, Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min, Map<Integer, String> zonesToStationMap) {
+    public StationDependentTotalHandlingTimes(AccessAndEgressVariables accessAndEgressVariables, Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min, Map<Integer, String> zonesToStationMap) {
         this.accessAndEgressVariables = accessAndEgressVariables;
         this.averageWaitingTimesByUAMStationAndTime_min = averageWaitingTimesByUAMStationAndTime_min;
         this.zonesToStationMap = zonesToStationMap;

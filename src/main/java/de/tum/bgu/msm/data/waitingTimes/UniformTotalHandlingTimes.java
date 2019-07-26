@@ -9,7 +9,7 @@ import de.tum.bgu.msm.resources.Resources;
 /**
  * Waiting times uniform for all trips and all locations of the study area
  */
-public class UniformWaitingTimes implements WaitingTimes {
+public class UniformTotalHandlingTimes implements TotalHandlingTimes {
 
     @Override
     public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode, double timeOfDay_s) {

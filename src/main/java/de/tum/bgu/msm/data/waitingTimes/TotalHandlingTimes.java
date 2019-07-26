@@ -3,7 +3,7 @@ package de.tum.bgu.msm.data.waitingTimes;
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.MitoTrip;
 
-public interface WaitingTimes {
+public interface TotalHandlingTimes {
     /**
      * returns the waiting time for a certain trip, origin and destination, by certain mode and at a certain time of day. The parameters
      * could be duplicated, to allow flexibility of queries. The implementation of this interface may use none, some or all

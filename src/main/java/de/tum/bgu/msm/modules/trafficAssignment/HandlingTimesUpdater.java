@@ -1,8 +1,8 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.waitingTimes.StationDependentWaitingTimes;
-import de.tum.bgu.msm.data.waitingTimes.WaitingTimes;
+import de.tum.bgu.msm.data.waitingTimes.StationDependentTotalHandlingTimes;
+import de.tum.bgu.msm.data.waitingTimes.TotalHandlingTimes;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -18,18 +18,18 @@ import java.util.*;
  * Updates the waiting time object after collecting data from the uam_extension. Works with the uam_extention only, as it needs
  * the uam_demand.csv files of the last MATSim iteration.
  */
-public class WaitingTimesUpdater {
+public class HandlingTimesUpdater {
 
-    private final static Logger logger = Logger.getLogger(WaitingTimes.class);
+    private final static Logger logger = Logger.getLogger(TotalHandlingTimes.class);
     private final DataSet dataSet;
     private final Map<String, Map<Integer, List<Double>>> waitingTimesByUAMStationAndTime;
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private static final int INTERVAL_S = 60 * 15;
     private static final int NUMBER_OF_INTERVALS = 24 * 60 * 60 / INTERVAL_S;
     private final Map<Integer, String> zonesToStationMap;
-    private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble("uam.boardingTime", 13) * 60;
+    private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 13) * 60;
 
-    public WaitingTimesUpdater(DataSet dataSet) {
+    public HandlingTimesUpdater(DataSet dataSet) {
         this.dataSet = dataSet;
         waitingTimesByUAMStationAndTime = new LinkedHashMap<>();
         averageWaitingTimesByUAMStationAndTime_min = new LinkedHashMap<>();
@@ -100,11 +100,11 @@ public class WaitingTimesUpdater {
     }
 
     private void updateWaitingTimes() {
-        StationDependentWaitingTimes stationDependentWaitingTimes =
-                new StationDependentWaitingTimes(dataSet.getAccessAndEgressVariables(),
+        StationDependentTotalHandlingTimes stationDependentWaitingTimes =
+                new StationDependentTotalHandlingTimes(dataSet.getAccessAndEgressVariables(),
                         averageWaitingTimesByUAMStationAndTime_min, zonesToStationMap);
 
-        dataSet.setWaitingTimes(stationDependentWaitingTimes);
+        dataSet.setTotalHandlingTimes(stationDependentWaitingTimes);
         logger.info("Watiting times updated after running the MATSim uam_extension");
 
     }
@@ -170,6 +170,7 @@ public class WaitingTimesUpdater {
     /**
      * This class is used to read a conversion between station names (uam_extension) and station zone (mito). Unfortunately
      * it is based on the assumption of at most 1 vertiport per zone.
+     * //todo get this information from the UAM extension data instead, so no need to duplicate codes
      */
     private class StationToZoneConversionReader extends AbstractCsvReader {
         int zoneIndex;
