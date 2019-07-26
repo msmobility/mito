@@ -35,13 +35,10 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,bike,pt");
 		matsimConfig.getModules().get("uam").addParam("parallelRouters", "" + numberOfThreads);
 		matsimConfig.getModules().get("uam").addParam("searchRadius", "50000");
-		//from mito mode choice many users choose uam with access and egress longer than 15 km...
 		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
 		// Possible strategies: MAXUTILITY, MAXACCESSUTILITY, MINTRAVELTIME, MINACCESSTRAVELTIME, MINDISTANCE, MINACCESSDISTANCE
 		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINACCESSDISTANCE");
 		matsimConfig.getModules().get("uam").addParam("ptSimulation", "false");
-		matsimConfig.getModules().get("uam").addParam("waitingTime",
-				Resources.INSTANCE.getString(Properties.UAM_BOARDINGTIME));
 		
 		// UAM planCalcScore activities
 		ConfigGroup uamInteractionParam = matsimConfig.getModules().get("planCalcScore").createParameterSet("activityParams");
