@@ -91,7 +91,7 @@ public class TravelDemandGenerator {
             }
 
             boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
-            boolean useUamMatsim = Resources.INSTANCE.getBoolean(Properties.RUN_UAM_MATSIM, false);
+            boolean useUamMatsim = Resources.INSTANCE.getBoolean(Properties.UAM_MATSIM, false);
             if (runTimeOfDayChoice && runScaling && runAssignment) {
                 logger.info("Running traffic assignment in MATsim");
                 TrafficAssignment trafficAssignment;
