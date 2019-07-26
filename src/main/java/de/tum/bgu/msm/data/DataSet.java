@@ -6,7 +6,7 @@ import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.data.waitingTimes.WaitingTimes;
+import de.tum.bgu.msm.data.waitingTimes.TotalHandlingTimes;
 import org.matsim.core.controler.Controler;
 
 import java.util.*;
@@ -20,7 +20,7 @@ public class DataSet {
     private TravelDistances travelDistancesNMT;
     private TravelDistances flyingDistanceUAM;
 
-    private WaitingTimes waitingTimes;
+    private TotalHandlingTimes totalHandlingTimes;
 
     private double peakHour = Double.NaN;
 
@@ -31,7 +31,7 @@ public class DataSet {
     private final Map<Integer, MitoJob> jobs = new LinkedHashMap<>();
 
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
-    private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
+    private Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
@@ -268,11 +268,15 @@ public class DataSet {
         this.flyingDistanceUAM = travelCostUAM;
     }
 
-    public void setWaitingTimes(WaitingTimes waitingTimes) {
-        this.waitingTimes = waitingTimes;
+    public void setTotalHandlingTimes(TotalHandlingTimes totalHandlingTimes) {
+        this.totalHandlingTimes = totalHandlingTimes;
     }
 
-    public WaitingTimes getWaitingTimes() {
-        return waitingTimes;
+    public TotalHandlingTimes getTotalHandlingTimes() {
+        return totalHandlingTimes;
+    }
+
+    public void emptyTripSubsample() {
+        tripSubsample = new LinkedHashMap<>();
     }
 }

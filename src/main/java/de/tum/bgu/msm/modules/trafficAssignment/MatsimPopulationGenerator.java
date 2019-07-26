@@ -98,7 +98,9 @@ public class MatsimPopulationGenerator {
                     if (trip.isHomeBased()) {
                         destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                         plan.addActivity(destinationActivity);
-                        plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
+                        Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+//                        leg.getAttributes().putAttribute("access_station", "MUC01");
+                        plan.addLeg(leg);
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
                     } else {
                         plan.addActivity(destinationActivity);

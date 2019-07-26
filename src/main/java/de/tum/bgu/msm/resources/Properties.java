@@ -107,4 +107,5 @@ public class Properties {
     public static final String UAM_TAKEOFF_MIN = "uam.takeoff.time";
     public static final String UAM_LANDING_MIN = "uam.landing.time";
 
+    public static final String UAM_VERTIPORT_LIST = "uam.vertiport.list";
 }
