@@ -5,6 +5,8 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
+import net.bhl.matsim.uam.router.strategy.UAMPredefinedStrategy.PredefinedAttribute;
+
 import org.apache.log4j.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
@@ -80,8 +82,11 @@ public class MatsimPopulationGenerator {
                     Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, originCoord);
                     originActivity.setEndTime(trip.getDepartureInMinutes() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                     plan.addActivity(originActivity);
-
-                    plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
+                    
+                    Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+                    if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
+                    	addUAMLegParamters(leg);
+                    plan.addLeg(leg);
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
 
@@ -98,9 +103,12 @@ public class MatsimPopulationGenerator {
                     if (trip.isHomeBased()) {
                         destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                         plan.addActivity(destinationActivity);
-                        Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
-//                        leg.getAttributes().putAttribute("access_station", "MUC01");
-                        plan.addLeg(leg);
+                        
+                        Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+                        if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
+                        	addUAMLegParamters(returnLeg);
+                        plan.addLeg(returnLeg);
+                        
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
                     } else {
                         plan.addActivity(destinationActivity);
@@ -157,7 +165,12 @@ public class MatsimPopulationGenerator {
         }
     }
 
-
+    private static void addUAMLegParamters(Leg l) {
+        l.getAttributes().putAttribute(PredefinedAttribute.ACCESSMODE.label, "car"); // TODO retrieve value from MITO mode choice
+        l.getAttributes().putAttribute(PredefinedAttribute.ORIGSTATION.label, "MUC01"); // TODO retrieve value from MITO mode choice
+        l.getAttributes().putAttribute(PredefinedAttribute.DESTSTATION.label, "MUC02"); // TODO retrieve value from MITO mode choice
+        l.getAttributes().putAttribute(PredefinedAttribute.EGRESSMODE.label, "car"); // TODO retrieve value from MITO mode choice
+    }
 
 
 
