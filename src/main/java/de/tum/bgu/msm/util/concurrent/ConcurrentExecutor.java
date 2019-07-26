@@ -47,6 +47,8 @@ public class ConcurrentExecutor<T> {
             }).collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+        	service.shutdownNow();
         }
     }
 
@@ -60,6 +62,8 @@ public class ConcurrentExecutor<T> {
             return result.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
+        } finally {
+        	service.shutdownNow();
         }
     }
 
@@ -68,6 +72,8 @@ public class ConcurrentExecutor<T> {
             return service.invokeAll(tasks);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } finally {
+        	service.shutdownNow();
         }
     }
 }
