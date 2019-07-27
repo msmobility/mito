@@ -5,7 +5,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import net.bhl.matsim.uam.router.strategy.UAMPredefinedStrategy.PredefinedAttribute;
+import net.bhl.matsim.uam.router.strategy.UAMPredefinedStrategy;
 
 import org.apache.log4j.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -166,10 +166,10 @@ public class MatsimPopulationGenerator {
     }
 
     private static void addUAMLegParamters(Leg l) {
-        l.getAttributes().putAttribute(PredefinedAttribute.ACCESSMODE.label, "car"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(PredefinedAttribute.ORIGSTATION.label, "MUC01"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(PredefinedAttribute.DESTSTATION.label, "MUC02"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(PredefinedAttribute.EGRESSMODE.label, "car"); // TODO retrieve value from MITO mode choice
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, "car"); // TODO retrieve value from MITO mode choice
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION, "MUC01"); // TODO retrieve value from MITO mode choice
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION, "MUC02"); // TODO retrieve value from MITO mode choice
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, "car"); // TODO retrieve value from MITO mode choice
     }
 
 
