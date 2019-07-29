@@ -46,7 +46,7 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
         if (hhId > 0) {
             MitoHousehold hh = dataSet.getHouseholds().get(hhId);
             if (hh == null) {
-                logger.warn(String.format("Household %d does not exist in mito.", hhId));
+                //logger.warn(String.format("Household %d does not exist in mito.", hhId));
                 return;
             }
             Coordinate homeLocation = new Coordinate(

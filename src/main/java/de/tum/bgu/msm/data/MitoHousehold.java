@@ -135,4 +135,9 @@ public class MitoHousehold implements Id, MicroLocation {
             return false;
         }
     }
+
+    public int getChildrenForHousehold() {
+        return (int) persons.values().stream().filter(person ->
+                person.getAge() < 18).count();
+    }
 }

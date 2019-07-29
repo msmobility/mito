@@ -58,11 +58,40 @@ public class ModeChoice extends Module {
                             dataSet.addModeShareForPurpose(purpose, mode, (double) count / totalTrips));
         });
 
+        //filter valid trips by purpose
+        Map<Purpose, List<MitoTrip>> tripsByPurposeTNC = dataSet.getTrips().values().stream()
+                .filter(trip -> trip.getTripMode() != null)
+                .filter(trip -> dataSet.getZones().get(trip.getTripOrigin().getZoneId()).isMunichZone())
+                .filter(trip -> dataSet.getZones().get(trip.getTripDestination().getZoneId()).isMunichZone())
+                .collect(Collectors.groupingBy(MitoTrip::getTripPurpose));
+
+        tripsByPurposeTNC.forEach((purpose, trips) -> {
+            final long totalTrips = trips.size();
+            trips.parallelStream()
+                    //group number of trips by mode
+                    .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
+                    //calculate and add share to data set table
+                    .forEach((mode, count) ->
+                            dataSet.addModeShareForPurposeTNC(purpose, mode, (double) count / totalTrips));
+        });
+
         for (Purpose purpose : Purpose.values()) {
             logger.info("#################################################");
             logger.info("Mode shares for purpose " + purpose + ":");
             for (Mode mode : Mode.values()) {
                 Double share = dataSet.getModeShareForPurpose(purpose, mode);
+                if (share != null) {
+                    logger.info(mode + " = " + share * 100 + "%");
+                }
+            }
+        }
+
+        for (Purpose purpose : Purpose.values()) {
+            logger.info("#################################################");
+            logger.info("#Munich trips#");
+            logger.info("Mode shares for purpose " + purpose + ":");
+            for (Mode mode : Mode.values()) {
+                Double share = dataSet.getModeShareForPurposeTNC(purpose, mode);
                 if (share != null) {
                     logger.info(mode + " = " + share * 100 + "%");
                 }
@@ -98,7 +127,6 @@ public class ModeChoice extends Module {
 
         private final Purpose purpose;
         private final DataSet dataSet;
-        private final ModeChoiceJSCalculator calculator;
         private final ModeChoiceJSCalculator calculatorTNC;
         private final TravelTimes travelTimes;
         private int countTripsSkipped;
@@ -108,22 +136,8 @@ public class ModeChoice extends Module {
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
-            boolean includeTNC = true;
-            if (includeTNC){
-                this.calculatorTNC = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+            this.calculatorTNC = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoiceTNC")), purpose);
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoice")), purpose);
-            } else {
-                if (includeAV) {
-                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                            .getResourceAsStream("ModeChoiceAV")), purpose);
-                } else {
-                    this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                            .getResourceAsStream("ModeChoice")), purpose);
-                }
-                this.calculatorTNC = null;
-            }
         }
 
         @Override
@@ -155,18 +169,9 @@ public class ModeChoice extends Module {
                     destinationId);
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
-            if (origin.isMunichZone()){
-                if (destination.isMunichZone()){
-                    return calculatorTNC.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
+            return calculatorTNC.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                             travelDistanceNMT, dataSet.getPeakHour());
-                } else {
-                    return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
-                            travelDistanceNMT, dataSet.getPeakHour());
-                }
-            } else {
-                return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
-                        travelDistanceNMT, dataSet.getPeakHour());
-            }
+
 
         }
 
