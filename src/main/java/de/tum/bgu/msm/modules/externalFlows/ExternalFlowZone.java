@@ -1,9 +1,9 @@
 package de.tum.bgu.msm.modules.externalFlows;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.shape.random.RandomPointsBuilder;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.geotools.MGC;
 import org.opengis.feature.simple.SimpleFeature;
@@ -45,8 +45,7 @@ public class ExternalFlowZone {
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
         randomPointsBuilder.setNumPoints(1);
         randomPointsBuilder.setExtent((Geometry) feature.getDefaultGeometry());
-        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
-        Point p = MGC.coordinate2Point(coordinate);
-        return new Coord(p.getX(), p.getY());
+        Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];        
+        return new Coord(coordinate.x, coordinate.y);
     }
 }

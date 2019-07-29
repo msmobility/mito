@@ -100,11 +100,13 @@ public class Properties {
     public static final String UAM_COST = "uam.cost";
     public static final String UAM_SPEED_KMH = "uam.speed.kmh" ;
     
-    public static final String RUN_UAM_MATSIM = "run.uam.matsim";
+    public static final String UAM_MATSIM = "uam.matsim";
+    public static final String UAM_MATSIM_ROUTING = "uam.matsim.routing";
     public static final String UAM_VEHICLES = "uam.vehicles";
 
     public static final String UAM_DETOUR_FACTOR = "uam.detour.factor";
     public static final String UAM_TAKEOFF_MIN = "uam.takeoff.time";
     public static final String UAM_LANDING_MIN = "uam.landing.time";
 
+    public static final String UAM_VERTIPORT_LIST = "uam.vertiport.list";
 }

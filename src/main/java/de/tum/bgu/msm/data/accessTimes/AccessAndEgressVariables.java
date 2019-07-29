@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data.accessTimes;
 
+import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import de.tum.bgu.msm.util.matrices.Matrices;
@@ -18,7 +19,7 @@ public class AccessAndEgressVariables {
 
     private final static Logger LOGGER = Logger.getLogger(AccessAndEgressVariables.class);
 
-    public enum AccessVariable {ACCESS_T_MIN, ACCESS_DIST_KM, EGRESS_T_MIN, EGRESS_DIST_KM, ACCESS_VERTIPORT, EGRESS_VERTIPORT}
+    public enum AccessVariable {ACCESS_T_MIN, ACCESS_DIST_KM, EGRESS_T_MIN, EGRESS_DIST_KM, ACCESS_VERTIPORT, EGRESS_VERTIPORT, ACCESS_VERTIPORT_NAME}
 
 	private final ConcurrentMap<String, ConcurrentMap<AccessVariable, IndexedDoubleMatrix2D>> matricesByMode = new ConcurrentHashMap<>();
 
@@ -80,4 +81,5 @@ public class AccessAndEgressVariables {
         matricesByMode.putIfAbsent(mode, new ConcurrentHashMap<>());
         matricesByMode.get(mode).put(variable, matrix);
     }
+
 }

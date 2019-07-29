@@ -54,6 +54,8 @@ public class TravelTimeBudgetModule extends Module {
             service.invokeAll(tasks);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+        	service.shutdownNow();
         }
 
         logger.info("  Adjusting travel time budgets.");

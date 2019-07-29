@@ -67,37 +67,43 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
+        int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
 
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        ModeChoice modeChoice = new ModeChoice(dataSet);
-        modeChoice.run();
+        for (int iteration= 0; iteration< iterations; iteration++) {
 
-        boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
-        if (runTimeOfDayChoice) {
-            logger.info("Running time of day choice");
-            TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
-            timeOfDayChoice.run();
-        }
+            logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+            ModeChoice modeChoice = new ModeChoice(dataSet);
+            modeChoice.run();
+            modeChoice.printModalShares(iteration, scenarioName);
 
-        boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
-        if (runTimeOfDayChoice && runScaling) {
-            logger.info("Running trip scaling");
-            TripScaling tripScaling = new TripScaling(dataSet);
-            tripScaling.run();
-        }
-
-        boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
-        boolean useUamMatsim = Resources.INSTANCE.getBoolean(Properties.RUN_UAM_MATSIM, false);
-        if (runTimeOfDayChoice && runScaling && runAssignment) {
-            logger.info("Running traffic assignment in MATsim");
-            TrafficAssignment trafficAssignment;
-            if (!useUamMatsim) {
-            	trafficAssignment = new DefaultTrafficAssignment(dataSet, scenarioName);
-            } else {
-            	trafficAssignment = new UamTrafficAssignment(dataSet, scenarioName);
+            boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
+            if (runTimeOfDayChoice) {
+                logger.info("Running time of day choice");
+                TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
+                timeOfDayChoice.run();
             }
 
-            trafficAssignment.run();
+            boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
+            if (runTimeOfDayChoice && runScaling) {
+                logger.info("Running trip scaling");
+                TripScaling tripScaling = new TripScaling(dataSet);
+                tripScaling.run();
+            }
+
+            boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
+            boolean useUamMatsim = Resources.INSTANCE.getBoolean(Properties.UAM_MATSIM, false);
+            if (runTimeOfDayChoice && runScaling && runAssignment) {
+                logger.info("Running traffic assignment in MATsim");
+                TrafficAssignment trafficAssignment;
+                if (!useUamMatsim) {
+                    trafficAssignment = new DefaultTrafficAssignment(dataSet, scenarioName, iteration);
+                } else {
+                    trafficAssignment = new UamTrafficAssignment(dataSet, scenarioName, iteration);
+                }
+
+                trafficAssignment.run();
+            }
+            logger.info("Iteration " + iteration + " completed. Feedback waiting times to re-run mode choice");
         }
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
@@ -119,7 +125,9 @@ public class TravelDemandGenerator {
                 OmxMatrixWriter.createOmxFile(fileName, dimension);
 
                 SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
-                tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");
+                /* TODO fix Exception in thread "main" java.lang.IllegalArgumentException: Matrix dimension ([4924, 4924]) does not match file dimensions ([4953, 4953])
+            	at omx.OmxFile.addMatrix(OmxFile.java:247) */
+                // tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");
 
                 MatrixTravelDistances td = (MatrixTravelDistances) dataSet.getTravelDistancesAuto();
                 td.printOutDistanceSkim(fileName, "distanceByTime");
