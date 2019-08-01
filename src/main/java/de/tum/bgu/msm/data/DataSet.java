@@ -7,6 +7,7 @@ import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.data.waitingTimes.TotalHandlingTimes;
+import net.bhl.matsim.uam.infrastructure.UAMStation;
 import org.matsim.core.controler.Controler;
 
 import java.util.*;
@@ -47,6 +48,7 @@ public class DataSet {
     private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
     private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
     private Controler matsimControler;
+    private Map<UAMStation, MitoZone> stationToZoneMap;
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
@@ -278,5 +280,13 @@ public class DataSet {
 
     public void emptyTripSubsample() {
         tripSubsample = new LinkedHashMap<>();
+    }
+
+    public void setUAMStationAndZoneMap(Map<UAMStation, MitoZone> stationZoneMap) {
+        this.stationToZoneMap = stationZoneMap;
+    }
+
+    public Map<UAMStation, MitoZone> getStationToZoneMap() {
+        return stationToZoneMap;
     }
 }
