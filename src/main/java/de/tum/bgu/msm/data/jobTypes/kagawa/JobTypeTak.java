@@ -5,7 +5,7 @@ import de.tum.bgu.msm.data.jobTypes.JobType;
 
 public enum JobTypeTak implements JobType {
 
-    AGR (Category.OTHER),
+    AGRI (Category.OTHER),
     MNFT(Category.INDUSTRY),
     SERV(Category.OFFICE);
 
