@@ -17,7 +17,7 @@ import org.matsim.core.controler.Controler;
  */
 public class UamTrafficAssignment extends TrafficAssignment {
 
-	private int numberOfThreads = 4;
+	private int numberOfThreads = Runtime.getRuntime().availableProcessors();
 
 	public UamTrafficAssignment(DataSet dataSet, String scenarioName, int iteration) {
 		super(dataSet, scenarioName, iteration);
