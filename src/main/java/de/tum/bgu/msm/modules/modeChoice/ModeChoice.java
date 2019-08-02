@@ -187,9 +187,6 @@ public class ModeChoice extends Module {
                 countTripsSkipped++;
                 return null;
             }
-
-            int zone = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
-
             final int originId = trip.getTripOrigin().getZoneId();
             final int destinationId = trip.getTripDestination().getZoneId();
             final MitoZone origin = dataSet.getZones().get(originId);

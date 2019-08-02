@@ -57,6 +57,8 @@ public class Properties {
     public static final String PRINT_MICRO_DATA = "micro.data";
     public static final String FILL_MICRO_DATA_WITH_MICROLOCATION = "micro.data.with.microlocation";
 
+    public static final String RUN_TRANSIT_ACCESS_EGRESS_MODE_ASSIGNMENT = "run.access.egress";
+
     public static final String RUN_TIME_OF_DAY_CHOICE = "run.time.of.day.choice";
     public static final String TIME_OF_DAY_DISTRIBUTIONS = "time.of.day.distribution.file";
 

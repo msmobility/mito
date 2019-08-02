@@ -193,11 +193,16 @@ public class SummarizeData {
 
     public static void writeOutTrips(DataSet dataSet, String scenarioName) {
         String outputSubDirectory = "scenOutput/" + scenarioName + "/";
-
+        boolean printAccessEgressModes = Resources.INSTANCE.getBoolean(Properties.RUN_TRANSIT_ACCESS_EGRESS_MODE_ASSIGNMENT,true);
         LOGGER.info("  Writing trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,departure_time,departure_time_return");
+        if(printAccessEgressModes) {
+            pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,transitAccessMode,transitEgressMode,departure_time,departure_time_return");
+        }
+        else {
+            pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,departure_time,departure_time_return");
+        }
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -289,6 +294,22 @@ public class SummarizeData {
             pwh.print(",");
             pwh.print(trip.getTripMode());
             pwh.print(",");
+            if(printAccessEgressModes) {
+                if (trip.getTripMode() != null) {
+                    if (trip.getTripMode().equals(Mode.train) || trip.getTripMode().equals(Mode.tramOrMetro) || trip.getTripMode().equals(Mode.bus) || trip.getTripMode().equals(Mode.uam)) {
+                        pwh.print(trip.getAccessMode());
+                        pwh.print(",");
+                        pwh.print(trip.getEgressMode());
+                        pwh.print(",");
+                    }
+                    else {
+                        pwh.print(",,");
+                    }
+                }
+                else {
+                    pwh.print("null,null,");
+                }
+            }
             pwh.print(trip.getDepartureInMinutes());
             int departureOfReturnTrip = trip.getDepartureInMinutesReturnTrip();
             if (departureOfReturnTrip != -1){

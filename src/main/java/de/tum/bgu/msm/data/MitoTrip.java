@@ -19,6 +19,8 @@ public class MitoTrip implements Id {
     private MitoPerson person;
 
     private Mode tripMode;
+    private Mode accessMode;
+    private Mode egressMode;
 
     private int departureInMinutes;
     private int departureInMinutesReturnTrip = -1;
@@ -66,13 +68,13 @@ public class MitoTrip implements Id {
         }
     }
 
-    public Mode getTripMode() {
-        return tripMode;
-    }
+    public Mode getTripMode()      { return tripMode; }
+    public Mode getAccessMode()    { return accessMode; }
+    public Mode getEgressMode()    { return egressMode; }
 
-    public void setTripMode(Mode tripMode) {
-        this.tripMode = tripMode;
-    }
+    public void setTripMode      (Mode tripMode)      { this.tripMode   =  tripMode; }
+    public void setAccessMode    (Mode accessMode)    { this.accessMode = accessMode; }
+    public void setEgressMode    (Mode egressMode)    { this.egressMode = egressMode; }
 
     public void setDepartureInMinutes(int departureInMinutes) {
         this.departureInMinutes = departureInMinutes;

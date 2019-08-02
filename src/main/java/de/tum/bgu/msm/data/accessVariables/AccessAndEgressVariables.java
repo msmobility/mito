@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data.accessTimes;
 
 import de.tum.bgu.msm.data.Location;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import de.tum.bgu.msm.util.matrices.Matrices;
 import omx.OmxFile;
