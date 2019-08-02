@@ -89,6 +89,10 @@ public final class MitoModel {
         dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes());
         new SkimsReader(dataSet).read();
         readAdditionalData();
+        UAMNetworkReader uamReader = new UAMNetworkReader(dataSet);
+        uamReader.read();
+        uamReader.printOutSampleForDebugging("./debugTimesUam.csv");
+
     }
 
     private void readAdditionalData() {

@@ -52,6 +52,7 @@ public class SkimsReader extends AbstractOmxReader {
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM), "mat1", 1.);
 
 
+        //todo THIS needs to be removed when the class UAMNetowrkReader is finalized!!!
         //read uam distance and divide by speed (property). Add access and egress time and update this matrix in travel times
         IndexedDoubleMatrix2D flyingDistance_km =
                 AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.UAM_SKIM),
@@ -65,6 +66,7 @@ public class SkimsReader extends AbstractOmxReader {
 
         IndexedDoubleMatrix2D uamTravelTime = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
 
+        //todo THIS needs to be removed when the class UAMNetowrkReader is finalized!!!
         for (int row : uamTravelTime.getRowLookupArray()) {
             for (int column : uamTravelTime.getColumnLookupArray()) {
                 if (flyingDistance_km.getIndexed(row, column) < 10000.) {
@@ -90,6 +92,8 @@ public class SkimsReader extends AbstractOmxReader {
     private void readAccessTimeSkims() {
         dataSet.getAccessAndEgressVariables().readSkim("transit", AccessAndEgressVariables.AccessVariable.ACCESS_T_MIN, Resources.INSTANCE.getString(Properties.PT_ACCESS_TIME_SKIM), "mat1", 1.);
 
+
+        //todo THIS needs to be removed when the class UAMNetowrkReader is finalized!!!
         dataSet.getAccessAndEgressVariables().readSkim("uam",
                 AccessAndEgressVariables.AccessVariable.ACCESS_T_MIN,
                 Resources.INSTANCE.getString(Properties.UAM_SKIM), "access_time", 1. / 60);
@@ -114,10 +118,12 @@ public class SkimsReader extends AbstractOmxReader {
                 }
             }
         }
+        //todo THIS needs to be removed when the class UAMNetowrkReader is finalized!!!
         //... and later set up within the access and egress data container
         dataSet.getAccessAndEgressVariables().setExternally(access_dist, "uam", AccessAndEgressVariables.AccessVariable.ACCESS_DIST_KM);
         dataSet.getAccessAndEgressVariables().setExternally(egress_dist, "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM);
 
+        //todo THIS needs to be removed when the class UAMNetowrkReader is finalized!!!
         //todo the vertiport zones should not be a double matrix!! Consider to implement it.
         dataSet.getAccessAndEgressVariables().readSkim("uam",
                 AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT,
@@ -132,9 +138,11 @@ public class SkimsReader extends AbstractOmxReader {
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
         IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM), "distanceByDistance", 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
-        //todo temporally we read cost and in the mode choice scripts we divided by 5 to use it as distance. In the future, read directly flying distance
-        //read flying distance
 
+
+
+        //todo THIS needs to be removed when the class UAMNetowrkReader is finalized!!!
+        //read flying distance
         IndexedDoubleMatrix2D travelDistanceUAM = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.UAM_SKIM), "uam_dist", 1);
         dataSet.setFlyingDistanceUAM(new MatrixTravelDistances(travelDistanceUAM));
     }

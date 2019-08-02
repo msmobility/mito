@@ -1,12 +1,14 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.waitingTimes.StationDependentTotalHandlingTimes;
 import de.tum.bgu.msm.data.waitingTimes.TotalHandlingTimes;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import net.bhl.matsim.uam.infrastructure.UAMStation;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -26,15 +28,31 @@ public class HandlingTimesUpdater {
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private static final int INTERVAL_S = 60 * 15;
     private static final int NUMBER_OF_INTERVALS = 24 * 60 * 60 / INTERVAL_S;
-    private final Map<Integer, String> zonesToStationMap;
+    private final Map<Integer, String>  zonesToStationMap;
     private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 13) * 60;
 
     public HandlingTimesUpdater(DataSet dataSet) {
         this.dataSet = dataSet;
         waitingTimesByUAMStationAndTime = new LinkedHashMap<>();
         averageWaitingTimesByUAMStationAndTime_min = new LinkedHashMap<>();
-        zonesToStationMap = new LinkedHashMap<>();
-        new StationToZoneConversionReader(dataSet).read();
+        Map<UAMStation, MitoZone> stationToZoneMap = dataSet.getStationToZoneMap();
+        zonesToStationMap = convertMap(stationToZoneMap);
+    }
+
+    /**
+     * reverts the station to zone into a zone to station map
+     * @param stationToZoneMap
+     * @return
+     */
+    private static Map<Integer, String> convertMap(Map<UAMStation, MitoZone> stationToZoneMap) {
+        Map<Integer, String>  zonesToStationMap = new LinkedHashMap<>();
+
+        for (UAMStation uamStation : stationToZoneMap.keySet()){
+            zonesToStationMap.put(stationToZoneMap.get(uamStation).getId(), uamStation.getName().toString());
+        }
+
+        return zonesToStationMap;
+
     }
 
 
@@ -167,42 +185,4 @@ public class HandlingTimesUpdater {
         }
     }
 
-    /**
-     * This class is used to read a conversion between station names (uam_extension) and station zone (mito). Unfortunately
-     * it is based on the assumption of at most 1 vertiport per zone.
-     * //todo get this information from the UAM extension data instead, so no need to duplicate codes
-     */
-    private class StationToZoneConversionReader extends AbstractCsvReader {
-        int zoneIndex;
-        int stationNameIndex;
-
-        public StationToZoneConversionReader(DataSet dataSet) {
-            super(dataSet);
-        }
-
-        @Override
-        protected void processHeader(String[] header) {
-            stationNameIndex = MitoUtil.findPositionInArray("originStationId", header);
-            zoneIndex = MitoUtil.findPositionInArray("Zone", header);
-
-        }
-
-        @Override
-        protected void processRecord(String[] record) {
-            String station = record[stationNameIndex];
-            int zoneId = Integer.parseInt(record[zoneIndex]);
-
-            if (zonesToStationMap.containsKey(zoneId)) {
-                throw new RuntimeException("This version is not compatible with having more that one vertiport per zone");
-            } else {
-                zonesToStationMap.put(zoneId, station);
-            }
-
-        }
-
-        @Override
-        public void read() {
-            super.read(Resources.INSTANCE.getString(Properties.UAM_VERTIPORT_LIST), ",");
-        }
-    }
 }

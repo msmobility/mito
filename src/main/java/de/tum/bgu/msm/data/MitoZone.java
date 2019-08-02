@@ -169,4 +169,7 @@ public class MitoZone implements Id, Location {
         return zoneId;
     }
 
+    public SimpleFeature getShapeFeature() {
+        return shapeFeature;
+    }
 }
