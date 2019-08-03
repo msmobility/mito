@@ -4,13 +4,13 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import net.bhl.matsim.uam.router.strategy.UAMStrategy;
 import net.bhl.matsim.uam.run.RunUAMScenario;
+import net.bhl.matsim.uam.scenario.utils.ConfigAddUAMParameters;
+import org.matsim.core.controler.Controler;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.matsim.core.config.ConfigGroup;
-import org.matsim.core.controler.Controler;
 
 /**
  * MATSim assignment model using the uam_extension (developed by BHL and not available yet as open-source)
@@ -30,36 +30,16 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig = RunUAMScenario.createConfig();
 
 		// UAM parameters
-		matsimConfig.getModules().get("uam").addParam("inputUAMFile",
-				Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
-		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,bike,pt");
-		matsimConfig.getModules().get("uam").addParam("parallelRouters", "" + numberOfThreads);
-		matsimConfig.getModules().get("uam").addParam("searchRadius", "50000");
-		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
-		// Possible strategies: MAXUTILITY, MAXACCESSUTILITY, MINTRAVELTIME, MINACCESSTRAVELTIME, MINDISTANCE, MINACCESSDISTANCE, PREDEFINED
-		matsimConfig.getModules().get("uam").addParam("routingStrategy", "PREDEFINED");
-		matsimConfig.getModules().get("uam").addParam("ptSimulation", "false");
-		
-		// UAM planCalcScore activities
-		ConfigGroup uamInteractionParam = matsimConfig.getModules().get("planCalcScore").createParameterSet("activityParams");
-		uamInteractionParam.addParam("activityType", "uam_interaction");
-		uamInteractionParam.addParam("scoringThisActivityAtAll", "false");
-		matsimConfig.getModules().get("planCalcScore").addParameterSet(uamInteractionParam);
-		
-		// UAM planCalcScore modes
-		String[] modeScores = { "uam",
-				"access_uam_walk", "egress_uam_walk",
-				"access_uam_car", "egress_uam_car",
-				"access_uam_bike", "egress_uam_bike" };
-		for (String modeScore : modeScores) {
-			ConfigGroup modeParam = matsimConfig.getModules().get("planCalcScore").createParameterSet("modeParams");
-			modeParam.addParam("mode", modeScore);
-			modeParam.addParam("constant", "0.0");
-			modeParam.addParam("marginalUtilityOfDistance_util_m", "0.0");
-			modeParam.addParam("marginalUtilityOfTraveling_util_hr", "0.0");
-			modeParam.addParam("monetaryDistanceRate", "0.0");
-			matsimConfig.getModules().get("planCalcScore").addParameterSet(modeParam);
-		}
+		ConfigAddUAMParameters.addUAMParameters(
+				matsimConfig,
+				Resources.INSTANCE.getString(Properties.UAM_VEHICLES),
+				"walk,car,bike,pt",
+				numberOfThreads,
+				50000,
+				500,
+				UAMStrategy.UAMStrategyType.PREDEFINED,
+				false
+		);
 		
 		matsimConfig = ConfigureMatsim.configureMatsim(matsimConfig);
 
