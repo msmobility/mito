@@ -1,7 +1,10 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import com.google.common.math.LongMath;
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
@@ -11,30 +14,19 @@ import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
+import net.bhl.matsim.uam.analysis.uamroutes.run.RunCalculateUAMRoutes;
+import net.bhl.matsim.uam.data.UAMStationConnectionGraph;
 import net.bhl.matsim.uam.infrastructure.UAMStation;
 import net.bhl.matsim.uam.infrastructure.readers.UAMXMLReader;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Person;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.router.FastMultiNodeDijkstraFactory;
-import org.matsim.core.router.MultiNodePathCalculator;
-import org.matsim.core.router.util.LeastCostPathCalculator;
-import org.matsim.core.router.util.TravelDisutility;
-import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.vehicles.EngineInformation;
-import org.matsim.vehicles.Vehicle;
-import org.matsim.vehicles.VehicleCapacity;
-import org.matsim.vehicles.VehicleType;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.File;
@@ -95,26 +87,22 @@ public class UAMNetworkReader {
         //create matrices for the zones that have vertiports:
         IndexedDoubleMatrix2D travelTimeUamAtServedZones = new IndexedDoubleMatrix2D(stationZoneMap.values(), stationZoneMap.values());
         IndexedDoubleMatrix2D travelDistanceUamAtServedZones = new IndexedDoubleMatrix2D(stationZoneMap.values(), stationZoneMap.values());
-        //TODO maybe, we need to use the routing of the uam extension - the current version does
-        // calculates a beeline distance
+
+        //calculate distances and times between all UAM stations
+        UAMStationConnectionGraph connections = RunCalculateUAMRoutes.calculateRoutes(network, uamxmlReader);
 
         for (UAMStation originStation : stationMap.values()) {
             for (UAMStation destinationStation : stationMap.values()) {
-                if (!originStation.equals(destinationStation)) {
-                    Coord origCoord = originStation.getLocationLink().getFromNode().getCoord();
-                    Coord destCoord = destinationStation.getLocationLink().getFromNode().getCoord();
-                    double travelDistance_m = NetworkUtils.getEuclideanDistance(origCoord,destCoord);
-                    double travelTime_s = travelDistance_m / Resources.INSTANCE.getDouble(Properties.UAM_SPEED_KMH, 200) * 3.6;
-                    travelTime_s += originStation.getDefaultWaitTime() + originStation.getPreFlightTime() +
-                            destinationStation.getPostFlightTime();
+                if (originStation.equals(destinationStation))
+                    continue;
 
-                    travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
-                            stationZoneMap.get(destinationStation).getId(),
-                            travelTime_s / 60);
-                    travelDistanceUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
-                            stationZoneMap.get(destinationStation).getId(),
-                            travelDistance_m / 1000);
-                }
+                travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
+                        stationZoneMap.get(destinationStation).getId(),
+                        connections.getTravelTime(originStation.getId(), destinationStation.getId()) / 60);
+
+                travelDistanceUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
+                        stationZoneMap.get(destinationStation).getId(),
+                        connections.getDistance(originStation.getId(), destinationStation.getId()) / 1000);
             }
         }
         logger.info("The matrix is completed for zones served by UAM");
