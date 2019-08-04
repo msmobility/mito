@@ -45,6 +45,38 @@
             <url>http://dl.bintray.com/matsim/matsim</url>
         </repository>
     </repositories>
+
+    <profiles>
+        <profile>
+            <id>zip</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.0.2</version>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <descriptor>src/main/assembly/assembly-release.xml</descriptor>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>create-archive</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -189,6 +221,8 @@
             <groupId>net.bhl.matsim</groupId>
             <artifactId>uam</artifactId>
             <version>0.3.0-SNAPSHOT</version>
+            <!--<scope>system</scope>
+            <systemPath>C:/Users/Raoul/Documents/GitHub/uam-extension/uam/target/uam-0.3.0-SNAPSHOT.jar</systemPath>-->
         </dependency>
     </dependencies>
     <properties>
