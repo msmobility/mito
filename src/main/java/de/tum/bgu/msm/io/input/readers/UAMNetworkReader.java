@@ -96,6 +96,7 @@ public class UAMNetworkReader {
                 if (originStation.equals(destinationStation))
                     continue;
 
+                // TODO: @Carlos, does this need to include handling time? Let's clarify how MITO deals with waiting+process times of UAM
                 travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
                         connections.getTravelTime(originStation.getId(), destinationStation.getId()) / 60);
