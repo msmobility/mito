@@ -68,7 +68,7 @@ public class ModeChoiceTest {
 
         dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes(){
             @Override
-            public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode, double time) {
+            public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode) {
                 return 5;
             }
         });
