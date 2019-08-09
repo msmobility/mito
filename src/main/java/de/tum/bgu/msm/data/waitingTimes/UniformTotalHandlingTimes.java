@@ -12,7 +12,7 @@ import de.tum.bgu.msm.resources.Resources;
 public class UniformTotalHandlingTimes implements TotalHandlingTimes {
 
     @Override
-    public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode, double timeOfDay_s) {
+    public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode) {
         if (mode.equalsIgnoreCase(Mode.uam.toString())){
             return Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 0);
         } else {

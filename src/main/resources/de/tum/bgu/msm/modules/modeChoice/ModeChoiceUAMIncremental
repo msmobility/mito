@@ -68,7 +68,7 @@ tripLengthHBW = [0.0, 0.0, -0.32, 0.0, 0.0, 0.0, -2.02, 0.0];
 isMunichTripHBW = [0.0, 0.04, 0.63, 0.77, 0.76, 0.77, 2.32, 0.76];
 
 
-var calculateHBWProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+var calculateHBWProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
 
     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
@@ -77,7 +77,7 @@ var calculateHBWProbabilities = function (hh, person, originZone, destinationZon
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
     timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
     if (timeUAM < 10000) {
-        timeUAM = timeUAM + boardingTime;
+        timeUAM = timeUAM + handlingTime;
     }
     monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     age = person.getAge();
@@ -234,7 +234,7 @@ generalizedCostHBE = [-0.0025, -0.0025, 0.0, -0.0025, -0.0025, -0.0025, 0.0, -0.
 tripLengthHBE = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.71, 0.0];
 isMunichTripHBE = [0.0, 0.02, 0.25, 0.07, 0.08, 0.06, -0.49, 0.08];
 
-var calculateHBEProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+var calculateHBEProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
     timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
@@ -242,7 +242,7 @@ var calculateHBEProbabilities = function (hh, person, originZone, destinationZon
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
     timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
     if (timeUAM < 10000) {
-        timeUAM = timeUAM + boardingTime;
+        timeUAM = timeUAM + handlingTime;
     }
     monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getMitoGender();
@@ -378,7 +378,7 @@ generalizedCostHBS_Sq = [-0.0000068, -0.0000068, 0.0, -0.0000068, -0.0000068, -0
 tripLengthHBS = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.46, 0.0];
 isMunichTripHBS = [0.0, 0.05, 1.16, 1.35, 1.32, 1.36, 1.94, 1.32];
 
-var calculateHBSProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+var calculateHBSProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
 
     var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
     hhChildren = dataSet.getChildrenForHousehold(hh);
@@ -389,7 +389,7 @@ var calculateHBSProbabilities = function (hh, person, originZone, destinationZon
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
     timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
     if (timeUAM < 10000) {
-        timeUAM = timeUAM + boardingTime;
+        timeUAM = timeUAM + handlingTime;
     }
     monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getMitoGender();
@@ -523,7 +523,7 @@ generalizedCostHBO = [-0.0012, -0.0012, 0.0, -0.0012, -0.0012, -0.0012, 0.0, -0.
 tripLengthHBO = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.68, 0.0];
 isMunichTripHBO = [0.0, 0.14, 0.61, 1.25, 1.23, 1.25, 0.34, 1.23];
 
-var calculateHBOProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+var calculateHBOProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
 
     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
@@ -532,7 +532,7 @@ var calculateHBOProbabilities = function (hh, person, originZone, destinationZon
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
     timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
     if (timeUAM < 10000) {
-        timeUAM = timeUAM + boardingTime;
+        timeUAM = timeUAM + handlingTime;
     }
     monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getMitoGender();
@@ -665,7 +665,7 @@ distToRailStopNHBW = [0.0, 0.0, 0.0, -0.24, 0.0, -0.16, -0.37, 0.0];
 generalizedCostNHBW = [-0.0034, -0.0034, 0.0, -0.0034, -0.0034, -0.0034, 0.0, -0.0034];
 tripLengthNHBW = [0.0, 0.0, -0.28, 0.0, 0.0, 0.0, -1.54, 0.0];
 
-var calculateNHBWProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+var calculateNHBWProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
 
     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
@@ -674,7 +674,7 @@ var calculateNHBWProbabilities = function (hh, person, originZone, destinationZo
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
     timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
     if (timeUAM < 10000) {
-        timeUAM = timeUAM + boardingTime;
+        timeUAM = timeUAM + handlingTime;
     }
     monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     age = person.getAge();
@@ -799,7 +799,7 @@ ruralNHBO = [0.0, 0.0, 0.0, -0.70, -0.91, -1.12, 0.0, -0.91];
 generalizedCostNHBO_Sq = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0, -0.000017];
 tripLengthNHBO = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57, 0.0];
 
-var calculateNHBOProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+var calculateNHBOProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
 
     timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
     timeAutoP = timeAutoD;
@@ -808,7 +808,7 @@ var calculateNHBOProbabilities = function (hh, person, originZone, destinationZo
     timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
     timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
     if (timeUAM < 10000) {
-        timeUAM = timeUAM + boardingTime;
+        timeUAM = timeUAM + handlingTime;
     }
     monthlyIncome_EUR = hh.getMonthlyIncome_EUR();
     gender = person.getMitoGender();
@@ -947,7 +947,7 @@ var calculateNHBOProbabilities = function (hh, person, originZone, destinationZo
 
 //AIRPORT
 
-var calculateAIRPORTUtilities = function (hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, boardingTime, uamFareEurosPerKm, travelCostUAM) {
+var calculateAIRPORTUtilities = function (hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm, travelCostUAM) {
 
     asc_autoDriver = 0.;
     asc_autoPassenger = 0.706154;
@@ -968,7 +968,7 @@ var calculateAIRPORTUtilities = function (hh, person, originZone, destinationZon
     exp_time_uam = 0;
 
     //distance is in minutes
-    beta_distance = -0.00002
+    beta_distance = -0.00002;
     exp_distance_autoDriver = 0;
     exp_distance_autoPassenger = 0;
     exp_distance_bus = 0;
@@ -1016,10 +1016,10 @@ var calculateAIRPORTUtilities = function (hh, person, originZone, destinationZon
         b_gcost_all * (travelTimeCar + travelDistanceAuto*sharedAVCostEurosPerKm / VOT_AIRPORT_autoPassengerAndOther);
 
     //this was done when referenc mode was train
-    //u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
+    //u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(handlingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
     //exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
 
-    travelTimeUAM = boardingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+    travelTimeUAM = handlingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
     u_uam = asc_uam +
         exp_time_uam * Math.exp(beta_time * 0.8621 * travelTimeUAM) +
         exp_distance_uam * Math.exp(beta_distance * 0.1626 * travelDistanceAuto * uamFareEurosPerKm / sharedAVCostEurosPerKm) +
@@ -1029,12 +1029,12 @@ var calculateAIRPORTUtilities = function (hh, person, originZone, destinationZon
 
 
 var calculateAIRPORTProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes,
-                                              travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+                                              travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
 
 
     //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, sharedAV, privateAV, TramMetro, Walk, privateAV, sharedAV, UAM]
     //calculate utilities for each mode
-    utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, boardingTime, uamFareEurosPerKm, travelCostUAM);
+    utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm, travelCostUAM);
 
     sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
 
@@ -1051,10 +1051,10 @@ var calculateAIRPORTProbabilities = function (hh, person, originZone, destinatio
 }
 
 var returnLogsumAIRPORT = function (hh, person, originZone, destinationZone, travelTimes, accessTimes,
-                                    travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, boardingTime, uamFareEurosPerKm) {
+                                    travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
 
     //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk, privateAV, sharedAV, UAM]
-    utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, boardingTime, uamFareEurosPerKm, travelCostUAM);
+    utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm, travelCostUAM);
 
     sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
 
