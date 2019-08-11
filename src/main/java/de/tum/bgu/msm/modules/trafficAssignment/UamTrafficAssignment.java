@@ -29,6 +29,10 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		RunUAMScenario.parseArguments(args);
 		matsimConfig = RunUAMScenario.createConfig();
 
+		// Selected routing strategy
+		UAMStrategy.UAMStrategyType strategy = Resources.INSTANCE.getBoolean(Properties.UAM_MATSIM_ROUTING) ?
+				UAMStrategy.UAMStrategyType.MINTRAVELTIME : UAMStrategy.UAMStrategyType.PREDEFINED;
+
 		// UAM parameters
 		ConfigAddUAMParameters.addUAMParameters(
 				matsimConfig,
@@ -37,7 +41,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				numberOfThreads,
 				50000,
 				500,
-				UAMStrategy.UAMStrategyType.PREDEFINED,
+				strategy,
 				false
 		);
 		
