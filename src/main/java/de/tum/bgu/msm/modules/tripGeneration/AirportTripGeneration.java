@@ -4,7 +4,6 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceJSCalculator;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -31,7 +30,11 @@ public class AirportTripGeneration {
 
     public AirportTripGeneration(DataSet dataSet) {
         this.dataSet = dataSet;
-        this.TRIP_ID_COUNTER.set(dataSet.getTrips().size());
+        if (dataSet.getTrips().isEmpty()){
+            this.TRIP_ID_COUNTER.set(0);
+        } else {
+            this.TRIP_ID_COUNTER.set(dataSet.getTrips().keySet().stream().max(Integer::compareTo).get());
+        }
         this.airportZoneId = Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE);
         this.airport = dataSet.getZones().get(airportZoneId);
         this.numberOfTripsCalculator = new AirportNumberOfTripsCalculator(new InputStreamReader(this.getClass().getResourceAsStream("AirportTripRateCalc")));
@@ -95,9 +98,9 @@ public class AirportTripGeneration {
                         dataSet.getAccessAndEgressVariables().
                                 getAccessVariable(airport, dataSet.getZones().get(zoneId), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
 
-                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(airport, dataSet.getZones().get(zoneId), Mode.uam.toString());
+                final double processingTime_min = dataSet.getTotalHandlingTimes().getWaitingTime(null, airport, dataSet.getZones().get(zoneId), Mode.uam.toString(), 0.);
 
-                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour(), processingTime_min, uamCost_eur);
+                logsum= airportLogsumCalculator.calculateLogsumForThisZoneUAM(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, uamCost_eur, dataSet.getPeakHour(), processingTime_min, uamFare_eurkm);
 
             }else {
                 logsum= airportLogsumCalculator.calculateLogsumForThisZone(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour());

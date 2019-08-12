@@ -4,47 +4,73 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-//import net.bhl.matsim.uam.run.RunUAMScenario;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.matsim.core.config.ConfigGroup;
 import org.matsim.core.controler.Controler;
 
+/**
+ * MATSim assignment model using the uam_extension (developed by BHL and not available yet as open-source)
+ */
 public class UamTrafficAssignment extends TrafficAssignment {
 
-	private static Controler controler;
+	private int numberOfThreads = 4;
 
-	public UamTrafficAssignment(DataSet dataSet, String scenarioName) {
-		super(dataSet, scenarioName);
+	public UamTrafficAssignment(DataSet dataSet, String scenarioName, int iteration) {
+		super(dataSet, scenarioName, iteration);
 	}
 
 	@Override
 	protected void configMatsim() {
-		String[] args = { "--config-path \"\"", "--city Munich" };
+		String[] args = { "--city", "Munich" };
 		//RunUAMScenario.parseArguments(args);
-		//matsimConfig = RunUAMScenario.initialiseConfig();
+		//matsimConfig = RunUAMScenario.createConfig();
 
 		// UAM parameters
-		matsimConfig.getModules().get("uam").addParam("inputFile", Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
-		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,pt");
-		matsimConfig.getModules().get("uam").addParam("parallelRouters", "16");
-		matsimConfig.getModules().get("uam").addParam("searchRadius", "99999");
+		matsimConfig.getModules().get("uam").addParam("inputUAMFile",
+				Resources.INSTANCE.getString(Properties.UAM_VEHICLES));
+		matsimConfig.getModules().get("uam").addParam("availableAccessModes", "walk,car,bike,pt");
+		matsimConfig.getModules().get("uam").addParam("parallelRouters", "" + numberOfThreads);
+		matsimConfig.getModules().get("uam").addParam("searchRadius", "50000");
 		matsimConfig.getModules().get("uam").addParam("walkDistance", "500");
-		matsimConfig.getModules().get("uam").addParam("routingStrategy", "MINTRAVELTIME");
+		// Possible strategies: MAXUTILITY, MAXACCESSUTILITY, MINTRAVELTIME, MINACCESSTRAVELTIME, MINDISTANCE, MINACCESSDISTANCE, PREDEFINED
+		matsimConfig.getModules().get("uam").addParam("routingStrategy", "PREDEFINED");
 		matsimConfig.getModules().get("uam").addParam("ptSimulation", "false");
-
+		
+		// UAM planCalcScore activities
+		ConfigGroup uamInteractionParam = matsimConfig.getModules().get("planCalcScore").createParameterSet("activityParams");
+		uamInteractionParam.addParam("activityType", "uam_interaction");
+		uamInteractionParam.addParam("scoringThisActivityAtAll", "false");
+		matsimConfig.getModules().get("planCalcScore").addParameterSet(uamInteractionParam);
+		
+		// UAM planCalcScore modes
+		String[] modeScores = { "uam",
+				"access_uam_walk", "egress_uam_walk",
+				"access_uam_car", "egress_uam_car",
+				"access_uam_bike", "egress_uam_bike" };
+		for (String modeScore : modeScores) {
+			ConfigGroup modeParam = matsimConfig.getModules().get("planCalcScore").createParameterSet("modeParams");
+			modeParam.addParam("mode", modeScore);
+			modeParam.addParam("constant", "0.0");
+			modeParam.addParam("marginalUtilityOfDistance_util_m", "0.0");
+			modeParam.addParam("marginalUtilityOfTraveling_util_hr", "0.0");
+			modeParam.addParam("monetaryDistanceRate", "0.0");
+			matsimConfig.getModules().get("planCalcScore").addParameterSet(modeParam);
+		}
+		
 		matsimConfig = ConfigureMatsim.configureMatsim(matsimConfig);
 
 		String runId = "mito_assignment";
 		matsimConfig.controler().setRunId(runId);
 		matsimConfig.controler().setOutputDirectory(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/"
-				+ outputSubDirectory + "/trafficAssignment");
+				+ outputSubDirectory + "/trafficAssignment/" + iteration  + "/");
 		matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
 
-		matsimConfig.qsim().setNumberOfThreads(16);
-		matsimConfig.global().setNumberOfThreads(16);
-		matsimConfig.parallelEventHandling().setNumberOfThreads(16);
+		matsimConfig.qsim().setNumberOfThreads(numberOfThreads);
+		matsimConfig.global().setNumberOfThreads(numberOfThreads);
+		matsimConfig.parallelEventHandling().setNumberOfThreads(numberOfThreads);
 		matsimConfig.qsim().setUsingThreadpool(false);
 
 		matsimConfig.controler().setLastIteration(Resources.INSTANCE.getInt(Properties.MATSIM_ITERATIONS));
@@ -58,12 +84,13 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
 
 		String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES,
-				new String[] { "autoDriver", "uam" });
+				new String[] { "autoDriver" });
 		Set<String> networkModesSet = new HashSet<>();
 
 		for (String mode : networkModes) {
 			String matsimMode = Mode.getMatsimMode(Mode.valueOf(mode));
-			if (!networkModesSet.contains(matsimMode)) {
+			//do not add uam as network mode, even if it is assigned
+			if (!networkModesSet.contains(matsimMode) && !matsimMode.equals("uam")) {
 				networkModesSet.add(matsimMode);
 			}
 		}
@@ -72,11 +99,24 @@ public class UamTrafficAssignment extends TrafficAssignment {
 	}
 
 	protected void runMatsim() {
-		//RunUAMScenario.initialiseControler().run();
+		//RunUAMScenario.setScenario(matsimScenario);
+		Controler controler = null;
+		controler.run();
 
+		//Do not update car times if car is not simulated!!
 		CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
 		skimUpdater.run();
 		dataSet.setMatsimControler(controler);
+
+		//update waiting times of UAM mode.
+		HandlingTimesUpdater handlingTimesUpdater = new HandlingTimesUpdater(dataSet);
+		int lastIteration = matsimConfig.controler().getLastIteration();
+		String inputFileName = matsimConfig.controler().getOutputDirectory() + "/ITERS/it." + lastIteration + "/" +
+		matsimConfig.controler().getRunId() + "." + lastIteration + ".uamdemand.csv";
+		String outputFileName = matsimConfig.controler().getOutputDirectory() + "/vertiportWaitingTimes.csv";
+		handlingTimesUpdater.run(inputFileName, outputFileName);
+
+
 	}
 
 }

@@ -12,6 +12,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
 import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.CoordUtils;
 
@@ -104,7 +105,8 @@ public class SummarizeData {
                 } else {
                     if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                             origin != null) {
-                        Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                    	Coordinate rand = dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord();
+                        Coord coordinate = CoordUtils.createCoord(rand.x, rand.y);
                         pwh.print(coordinate.getX());
                         pwh.print(",");
                         pwh.print(coordinate.getY());
@@ -132,7 +134,8 @@ public class SummarizeData {
                 } else {
                     if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                             destination != null) {
-                        Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                    	Coordinate rand = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord();
+                        Coord coordinate = CoordUtils.createCoord(rand.x, rand.y);
                         pwh.print(coordinate.getX());
                         pwh.print(",");
                         pwh.print(coordinate.getY());
@@ -222,7 +225,8 @@ public class SummarizeData {
             } else{
                 if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         origin != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                	Coordinate rand = dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord();
+                    Coord coordinate = CoordUtils.createCoord(rand.x, rand.y);
                     pwh.print(coordinate.getX());
                     pwh.print(",");
                     pwh.print(coordinate.getY());
@@ -250,7 +254,8 @@ public class SummarizeData {
             }else{
                 if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         destination != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                	Coordinate rand = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord();
+                    Coord coordinate = CoordUtils.createCoord(rand.x, rand.y);
                     pwh.print(coordinate.getX());
                     pwh.print(",");
                     pwh.print(coordinate.getY());

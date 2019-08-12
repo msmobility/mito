@@ -5,7 +5,9 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
+
 import org.apache.log4j.Logger;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
@@ -69,31 +71,41 @@ public class MatsimPopulationGenerator {
 
                     Coord originCoord;
                     if(trip.getTripOrigin() instanceof MicroLocation) {
-                        originCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripOrigin()).getCoordinate());
+                        originCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripOrigin()).getCoordinate().x,
+                        		((MicroLocation) trip.getTripOrigin()).getCoordinate().y);
                     } else {
-                        originCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                    	Coordinate randCoord = dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord();
+                        originCoord = CoordUtils.createCoord(randCoord.x, randCoord.y);
                     }
 
                     Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, originCoord);
                     originActivity.setEndTime(trip.getDepartureInMinutes() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                     plan.addActivity(originActivity);
-
-                    plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
+                    
+                    Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+                    if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
+                    plan.addLeg(leg);
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
 
                     Coord destinationCoord;
                     if(trip.getTripDestination() instanceof MicroLocation) {
-                        destinationCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripDestination()).getCoordinate());
+                    	Coordinate rand = ((MicroLocation) trip.getTripDestination()).getCoordinate();
+                        destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
                     } else {
-                        destinationCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                    	Coordinate rand = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord();
+                        destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
                     }
                     Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoord);
 
                     if (trip.isHomeBased()) {
                         destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                         plan.addActivity(destinationActivity);
-                        plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
+                        
+                        Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+                        if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
+                        plan.addLeg(returnLeg);
+                        
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
                     } else {
                         plan.addActivity(destinationActivity);
@@ -149,10 +161,4 @@ public class MatsimPopulationGenerator {
             return "other";
         }
     }
-
-
-
-
-
-
 }

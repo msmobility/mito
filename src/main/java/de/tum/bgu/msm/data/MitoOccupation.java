@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.data;
 
 
-import org.locationtech.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Coordinate;
 
 public interface MitoOccupation extends MicroLocation, Id {
 

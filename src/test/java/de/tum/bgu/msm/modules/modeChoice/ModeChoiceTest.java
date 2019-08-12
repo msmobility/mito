@@ -3,7 +3,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.data.waitingTimes.WaitingTimes;
+import de.tum.bgu.msm.data.waitingTimes.UniformTotalHandlingTimes;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
@@ -66,9 +66,9 @@ public class ModeChoiceTest {
             }
         });
 
-        dataSet.setWaitingTimes(new WaitingTimes(){
+        dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes(){
             @Override
-            public double getWaitingTime(Location origin, Location destination, String mode) {
+            public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode, double time) {
                 return 5;
             }
         });

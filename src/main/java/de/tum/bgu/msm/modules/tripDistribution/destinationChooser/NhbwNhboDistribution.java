@@ -97,6 +97,11 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                         TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
                 } else {
+                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        dataSet.removeTrip(trip.getTripId());
+                        TripDistribution.tripsRemovedDueToNoBudget.incrementAndGet();
+                    }
+                    household.getTripsForPurpose(purpose).removeAll(household.getTripsForPurpose(purpose));
                     TripDistribution.failedTripsCounter.incrementAndGet();
                 }
             }

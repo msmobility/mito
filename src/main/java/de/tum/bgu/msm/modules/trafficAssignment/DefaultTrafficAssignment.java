@@ -12,8 +12,8 @@ import de.tum.bgu.msm.resources.Resources;
 
 public class DefaultTrafficAssignment extends TrafficAssignment {
 
-	public DefaultTrafficAssignment(DataSet dataSet, String scenarioName) {
-		super(dataSet, scenarioName);
+	public DefaultTrafficAssignment(DataSet dataSet, String scenarioName, int iteration) {
+		super(dataSet, scenarioName, iteration);
 	}
 	
 	protected void configMatsim() {

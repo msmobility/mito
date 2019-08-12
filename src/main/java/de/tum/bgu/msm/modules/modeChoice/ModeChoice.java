@@ -11,7 +11,10 @@ import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,6 +34,7 @@ public class ModeChoice extends Module {
 
     @Override
     public void run() {
+    	// TODO make logging statement dynamic based on provided modes?
         logger.info(" Calculating mode choice probabilities for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro, 7. Walk ");
         modeChoiceByPurpose();
         printModeShares();
@@ -108,27 +112,32 @@ public class ModeChoice extends Module {
 
         logger.info("UAM share: " + uam/this.dataSet.getTrips().values().size());
 
+    }
 
-        //auxiliar code for calibration
-//        double shareAutoDriver = 0.15;
-//        double shareAutoPassenger = 0.43;
-//        double shareNonMotorized = 0.0;
-//        double shareMetro = 0.0;
-//        double shareBus = 0.03;
-//        double shareTrain = 1 - shareAutoDriver - shareAutoPassenger - shareNonMotorized - shareMetro - shareBus;
-//
-//        double k_autoDriver = shareAutoDriver - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoDriver);
-//        double k_autoPassenger = shareAutoPassenger - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoPassenger);
-//        double k_bicycle = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bicycle);
-//        double k_walk = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.walk);
-//        double k_bus = shareBus - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bus);
-//        double k_metro = shareMetro - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.tramOrMetro);
-//        double k_train = shareTrain - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.train);
-//
-//        logger.info(k_autoDriver + "," +
-//                k_autoPassenger + "," + k_bicycle +
-//                "," + k_bus + "," + k_train + "," + k_metro + "," +
-//                k_walk );
+    public void printModalShares(int iteration, String scenarioName) {
+        String fileName = "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/modeChoice/modalShares" + iteration + ".csv";
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new File(fileName));
+            pw.println("iteration,purpose,mode,share");
+            for (Purpose purpose : Purpose.values()){
+                for (Mode mode : Mode.values()){
+                    StringBuilder sb = new StringBuilder();
+                    Double share = dataSet.getModeShareForPurpose(purpose, mode);
+                    if(share != null){
+                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(share);
+                    } else {
+                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(0.);
+                    }
+                    pw.println(sb);
+                }
+            }
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
 
     }
@@ -180,13 +189,11 @@ public class ModeChoice extends Module {
 
         double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
 
-
-
-
             if (trip.getTripOrigin() == null || trip.getTripDestination() == null) {
                 countTripsSkipped++;
                 return null;
             }
+
             final int originId = trip.getTripOrigin().getZoneId();
             final int destinationId = trip.getTripDestination().getZoneId();
             final MitoZone origin = dataSet.getZones().get(originId);
@@ -207,11 +214,12 @@ public class ModeChoice extends Module {
                         dataSet.getAccessAndEgressVariables().
                                 getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
 
-                final double processingTime_min = dataSet.getWaitingTimes().getWaitingTime(trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
+                final double processingTime_min = dataSet.getTotalHandlingTimes().
+                        getWaitingTime(trip, trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString(),0.);
 
                 return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
                         travelDistanceNMT, uamCost_eur, dataSet.getPeakHour(),processingTime_min,uamFare_eurkm);
-            }else {
+            } else {
                 return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                         travelDistanceNMT, dataSet.getPeakHour());
             }

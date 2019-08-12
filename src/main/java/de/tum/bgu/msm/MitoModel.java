@@ -3,7 +3,7 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
-import de.tum.bgu.msm.data.waitingTimes.WaitingTimes;
+import de.tum.bgu.msm.data.waitingTimes.UniformTotalHandlingTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -86,7 +86,7 @@ public final class MitoModel {
         new PersonsReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
         dataSet.setAccessAndEgressVariables(new AccessAndEgressVariables());
-        dataSet.setWaitingTimes(new WaitingTimes());
+        dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes());
         new SkimsReader(dataSet).read();
         readAdditionalData();
     }
