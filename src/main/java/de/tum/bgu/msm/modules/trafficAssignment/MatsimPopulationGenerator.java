@@ -175,9 +175,18 @@ public class MatsimPopulationGenerator {
         }
         l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, "car"); // TODO retrieve value from MITO mode choice
         int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION, zoneToStationMap.get(accessVertiportZoneId));
+        if (accessVertiportZoneId != 10000){
+            l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION, zoneToStationMap.get(accessVertiportZoneId));
+        } else {
+            logger.warn("Trip using UAM but without UAM station");
+        }
         int egressVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam", AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT);
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION, zoneToStationMap.get(egressVertiportZoneId));
+        if (egressVertiportZoneId != 10000) {
+            l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION, zoneToStationMap.get(egressVertiportZoneId));
+        } else {
+            logger.warn("Trip using UAM but without UAM station");
+        }
+
         l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, "car"); // TODO retrieve value from MITO mode choice
     }
 
