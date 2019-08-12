@@ -49,6 +49,7 @@ public class DataSet {
     private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
     private Controler matsimControler;
     private Map<UAMStation, MitoZone> stationToZoneMap;
+    private Map<MitoZone, UAMStation> zoneStationMap;
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
@@ -282,11 +283,19 @@ public class DataSet {
         tripSubsample = new LinkedHashMap<>();
     }
 
-    public void setUAMStationAndZoneMap(Map<UAMStation, MitoZone> stationZoneMap) {
+    public void setStationZoneMap(Map<UAMStation, MitoZone> stationZoneMap) {
         this.stationToZoneMap = stationZoneMap;
+    }
+
+    public void setZoneStationMap(Map<MitoZone, UAMStation> zoneStationMap) {
+        this.zoneStationMap = zoneStationMap;
     }
 
     public Map<UAMStation, MitoZone> getStationToZoneMap() {
         return stationToZoneMap;
+    }
+
+    public Map<MitoZone, UAMStation> getZoneToZoneMap() {
+        return zoneStationMap;
     }
 }
