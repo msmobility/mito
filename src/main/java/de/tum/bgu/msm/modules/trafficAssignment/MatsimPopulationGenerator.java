@@ -5,7 +5,6 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
-import net.bhl.matsim.uam.router.strategy.UAMPredefinedStrategy;
 
 import org.apache.log4j.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -85,7 +84,6 @@ public class MatsimPopulationGenerator {
                     
                     Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                     if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                    	addUAMLegParamters(leg);
                     plan.addLeg(leg);
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
@@ -106,7 +104,6 @@ public class MatsimPopulationGenerator {
                         
                         Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                         if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                        	addUAMLegParamters(returnLeg);
                         plan.addLeg(returnLeg);
                         
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
@@ -164,15 +161,4 @@ public class MatsimPopulationGenerator {
             return "other";
         }
     }
-
-    private static void addUAMLegParamters(Leg l) {
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, "car"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION, "MUC01"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION, "MUC02"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, "car"); // TODO retrieve value from MITO mode choice
-    }
-
-
-
-
 }

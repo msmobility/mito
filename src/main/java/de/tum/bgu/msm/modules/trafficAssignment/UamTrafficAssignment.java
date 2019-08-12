@@ -4,7 +4,6 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import net.bhl.matsim.uam.run.RunUAMScenario;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,8 +25,8 @@ public class UamTrafficAssignment extends TrafficAssignment {
 	@Override
 	protected void configMatsim() {
 		String[] args = { "--city", "Munich" };
-		RunUAMScenario.parseArguments(args);
-		matsimConfig = RunUAMScenario.createConfig();
+		//RunUAMScenario.parseArguments(args);
+		//matsimConfig = RunUAMScenario.createConfig();
 
 		// UAM parameters
 		matsimConfig.getModules().get("uam").addParam("inputUAMFile",
@@ -100,8 +99,8 @@ public class UamTrafficAssignment extends TrafficAssignment {
 	}
 
 	protected void runMatsim() {
-		RunUAMScenario.setScenario(matsimScenario);
-		Controler controler = RunUAMScenario.createControler();
+		//RunUAMScenario.setScenario(matsimScenario);
+		Controler controler = null;
 		controler.run();
 
 		//Do not update car times if car is not simulated!!
