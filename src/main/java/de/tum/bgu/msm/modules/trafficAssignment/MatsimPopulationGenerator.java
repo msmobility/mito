@@ -1,10 +1,12 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import edu.emory.mathcs.utils.ConcurrencyUtils;
+import net.bhl.matsim.uam.infrastructure.UAMStation;
 import net.bhl.matsim.uam.router.strategy.UAMPredefinedStrategy;
 
 import org.apache.log4j.Logger;
@@ -85,7 +87,7 @@ public class MatsimPopulationGenerator {
                     
                     Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                     if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                    	addUAMLegParamters(leg);
+                    	addUAMLegParamters(leg, dataSet, trip.getTripOrigin(), trip.getTripDestination());
                     plan.addLeg(leg);
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
@@ -106,7 +108,7 @@ public class MatsimPopulationGenerator {
                         
                         Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                         if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                        	addUAMLegParamters(returnLeg);
+                        	addUAMLegParamters(returnLeg, dataSet, trip.getTripDestination(), trip.getTripOrigin());
                         plan.addLeg(returnLeg);
                         
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
@@ -165,10 +167,26 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    private static void addUAMLegParamters(Leg l) {
+    private static void addUAMLegParamters(Leg l, DataSet dataSet, Location origin, Location destination) {
+        Map<Integer, String> zoneToStationMap = new HashMap<>();
+        Map<UAMStation, MitoZone> stationToZoneMap = dataSet.getStationToZoneMap();
+        for (UAMStation uamStation : stationToZoneMap.keySet()){
+            zoneToStationMap.put(stationToZoneMap.get(uamStation).getId(), uamStation.getName());
+        }
         l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, "car"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION, "MUC01"); // TODO retrieve value from MITO mode choice
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION, "MUC02"); // TODO retrieve value from MITO mode choice
+        int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
+        if (accessVertiportZoneId != 10000){
+            l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION, zoneToStationMap.get(accessVertiportZoneId));
+        } else {
+            logger.warn("Trip using UAM but without UAM station");
+        }
+        int egressVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam", AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT);
+        if (egressVertiportZoneId != 10000) {
+            l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION, zoneToStationMap.get(egressVertiportZoneId));
+        } else {
+            logger.warn("Trip using UAM but without UAM station");
+        }
+
         l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, "car"); // TODO retrieve value from MITO mode choice
     }
 

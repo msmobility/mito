@@ -215,7 +215,7 @@ public class ModeChoice extends Module {
                                 getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
 
                 final double processingTime_min = dataSet.getTotalHandlingTimes().
-                        getWaitingTime(trip, trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString(),0.);
+                        getWaitingTime(trip, trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
 
                 return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
                         travelDistanceNMT, uamCost_eur, dataSet.getPeakHour(),processingTime_min,uamFare_eurkm);

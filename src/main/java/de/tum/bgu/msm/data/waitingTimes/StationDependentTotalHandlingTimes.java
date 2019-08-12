@@ -25,7 +25,7 @@ public class StationDependentTotalHandlingTimes implements TotalHandlingTimes {
 
 
     @Override
-    public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode, double timeOfDay_s) {
+    public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode) {
         if (mode.equalsIgnoreCase(Mode.uam.toString())) {
             double timeOfDay_s2 = trip.getDepartureInMinutes() * 60;
             int zoneId = (int) accessAndEgressVariables.getAccessVariable(origin, destination, mode, AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);

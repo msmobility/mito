@@ -12,8 +12,7 @@ public interface TotalHandlingTimes {
      * @param origin
      * @param destination
      * @param mode
-     * @param timeOfDay_s
      * @return the waiting time in minutes
      */
-    double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode, double timeOfDay_s);
+    double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode);
 }

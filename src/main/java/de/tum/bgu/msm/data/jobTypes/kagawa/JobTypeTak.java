@@ -3,15 +3,15 @@ package de.tum.bgu.msm.data.jobTypes.kagawa;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
 
-public enum KagawaJobType implements JobType {
+public enum JobTypeTak implements JobType {
 
     AGR (Category.OTHER),
-    IND(Category.INDUSTRY),
-    SRV(Category.OFFICE);
+    MNFT(Category.INDUSTRY),
+    SERV(Category.OFFICE);
 
     private final Category category;
 
-    KagawaJobType(Category category) {
+    JobTypeTak(Category category) {
         this.category = category;
     }
 

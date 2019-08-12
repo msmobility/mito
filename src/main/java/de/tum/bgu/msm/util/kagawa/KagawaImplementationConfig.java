@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.util.kagawa;
 
 import de.tum.bgu.msm.data.jobTypes.JobTypeFactory;
-import de.tum.bgu.msm.data.jobTypes.kagawa.KagawaJobTypeFactory;
+import de.tum.bgu.msm.data.jobTypes.kagawa.JobTypeFactoryTak;
 import de.tum.bgu.msm.util.ImplementationConfig;
 
 public class KagawaImplementationConfig implements ImplementationConfig {
@@ -16,6 +16,6 @@ public class KagawaImplementationConfig implements ImplementationConfig {
 
     @Override
     public JobTypeFactory getJobTypeFactory() {
-        return new KagawaJobTypeFactory();
+        return new JobTypeFactoryTak();
     }
 }
