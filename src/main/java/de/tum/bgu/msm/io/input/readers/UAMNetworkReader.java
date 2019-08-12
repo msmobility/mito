@@ -18,7 +18,6 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import net.bhl.matsim.uam.analysis.uamroutes.run.RunCalculateUAMRoutes;
 import net.bhl.matsim.uam.data.UAMStationConnectionGraph;
 import net.bhl.matsim.uam.infrastructure.UAMStation;
-import net.bhl.matsim.uam.infrastructure.UAMVehicleType;
 import net.bhl.matsim.uam.infrastructure.readers.UAMXMLReader;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
@@ -70,6 +69,7 @@ public class UAMNetworkReader {
 
         //map stations to zones
         Map<UAMStation, MitoZone> stationZoneMap = new HashMap<>();
+        Map<MitoZone, UAMStation> zoneStationMap = new HashMap<>();
 
         for (UAMStation station : stationMap.values()) {
             for (MitoZone zone : dataSet.getZones().values()) {
@@ -80,11 +80,13 @@ public class UAMNetworkReader {
                 Point point = factory.createPoint(new Coordinate(coord.getX(), coord.getY()));
                 if (polygon.contains(point)) {
                     stationZoneMap.put(station, zone);
+                    zoneStationMap.put(zone, station);
                 }
             }
         }
 
-        dataSet.setUAMStationAndZoneMap(stationZoneMap);
+        dataSet.setStationZoneMap(stationZoneMap);
+        dataSet.setZoneStationMap(zoneStationMap);
 
         //create matrices for the zones that have vertiports:
         IndexedDoubleMatrix2D travelTimeUamAtServedZones = new IndexedDoubleMatrix2D(stationZoneMap.values(), stationZoneMap.values());

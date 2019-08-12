@@ -168,24 +168,20 @@ public class MatsimPopulationGenerator {
     }
 
     private static void addUAMLegParamters(Leg l, DataSet dataSet, Location origin, Location destination) {
-        Map<Integer, String> zoneToStationMap = new HashMap<>();
-        Map<UAMStation, MitoZone> stationToZoneMap = dataSet.getStationToZoneMap();
-        for (UAMStation uamStation : stationToZoneMap.keySet()){
-            zoneToStationMap.put(stationToZoneMap.get(uamStation).getId(), uamStation.getName());
-        }
         l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, "car"); // TODO retrieve value from MITO mode choice
-        int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
-        if (accessVertiportZoneId != 10000){
-            l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION, zoneToStationMap.get(accessVertiportZoneId));
-        } else {
+
+        int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
+                "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION,
+                dataSet.getStationToZoneMap().get(accessVertiportZoneId));
+
+        int egressVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
+                "uam", AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT);
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION,
+                dataSet.getStationToZoneMap().get(egressVertiportZoneId));
+
+        if (accessVertiportZoneId != 10000 || egressVertiportZoneId != 10000)
             logger.warn("Trip using UAM but without UAM station");
-        }
-        int egressVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam", AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT);
-        if (egressVertiportZoneId != 10000) {
-            l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION, zoneToStationMap.get(egressVertiportZoneId));
-        } else {
-            logger.warn("Trip using UAM but without UAM station");
-        }
 
         l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, "car"); // TODO retrieve value from MITO mode choice
     }
