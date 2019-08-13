@@ -167,11 +167,12 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    private static void addUAMLegParamters(Leg l, DataSet dataSet, MitoTrip trip, boolean isReturn ) {
+    private static void addUAMLegParamters(Leg l, DataSet dataSet, MitoTrip trip, boolean isReturn) {
         Location origin;
         Location destination;
         String accessMode;
         String egressMode;
+
         if (isReturn){
             origin = trip.getTripDestination();
             destination = trip.getTripOrigin();
@@ -183,16 +184,17 @@ public class MatsimPopulationGenerator {
             accessMode = Mode.getMatsimMode(trip.getAccessMode());
             egressMode  = Mode.getMatsimMode(trip.getEgressMode());
         }
-        //uam extension is not compatible with car_passenger?
-        if (accessMode.equals("car_passenger")) {
-            accessMode = "car";
-        }
 
-        if (egressMode.equals("car_passenger")) {
+        // uam extension is not compatible with car_passenger?
+        // RR: it is, but not as access or egress mode for UAM
+        if (accessMode.equals("car_passenger"))
+            accessMode = "car";
+
+        if (egressMode.equals("car_passenger"))
             egressMode = "car";
-        }
 
         l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, accessMode);
+
         int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
                 "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
         if (accessVertiportZoneId != 10000) {
@@ -201,6 +203,7 @@ public class MatsimPopulationGenerator {
         } else {
             logger.warn("Trip using UAM but without UAM station");
         }
+
         int egressVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
                 "uam", AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT);
 
@@ -210,6 +213,7 @@ public class MatsimPopulationGenerator {
         } else {
             logger.warn("Trip using UAM but without UAM station");
         }
+
         l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, egressMode);
     }
 
