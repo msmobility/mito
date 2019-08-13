@@ -183,12 +183,21 @@ public class MatsimPopulationGenerator {
             accessMode = Mode.getMatsimMode(trip.getAccessMode());
             egressMode  = Mode.getMatsimMode(trip.getEgressMode());
         }
+        //uam extension is not compatible with car_passenger?
+        if (accessMode.equals("car_passenger")) {
+            accessMode = "car";
+        }
+
+        if (egressMode.equals("car_passenger")) {
+            egressMode = "car";
+        }
+
         l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, accessMode);
         int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
                 "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
         if (accessVertiportZoneId != 10000) {
             l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION,
-                    dataSet.getZoneIdToStationMap().get(accessVertiportZoneId));
+                    dataSet.getZoneIdToStationMap().get(accessVertiportZoneId).getName());
         } else {
             logger.warn("Trip using UAM but without UAM station");
         }
@@ -197,7 +206,7 @@ public class MatsimPopulationGenerator {
 
         if (egressVertiportZoneId != 10000) {
             l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION,
-                    dataSet.getZoneIdToStationMap().get(egressVertiportZoneId));
+                    dataSet.getZoneIdToStationMap().get(egressVertiportZoneId).getName());
         } else {
             logger.warn("Trip using UAM but without UAM station");
         }
