@@ -1,0 +1,89 @@
+//////////////////////////////// Transit Secondary Mode Choice for HOME-BASED Trips ////////////////////////////////////
+
+var calculateHB = function(hh,person,mainMode,purpose,zone) {
+
+    // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Walk]
+    cIntercept           = [ -7.972376       , -3.602731      , -3.956450       , 0 ];
+    cSGtyp20             = [  1.754772       ,  0.7916265     ,  0.2787265      , 0 ];
+    cSGtyp30             = [  2.202255       ,  0.9509934     ,  0.5642665      , 0 ];
+    cSGtyp40             = [  2.202255       ,  0.9509934     ,  0.5642665      , 0 ];
+    cLogDistToRailStop   = [  0.1285945      ,  0             ,  0.1880992      , 0 ];
+    cLogAge              = [  0              , -0.3732238     ,  0              , 0 ];
+    cAgeSquared          = [  0              ,  0             , -0.0002247027   , 0 ];
+    cIncome              = [  0.00008735016  ,  0             ,  0.00006810963  , 0 ];
+    cDriversLicense      = [  2.979169       ,  0.6652782     ,  0.7667477      , 0 ];
+    cWorkTrip            = [  0.6254140      , -0.9005746     ,  0.6119592      , 0 ];
+    cMainModeTrain       = [  2.678045       ,  1.971422      ,  1.722496       , 0 ];
+    cMainModeTramMetro   = [  1.853829       ,  0.6419955     ,  0.7712358      , 0 ];
+
+    hhIncome = hh.getMonthlyIncome_EUR();
+    age = person.getAge();
+    if(age == 0) { age = 1; }
+    logDistToRailStop = Math.log(zone.getDistanceToNearestRailStop());
+    driversLicense = person.hasDriversLicense();
+    areaType = zone.getAreaTypeSG().code();
+    SGtyp20 = (areaType == 20);
+    SGtyp30 = (areaType == 30);
+    SGtyp40 = (areaType == 40);
+    workTrip = purpose.name().equals("HBW");
+    mainModeTrain = mainMode.name().equals("train");
+    mainModeTramMetro = mainMode.name().equals("tramOrMetro");
+
+    utilityAutoD   = cIntercept[0] + cSGtyp20[0]*SGtyp20 + cSGtyp30[0]*SGtyp30 + cSGtyp40[0]*SGtyp40 + cLogDistToRailStop[0]*logDistToRailStop + cLogAge[0]*Math.log(age) + cAgeSquared[0]*Math.pow(age,2) + cIncome[0]*hhIncome + cDriversLicense[0]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[0]*mainModeTrain + cMainModeTramMetro[0]*mainModeTramMetro;
+    utilityAutoP   = cIntercept[1] + cSGtyp20[1]*SGtyp20 + cSGtyp30[1]*SGtyp30 + cSGtyp40[1]*SGtyp40 + cLogDistToRailStop[1]*logDistToRailStop + cLogAge[1]*Math.log(age) + cAgeSquared[1]*Math.pow(age,2) + cIncome[1]*hhIncome + cDriversLicense[1]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[1]*mainModeTrain + cMainModeTramMetro[1]*mainModeTramMetro;
+    utilityBicycle = cIntercept[2] + cSGtyp20[2]*SGtyp20 + cSGtyp30[2]*SGtyp30 + cSGtyp40[2]*SGtyp40 + cLogDistToRailStop[2]*logDistToRailStop + cLogAge[2]*Math.log(age) + cAgeSquared[2]*Math.pow(age,2) + cIncome[2]*hhIncome + cDriversLicense[2]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[2]*mainModeTrain + cMainModeTramMetro[2]*mainModeTramMetro;
+    utilityWalk    = cIntercept[3] + cSGtyp20[3]*SGtyp20 + cSGtyp30[3]*SGtyp30 + cSGtyp40[3]*SGtyp40 + cLogDistToRailStop[3]*logDistToRailStop + cLogAge[3]*Math.log(age) + cAgeSquared[3]*Math.pow(age,2) + cIncome[3]*hhIncome + cDriversLicense[3]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[3]*mainModeTrain + cMainModeTramMetro[3]*mainModeTramMetro;
+
+    probabilityAutoD   = Math.exp(utilityAutoD)   / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+    probabilityAutoP   = Math.exp(utilityAutoP)   / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+    probabilityBicycle = Math.exp(utilityBicycle) / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+    probabilityWalk    = Math.exp(utilityWalk)    / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+
+    return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, 0, 0, 0, probabilityWalk], "double[]");
+
+}
+
+/////////////////////////////// Transit Secondary Mode Choice for NON-HOME-BASED Trips /////////////////////////////////
+
+var calculateNHB = function(hh,person,mainMode,purpose,zone) {
+
+    // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Walk]
+    cIntercept           = [ -9.149098       , -3.983147      , -4.837856       , 0 ];
+    cSGtyp20             = [  1.754772       ,  0.7916265     ,  0.2787265      , 0 ];
+    cSGtyp30             = [  2.202255       ,  0.9509934     ,  0.5642665      , 0 ];
+    cSGtyp40             = [  2.202255       ,  0.9509934     ,  0.5642665      , 0 ];
+    cLogDistToRailStop   = [  0.1285945      ,  0             ,  0.1880992      , 0 ];
+    cLogAge              = [  0              , -0.3732238     ,  0              , 0 ];
+    cAgeSquared          = [  0              ,  0             , -0.0002247027   , 0 ];
+    cIncome              = [  0.00008735016  ,  0             ,  0.00006810963  , 0 ];
+    cDriversLicense      = [  2.979169       ,  0.6652782     ,  0.7667477      , 0 ];
+    cWorkTrip            = [  0.6254140      , -0.9005746     ,  0.6119592      , 0 ];
+    cMainModeTrain       = [  2.678045       ,  1.971422      ,  1.722496       , 0 ];
+    cMainModeTramMetro   = [  1.853829       ,  0.6419955     ,  0.7712358      , 0 ];
+
+    hhIncome = hh.getMonthlyIncome_EUR();
+    age = person.getAge();
+    if(age == 0) { age = 1; }
+    logDistToRailStop = Math.log(zone.getDistanceToNearestRailStop());
+    driversLicense = person.hasDriversLicense();
+    areaType = zone.getAreaTypeSG().code();
+    SGtyp20 = (areaType == 20);
+    SGtyp30 = (areaType == 30);
+    SGtyp40 = (areaType == 40);
+    workTrip = purpose.name().equals("NHBW");
+    mainModeTrain = mainMode.name().equals("train");
+    mainModeTramMetro = mainMode.name().equals("tramOrMetro");
+
+    utilityAutoD   = cIntercept[0] + cSGtyp20[0]*SGtyp20 + cSGtyp30[0]*SGtyp30 + cSGtyp40[0]*SGtyp40 + cLogDistToRailStop[0]*logDistToRailStop + cLogAge[0]*Math.log(age) + cAgeSquared[0]*Math.pow(age,2) + cIncome[0]*hhIncome + cDriversLicense[0]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[0]*mainModeTrain + cMainModeTramMetro[0]*mainModeTramMetro;
+    utilityAutoP   = cIntercept[1] + cSGtyp20[1]*SGtyp20 + cSGtyp30[1]*SGtyp30 + cSGtyp40[1]*SGtyp40 + cLogDistToRailStop[1]*logDistToRailStop + cLogAge[1]*Math.log(age) + cAgeSquared[1]*Math.pow(age,2) + cIncome[1]*hhIncome + cDriversLicense[1]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[1]*mainModeTrain + cMainModeTramMetro[1]*mainModeTramMetro;
+    utilityBicycle = cIntercept[2] + cSGtyp20[2]*SGtyp20 + cSGtyp30[2]*SGtyp30 + cSGtyp40[2]*SGtyp40 + cLogDistToRailStop[2]*logDistToRailStop + cLogAge[2]*Math.log(age) + cAgeSquared[2]*Math.pow(age,2) + cIncome[2]*hhIncome + cDriversLicense[2]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[2]*mainModeTrain + cMainModeTramMetro[2]*mainModeTramMetro;
+    utilityWalk    = cIntercept[3] + cSGtyp20[3]*SGtyp20 + cSGtyp30[3]*SGtyp30 + cSGtyp40[3]*SGtyp40 + cLogDistToRailStop[3]*logDistToRailStop + cLogAge[3]*Math.log(age) + cAgeSquared[3]*Math.pow(age,2) + cIncome[3]*hhIncome + cDriversLicense[3]*driversLicense + cWorkTrip[0]*workTrip + cMainModeTrain[3]*mainModeTrain + cMainModeTramMetro[3]*mainModeTramMetro;
+
+    probabilityAutoD   = Math.exp(utilityAutoD)   / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+    probabilityAutoP   = Math.exp(utilityAutoP)   / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+    probabilityBicycle = Math.exp(utilityBicycle) / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+    probabilityWalk    = Math.exp(utilityWalk)    / ( Math.exp(utilityAutoD) + Math.exp(utilityAutoP) + Math.exp(utilityBicycle) + Math.exp(utilityWalk));
+
+    return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, 0, 0, 0, probabilityWalk], "double[]");
+
+}

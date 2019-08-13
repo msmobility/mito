@@ -9,6 +9,7 @@ import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.accessEgressChoice.AccessEgressChoice;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
@@ -75,6 +76,13 @@ public class TravelDemandGenerator {
             ModeChoice modeChoice = new ModeChoice(dataSet);
             modeChoice.run();
             modeChoice.printModalShares(iteration, scenarioName);
+
+            boolean runAccessEgressModeAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRANSIT_ACCESS_EGRESS_MODE_ASSIGNMENT,true);
+            if(runAccessEgressModeAssignment) {
+                logger.info("Running Module: Access/Egress Mode Assignment");
+                AccessEgressChoice accessEgressChoice = new AccessEgressChoice(dataSet, scenarioName);
+                accessEgressChoice.run();
+            }
 
             boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
             if (runTimeOfDayChoice) {
