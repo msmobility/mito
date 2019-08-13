@@ -15,7 +15,8 @@ public class AccessEgressJSCalculatorTransit extends JavaScriptCalculator<double
     }
 
     public double[] calculateSecondaryModeProbabilities(MitoHousehold household, MitoPerson person, Mode mainMode, MitoZone origin) {
-        if (!this.purpose.equals(Purpose.NHBW) && !this.purpose.equals(Purpose.NHBO)) {
+        if (this.purpose.equals(Purpose.HBW) || this.purpose.equals(Purpose.HBE) || this.purpose.equals(Purpose.HBS) ||
+                this.purpose.equals(Purpose.HBO) || (this.purpose.equals(Purpose.AIRPORT) && household.getHomeZone().equals(origin))) {
             return super.calculate("calculateHB",household,person,mainMode,purpose,origin);
         }
         else {

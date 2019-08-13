@@ -20,7 +20,6 @@ public class AccessEgressChoice extends Module {
     private final static Logger logger = Logger.getLogger(AccessEgressChoice.class);
 
     public AccessEgressChoice (DataSet dataSet, String scenarioName) {
-
         super(dataSet);
         this.scenarioName = scenarioName;
     }
@@ -142,49 +141,79 @@ public class AccessEgressChoice extends Module {
 
             final int originId = trip.getTripOrigin().getZoneId();
             final int destinationId = trip.getTripDestination().getZoneId();
-            final double accessDistance = dataSet.getZones().get(originId).getDistanceToNearestRailStop();
-            final double egressDistance = dataSet.getZones().get(destinationId).getDistanceToNearestRailStop();
-            double distanceRatio = accessDistance / egressDistance;
-            double cutoffRatio;
-            if(trip.getTripPurpose().equals(Purpose.NHBW) || trip.getTripPurpose().equals(Purpose.NHBO)) {
-                cutoffRatio = 1;
-            }
-            else {
-                switch (secondaryMode) {
-                    case autoDriver:        cutoffRatio = 0.436;  break;
-                    case autoPassenger:     cutoffRatio = 0.768;  break;
-                    case bicycle:           cutoffRatio = 0.419;  break;
-                    default:                cutoffRatio = 0;
+
+            if(trip.getTripPurpose().equals(Purpose.AIRPORT)) {
+                if (destinationId == 1659 && originId == 1659) {
+                    trip.setAccessMode(Mode.walk);
+                    trip.setEgressMode(Mode.walk);
+                }
+                else if (destinationId == 1659) {
+                    trip.setAccessMode(secondaryMode);
+                    trip.setEgressMode(Mode.walk);
+                }
+                else if (originId == 1659) {
+                    trip.setAccessMode(Mode.walk);
+                    trip.setEgressMode(secondaryMode);
+                }
+                else {
+                    logger.info("Airport Trip " + trip.getId() + "does not begin or end at the airport!");
+                    trip.setAccessMode(null);
+                    trip.setEgressMode(null);
                 }
             }
-            if (distanceRatio > cutoffRatio) {
-                trip.setAccessMode(secondaryMode);
-                trip.setEgressMode(Mode.walk);
-            }
             else {
-                trip.setAccessMode(Mode.walk);
-                trip.setEgressMode(secondaryMode);
+                final double accessDistance = dataSet.getZones().get(originId).getDistanceToNearestRailStop();
+                final double egressDistance = dataSet.getZones().get(destinationId).getDistanceToNearestRailStop();
+                double distanceRatio = accessDistance / egressDistance;
+                double cutoffRatio;
+                if(trip.getTripPurpose().equals(Purpose.NHBW) || trip.getTripPurpose().equals(Purpose.NHBO)) {
+                    cutoffRatio = 1;
+                }
+                else {
+                    switch (secondaryMode) {
+                        case autoDriver:        cutoffRatio = 0.436;  break;
+                        case autoPassenger:     cutoffRatio = 0.768;  break;
+                        case bicycle:           cutoffRatio = 0.419;  break;
+                        default:                cutoffRatio = 0;
+                    }
+                }
+                if (distanceRatio > cutoffRatio) {
+                    trip.setAccessMode(secondaryMode);
+                    trip.setEgressMode(Mode.walk);
+                } else {
+                    trip.setAccessMode(Mode.walk);
+                    trip.setEgressMode(secondaryMode);
+                }
             }
         }
 
         private void chooseUamAccessAndEgressMode (MitoTrip trip, double[] accessProbabilities, double[] egressProbabilities) {
-            if(accessProbabilities != null) {
-                double accessSum = MitoUtil.getSum(accessProbabilities);
-                Mode accessMode = Mode.valueOf(MitoUtil.select(accessProbabilities, random, accessSum));
-                trip.setAccessMode(accessMode);
-            } else {
-                trip.setAccessMode(null);
+            if(trip.getTripPurpose().equals(Purpose.AIRPORT) && trip.getTripOrigin().getZoneId() == 1659) {
+                trip.setAccessMode(Mode.walk);
+            }
+            else {
+                if(accessProbabilities != null) {
+                    double accessSum = MitoUtil.getSum(accessProbabilities);
+                    Mode accessMode = Mode.valueOf(MitoUtil.select(accessProbabilities, random, accessSum));
+                    trip.setAccessMode(accessMode);
+                } else {
+                    trip.setAccessMode(null);
+                }
             }
 
-            if(egressProbabilities != null ) {
-                double egressSum = MitoUtil.getSum(egressProbabilities);
-                Mode egressMode = Mode.valueOf(MitoUtil.select(egressProbabilities, random, egressSum));
-                trip.setEgressMode(egressMode);
-            } else {
-                trip.setEgressMode(null);
+            if(trip.getTripPurpose().equals(Purpose.AIRPORT) && trip.getTripDestination().getZoneId() == 1659) {
+                trip.setEgressMode(Mode.walk);
+            }
+            else {
+                if(egressProbabilities != null) {
+                    double egressSum = MitoUtil.getSum(egressProbabilities);
+                    Mode egressMode = Mode.valueOf(MitoUtil.select(egressProbabilities, random, egressSum));
+                    trip.setEgressMode(egressMode);
+                } else {
+                    trip.setEgressMode(null);
+                }
             }
         }
-
     }
 
     private void writeAccessEgressDetail() {

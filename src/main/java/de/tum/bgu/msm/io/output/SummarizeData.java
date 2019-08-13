@@ -201,7 +201,7 @@ public class SummarizeData {
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
         if(printAccessEgressModes) {
-            pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,transitAccessMode,transitEgressMode,departure_time,departure_time_return");
+            pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,accessMode,egressMode,departure_time,departure_time_return");
         }
         else {
             pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,departure_time,departure_time_return");
