@@ -105,7 +105,7 @@ public class UAMNetworkReader {
                 //the boarding and de-boarding part too: vehicle types in the xml reader is not accessible!!
                 double handlingTime = originStation.getPreFlightTime() +
                         originStation.getDefaultWaitTime() +
-                        destinationStation.getPostFlightTime() - 30 - 30;
+                        destinationStation.getPostFlightTime() + 30 + 30;
 
                 travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
