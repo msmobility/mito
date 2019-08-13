@@ -87,7 +87,7 @@ public class MatsimPopulationGenerator {
                     
                     Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                     if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                    	addUAMLegParamters(leg, dataSet, trip.getTripOrigin(), trip.getTripDestination());
+                    	addUAMLegParamters(leg, dataSet, trip, false);
                     plan.addLeg(leg);
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
@@ -108,7 +108,7 @@ public class MatsimPopulationGenerator {
                         
                         Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                         if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                        	addUAMLegParamters(returnLeg, dataSet, trip.getTripDestination(), trip.getTripOrigin());
+                        	addUAMLegParamters(returnLeg, dataSet, trip, true);
                         plan.addLeg(returnLeg);
                         
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
@@ -167,23 +167,50 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    private static void addUAMLegParamters(Leg l, DataSet dataSet, Location origin, Location destination) {
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, "car"); // TODO retrieve value from MITO mode choice
+    private static void addUAMLegParamters(Leg l, DataSet dataSet, MitoTrip trip, boolean isReturn ) {
+        Location origin;
+        Location destination;
+        String accessMode;
+        String egressMode;
+        if (isReturn){
+            origin = trip.getTripDestination();
+            destination = trip.getTripOrigin();
+            egressMode = Mode.getMatsimMode(trip.getAccessMode());
+            accessMode = Mode.getMatsimMode(trip.getEgressMode());
+        } else {
+            origin = trip.getTripOrigin();
+            destination = trip.getTripDestination();
+            accessMode = Mode.getMatsimMode(trip.getAccessMode());
+            egressMode  = Mode.getMatsimMode(trip.getEgressMode());
+        }
+        //uam extension is not compatible with car_passenger?
+        if (accessMode.equals("car_passenger")) {
+            accessMode = "car";
+        }
 
+        if (egressMode.equals("car_passenger")) {
+            egressMode = "car";
+        }
+
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, accessMode);
         int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
                 "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION,
-                dataSet.getStationToZoneMap().get(accessVertiportZoneId));
-
+        if (accessVertiportZoneId != 10000) {
+            l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION,
+                    dataSet.getZoneIdToStationMap().get(accessVertiportZoneId).getName());
+        } else {
+            logger.warn("Trip using UAM but without UAM station");
+        }
         int egressVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
                 "uam", AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT);
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION,
-                dataSet.getStationToZoneMap().get(egressVertiportZoneId));
 
-        if (accessVertiportZoneId != 10000 || egressVertiportZoneId != 10000)
+        if (egressVertiportZoneId != 10000) {
+            l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION,
+                    dataSet.getZoneIdToStationMap().get(egressVertiportZoneId).getName());
+        } else {
             logger.warn("Trip using UAM but without UAM station");
-
-        l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, "car"); // TODO retrieve value from MITO mode choice
+        }
+        l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, egressMode);
     }
 
 

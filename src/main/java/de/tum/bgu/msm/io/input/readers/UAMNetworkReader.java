@@ -69,7 +69,7 @@ public class UAMNetworkReader {
 
         //map stations to zones
         Map<UAMStation, MitoZone> stationZoneMap = new HashMap<>();
-        Map<MitoZone, UAMStation> zoneStationMap = new HashMap<>();
+        Map<Integer, UAMStation> zoneIdToStationMap = new HashMap<>();
 
         for (UAMStation station : stationMap.values()) {
             for (MitoZone zone : dataSet.getZones().values()) {
@@ -80,13 +80,13 @@ public class UAMNetworkReader {
                 Point point = factory.createPoint(new Coordinate(coord.getX(), coord.getY()));
                 if (polygon.contains(point)) {
                     stationZoneMap.put(station, zone);
-                    zoneStationMap.put(zone, station);
+                    zoneIdToStationMap.put(zone.getId(), station);
                 }
             }
         }
 
         dataSet.setStationZoneMap(stationZoneMap);
-        dataSet.setZoneStationMap(zoneStationMap);
+        dataSet.setZoneIdToStationMap(zoneIdToStationMap);
 
         //create matrices for the zones that have vertiports:
         IndexedDoubleMatrix2D travelTimeUamAtServedZones = new IndexedDoubleMatrix2D(stationZoneMap.values(), stationZoneMap.values());
@@ -105,7 +105,7 @@ public class UAMNetworkReader {
                 //the boarding and de-boarding part too: vehicle types in the xml reader is not accessible!!
                 double handlingTime = originStation.getPreFlightTime() +
                         originStation.getDefaultWaitTime() +
-                        destinationStation.getPostFlightTime() - 30 - 30;
+                        destinationStation.getPostFlightTime() + 30 + 30;
 
                 travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),

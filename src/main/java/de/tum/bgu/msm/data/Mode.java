@@ -73,6 +73,10 @@ public enum Mode implements Id {
                 return TransportMode.bike;
             case uam:
             	return "uam";
+            case privateAV:
+                return TransportMode.car;
+            case sharedAV:
+                return TransportMode.car;
             default:
                 return null;
 
