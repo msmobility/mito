@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.data.accessTimes;
 
-import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import de.tum.bgu.msm.util.matrices.Matrices;
@@ -81,5 +80,4 @@ public class AccessAndEgressVariables {
         matricesByMode.putIfAbsent(mode, new ConcurrentHashMap<>());
         matricesByMode.get(mode).put(variable, matrix);
     }
-
 }

@@ -2,14 +2,12 @@ package de.tum.bgu.msm.data;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import de.tum.bgu.msm.data.jobTypes.Category;
-import de.tum.bgu.msm.data.jobTypes.JobType;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
-import org.matsim.core.utils.geometry.geotools.MGC;
+import de.tum.bgu.msm.data.jobTypes.Category;
+import de.tum.bgu.msm.data.jobTypes.JobType;
 import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.EnumMap;
