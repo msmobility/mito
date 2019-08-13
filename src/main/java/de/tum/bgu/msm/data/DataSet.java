@@ -295,7 +295,7 @@ public class DataSet {
         return stationToZoneMap;
     }
 
-    public Map<Integer, UAMStation> getZoneToZoneMap() {
+    public Map<Integer, UAMStation> getZoneIdToStationMap() {
         return zoneIdToStationMap;
     }
 }
