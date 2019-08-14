@@ -203,7 +203,7 @@ public class TripCSVToMATSimPlan {
 			// departure time comes in minutes, needed as seconds
 			this.departure_time = Double.parseDouble(data[15]) * 60; 
 
-			if (data.length >= 17)
+			if (data.length >= 17 && !data[16].equals("NA"))
 				this.departure_time_return = Double.parseDouble(data[16]) * 60;
 			else
 				this.departure_time_return = -1;
