@@ -99,7 +99,7 @@ public class TripCSVToMATSimPlan {
 		Purpose purpose = Purpose.valueOf(t.purpose);
 		boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
 
-		String firstActivityType = getOriginActivity(purpose);
+		String firstActivityType = getOriginActivity(purpose.toString());
 		Coord firstCoord = new Coord(t.originX, t.originY);
 
 		Activity firstAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
@@ -112,7 +112,7 @@ public class TripCSVToMATSimPlan {
 		firstLeg.setDepartureTime(t.departure_time);
 		plan.addLeg(firstLeg);
 
-		String secondActivityType = getDestinationActivity(purpose);
+		String secondActivityType = getDestinationActivity(purpose.toString());
 		Coord secondCoord = new Coord(t.destinationX, t.destinationY);
 
 		Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
