@@ -139,12 +139,26 @@ public class TripCSVToMATSimPlan {
 		return p;
 	}
 
-	private static String getDestinationActivity(Purpose purpose) {
-		return "";
+	public static String getOriginActivity(String purpose) {
+		if (purpose.equals("NHBW")) {
+			return "work";
+		} else if (purpose.equals("NHBO")) {
+			return "other";
+		} else {
+			return "home";
+		}
 	}
 
-	private static String getOriginActivity(Purpose purpose) {
-		return "";
+	public static String getDestinationActivity(String purpose) {
+		if (purpose.equals("HBW")) {
+			return "work";
+		} else if (purpose.equals("HBE")) {
+			return "education";
+		} else if (purpose.equals("HBS")) {
+			return "shopping";
+		} else {
+			return "other";
+		}
 	}
 
 	private static String decodeMode(String encodedMode) {
