@@ -134,90 +134,90 @@ public class UAMNetworkReader {
         AtomicInteger counter = new AtomicInteger(0);
         //for (MitoZone originZone : dataSet.getZones().values()) {
 
-            dataSet.getZones().values().parallelStream().forEach(originZone -> {
-                        for (MitoZone destinationZone : dataSet.getZones().values()) {
-                            counter.incrementAndGet();
-                            int origId = originZone.getId();
-                            int destId = destinationZone.getId();
-                            if (!originZone.equals(destinationZone)) {
-                                double minTravelTime = 10000;
-                                //double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
-                                UAMStation accessStationChosen = null;
-                                UAMStation egressStationChosen = null;
+        dataSet.getZones().values().parallelStream().forEach(originZone -> {
+            for (MitoZone destinationZone : dataSet.getZones().values()) {
+                counter.incrementAndGet();
+                int origId = originZone.getId();
+                int destId = destinationZone.getId();
+                if (!originZone.equals(destinationZone)) {
+                    double minTravelTime = 10000;
+                    double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+                    UAMStation accessStationChosen = null;
+                    UAMStation egressStationChosen = null;
 
 
-                                for (UAMStation accessStation : stationMap.values()) {
-                                    for (UAMStation egressStation : stationMap.values()) {
-                                        if (!accessStation.equals(egressStation)) {
-                                            MitoZone accessZone = stationZoneMap.get(accessStation);
-                                            MitoZone egressZone = stationZoneMap.get(egressStation);
-                                            double travelTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
-                                                    travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
-                                                    travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
-                                            if (travelTimeAtThisRoute < minTravelTime) {
-                                                minTravelTime = travelTimeAtThisRoute;
-                                                accessStationChosen = accessStation;
-                                                egressStationChosen = egressStation;
-                                            }
-                                        }
-                                    }
+                    for (UAMStation accessStation : stationMap.values()) {
+                        for (UAMStation egressStation : stationMap.values()) {
+                            if (!accessStation.equals(egressStation)) {
+                                MitoZone accessZone = stationZoneMap.get(accessStation);
+                                MitoZone egressZone = stationZoneMap.get(egressStation);
+                                double travelTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
+                                        travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
+                                        travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+                                if (travelTimeAtThisRoute < minTravelTime) {
+                                    minTravelTime = travelTimeAtThisRoute;
+                                    accessStationChosen = accessStation;
+                                    egressStationChosen = egressStation;
                                 }
-                                MitoZone accessZone = stationZoneMap.get(accessStationChosen);
-                                MitoZone egressZone = stationZoneMap.get(egressStationChosen);
-                                //if (minTravelTime < carTravelTime) {
-                                travelTimeUam.setIndexed(origId, destId, minTravelTime);
-
-                                accessVertiportUam.setIndexed(origId,
-                                        destId,
-                                        accessZone.getId());
-                                egressVertiportUam.setIndexed(origId,
-                                        destId,
-                                        egressZone.getId());
-
-                                accessTimeUam.setIndexed(origId,
-                                        destId,
-                                        travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE));
-                                egressTimeUam.setIndexed(origId,
-                                        destId,
-                                        travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE));
-
-                                accessDistanceUam.setIndexed(origId,
-                                        destId,
-                                        travelDistancesAuto.getTravelDistance(origId, accessZone.getId()));
-                                egressDistanceUam.setIndexed(origId,
-                                        destId,
-                                        travelDistancesAuto.getTravelDistance(egressZone.getId(), destId));
-
-                                travelDistanceUAM.setIndexed(origId,
-                                        destId,
-                                        travelDistanceUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()));
-
-//                    } else {
-//                        travelTimeUam.setIndexed(origId, destId, 10000.);
-//                        accessVertiportUam.setIndexed(origId, destId, 10000);
-//                        egressVertiportUam.setIndexed(origId, destId, 10000);
-//                        accessTimeUam.setIndexed(origId, destId, 10000);
-//                        egressTimeUam.setIndexed(origId, destId, 10000);
-//                        accessDistanceUam.setIndexed(origId, destId, 10000);
-//                        egressDistanceUam.setIndexed(origId, destId, 10000);
-//                        travelDistanceUAM.setIndexed(origId, destId, 10000);
-//                    }
-                            } else {
-                                travelTimeUam.setIndexed(origId, destId, 10000);
-                                accessVertiportUam.setIndexed(origId, destId, 10000);
-                                egressVertiportUam.setIndexed(origId, destId, 10000);
-                                accessTimeUam.setIndexed(origId, destId, 10000);
-                                egressTimeUam.setIndexed(origId, destId, 10000);
-                                accessDistanceUam.setIndexed(origId, destId, 10000);
-                                egressDistanceUam.setIndexed(origId, destId, 10000);
-                                travelDistanceUAM.setIndexed(origId, destId, 10000);
-                            }
-                            if (LongMath.isPowerOfTwo(counter.get())) {
-                                logger.info("Completed " + counter.get() + " origin-destination pairs");
                             }
                         }
-                    });
-            //}
+                    }
+                    MitoZone accessZone = stationZoneMap.get(accessStationChosen);
+                    MitoZone egressZone = stationZoneMap.get(egressStationChosen);
+                    if (minTravelTime < carTravelTime) {
+                        travelTimeUam.setIndexed(origId, destId, minTravelTime);
+
+                        accessVertiportUam.setIndexed(origId,
+                                destId,
+                                accessZone.getId());
+                        egressVertiportUam.setIndexed(origId,
+                                destId,
+                                egressZone.getId());
+
+                        accessTimeUam.setIndexed(origId,
+                                destId,
+                                travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE));
+                        egressTimeUam.setIndexed(origId,
+                                destId,
+                                travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE));
+
+                        accessDistanceUam.setIndexed(origId,
+                                destId,
+                                travelDistancesAuto.getTravelDistance(origId, accessZone.getId()));
+                        egressDistanceUam.setIndexed(origId,
+                                destId,
+                                travelDistancesAuto.getTravelDistance(egressZone.getId(), destId));
+
+                        travelDistanceUAM.setIndexed(origId,
+                                destId,
+                                travelDistanceUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()));
+
+                    } else {
+                        travelTimeUam.setIndexed(origId, destId, Double.POSITIVE_INFINITY);
+                        accessVertiportUam.setIndexed(origId, destId, 10000);
+                        egressVertiportUam.setIndexed(origId, destId, 10000);
+                        accessTimeUam.setIndexed(origId, destId, 10000);
+                        egressTimeUam.setIndexed(origId, destId, 10000);
+                        accessDistanceUam.setIndexed(origId, destId, 10000);
+                        egressDistanceUam.setIndexed(origId, destId, 10000);
+                        travelDistanceUAM.setIndexed(origId, destId, 10000);
+                    }
+                } else {
+                    travelTimeUam.setIndexed(origId, destId, 10000);
+                    accessVertiportUam.setIndexed(origId, destId, 10000);
+                    egressVertiportUam.setIndexed(origId, destId, 10000);
+                    accessTimeUam.setIndexed(origId, destId, 10000);
+                    egressTimeUam.setIndexed(origId, destId, 10000);
+                    accessDistanceUam.setIndexed(origId, destId, 10000);
+                    egressDistanceUam.setIndexed(origId, destId, 10000);
+                    travelDistanceUAM.setIndexed(origId, destId, 10000);
+                }
+                if (LongMath.isPowerOfTwo(counter.get())) {
+                    logger.info("Completed " + counter.get() + " origin-destination pairs");
+                }
+            }
+        });
+        //}
         logger.info("The matrix is completed for all zones");
 
         //finnally, store the information in the respective containers
