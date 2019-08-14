@@ -6,6 +6,7 @@ import com.google.common.collect.SortedMultiset;
 import com.google.common.collect.TreeMultiset;
 import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -84,7 +85,7 @@ public class SummarizeData {
         LOGGER.info("  Writing uam trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/UAMtrips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,departure_time,departure_time_return");
+        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,time_uam,cost_uam,mode,departure_time,departure_time_return,accessMode,egressMode,accessDistance,egressDistance,accessStation,egressStation,uamAirDist");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripMode() == Mode.uam) {
                 pwh.print(trip.getId());
@@ -183,11 +184,32 @@ public class SummarizeData {
                 int departureOfReturnTrip = trip.getDepartureInMinutesReturnTrip();
                 if (departureOfReturnTrip != -1) {
                     pwh.print(",");
-                    pwh.println(departureOfReturnTrip);
+                    pwh.print(departureOfReturnTrip);
                 } else {
                     pwh.print(",");
-                    pwh.println("NA");
+                    pwh.print("NA");
                 }
+                pwh.print(",");
+                pwh.print(trip.getAccessMode());
+                pwh.print(",");
+                pwh.print(trip.getEgressMode());
+                pwh.print(",");
+                pwh.print(dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam",
+                        AccessAndEgressVariables.AccessVariable.ACCESS_DIST_KM));
+                pwh.print(",");
+                pwh.print(dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam",
+                        AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM));
+                pwh.print(",");
+                pwh.print(dataSet.getZoneIdToStationMap().get( (int)
+                        dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam",
+                                AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT)).getName());
+                pwh.print(",");
+                pwh.print(dataSet.getZoneIdToStationMap().get( (int)
+                        dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam",
+                                AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT)).getName());
+                pwh.print(",");
+                pwh.print(dataSet.getFlyingDistanceUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId()));
+                pwh.println();
 
             }
         }
