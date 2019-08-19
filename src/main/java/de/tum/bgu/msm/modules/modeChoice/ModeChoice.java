@@ -105,6 +105,7 @@ public class ModeChoice extends Module {
             }
         }
         logger.info("#################################################");
+        logger.info("Mode shares for UAM per purpose:");
         for (Purpose purpose : Purpose.values()) {
 
                 Double share = dataSet.getModeShareForPurpose(purpose, Mode.uam);
@@ -113,6 +114,8 @@ public class ModeChoice extends Module {
                 }
         }
         logger.info("#################################################");
+        logger.info("Number of UAM trips per purpose:");
+
         for (Purpose purpose : Purpose.values()) {
 
             Double count = dataSet.getModeCountForPurpose(purpose, Mode.uam);
@@ -120,6 +123,7 @@ public class ModeChoice extends Module {
                 logger.info(purpose + ": " + count);
             }
         }
+        logger.info("#################################################");
 
         double uam = 0.;
         for (MitoTrip trip : this.dataSet.getTrips().values()){
@@ -128,7 +132,7 @@ public class ModeChoice extends Module {
             }
         }
 
-        logger.info("UAM share: " + uam/this.dataSet.getTrips().values().size());
+        logger.info("Overall UAM mode share: " + uam / this.dataSet.getTrips().values().size() * 100 + "%");
 
     }
 
