@@ -205,10 +205,11 @@ public class ModeChoice extends Module {
             if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)){
                 final double flyingDistanceUAM_km = dataSet.getFlyingDistanceUAM().getTravelDistance(originId,
                         destinationId);
-                final double uamFare_eurkm = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST));
+                final double uamFare_eurkm = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST_KM));
+                final double uamFare_eurbase = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST_BASE));
 
                 //todo car costs hard coded to 0.07!!!!!
-                final double uamCost_eur = flyingDistanceUAM_km * uamFare_eurkm +
+                final double uamCost_eur = uamFare_eurbase + flyingDistanceUAM_km * uamFare_eurkm +
                         dataSet.getAccessAndEgressVariables().
                                 getAccessVariable(trip.getTripOrigin(), trip.getTripDestination(), "uam", AccessAndEgressVariables.AccessVariable.ACCESS_DIST_KM) * 0.07 +
                         dataSet.getAccessAndEgressVariables().
