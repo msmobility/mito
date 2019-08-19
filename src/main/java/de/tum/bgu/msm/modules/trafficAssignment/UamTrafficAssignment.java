@@ -62,7 +62,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig.qsim().setNumberOfThreads(numberOfThreads);
 		matsimConfig.global().setNumberOfThreads(numberOfThreads);
 		matsimConfig.parallelEventHandling().setNumberOfThreads(numberOfThreads);
-		matsimConfig.qsim().setUsingThreadpool(false);
+		matsimConfig.qsim().setUsingThreadpool(true);
 
 		matsimConfig.controler().setLastIteration(Resources.INSTANCE.getInt(Properties.MATSIM_ITERATIONS));
 		matsimConfig.controler().setWritePlansInterval(matsimConfig.controler().getLastIteration());
