@@ -33,13 +33,19 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		UAMStrategy.UAMStrategyType strategy = Resources.INSTANCE.getBoolean(Properties.UAM_MATSIM_ROUTING, false) ?
 				UAMStrategy.UAMStrategyType.MINTRAVELTIME : UAMStrategy.UAMStrategyType.PREDEFINED;
 
+		// If UAM MATSim routing is used: reduce searchRadius to 10km to speed up computation; if MATSim does not have
+		// to do routing, set search radius to cover whole study area, to avoid MATSim not finding the UAM stations
+		// as defined by MITO (and handed to MATSim via agents' plans)
+		int searchRadius = Resources.INSTANCE.getBoolean(Properties.UAM_MATSIM_ROUTING, false) ?
+				10000 : 300000;
+
 		// UAM parameters
 		ConfigAddUAMParameters.addUAMParameters(
 				matsimConfig,
 				Resources.INSTANCE.getString(Properties.UAM_VEHICLES),
 				"walk,car,bike,pt",
 				numberOfThreads,
-				50000,
+				searchRadius,
 				500,
 				strategy,
 				false
