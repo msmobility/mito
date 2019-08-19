@@ -37,9 +37,10 @@ public class ModeChoice extends Module {
         StringBuilder info = new StringBuilder(" Calculating mode choice probabilities for each trip. Modes considered: ");
         int i = 1;
         for (Mode mode : Mode.values()) {
-            info.append("" + i++ + ". " + mode);
+            info.append("" + i + ". " + mode);
             if (i != Mode.values().length)
                 info.append(", ");
+            i++;
         }
         logger.info(info);
 
