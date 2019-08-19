@@ -34,8 +34,25 @@ public class ModeChoice extends Module {
 
     @Override
     public void run() {
-    	// TODO make logging statement dynamic based on provided modes?
-        logger.info(" Calculating mode choice probabilities for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro, 7. Walk ");
+        StringBuilder info = new StringBuilder(" Calculating mode choice probabilities for each trip. Modes considered: ");
+        int i = 1;
+        for (Mode mode : Mode.values()) {
+            info.append("" + i++ + ". " + mode);
+            if (i != Mode.values().length)
+                info.append(", ");
+        }
+        logger.info(info);
+
+        if (includeAV)
+            logger.info("AV mode choice is included.");
+        else
+            logger.info("AV mode choice is excluded.");
+
+        if (includeUAM)
+            logger.info("UAM mode choice is included.");
+        else
+            logger.info("UAM mode choice is excluded.");
+
         modeChoiceByPurpose();
         printModeShares();
     }
