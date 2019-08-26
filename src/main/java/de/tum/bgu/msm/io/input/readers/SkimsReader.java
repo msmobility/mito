@@ -65,20 +65,22 @@ public class SkimsReader extends AbstractOmxReader {
 
         IndexedDoubleMatrix2D uamTravelTime = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
 
-        for (int row : uamTravelTime.getRowLookupArray()) {
-            for (int column : uamTravelTime.getColumnLookupArray()) {
-                if (flyingDistance_km.getIndexed(row, column) < 10000.) {
-                    double accessTime_min = accessTimeUam_min.getIndexed(row, column);
-                    double egressTime_min = egressTimeUam_min.getIndexed(row, column);
-                    double time = flyingDistance_km.getIndexed(row, column) / Resources.INSTANCE.getDouble(Properties.UAM_SPEED_KMH, 200.) * 60 *
+
+
+        for (int originId : dataSet.getZones().keySet()) {
+            for (int destinationId : dataSet.getZones().keySet()) {
+                if (flyingDistance_km.getIndexed(originId, destinationId) < 10000.) {
+                    double accessTime_min = accessTimeUam_min.getIndexed(originId, destinationId);
+                    double egressTime_min = egressTimeUam_min.getIndexed(originId, destinationId);
+                    double time = flyingDistance_km.getIndexed(originId, destinationId) / Resources.INSTANCE.getDouble(Properties.UAM_SPEED_KMH, 200.) * 60 *
                             Resources.INSTANCE.getDouble(Properties.UAM_DETOUR_FACTOR, 1.) +
                             accessTime_min +
                             egressTime_min +
                             Resources.INSTANCE.getDouble(Properties.UAM_TAKEOFF_MIN, 1.) +
                             Resources.INSTANCE.getDouble(Properties.UAM_LANDING_MIN, 1.);
-                    uamTravelTime.setIndexed(row, column, time);
+                    uamTravelTime.setIndexed(originId, destinationId, time);
                 } else {
-                    uamTravelTime.setIndexed(row, column, 10000.);
+                    uamTravelTime.setIndexed(originId, destinationId, 10000.);
                 }
 
             }
@@ -105,12 +107,12 @@ public class SkimsReader extends AbstractOmxReader {
         IndexedDoubleMatrix2D egress_dist =
                 AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.UAM_SKIM), "egress_dist", 1./1000);
 
-        for (int row : access_dist.getRowLookupArray()) {
-            for (int column : access_dist.getColumnLookupArray()) {
-                double distance = access_dist.getIndexed(row, column);
+        for (int originId : dataSet.getZones().keySet()) {
+            for (int destinationId : dataSet.getZones().keySet()) {
+                double distance = access_dist.getIndexed(originId, destinationId);
                 if (distance == 10.){
-                    access_dist.setIndexed(row, column, 10000.);
-                    egress_dist.setIndexed(row, column, 10000.);
+                    access_dist.setIndexed(originId, destinationId, 10000.);
+                    egress_dist.setIndexed(originId, destinationId, 10000.);
                 }
             }
         }
