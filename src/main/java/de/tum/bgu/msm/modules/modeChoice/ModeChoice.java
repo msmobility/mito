@@ -140,26 +140,21 @@ public class ModeChoice extends Module {
         String fileName = "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/modeChoice/modalShares" + iteration + ".csv";
 
         PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new File(fileName));
-            pw.println("iteration,purpose,mode,share");
-            for (Purpose purpose : Purpose.values()){
-                for (Mode mode : Mode.values()){
-                    StringBuilder sb = new StringBuilder();
-                    Double share = dataSet.getModeShareForPurpose(purpose, mode);
-                    if(share != null){
-                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(share);
-                    } else {
-                        sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(0.);
-                    }
-                    pw.println(sb);
+        pw = MitoUtil.openFileForSequentialWriting(fileName, false);;
+        pw.println("iteration,purpose,mode,share");
+        for (Purpose purpose : Purpose.values()){
+            for (Mode mode : Mode.values()){
+                StringBuilder sb = new StringBuilder();
+                Double share = dataSet.getModeShareForPurpose(purpose, mode);
+                if(share != null){
+                    sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(share);
+                } else {
+                    sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(0.);
                 }
+                pw.println(sb);
             }
-            pw.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
-
+        pw.close();
 
 
     }
