@@ -46,6 +46,7 @@ public class UAMNetworkReader {
     private final int TIME_OF_DAY_S = 8 * 60 * 60;
     private final String ACCESS_MODE = "car";
     private Network network;
+    private static final double searchRadius_km = 10;
 
 
     public UAMNetworkReader(DataSet dataSet) {
@@ -141,7 +142,7 @@ public class UAMNetworkReader {
                 int destId = destinationZone.getId();
                 if (!originZone.equals(destinationZone)) {
                     double minTravelTime = 10000;
-                    double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+                    //double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
                     UAMStation accessStationChosen = null;
                     UAMStation egressStationChosen = null;
 
@@ -151,20 +152,25 @@ public class UAMNetworkReader {
                             if (!accessStation.equals(egressStation)) {
                                 MitoZone accessZone = stationZoneMap.get(accessStation);
                                 MitoZone egressZone = stationZoneMap.get(egressStation);
-                                double travelTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
-                                        travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
-                                        travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
-                                if (travelTimeAtThisRoute < minTravelTime) {
-                                    minTravelTime = travelTimeAtThisRoute;
-                                    accessStationChosen = accessStation;
-                                    egressStationChosen = egressStation;
+                                double accessDistance = travelDistancesAuto.getTravelDistance(originZone.getId(), accessZone.getId());
+                                double egressDistance = travelDistancesAuto.getTravelDistance(egressZone.getId(), destinationZone.getId());
+                                if (accessDistance < searchRadius_km && egressDistance < searchRadius_km) {
+                                    double travelTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
+                                            travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
+                                            travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+                                    if (travelTimeAtThisRoute < minTravelTime) {
+                                        minTravelTime = travelTimeAtThisRoute;
+                                        accessStationChosen = accessStation;
+                                        egressStationChosen = egressStation;
+                                    }
                                 }
                             }
                         }
                     }
                     MitoZone accessZone = stationZoneMap.get(accessStationChosen);
                     MitoZone egressZone = stationZoneMap.get(egressStationChosen);
-                    if (minTravelTime < carTravelTime) {
+                    //if (minTravelTime < carTravelTime) {
+                    if (accessStationChosen != null && egressStationChosen != null){
                         travelTimeUam.setIndexed(origId, destId, minTravelTime);
 
                         accessVertiportUam.setIndexed(origId,
