@@ -94,7 +94,6 @@ public final class TimeOfDayChoice extends Module {
     }
 
     private int chooseDepartureTimeForReturnTrip(MitoTrip mitoTrip, int arrivalTime) {
-
         //if departure is after midnight
         int duration = MitoUtil.select(durationMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
         if (arrivalTime + duration > 24 * 60) {
