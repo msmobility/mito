@@ -28,7 +28,7 @@ public class HandlingTimesUpdater {
     private final Map<String, Map<Integer, List<Double>>> waitingTimesByUAMStationAndTime;
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private static final int INTERVAL_S = 60 * 15;
-    private static final int NUMBER_OF_INTERVALS = 24 * 60 * 60 / INTERVAL_S;
+    private static final int NUMBER_OF_INTERVALS = 30 * 60 * 60 / INTERVAL_S;
     private final Map<Integer, String> zonesToStationMap;
     private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 13) * 60;
 
@@ -76,6 +76,8 @@ public class HandlingTimesUpdater {
                 waitingTimesByUAMStationAndTime.get(station).put(intervalIndex * INTERVAL_S, new ArrayList<>());
                 averageWaitingTimesByUAMStationAndTime_min.get(station).put(intervalIndex * INTERVAL_S, 0.);
             }
+            waitingTimesByUAMStationAndTime.get(station).put(NUMBER_OF_INTERVALS * INTERVAL_S, new ArrayList<>());
+            averageWaitingTimesByUAMStationAndTime_min.get(station).put(NUMBER_OF_INTERVALS * INTERVAL_S, 0.);
         }
     }
 
@@ -175,6 +177,7 @@ public class HandlingTimesUpdater {
             while (interval < startTime) {
                 interval += INTERVAL_S;
             }
+
             if (isUamTrip) {
                 double arrivalAtStationTime_s = Double.parseDouble(record[t0Index]);
                 double waitingTimeAtOrigStation_s = Double.parseDouble(record[t1Index]) - arrivalAtStationTime_s;
@@ -182,8 +185,12 @@ public class HandlingTimesUpdater {
                 double waitingTimeAtDestStation_s = Double.parseDouble(record[t3Index]) - landingTime;
                 double totalProcessingTime = waitingTimeAtOrigStation_s + waitingTimeAtDestStation_s;
                 waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(totalProcessingTime);
-            } else if (origStation != null) {
-                waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(PROCESSING_TIME_FOR_INCOMPLETE_TRIPS_S);
+            } else if (!origStation.equals("null")) {
+                try {
+                    waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(PROCESSING_TIME_FOR_INCOMPLETE_TRIPS_S);
+                } catch (NullPointerException e){
+                    logger.info("Something went wrong!");
+                }
             }
         }
 
