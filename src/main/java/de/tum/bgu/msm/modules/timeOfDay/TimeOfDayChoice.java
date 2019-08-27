@@ -2,10 +2,7 @@ package de.tum.bgu.msm.modules.timeOfDay;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.math.LongMath;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Mode;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -15,7 +12,7 @@ import org.apache.log4j.Logger;
 import java.util.EnumMap;
 
 
-public class TimeOfDayChoice extends Module {
+public final class TimeOfDayChoice extends Module {
 
     private static final Logger logger = Logger.getLogger(TimeOfDayChoice.class);
 
@@ -23,8 +20,8 @@ public class TimeOfDayChoice extends Module {
     private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
     private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
 
-    private double speedWalk = 5 / 3.6;
-    private double speedBicycle = 13 / 3.6;
+    private final static double SPEED_WALK = 5 / 3.6;
+    private final static double SPEED_BICYCLE = 13 / 3.6;
 
     private long counter = 0;
     private int issues = 0;
@@ -85,11 +82,16 @@ public class TimeOfDayChoice extends Module {
 
     }
 
-
     private int chooseArrivalTime(MitoTrip mitoTrip) {
-        return MitoUtil.select(arrivalMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
+        Purpose tripPurpose = mitoTrip.getTripPurpose();
+        if(tripPurpose == Purpose.HBW || tripPurpose == Purpose.HBE) {
+            MitoOccupation occupation = mitoTrip.getPerson().getOccupation();
+            if(occupation != null){
+                return occupation.getStartTime().orElse(MitoUtil.select(arrivalMinuteCumProbByPurpose.get(tripPurpose).toArray(), MitoUtil.getRandomObject()));
+            }
+        }
+        return MitoUtil.select(arrivalMinuteCumProbByPurpose.get(tripPurpose).toArray(), MitoUtil.getRandomObject());
     }
-
 
     private int chooseDepartureTimeForReturnTrip(MitoTrip mitoTrip, int arrivalTime) {
 
@@ -104,9 +106,9 @@ public class TimeOfDayChoice extends Module {
 
     private double estimateTravelTimeForDeparture(MitoTrip trip, double arrivalInMinutes) {
         if (trip.getTripMode().equals(Mode.walk)) {
-            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / speedWalk;
+            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_WALK;
         } else if (trip.getTripMode().equals(Mode.bicycle)) {
-            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / speedBicycle;
+            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_BICYCLE;
         } else {
             //both transit and car use here travel times by car
             return dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin(), trip.getTripDestination(), arrivalInMinutes * 60, "car");
