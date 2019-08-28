@@ -198,8 +198,9 @@ public class MatsimPopulationGenerator {
         int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
                 "uam", AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT);
         if (accessVertiportZoneId != 10000) {
+            //todo get name or get station id?
             l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION,
-                    dataSet.getZoneIdToStationMap().get(accessVertiportZoneId).getName());
+                    dataSet.getZoneIdToStationMap().get(accessVertiportZoneId).getId());
         } else {
             logger.warn("Trip using UAM but without UAM station");
         }
@@ -208,8 +209,9 @@ public class MatsimPopulationGenerator {
                 "uam", AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT);
 
         if (egressVertiportZoneId != 10000) {
+            //todo get name or get station id?
             l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION,
-                    dataSet.getZoneIdToStationMap().get(egressVertiportZoneId).getName());
+                    dataSet.getZoneIdToStationMap().get(egressVertiportZoneId).getId());
         } else {
             logger.warn("Trip using UAM but without UAM station");
         }
