@@ -85,7 +85,8 @@ public class TravelDemandGenerator {
             }
 
             boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
-            if (runTimeOfDayChoice) {
+            //todo should or should not run time of day choice every feedback iteration?
+            if (runTimeOfDayChoice && iteration == 0) {
                 logger.info("Running time of day choice");
                 TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
                 timeOfDayChoice.run();

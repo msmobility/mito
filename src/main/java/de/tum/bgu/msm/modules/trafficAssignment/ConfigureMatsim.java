@@ -21,7 +21,7 @@ public class ConfigureMatsim {
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 
-        config.qsim().setEndTime(24*3600);
+        config.qsim().setEndTime(30*3600);
         config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.withHoles);
         config.vspExperimental().setWritingOutputEvents(true); // writes final events into toplevel directory
 

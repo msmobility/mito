@@ -23,12 +23,13 @@ import java.util.*;
 public class HandlingTimesUpdater {
 
     private final static Logger logger = Logger.getLogger(TotalHandlingTimes.class);
+    private static final double PROCESSING_TIME_FOR_INCOMPLETE_TRIPS_S = 10000.;
     private final DataSet dataSet;
     private final Map<String, Map<Integer, List<Double>>> waitingTimesByUAMStationAndTime;
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private static final int INTERVAL_S = 60 * 15;
-    private static final int NUMBER_OF_INTERVALS = 24 * 60 * 60 / INTERVAL_S;
-    private final Map<Integer, String>  zonesToStationMap;
+    private static final int NUMBER_OF_INTERVALS = 30 * 60 * 60 / INTERVAL_S;
+    private final Map<Integer, String> zonesToStationMap;
     private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 13) * 60;
 
     public HandlingTimesUpdater(DataSet dataSet) {
@@ -41,13 +42,14 @@ public class HandlingTimesUpdater {
 
     /**
      * reverts the station to zone into a zone to station map
+     *
      * @param stationToZoneMap
      * @return
      */
     private static Map<Integer, String> convertMap(Map<UAMStation, MitoZone> stationToZoneMap) {
-        Map<Integer, String>  zonesToStationMap = new LinkedHashMap<>();
+        Map<Integer, String> zonesToStationMap = new LinkedHashMap<>();
 
-        for (UAMStation uamStation : stationToZoneMap.keySet()){
+        for (UAMStation uamStation : stationToZoneMap.keySet()) {
             zonesToStationMap.put(stationToZoneMap.get(uamStation).getId(), uamStation.getName().toString());
         }
 
@@ -74,6 +76,8 @@ public class HandlingTimesUpdater {
                 waitingTimesByUAMStationAndTime.get(station).put(intervalIndex * INTERVAL_S, new ArrayList<>());
                 averageWaitingTimesByUAMStationAndTime_min.get(station).put(intervalIndex * INTERVAL_S, 0.);
             }
+            waitingTimesByUAMStationAndTime.get(station).put(NUMBER_OF_INTERVALS * INTERVAL_S, new ArrayList<>());
+            averageWaitingTimesByUAMStationAndTime_min.get(station).put(NUMBER_OF_INTERVALS * INTERVAL_S, 0.);
         }
     }
 
@@ -85,9 +89,9 @@ public class HandlingTimesUpdater {
                             stream().mapToDouble(a -> a).average().getAsDouble();
                     averageWaitingTime = Math.max(averageWaitingTime, MINIMUM_WAITING_TIME_S);
 
-                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, averageWaitingTime/60);
+                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, averageWaitingTime / 60);
                 } else {
-                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, MINIMUM_WAITING_TIME_S/60);
+                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, MINIMUM_WAITING_TIME_S / 60);
                 }
             }
         }
@@ -141,6 +145,7 @@ public class HandlingTimesUpdater {
 
         private final String fileName;
         private int origStationIndex;
+        private int tStartIndex;
         private int t0Index;
         private int t1Index;
         private int t2Index;
@@ -155,6 +160,7 @@ public class HandlingTimesUpdater {
         @Override
         protected void processHeader(String[] header) {
             origStationIndex = MitoUtil.findPositionInArray("originStationId", header);
+            tStartIndex = MitoUtil.findPositionInArray("startTime", header);
             t0Index = MitoUtil.findPositionInArray("arrivalAtStationTime", header);
             t1Index = MitoUtil.findPositionInArray("takeOffTime", header);
             t2Index = MitoUtil.findPositionInArray("landingTime", header);
@@ -164,18 +170,27 @@ public class HandlingTimesUpdater {
 
         @Override
         protected void processRecord(String[] record) {
-            if (Boolean.parseBoolean(record[uamTagIndex])) {
-                String origStation = record[origStationIndex];
+            boolean isUamTrip = Boolean.parseBoolean(record[uamTagIndex]);
+            double startTime = Double.parseDouble(record[tStartIndex]);
+            String origStation = record[origStationIndex];
+            int interval = 0;
+            while (interval < startTime) {
+                interval += INTERVAL_S;
+            }
+
+            if (isUamTrip) {
                 double arrivalAtStationTime_s = Double.parseDouble(record[t0Index]);
                 double waitingTimeAtOrigStation_s = Double.parseDouble(record[t1Index]) - arrivalAtStationTime_s;
                 double landingTime = Double.parseDouble(record[t2Index]);
                 double waitingTimeAtDestStation_s = Double.parseDouble(record[t3Index]) - landingTime;
-                int interval = 0;
-                while (interval < arrivalAtStationTime_s) {
-                    interval += INTERVAL_S;
-                }
                 double totalProcessingTime = waitingTimeAtOrigStation_s + waitingTimeAtDestStation_s;
                 waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(totalProcessingTime);
+            } else if (!origStation.equals("null")) {
+                try {
+                    waitingTimesByUAMStationAndTime.get(origStation).get(interval).add(PROCESSING_TIME_FOR_INCOMPLETE_TRIPS_S);
+                } catch (NullPointerException e){
+                    logger.info("Something went wrong!");
+                }
             }
         }
 
