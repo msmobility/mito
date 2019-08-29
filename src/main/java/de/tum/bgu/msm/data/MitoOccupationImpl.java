@@ -4,12 +4,15 @@ package de.tum.bgu.msm.data;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public abstract class MitoOccupationImpl implements MitoOccupation {
 
     private final MitoZone occupationZone;
     private final Coordinate occupationLocation;
     private final int id;
+
+    private Integer startTime = null;
 
     public MitoOccupationImpl(MitoZone occupationZone, Coordinate occupationLocation, int id) {
         this.occupationZone = Objects.requireNonNull(occupationZone);
@@ -35,5 +38,15 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     @Override
     public int getId() {
         return id;
+    }
+
+    @Override
+    public Optional<Integer> getStartTime() {
+        return Optional.ofNullable(startTime);
+    }
+
+    @Override
+    public void setStartTime(int startTime_s) {
+        this.startTime = startTime_s;
     }
 }
