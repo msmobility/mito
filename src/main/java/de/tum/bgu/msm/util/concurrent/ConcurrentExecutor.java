@@ -69,8 +69,17 @@ public class ConcurrentExecutor<T> {
 
     public List<Future<T>> execute() {
         try {
-            return service.invokeAll(tasks);
-        } catch (InterruptedException e) {
+            List<Future<T>> futures = service.invokeAll(tasks);
+            //The Following is needed to query each future at least once even
+            //if no particular result is needed. Otherwise exceptions that
+            //appeared during the execution are not caught and just silently
+            //ignored
+            //TODO: Implement utils for Runnables instead of Callables
+            for(Future<T> future: futures) {
+                future.get();
+            }
+            return futures;
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         } finally {
         	service.shutdownNow();
