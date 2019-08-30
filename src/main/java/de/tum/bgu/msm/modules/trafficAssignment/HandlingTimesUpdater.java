@@ -50,7 +50,7 @@ public class HandlingTimesUpdater {
         Map<Integer, String> zonesToStationMap = new LinkedHashMap<>();
 
         for (UAMStation uamStation : stationToZoneMap.keySet()) {
-            zonesToStationMap.put(stationToZoneMap.get(uamStation).getId(), uamStation.getName().toString());
+            zonesToStationMap.put(stationToZoneMap.get(uamStation).getId(), uamStation.getId().toString());
         }
 
         return zonesToStationMap;

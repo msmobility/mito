@@ -36,31 +36,31 @@ public class MatsimPopulationGenerator {
     public MatsimPopulationGenerator() {
         String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
         String[] teleportedModes = Resources.INSTANCE.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
-        for (String mode : networkModes){
+        for (String mode : networkModes) {
             modeSet.add(Mode.valueOf(mode));
         }
-        for (String mode : teleportedModes){
+        for (String mode : teleportedModes) {
             modeSet.add(Mode.valueOf(mode));
         }
     }
     //private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
 
 
-    public static Map<Integer,SimpleFeature> loadZoneShapeFile(){
-        Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
-        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
+    public static Map<Integer, SimpleFeature> loadZoneShapeFile() {
+        Map<Integer, SimpleFeature> zoneFeatureMap = new HashMap<>();
+        for (SimpleFeature feature : ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
-            zoneFeatureMap.put(zoneId,feature);
+            zoneFeatureMap.put(zoneId, feature);
         }
         return zoneFeatureMap;
     }
 
-    public Population generateMatsimPopulation(DataSet dataSet, Config config){
+    public Population generateMatsimPopulation(DataSet dataSet, Config config) {
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
         AtomicInteger assignedTripCounter = new AtomicInteger(0);
         AtomicInteger nonAssignedTripCounter = new AtomicInteger(0);
-        dataSet.getTripSubsample().values().forEach(trip ->{
+        dataSet.getTripSubsample().values().forEach(trip -> {
             try {
                 if (modeSet.contains(trip.getTripMode())) {
                     Person person = factory.createPerson(Id.createPersonId(trip.getId()));
@@ -73,31 +73,34 @@ public class MatsimPopulationGenerator {
                     String activityTypeAtOrigin = getOriginActivity(trip);
 
                     Coord originCoord;
-                    if(trip.getTripOrigin() instanceof MicroLocation) {
+                    if (trip.getTripOrigin() instanceof MicroLocation) {
                         originCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripOrigin()).getCoordinate().x,
-                        		((MicroLocation) trip.getTripOrigin()).getCoordinate().y);
+                                ((MicroLocation) trip.getTripOrigin()).getCoordinate().y);
                     } else {
-                    	Coordinate randCoord = dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord();
+                        Coordinate randCoord = dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord();
                         originCoord = CoordUtils.createCoord(randCoord.x, randCoord.y);
                     }
 
                     Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, originCoord);
                     originActivity.setEndTime(trip.getDepartureInMinutes() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                     plan.addActivity(originActivity);
-                    
+
                     Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+                    boolean thisLegIsPlausible = true;
                     if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                    	addUAMLegParamters(leg, dataSet, trip, false);
-                    plan.addLeg(leg);
+                        thisLegIsPlausible = addUAMLegParamters(leg, dataSet, trip, false);
+
+                    if (thisLegIsPlausible)
+                        plan.addLeg(leg);
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
 
                     Coord destinationCoord;
-                    if(trip.getTripDestination() instanceof MicroLocation) {
-                    	Coordinate rand = ((MicroLocation) trip.getTripDestination()).getCoordinate();
+                    if (trip.getTripDestination() instanceof MicroLocation) {
+                        Coordinate rand = ((MicroLocation) trip.getTripDestination()).getCoordinate();
                         destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
                     } else {
-                    	Coordinate rand = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord();
+                        Coordinate rand = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord();
                         destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
                     }
                     Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoord);
@@ -105,40 +108,43 @@ public class MatsimPopulationGenerator {
                     if (trip.isHomeBased()) {
                         destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
                         plan.addActivity(destinationActivity);
-                        
+
                         Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+                        thisLegIsPlausible = true;
                         if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                        	addUAMLegParamters(returnLeg, dataSet, trip, true);
-                        plan.addLeg(returnLeg);
-                        
+                            addUAMLegParamters(returnLeg, dataSet, trip, true);
+
+                        if (thisLegIsPlausible)
+                            plan.addLeg(returnLeg);
+
                         plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
                     } else {
                         plan.addActivity(destinationActivity);
                     }
 
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 nonAssignedTripCounter.incrementAndGet();
             }
 
-            if (ConcurrencyUtils.isPowerOf2(assignedTripCounter.incrementAndGet())){
-                logger.warn( assignedTripCounter.get()  + " MATSim agents created");
+            if (ConcurrencyUtils.isPowerOf2(assignedTripCounter.incrementAndGet())) {
+                logger.warn(assignedTripCounter.get() + " MATSim agents created");
             }
 
         });
-        logger.warn( nonAssignedTripCounter.get()  + " trips do not have trip origin, destination or mode and cannot be assigned in MATSim");
+        logger.warn(nonAssignedTripCounter.get() + " trips do not have trip origin, destination or mode and cannot be assigned in MATSim");
         return population;
     }
 
 
-    public static String getOriginActivity(MitoTrip trip){
+    public static String getOriginActivity(MitoTrip trip) {
         Purpose purpose = trip.getTripPurpose();
-        if (purpose.equals(Purpose.NHBW)){
+        if (purpose.equals(Purpose.NHBW)) {
             return "work";
-        } else if (purpose.equals(Purpose.NHBO)){
+        } else if (purpose.equals(Purpose.NHBO)) {
             return "other";
         } else if (purpose.equals(Purpose.AIRPORT)) {
-            if (trip.getTripOrigin().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)){
+            if (trip.getTripOrigin().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)) {
                 return "airport";
             } else {
                 return "home";
@@ -148,13 +154,13 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    public static String getDestinationActivity(MitoTrip trip){
+    public static String getDestinationActivity(MitoTrip trip) {
         Purpose purpose = trip.getTripPurpose();
-        if (purpose.equals(Purpose.HBW)){
+        if (purpose.equals(Purpose.HBW)) {
             return "work";
-        } else if (purpose.equals(Purpose.HBE)){
+        } else if (purpose.equals(Purpose.HBE)) {
             return "education";
-        } else if (purpose.equals(Purpose.HBS)){
+        } else if (purpose.equals(Purpose.HBS)) {
             return "shopping";
         } else if (purpose.equals(Purpose.AIRPORT)) {
             if (trip.getTripDestination().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)) {
@@ -167,13 +173,13 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    private static void addUAMLegParamters(Leg l, DataSet dataSet, MitoTrip trip, boolean isReturn) {
+    private boolean addUAMLegParamters(Leg l, DataSet dataSet, MitoTrip trip, boolean isReturn) {
         Location origin;
         Location destination;
         String accessMode;
         String egressMode;
 
-        if (isReturn){
+        if (isReturn) {
             origin = trip.getTripDestination();
             destination = trip.getTripOrigin();
             egressMode = Mode.getMatsimMode(trip.getAccessMode());
@@ -182,7 +188,7 @@ public class MatsimPopulationGenerator {
             origin = trip.getTripOrigin();
             destination = trip.getTripDestination();
             accessMode = Mode.getMatsimMode(trip.getAccessMode());
-            egressMode  = Mode.getMatsimMode(trip.getEgressMode());
+            egressMode = Mode.getMatsimMode(trip.getEgressMode());
         }
 
         // uam extension is not compatible with car_passenger?
@@ -200,9 +206,10 @@ public class MatsimPopulationGenerator {
         if (accessVertiportZoneId != 10000) {
             //todo get name or get station id?
             l.getAttributes().putAttribute(UAMPredefinedStrategy.ORIG_STATION,
-                    dataSet.getZoneIdToStationMap().get(accessVertiportZoneId).getId());
+                    dataSet.getZoneIdToStationMap().get(accessVertiportZoneId).getId().toString());
         } else {
             logger.warn("Trip using UAM but without UAM station");
+            return false;
         }
 
         int egressVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
@@ -211,15 +218,15 @@ public class MatsimPopulationGenerator {
         if (egressVertiportZoneId != 10000) {
             //todo get name or get station id?
             l.getAttributes().putAttribute(UAMPredefinedStrategy.DEST_STATION,
-                    dataSet.getZoneIdToStationMap().get(egressVertiportZoneId).getId());
+                    dataSet.getZoneIdToStationMap().get(egressVertiportZoneId).getId().toString());
         } else {
             logger.warn("Trip using UAM but without UAM station");
+            return false;
         }
 
         l.getAttributes().putAttribute(UAMPredefinedStrategy.EGRESS_MODE, egressMode);
+        return true;
     }
-
-
 
 
 }
