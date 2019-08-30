@@ -199,6 +199,10 @@ public class MatsimPopulationGenerator {
         if (egressMode.equals("car_passenger"))
             egressMode = "car";
 
+        if (accessMode == null){
+            return false;
+        }
+
         l.getAttributes().putAttribute(UAMPredefinedStrategy.ACCESS_MODE, accessMode);
 
         int accessVertiportZoneId = (int) dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination,
