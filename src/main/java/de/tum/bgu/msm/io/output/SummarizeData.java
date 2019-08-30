@@ -202,11 +202,11 @@ public class SummarizeData {
                 pwh.print(",");
                 pwh.print(dataSet.getZoneIdToStationMap().get( (int)
                         dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam",
-                                AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT)).getName());
+                                AccessAndEgressVariables.AccessVariable.ACCESS_VERTIPORT)).getId().toString());
                 pwh.print(",");
                 pwh.print(dataSet.getZoneIdToStationMap().get( (int)
                         dataSet.getAccessAndEgressVariables().getAccessVariable(origin, destination, "uam",
-                                AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT)).getName());
+                                AccessAndEgressVariables.AccessVariable.EGRESS_VERTIPORT)).getId().toString());
                 pwh.print(",");
                 pwh.print(dataSet.getFlyingDistanceUAM().getTravelDistance(origin.getZoneId(), destination.getZoneId()));
                 pwh.println();
