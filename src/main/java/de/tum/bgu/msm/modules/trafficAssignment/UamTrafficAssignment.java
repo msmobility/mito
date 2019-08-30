@@ -6,6 +6,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import net.bhl.matsim.uam.router.strategy.UAMStrategy;
 import net.bhl.matsim.uam.run.RunUAMScenario;
+import net.bhl.matsim.uam.run.UAMModule;
 import net.bhl.matsim.uam.scenario.utils.ConfigAddUAMParameters;
 import org.matsim.core.controler.Controler;
 
@@ -94,9 +95,9 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		Controler controler = RunUAMScenario.createControler();
 		controler.run();
 
-		//Do not update car times if car is not simulated!!
-		CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
-		skimUpdater.run();
+		//ToDo temporary do not update car times if car is not simulated or subsample is too low to be representative!!
+		//CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
+		//skimUpdater.run();
 		dataSet.setMatsimControler(controler);
 
 		//update waiting times of UAM mode.
