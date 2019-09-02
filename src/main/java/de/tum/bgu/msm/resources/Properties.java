@@ -16,26 +16,13 @@ public class Properties {
     public static final String PERSONS = "person.file.ascii";
     public static final String DWELLINGS = "dwelling.file.ascii";
     public static final String REDUCTION_NEAR_BORDER_DAMPERS = "reduction.near.outer.border";
-    public static final String SCHOOL_ENROLLMENT = "school.enrollment.data";
+
     public static final String ECONOMIC_STATUS = "economic.status.definition";
-    public static final String TRANSIT_PEAK_SKIM = "transit.peak.travelTime";
     public static final String ZONES = "zonal.data.file";
-
-    public static final String TRAVEL_SURVEY_HOUSEHOLDS = "household.travel.survey.hh";
-    public static final String TRAVEL_SURVEY_TRIPS = "household.travel.survey.trips";
-
-    public static final String HBW_TRIP_FREQUENCIES = "HBW.trip.frequencies";
-    public static final String HBS_TRIP_FREQUENCIES = "HBS.trip.frequencies";
-    public static final String HBO_TRIP_FREQUENCIES = "HBO.trip.frequencies";
-    public static final String HBE_TRIP_FREQUENCIES = "HBE.trip.frequencies";
-    public static final String NHBW_TRIP_FREQUENCIES = "NHBW.trip.frequencies";
-    public static final String NHBO_TRIP_FREQUENCIES = "NHBO.trip.frequencies";
 
     public static final String TRIP_ATTRACTION_RATES = "trip.attraction.rates";
     public static final String TRIP_PRODUCTION_OUTPUT = "trip.production.output";
     public static final String TRIP_ATTRACTION_OUTPUT = "trip.attraction.output";
-
-    public static final String BASE_DIRECTORY = "base.directory";
 
     public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
 
@@ -62,7 +49,6 @@ public class Properties {
     public static final String MATSIM_NETWORK_FILE = "matsim.network";
     public static final String MATSIM_ITERATIONS = "matsim.iterations";
     public static final String ZONE_SHAPEFILE = "zone.shapefile";
-    public static final String ZONE_SHAPEFILE_CRS = "zone.shapefile.crs";
     public static final String ZONE_SHAPEFILE_ID_FIELD  = "zone.shapefile.id.field";
     public static final String DEFAULT_BUDGET = "default.budget.";
 
@@ -83,7 +69,6 @@ public class Properties {
 
     public static final String AIRPORT_ZONE = "airport.zone";
     public static final String ADD_AIRPORT_DEMAND = "add.airport.demand";
-
 
     public static final String AIRPORT_Y = "airport.y";
     public static final String AIRPORT_X = "airport.x";
