@@ -40,7 +40,7 @@ public class EconomicStatusReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.ECONOMIC_STATUS), ",");
+        super.read(Resources.instance.getString(Properties.ECONOMIC_STATUS), ",");
         assignEconomicStatusToAllHouseholds();
     }
 

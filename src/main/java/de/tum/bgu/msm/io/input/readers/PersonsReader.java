@@ -33,7 +33,7 @@ public class PersonsReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("  Reading person micro data from ascii file");
-        String fileName = Resources.INSTANCE.getString(Properties.PERSONS);
+        String fileName = Resources.instance.getString(Properties.PERSONS);
         super.read(fileName, ",");
         int noIncomeHouseholds = 0;
         for(MitoHousehold household: dataSet.getHouseholds().values()) {

@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.resources;
 
-import de.tum.bgu.msm.util.MitoUtil;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -11,7 +9,7 @@ import java.util.Properties;
  */
 public class Resources {
 
-    public static Resources INSTANCE;
+    public static Resources instance;
 
     private final Properties properties;
 
@@ -23,8 +21,7 @@ public class Resources {
         try (FileInputStream in = new FileInputStream(fileName)) {
             Properties properties = new Properties();
             properties.load(in);
-            MitoUtil.setBaseDirectory(properties.getProperty("base.directory"));
-            INSTANCE = new Resources(properties);
+            instance = new Resources(properties);
         } catch (IOException e) {
             e.printStackTrace();
         }

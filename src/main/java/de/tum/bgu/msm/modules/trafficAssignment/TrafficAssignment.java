@@ -43,24 +43,24 @@ public class TrafficAssignment extends Module {
 
         String runId = "mito_assignment";
         matsimConfig.controler().setRunId(runId);
-        matsimConfig.controler().setOutputDirectory(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "/trafficAssignment");
-        matsimConfig.network().setInputFile(Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_FILE));
+        matsimConfig.controler().setOutputDirectory(Resources.instance.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "/trafficAssignment");
+        matsimConfig.network().setInputFile(Resources.instance.getString(Properties.MATSIM_NETWORK_FILE));
 
         matsimConfig.qsim().setNumberOfThreads(16);
         matsimConfig.global().setNumberOfThreads(16);
         matsimConfig.parallelEventHandling().setNumberOfThreads(16);
         matsimConfig.qsim().setUsingThreadpool(false);
 
-        matsimConfig.controler().setLastIteration(Resources.INSTANCE.getInt(Properties.MATSIM_ITERATIONS));
+        matsimConfig.controler().setLastIteration(Resources.instance.getInt(Properties.MATSIM_ITERATIONS));
         matsimConfig.controler().setWritePlansInterval(matsimConfig.controler().getLastIteration());
         matsimConfig.controler().setWriteEventsInterval(matsimConfig.controler().getLastIteration());
 
         matsimConfig.qsim().setStuckTime(10);
-        matsimConfig.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
-        matsimConfig.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+        matsimConfig.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+        matsimConfig.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
 
 
-        String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
+        String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
         Set<String> networkModesSet = new HashSet<>();
 
         for (String mode : networkModes){
@@ -79,9 +79,9 @@ public class TrafficAssignment extends Module {
     private void createPopulation() {
         MatsimPopulationGenerator matsimPopulationGenerator = new MatsimPopulationGenerator();
         Population population = matsimPopulationGenerator.generateMatsimPopulation(dataSet, matsimConfig);
-        if (Resources.INSTANCE.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
+        if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
             LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
-            population = longDistanceTraffic.addLongDistancePlans(Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)), population);
+            population = longDistanceTraffic.addLongDistancePlans(Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), population);
         }
         matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(matsimConfig);
         matsimScenario.setPopulation(population);

@@ -41,7 +41,7 @@ public class SummarizeDataToVisualize {
         // handle summary file
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" +  year + "/";
+                String directory = Resources.instance.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" +  year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 spatialResultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFileSpatial" +
                         ".csv", false);
@@ -77,7 +77,7 @@ public class SummarizeDataToVisualize {
     private static void resultFile(String action, boolean writeFinal, String scenarioName) {
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" + year + "/";
+                String directory = Resources.instance.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" + year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 resultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFile" +
                         ".csv", false);

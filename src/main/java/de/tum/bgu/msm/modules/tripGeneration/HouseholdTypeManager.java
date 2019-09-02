@@ -38,7 +38,7 @@ public class HouseholdTypeManager {
 
     private Map<HouseholdType, Integer[]> readTripFrequencies() {
         // todo: should this not read the token from the class Properties.java?
-        String fileName = Resources.INSTANCE.getString(purpose + ".trip.frequencies");
+        String fileName = Resources.instance.getString(purpose + ".trip.frequencies");
         GenericCsvReader csvReader = new GenericCsvReader(fileName);
         csvReader.read();
         GenericCsvTable dataTable = csvReader.getTable();
@@ -85,7 +85,7 @@ public class HouseholdTypeManager {
 
     public void createHouseHoldTypeDefinitions() {
         // todo: should this not read the token from the class Properties.java?
-        String[] householdDefinitionToken = Resources.INSTANCE.getArray("hh.type." + purpose);
+        String[] householdDefinitionToken = Resources.instance.getArray("hh.type." + purpose);
         String sizeToken = householdDefinitionToken[1];
         String[] sizePortions = sizeToken.split("\\.");
         String workerToken = householdDefinitionToken[2];

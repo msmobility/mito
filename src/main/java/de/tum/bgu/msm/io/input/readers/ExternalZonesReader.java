@@ -17,9 +17,9 @@ public class ExternalZonesReader extends AbstractCsvReader {
 
     private Map<Integer, ExternalFlowZone> zones;
 
-    private String fileNameZones = Resources.INSTANCE.getString(Properties.EXTERNAL_ZONES_LIST_FILE);
-    private String shapeFileZones = Resources.INSTANCE.getString(Properties.EXTERNAL_ZONES_SHAPEFILE);
-    private String idFieldName = Resources.INSTANCE.getString(Properties.EXTERNAL_ZONES_SHAPE_ID_FIELD);
+    private String fileNameZones = Resources.instance.getString(Properties.EXTERNAL_ZONES_LIST_FILE);
+    private String shapeFileZones = Resources.instance.getString(Properties.EXTERNAL_ZONES_SHAPEFILE);
+    private String idFieldName = Resources.instance.getString(Properties.EXTERNAL_ZONES_SHAPE_ID_FIELD);
 
     private int positionId;
     private int positionName;

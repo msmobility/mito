@@ -23,11 +23,10 @@ public final class MitoUtil {
 
     private static final Logger logger = Logger.getLogger(MitoUtil.class);
     private static Random rand;
-    private static String baseDirectory = "";
 
 
     public static void initializeRandomNumber() {
-        int seed = Resources.INSTANCE.getInt(Properties.RANDOM_SEED);
+        int seed = Resources.instance.getInt(Properties.RANDOM_SEED);
         rand = new Random(seed);
     }
 
@@ -35,13 +34,6 @@ public final class MitoUtil {
         rand = randSetting;
     }
 
-    public static String getBaseDirectory() {
-        return baseDirectory;
-    }
-
-    public static void setBaseDirectory(String baseDirectoryInput) {
-        baseDirectory = baseDirectoryInput;
-    }
 
     public static float rounder(float value, int digits) {
         // rounds value to digits behind the decimal point
@@ -302,7 +294,9 @@ public final class MitoUtil {
         if (!file.exists()) {
             logger.info("   Creating Directory: "+directory);
             boolean outputDirectorySuccessfullyCreated = file.mkdir();
-            if (!outputDirectorySuccessfullyCreated) logger.error("Could not create scenarios directory " + directory);
+            if (!outputDirectorySuccessfullyCreated) {
+                logger.error("Could not create scenarios directory " + directory);
+            }
         }
     }
 }

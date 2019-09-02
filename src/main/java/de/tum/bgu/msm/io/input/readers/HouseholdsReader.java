@@ -27,7 +27,7 @@ public class HouseholdsReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("  Reading household micro data from ascii file");
-        String fileName = Resources.INSTANCE.getString(Properties.HOUSEHOLDS);
+        String fileName = Resources.instance.getString(Properties.HOUSEHOLDS);
         super.read(fileName, ",");
     }
 

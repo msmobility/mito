@@ -49,7 +49,7 @@ public final class TimeOfDayChoice extends Module {
                             && trip.getTripMode() != null) {
                         int departureTimeInMinutes;
                         if (trip.getTripPurpose().equals(Purpose.AIRPORT) &&
-                                trip.getTripOrigin().equals(dataSet.getZones().get(Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)))){
+                                trip.getTripOrigin().equals(dataSet.getZones().get(Resources.instance.getInt(Properties.AIRPORT_ZONE)))){
                             departureTimeInMinutes = chooseDepartureTime(trip);
                         } else {
                             int arrivalTimeInMinutes = chooseArrivalTime(trip);

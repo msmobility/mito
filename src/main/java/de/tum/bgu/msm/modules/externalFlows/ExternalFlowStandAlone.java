@@ -30,7 +30,7 @@ public class ExternalFlowStandAlone {
         float scalingFactor = 0.05f;
 
         DataSet dataSet = new DataSet();
-        dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR, 2011));
+        dataSet.setYear(Resources.instance.getInt(Properties.SCENARIO_YEAR, 2011));
         LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
 
         Config config = ConfigUtils.createConfig();

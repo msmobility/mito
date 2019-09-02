@@ -19,7 +19,7 @@ import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COU
 class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> {
 
     private static final Logger logger = Logger.getLogger(TripsByPurposeGenerator.class);
-    private final boolean dropAtBorder = Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER);
+    private final boolean dropAtBorder = Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER);
 
     private Map<MitoHousehold, List<MitoTrip>> tripsByHH = new HashMap<>();
 

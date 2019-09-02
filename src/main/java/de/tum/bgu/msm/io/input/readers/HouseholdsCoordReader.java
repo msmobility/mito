@@ -27,7 +27,7 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("Reading household microlocation coordinate from dwelling file");
-        String fileName = Resources.INSTANCE.getString(Properties.DWELLINGS);
+        String fileName = Resources.instance.getString(Properties.DWELLINGS);
         super.read(fileName, ",");
     }
 

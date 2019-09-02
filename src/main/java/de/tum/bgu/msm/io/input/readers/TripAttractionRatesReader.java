@@ -22,7 +22,7 @@ public class TripAttractionRatesReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_RATES), ",");
+        super.read(Resources.instance.getString(Properties.TRIP_ATTRACTION_RATES), ",");
     }
 
     @Override

@@ -34,7 +34,7 @@ public class JobReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("Reading job micro data from ascii file");
-        String fileName = Resources.INSTANCE.getString(Properties.JOBS);
+        String fileName = Resources.instance.getString(Properties.JOBS);
         super.read(fileName, ",");
     }
 

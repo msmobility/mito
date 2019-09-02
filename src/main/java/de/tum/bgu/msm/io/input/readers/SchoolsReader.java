@@ -49,7 +49,7 @@ public class SchoolsReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("Reading school micro data from ascii file");
-        String fileName = Resources.INSTANCE.getString(Properties.SCHOOLS);
+        String fileName = Resources.instance.getString(Properties.SCHOOLS);
         super.read(fileName, ",");
     }
 }

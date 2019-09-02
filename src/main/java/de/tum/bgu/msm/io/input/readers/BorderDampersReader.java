@@ -20,7 +20,7 @@ public final class BorderDampersReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read( Resources.INSTANCE.getString(Properties.REDUCTION_NEAR_BORDER_DAMPERS), ",");
+        super.read( Resources.instance.getString(Properties.REDUCTION_NEAR_BORDER_DAMPERS), ",");
     }
 
     @Override

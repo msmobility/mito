@@ -8,7 +8,6 @@ import edu.emory.mathcs.utils.ConcurrencyUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
 import org.matsim.core.population.PopulationUtils;
@@ -29,8 +28,8 @@ public class MatsimPopulationGenerator {
     Set<Mode> modeSet = new HashSet<>();
 
     public MatsimPopulationGenerator() {
-        String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
-        String[] teleportedModes = Resources.INSTANCE.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
+        String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
+        String[] teleportedModes = Resources.instance.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
         for (String mode : networkModes){
             modeSet.add(Mode.valueOf(mode));
         }
@@ -43,8 +42,8 @@ public class MatsimPopulationGenerator {
 
     public static Map<Integer,SimpleFeature> loadZoneShapeFile(){
         Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
-        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
-            int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
+        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.instance.getString(Properties.ZONE_SHAPEFILE))) {
+            int zoneId = Integer.parseInt(feature.getAttribute(Resources.instance.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
             zoneFeatureMap.put(zoneId,feature);
         }
         return zoneFeatureMap;
@@ -121,7 +120,7 @@ public class MatsimPopulationGenerator {
         } else if (purpose.equals(Purpose.NHBO)){
             return "other";
         } else if (purpose.equals(Purpose.AIRPORT)) {
-            if (trip.getTripOrigin().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)){
+            if (trip.getTripOrigin().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)){
                 return "airport";
             } else {
                 return "home";
@@ -140,7 +139,7 @@ public class MatsimPopulationGenerator {
         } else if (purpose.equals(Purpose.HBS)){
             return "shopping";
         } else if (purpose.equals(Purpose.AIRPORT)) {
-            if (trip.getTripDestination().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)) {
+            if (trip.getTripDestination().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)) {
                 return "airport";
             } else {
                 return "home";

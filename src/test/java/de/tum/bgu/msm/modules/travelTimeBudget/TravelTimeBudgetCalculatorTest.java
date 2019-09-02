@@ -25,7 +25,7 @@ public class TravelTimeBudgetCalculatorTest {
         Resources.initializeResources("./testInput/test.properties");
 
         try {
-            Reader reader = new FileReader(Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_JS));
+            Reader reader = new FileReader(Resources.instance.getString(Properties.TRAVEL_TIME_BUDGET_JS));
             calculator = new TravelTimeBudgetJSCalculator(reader);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -35,7 +35,7 @@ public class LongDistanceTimeOfDayDistributionReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.EXTERNAL_DEPARTURE_TIME_FILE),",");
+        super.read(Resources.instance.getString(Properties.EXTERNAL_DEPARTURE_TIME_FILE),",");
     }
 
 

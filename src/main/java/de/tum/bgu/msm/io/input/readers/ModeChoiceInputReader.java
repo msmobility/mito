@@ -41,6 +41,6 @@ public class ModeChoiceInputReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.AREA_TYPES_AND_RAIL_DISTANCE),",");
+        super.read(Resources.instance.getString(Properties.AREA_TYPES_AND_RAIL_DISTANCE),",");
     }
 }
