@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * @param <T> object type of expected results of tasks. I.e. Future < T >
  */
 public class ConcurrentExecutor<T> {
+    //TODO: Implement utils for Runnables instead of Callables
 
     private final List<Callable<T>> tasks = new ArrayList<>();
     private final ExecutorService service;
@@ -67,19 +68,17 @@ public class ConcurrentExecutor<T> {
         }
     }
 
-    public List<Future<T>> execute() {
+    public List<T> execute() {
         try {
             List<Future<T>> futures = service.invokeAll(tasks);
-            //The Following is needed to query each future at least once even
-            //if no particular result is needed. Otherwise exceptions that
-            //appeared during the execution are not caught and just silently
-            //ignored
-            //TODO: Implement utils for Runnables instead of Callables
-            for(Future<T> future: futures) {
-                future.get();
-            }
-            return futures;
-        } catch (InterruptedException | ExecutionException e) {
+            return futures.stream().map(future -> {
+                try {
+                    return future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
         	service.shutdownNow();
