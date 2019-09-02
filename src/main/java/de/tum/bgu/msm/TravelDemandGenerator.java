@@ -86,7 +86,7 @@ public class TravelDemandGenerator {
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
         if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
-            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet, scenarioName);
+            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
             SummarizeData.writeOutTrips(dataSet, scenarioName);
         }
         if(Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)){

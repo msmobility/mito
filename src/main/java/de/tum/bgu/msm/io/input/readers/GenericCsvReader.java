@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +17,13 @@ import java.util.stream.Collectors;
  */
 public final class GenericCsvReader extends AbstractCsvReader {
 
-    private final String fileName;
+    private final Path filePath;
     private final GenericCsvTable table = new GenericCsvTable();
     private int currentRow = 0;
 
-    public GenericCsvReader(String fileName) {
+    public GenericCsvReader(Path filePath) {
         super(null);
-        this.fileName = fileName;
+        this.filePath = filePath;
     }
 
     @Override
@@ -40,7 +41,7 @@ public final class GenericCsvReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(fileName, ",");
+        super.read(filePath, ",");
     }
 
     public GenericCsvTable getTable() {

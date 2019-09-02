@@ -3,7 +3,6 @@ package de.tum.bgu.msm.io.input.readers;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -40,7 +39,7 @@ public class EconomicStatusReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.instance.getString(Properties.ECONOMIC_STATUS), ",");
+        super.read(Resources.instance.getEconomicStatusFilePath(), ",");
         assignEconomicStatusToAllHouseholds();
     }
 

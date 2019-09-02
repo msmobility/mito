@@ -4,10 +4,11 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+
+import java.nio.file.Path;
 
 /**
  * Created by Nico on 17.07.2017.
@@ -27,8 +28,8 @@ public class HouseholdsReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("  Reading household micro data from ascii file");
-        String fileName = Resources.instance.getString(Properties.HOUSEHOLDS);
-        super.read(fileName, ",");
+        Path filePath = Resources.instance.getHouseholdsFilePath();
+        super.read(filePath, ",");
     }
 
     @Override

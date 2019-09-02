@@ -10,6 +10,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class ExternalZonesReader extends AbstractCsvReader {
 
     private Map<Integer, ExternalFlowZone> zones;
 
-    private String fileNameZones = Resources.instance.getString(Properties.EXTERNAL_ZONES_LIST_FILE);
+    private Path fileNameZones = Resources.instance.getExternalZonesListFilePath();
     private String shapeFileZones = Resources.instance.getString(Properties.EXTERNAL_ZONES_SHAPEFILE);
     private String idFieldName = Resources.instance.getString(Properties.EXTERNAL_ZONES_SHAPE_ID_FIELD);
 
@@ -56,7 +57,7 @@ public class ExternalZonesReader extends AbstractCsvReader {
         ExternalFlowZoneType type = ExternalFlowZoneType.getExternalFlowZoneTypeFromInt(Integer.parseInt(record[positionType]));
         Coord coordinates = new Coord(Float.parseFloat(record[positionX]),Float.parseFloat(record[positionY]));
         SimpleFeature feature;
-        if (!type.equals(ExternalFlowZoneType.BORDER)) {
+        if (!ExternalFlowZoneType.BORDER.equals(type)) {
             feature = features.get(id);
         } else {
             feature = null;

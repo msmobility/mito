@@ -2,6 +2,17 @@ package de.tum.bgu.msm.resources;
 
 public class Properties {
 
+    static final String ZONES = "zonal.data.file";
+    static final String ZONE_SHAPEFILE = "zone.shapefile";
+    static final String REDUCTION_NEAR_BORDER_DAMPERS = "reduction.near.outer.border";
+    static final String ECONOMIC_STATUS = "economic.status.definition";
+
+    static final String JOBS = "job.file.ascii";
+    static final String SCHOOLS = "school.file.ascii";
+    static final String HOUSEHOLDS = "household.file.ascii";
+    static final String PERSONS = "person.file.ascii";
+    static final String DWELLINGS = "dwelling.file.ascii";
+
     public static final String SCENARIO_NAME = "scenario.name";
     public static final String SCENARIO_YEAR = "year";
 
@@ -10,15 +21,7 @@ public class Properties {
     public static final String REMOVE_TRIPS_AT_BORDER = "reduce.trips.at.outer.border";
 
     public static final String AUTO_PEAK_SKIM = "auto.peak.travelTime";
-    public static final String JOBS = "job.file.ascii";
-    public static final String SCHOOLS = "school.file.ascii";
-    public static final String HOUSEHOLDS = "household.file.ascii";
-    public static final String PERSONS = "person.file.ascii";
-    public static final String DWELLINGS = "dwelling.file.ascii";
-    public static final String REDUCTION_NEAR_BORDER_DAMPERS = "reduction.near.outer.border";
 
-    public static final String ECONOMIC_STATUS = "economic.status.definition";
-    public static final String ZONES = "zonal.data.file";
 
     public static final String TRIP_ATTRACTION_RATES = "trip.attraction.rates";
     public static final String TRIP_PRODUCTION_OUTPUT = "trip.production.output";
@@ -48,8 +51,7 @@ public class Properties {
     public static final String RUN_TRAFFIC_ASSIGNMENT = "run.traffic.assignment";
     public static final String MATSIM_NETWORK_FILE = "matsim.network";
     public static final String MATSIM_ITERATIONS = "matsim.iterations";
-    public static final String ZONE_SHAPEFILE = "zone.shapefile";
-    public static final String ZONE_SHAPEFILE_ID_FIELD  = "zone.shapefile.id.field";
+    public static final String ZONE_SHAPEFILE_ID_FIELD = "zone.shapefile.id.field";
     public static final String DEFAULT_BUDGET = "default.budget.";
 
     public static final String PRINT_OUT_SKIM = "print.skim";

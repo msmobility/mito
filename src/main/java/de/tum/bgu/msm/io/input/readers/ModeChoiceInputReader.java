@@ -4,7 +4,6 @@ import de.tum.bgu.msm.data.AreaTypes;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
@@ -41,6 +40,6 @@ public class ModeChoiceInputReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.instance.getString(Properties.AREA_TYPES_AND_RAIL_DISTANCE),",");
+        super.read(Resources.instance.getAreaTypesAndRailDistancesFilePath(),",");
     }
 }

@@ -2,29 +2,79 @@ package de.tum.bgu.msm.resources;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
+
+import static de.tum.bgu.msm.resources.Properties.*;
 
 /**
  * Created by Nico on 19.07.2017.
  */
 public class Resources {
 
+    //TODO: provide defaults.
+
     public static Resources instance;
 
     private final Properties properties;
 
-    private Resources(Properties properties) {
+    private final Path baseDirectory;
+
+
+    private Resources(Properties properties, String baseDirectory) {
         this.properties = properties;
+        this.baseDirectory = Paths.get(baseDirectory).getParent();
     }
 
     public static void initializeResources(String fileName) {
         try (FileInputStream in = new FileInputStream(fileName)) {
             Properties properties = new Properties();
             properties.load(in);
-            instance = new Resources(properties);
+            instance = new Resources(properties, fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Path getZonesInputFile() {
+        return baseDirectory.resolve(getString(ZONES));
+    }
+
+    public Path getZoneShapesInputFile() {
+        return baseDirectory.resolve(getString(ZONE_SHAPEFILE));
+    }
+
+    public Path getBaseDirectory() {
+        return baseDirectory.toAbsolutePath();
+    }
+
+    public Path getBorderReductionDamperFilePath() {
+        return baseDirectory.resolve(getString(REDUCTION_NEAR_BORDER_DAMPERS));
+    }
+
+    public Path getJobsFilePath() {
+        return baseDirectory.resolve(getString(JOBS));
+    }
+
+    public Path getSchoolsFilePath() {
+        return baseDirectory.resolve(getString(SCHOOLS));
+    }
+
+    public Path getHouseholdsFilePath() {
+        return baseDirectory.resolve(getString(HOUSEHOLDS));
+    }
+
+    public Path getPersonsFilePath() {
+        return baseDirectory.resolve(getString(PERSONS));
+    }
+
+    public Path getDwellingsFilePath() {
+        return baseDirectory.resolve(getString(DWELLINGS));
+    }
+
+    public Path getEconomicStatusFilePath() {
+        return baseDirectory.resolve(getString(ECONOMIC_STATUS));
     }
 
     public synchronized int getInt(String key) {
@@ -70,5 +120,39 @@ public class Resources {
     public synchronized double getDouble(String key, double defaultValue) {
         String value = properties.getProperty(key);
         return value != null ? Double.parseDouble(value) : defaultValue;
+    }
+
+    public Path getAreaTypesAndRailDistancesFilePath() {
+        return baseDirectory.resolve(getString((AREA_TYPES_AND_RAIL_DISTANCE)));
+    }
+
+    public Path getExternalDepartureTimeFilePath() {
+        return baseDirectory.resolve(EXTERNAL_DEPARTURE_TIME_FILE);
+    }
+
+    public Path getTimeOfDayDistributionsFilePath() {
+        return baseDirectory.resolve(getString(TIME_OF_DAY_DISTRIBUTIONS));
+    }
+
+    public Path getTripAttractionRatesFilePath() {
+        return baseDirectory.resolve(getString(TRIP_ATTRACTION_RATES));
+    }
+
+    public Path getOutputHouseholdPath() {
+        String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
+        return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve(getString(SCENARIO_YEAR)).resolve("microData").resolve("hhInclTrips.csv");
+    }
+
+    public Path getOutputPersonsPath() {
+        String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
+        return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve(getString(SCENARIO_YEAR)).resolve("microData").resolve("ppInclTrips.csv");
+    }
+
+    public Path getExternalZonesListFilePath() {
+        return baseDirectory.resolve(getString(de.tum.bgu.msm.resources.Properties.EXTERNAL_ZONES_LIST_FILE));
+    }
+
+    public Path getRelativePath(String autoPeakSkim) {
+        return baseDirectory.resolve(getString(autoPeakSkim));
     }
 }

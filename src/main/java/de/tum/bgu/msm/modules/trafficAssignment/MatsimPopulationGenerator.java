@@ -12,22 +12,18 @@ import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordUtils;
-import org.matsim.core.utils.gis.ShapeFileReader;
-import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MatsimPopulationGenerator {
+class MatsimPopulationGenerator {
 
     private static final Logger logger = Logger.getLogger(MatsimPopulationGenerator.class);
 
-    Set<Mode> modeSet = new HashSet<>();
+    private Set<Mode> modeSet = new HashSet<>();
 
-    public MatsimPopulationGenerator() {
+    MatsimPopulationGenerator() {
         String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
         String[] teleportedModes = Resources.instance.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
         for (String mode : networkModes){
@@ -39,17 +35,7 @@ public class MatsimPopulationGenerator {
     }
     //private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
 
-
-    public static Map<Integer,SimpleFeature> loadZoneShapeFile(){
-        Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
-        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.instance.getString(Properties.ZONE_SHAPEFILE))) {
-            int zoneId = Integer.parseInt(feature.getAttribute(Resources.instance.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
-            zoneFeatureMap.put(zoneId,feature);
-        }
-        return zoneFeatureMap;
-    }
-
-    public Population generateMatsimPopulation(DataSet dataSet, Config config){
+    Population generateMatsimPopulation(DataSet dataSet, Config config){
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
         AtomicInteger assignedTripCounter = new AtomicInteger(0);
@@ -113,7 +99,7 @@ public class MatsimPopulationGenerator {
     }
 
 
-    public static String getOriginActivity(MitoTrip trip){
+    private static String getOriginActivity(MitoTrip trip){
         Purpose purpose = trip.getTripPurpose();
         if (purpose.equals(Purpose.NHBW)){
             return "work";
@@ -130,7 +116,7 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    public static String getDestinationActivity(MitoTrip trip){
+    private static String getDestinationActivity(MitoTrip trip){
         Purpose purpose = trip.getTripPurpose();
         if (purpose.equals(Purpose.HBW)){
             return "work";
@@ -148,10 +134,4 @@ public class MatsimPopulationGenerator {
             return "other";
         }
     }
-
-
-
-
-
-
 }

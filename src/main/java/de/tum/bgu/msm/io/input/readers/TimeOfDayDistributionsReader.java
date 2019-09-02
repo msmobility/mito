@@ -82,7 +82,7 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.instance.getString(Properties.TIME_OF_DAY_DISTRIBUTIONS), ",");
+        super.read(Resources.instance.getTimeOfDayDistributionsFilePath(), ",");
         dataSet.setArrivalMinuteCumProbByPurpose(arrivalTimeCumProbByPurpose);
         dataSet.setDurationMinuteCumProbByPurpose(durationCumProbByPurpose);
         dataSet.setDepartureMinuteCumProbByPurpose(departureTimeCumProbByPurpose);

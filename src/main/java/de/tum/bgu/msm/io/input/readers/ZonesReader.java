@@ -25,12 +25,12 @@ public class ZonesReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.instance.getString(Properties.ZONES), ",");
+        super.read(Resources.instance.getZonesInputFile().toAbsolutePath(), ",");
         mapFeaturesToZones(dataSet);
     }
 
-    public static void mapFeaturesToZones(DataSet dataSet) {
-        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.instance.getString(Properties.ZONE_SHAPEFILE))) {
+    private static void mapFeaturesToZones(DataSet dataSet) {
+        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.instance.getZoneShapesInputFile().toString())) {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.instance.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
             MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone != null){

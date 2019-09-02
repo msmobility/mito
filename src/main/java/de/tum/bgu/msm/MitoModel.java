@@ -109,10 +109,6 @@ public final class MitoModel {
         return dataSet;
     }
 
-    public void setBaseDirectory(String baseDirectory) {
-        MitoUtil.setBaseDirectory(baseDirectory);
-    }
-
     public String getScenarioName() {
         return scenarioName;
     }
