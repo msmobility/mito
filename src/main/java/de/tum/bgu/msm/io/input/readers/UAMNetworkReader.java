@@ -46,7 +46,8 @@ public class UAMNetworkReader {
     private final int TIME_OF_DAY_S = 8 * 60 * 60;
     private final String ACCESS_MODE = "car";
     private Network network;
-    private static final double searchRadius_km = 10;
+    private static final double SEARCH_RADIUS_KM = 1000000;
+    private final double CAR_UAM_TIME_FACTOR = 1.5;
 
 
     public UAMNetworkReader(DataSet dataSet) {
@@ -104,13 +105,13 @@ public class UAMNetworkReader {
                 // TODO: @Carlos, does this need to include handling time? Let's clarify how MITO deals with waiting+process times of UAM
                 //No, the handling time should be apart
                 //the boarding and de-boarding part too: vehicle types in the xml reader is not accessible!!
-                double handlingTime = originStation.getPreFlightTime() +
-                        originStation.getDefaultWaitTime() +
-                        destinationStation.getPostFlightTime() + 30 + 30;
+                //double handlingTime = originStation.getPreFlightTime() +
+//                        originStation.getDefaultWaitTime() +
+//                        destinationStation.getPostFlightTime() + 30 + 30;
 
                 travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
-                        (connections.getTravelTime(originStation.getId(), destinationStation.getId()) - handlingTime) / 60);
+                        (connections.getTravelTime(originStation.getId(), destinationStation.getId())) / 60);
 
                 travelDistanceUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
@@ -142,7 +143,7 @@ public class UAMNetworkReader {
                 int destId = destinationZone.getId();
                 if (!originZone.equals(destinationZone)) {
                     double minTravelTime = 10000;
-                    //double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+                    double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
                     UAMStation accessStationChosen = null;
                     UAMStation egressStationChosen = null;
 
@@ -154,7 +155,7 @@ public class UAMNetworkReader {
                                 MitoZone egressZone = stationZoneMap.get(egressStation);
                                 double accessDistance = travelDistancesAuto.getTravelDistance(originZone.getId(), accessZone.getId());
                                 double egressDistance = travelDistancesAuto.getTravelDistance(egressZone.getId(), destinationZone.getId());
-                                if (accessDistance < searchRadius_km && egressDistance < searchRadius_km) {
+                                if (accessDistance < SEARCH_RADIUS_KM && egressDistance < SEARCH_RADIUS_KM) {
                                     double travelTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
                                             travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
                                             travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
@@ -170,7 +171,7 @@ public class UAMNetworkReader {
                     MitoZone accessZone = stationZoneMap.get(accessStationChosen);
                     MitoZone egressZone = stationZoneMap.get(egressStationChosen);
                     //if (minTravelTime < carTravelTime) {
-                    if (accessStationChosen != null && egressStationChosen != null){
+                    if (accessStationChosen != null && egressStationChosen != null && minTravelTime < carTravelTime * CAR_UAM_TIME_FACTOR){
                         travelTimeUam.setIndexed(origId, destId, minTravelTime);
 
                         accessVertiportUam.setIndexed(origId,
