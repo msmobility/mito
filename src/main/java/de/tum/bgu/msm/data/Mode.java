@@ -78,7 +78,8 @@ public enum Mode implements Id {
             case sharedAV:
                 return TransportMode.car;
             default:
-                return null;
+                //TODO needs more attention probably
+                return TransportMode.walk;
 
         }
 
