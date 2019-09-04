@@ -69,13 +69,13 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		matsimConfig.controler().setWritePlansInterval(matsimConfig.controler().getLastIteration());
 		matsimConfig.controler().setWriteEventsInterval(matsimConfig.controler().getLastIteration());
 
+		matsimConfig.linkStats().setAverageLinkStatsOverIterations(Math.min(matsimConfig.controler().getLastIteration(), 5));
 		matsimConfig.linkStats().setWriteLinkStatsInterval(matsimConfig.controler().getLastIteration());
 
 		matsimConfig.qsim().setStuckTime(10);
-		matsimConfig.qsim().setFlowCapFactor(
-				SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
-		matsimConfig.qsim().setStorageCapFactor(
-				SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
+		//TODO temporary set capacity factors to the UAM scale factor
+		matsimConfig.qsim().setFlowCapFactor(Resources.INSTANCE.getDouble(Properties.TRIP_SCALING_FACTOR + ".uam", 1));
+		matsimConfig.qsim().setStorageCapFactor(Resources.INSTANCE.getDouble(Properties.TRIP_SCALING_FACTOR + ".uam", 1));
 
 		String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES,
 				new String[] { "autoDriver" });
@@ -97,7 +97,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 		Controler controler = RunUAMScenario.createControler();
 		controler.run();
 
-		//ToDo temporary do not update car times if car is not simulated or subsample is too low to be representative!!
+		//TODO temporary do not update car times if car is not simulated or subsample is too low to be representative!!
 		//CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
 		//skimUpdater.run();
 		dataSet.setMatsimControler(controler);
