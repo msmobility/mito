@@ -90,36 +90,38 @@ public class MatsimPopulationGenerator {
                     if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
                         thisLegIsPlausible = addUAMLegParamters(leg, dataSet, trip, false);
 
-                    if (thisLegIsPlausible)
+                    if (thisLegIsPlausible) {
                         plan.addLeg(leg);
 
-                    String activityTypeAtDestination = getDestinationActivity(trip);
+                        String activityTypeAtDestination = getDestinationActivity(trip);
 
-                    Coord destinationCoord;
-                    if (trip.getTripDestination() instanceof MicroLocation) {
-                        Coordinate rand = ((MicroLocation) trip.getTripDestination()).getCoordinate();
-                        destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
-                    } else {
-                        Coordinate rand = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord();
-                        destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
-                    }
-                    Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoord);
+                        Coord destinationCoord;
+                        if (trip.getTripDestination() instanceof MicroLocation) {
+                            Coordinate rand = ((MicroLocation) trip.getTripDestination()).getCoordinate();
+                            destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
+                        } else {
+                            Coordinate rand = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord();
+                            destinationCoord = CoordUtils.createCoord(rand.x, rand.y);
+                        }
+                        Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoord);
 
-                    if (trip.isHomeBased()) {
-                        destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
-                        plan.addActivity(destinationActivity);
+                        if (trip.isHomeBased()) {
+                            destinationActivity.setEndTime(trip.getDepartureInMinutesReturnTrip() * 60 + MitoUtil.getRandomObject().nextDouble() * 60);
+                            plan.addActivity(destinationActivity);
 
-                        Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
-                        thisLegIsPlausible = true;
-                        if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                            addUAMLegParamters(returnLeg, dataSet, trip, true);
+                            Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
+                            boolean thisreturnLegIsPlausible = true;
+                            if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
+                                thisreturnLegIsPlausible = addUAMLegParamters(returnLeg, dataSet, trip, true);
 
-                        if (thisLegIsPlausible)
-                            plan.addLeg(returnLeg);
+                            if (thisreturnLegIsPlausible) {
+                                plan.addLeg(returnLeg);
+                                plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
+                            }
+                        } else {
+                            plan.addActivity(destinationActivity);
 
-                        plan.addActivity(factory.createActivityFromCoord(activityTypeAtOrigin, originCoord));
-                    } else {
-                        plan.addActivity(destinationActivity);
+                        }
                     }
 
                 }
@@ -199,7 +201,7 @@ public class MatsimPopulationGenerator {
         if (egressMode.equals("car_passenger"))
             egressMode = "car";
 
-        if (accessMode == null){
+        if (accessMode == null || egressMode == null) {
             return false;
         }
 
