@@ -68,7 +68,7 @@ public class MatsimPopulationGenerator {
 
                     Plan plan = factory.createPlan();
                     person.addPlan(plan);
-                    population.addPerson(person);
+
 
                     String activityTypeAtOrigin = getOriginActivity(trip);
 
@@ -91,6 +91,7 @@ public class MatsimPopulationGenerator {
                         thisLegIsPlausible = addUAMLegParamters(leg, dataSet, trip, false);
 
                     if (thisLegIsPlausible) {
+                        population.addPerson(person);
                         plan.addLeg(leg);
 
                         String activityTypeAtDestination = getDestinationActivity(trip);

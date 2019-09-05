@@ -70,7 +70,7 @@ public class TravelDemandGenerator {
 
         int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
 
-        for (int iteration= 0; iteration< iterations; iteration++) {
+        for (int iteration = 0; iteration< iterations; iteration++) {
 
             logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
             ModeChoice modeChoice = new ModeChoice(dataSet);
