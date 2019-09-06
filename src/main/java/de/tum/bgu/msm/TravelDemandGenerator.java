@@ -1,8 +1,6 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
@@ -22,14 +20,7 @@ import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import org.apache.commons.math.stat.descriptive.summary.Sum;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.TransportMode;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.EnumSet;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -69,11 +60,18 @@ public class TravelDemandGenerator {
         distribution.run();
 
         int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
+        boolean useAtenuationFactor  = Resources.INSTANCE.getBoolean("attenuation", true);
+        double b = Resources.INSTANCE.getDouble("attenuation.factor", 1.5);
 
         for (int iteration = 0; iteration< iterations; iteration++) {
+            double probabilityOfModeChange = 1.0;
+            //reduces progresively the proportion of mode changes of the trips
+            if (iterations > 1 && useAtenuationFactor) {
+                probabilityOfModeChange = 1 / Math.pow(iteration + 1., b);
+            }
 
             logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-            ModeChoice modeChoice = new ModeChoice(dataSet);
+            ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfModeChange);
             modeChoice.run();
             modeChoice.printModalShares(iteration, scenarioName);
 

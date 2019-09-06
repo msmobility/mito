@@ -19,6 +19,7 @@ public class ModeChoiceTest {
     private MitoTrip trip1;
     private MitoHousehold household2;
     private MitoTrip trip2;
+    private double probabilityOfChoosing = 1.;
 
 
     @Before
@@ -77,8 +78,8 @@ public class ModeChoiceTest {
 
     @Test
     public void testModeChoice() throws Exception {
-        ModeChoice modeChoice = new ModeChoice(dataSet);
-        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, false,true);
+        ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfChoosing);
+        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, false,true, 1.);
         modeChoiceByPurpose.call();
 
     }

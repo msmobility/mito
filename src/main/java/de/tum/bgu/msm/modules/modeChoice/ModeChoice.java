@@ -11,8 +11,6 @@ import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.List;
@@ -27,9 +25,11 @@ public class ModeChoice extends Module {
     private final static Logger logger = Logger.getLogger(ModeChoice.class);
     private final boolean includeAV = Resources.INSTANCE.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
     private final boolean includeUAM = Resources.INSTANCE.getBoolean(UAM_CHOICE, true);
+    private final double probabilityOfChoosing;
 
-    public ModeChoice(DataSet dataSet) {
+    public ModeChoice(DataSet dataSet, double probabilityOfChoosing) {
         super(dataSet);
+        this.probabilityOfChoosing = probabilityOfChoosing;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ModeChoice extends Module {
     private void modeChoiceByPurpose() {
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         for (Purpose purpose : Purpose.values()) {
-            executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, includeAV, includeUAM));
+            executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, includeAV, includeUAM, probabilityOfChoosing));
         }
         executor.execute();
     }
@@ -167,13 +167,15 @@ public class ModeChoice extends Module {
         private final TravelTimes travelTimes;
         private final AccessAndEgressVariables accessAndEgressVariables;
         private int countTripsSkipped;
+        private final double probabilityOfChoosing;
 
-        ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, boolean includeAV, boolean includeUAM) {
+        ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, boolean includeAV, boolean includeUAM, double probabilityOfChoosing) {
             super(MitoUtil.getRandomObject().nextLong());
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
             this.accessAndEgressVariables = dataSet.getAccessAndEgressVariables();
+            this.probabilityOfChoosing = probabilityOfChoosing;
             if (includeAV) {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoiceAV")), purpose);
@@ -194,7 +196,7 @@ public class ModeChoice extends Module {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         //double[] probabilities = calculateTripProbabilities(household, trip);
                         //logger.info("Probabilities for modes: " + Arrays.toString(probabilities));
-                        chooseMode(trip, calculateTripProbabilities(household, trip));
+                        chooseMode(trip, calculateTripProbabilities(household, trip), probabilityOfChoosing);
                     }
                 }
             } catch (Exception e) {
@@ -243,24 +245,27 @@ public class ModeChoice extends Module {
             }
         }
 
-        private void chooseMode(MitoTrip trip, double[] probabilities) {
-            if (probabilities == null) {
-                countTripsSkipped++;
-                return;
-            }
-            //found Nan when there is no transit!!
-            for (int i = 0; i < probabilities.length; i++) {
-                if (Double.isNaN(probabilities[i])) {
-                    probabilities[i] = 0;
-                }
-            }
+        private void chooseMode(MitoTrip trip, double[] probabilities, double probabilityOfChoosing) {
+            if (random.nextDouble() < probabilityOfChoosing) {
 
-            double sum = MitoUtil.getSum(probabilities);
-            if (sum > 0) {
-                trip.setTripMode(Mode.valueOf(MitoUtil.select(probabilities, random, sum)));
-            } else {
-                //logger.error("Negative probabilities for trip " + trip.getId());
-                trip.setTripMode(null);
+                if (probabilities == null) {
+                    countTripsSkipped++;
+                    return;
+                }
+                //found Nan when there is no transit!!
+                for (int i = 0; i < probabilities.length; i++) {
+                    if (Double.isNaN(probabilities[i])) {
+                        probabilities[i] = 0;
+                    }
+                }
+
+                double sum = MitoUtil.getSum(probabilities);
+                if (sum > 0) {
+                    trip.setTripMode(Mode.valueOf(MitoUtil.select(probabilities, random, sum)));
+                } else {
+                    //logger.error("Negative probabilities for trip " + trip.getId());
+                    trip.setTripMode(null);
+                }
             }
         }
     }
