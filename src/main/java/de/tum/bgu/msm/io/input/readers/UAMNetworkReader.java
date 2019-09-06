@@ -47,7 +47,7 @@ public class UAMNetworkReader {
     private final String ACCESS_MODE = "car";
     private Network network;
     private static final double SEARCH_RADIUS_KM = 1000000;
-    private final double CAR_UAM_TIME_FACTOR = 1.5;
+    private final double CAR_UAM_TIME_FACTOR = 1;
 
 
     public UAMNetworkReader(DataSet dataSet) {
