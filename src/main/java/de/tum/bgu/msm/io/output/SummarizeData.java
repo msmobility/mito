@@ -2,12 +2,15 @@ package de.tum.bgu.msm.io.output;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.google.common.collect.SortedMultiset;
+import com.google.common.collect.TreeMultiset;
 import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
+import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.CoordUtils;
@@ -228,7 +231,7 @@ public class SummarizeData {
         Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 0, 80);
         Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 400, 0, 100);
 
-        PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
+        PieChart.createPieChart(Resources.instance.getBaseDirectory() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
 
         Map<Double, Double> averageDistancesByZone = new HashMap<>();
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
