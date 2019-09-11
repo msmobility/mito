@@ -26,7 +26,7 @@ VOT7000_other_transit = 13.29;
 ///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order:[AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBW = [0.0, 0.64, 2.98, 2.95, 2.87, 3.03, 5.84];
+interceptHBW = [0.0, 0.64, 2.98, 2.95, 2.87, 3.03, -999999];
 ageHBW = [0.0, -0.0037, 0.0, -0.016, -0.017, -0.014, 0.0];
 maleHBW = [0.0, -0.16, 0.22, -0.28, -0.25, -0.18, 0.0];
 driversLicenseHBW = [0.0, -1.03, -1.86, -2.25, -2.09, -2.14, -2.16];
@@ -154,7 +154,7 @@ var calculateHBWProbabilities = function (hh, person, originZone, destinationZon
 ///////////////////////////////////////////////// HBE Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order - [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBE = [0.0, 1.25, 2.82, 2.15, 1.73, 1.97, 5.14];
+interceptHBE = [0.0, 1.25, 2.82, 2.15, 1.73, 1.97, -999999];
 maleHBE = [0.0, -0.17, 0.0, -0.14, -0.15, -0.15, 0.0];
 driversLicenseHBE = [0.0, -1.26, -0.43, -1.23, -0.75, -0.77, -0.55];
 hhAutosHBE = [0.0, -0.11, -0.56, -0.52, -0.56, -0.70, -0.68];
@@ -236,7 +236,7 @@ var calculateHBEProbabilities = function (hh, person, originZone, destinationZon
 ///////////////////////////////////////////////// HBS Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBS = [0.0, 1.27, 2.58, 1.80, 1.36, 1.76, 5.01];
+interceptHBS = [0.0, 1.27, 2.58, 1.80, 1.36, 1.76, -999999];
 maleHBS = [0.0, -0.47, -0.14, -0.62, -0.47, -0.53, -0.15];
 driversLicenseHBS = [0.0, -1.43, -1.86, -2.43, -2.46, -2.39, -2.10];
 hhAutosHBS = [0.0, -0.03, -0.81, -1.88, -1.73, -1.88, -0.86];
@@ -328,7 +328,7 @@ var calculateHBSProbabilities = function (hh, person, originZone, destinationZon
 ///////////////////////////////////////////////// HBO Mode Choice /////////////////////////////////////////////////////
 
 // Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk]
-interceptHBO = [0.0, 1.14, 1.38, 1.36, 1.08, 1.46, 3.74];
+interceptHBO = [0.0, 1.14, 1.38, 1.36, 1.08, 1.46, -999999];
 maleHBO = [0.0, -0.27, 0.17, -0.13, 0.0, -0.063, -0.13];
 driversLicenseHBO = [0.0, -1.34, -1.51, -1.91, -1.66, -1.74, -1.30];
 hhAutosHBO = [0.0, -0.029, -0.57, -1.54, -1.56, -1.72, -0.30];

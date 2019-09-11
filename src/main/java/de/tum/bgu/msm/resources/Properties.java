@@ -36,7 +36,7 @@ public class Properties {
     public static final String TRIP_ATTRACTION_OUTPUT = "trip.attraction.output";
 
     public static final String BASE_DIRECTORY = "base.directory";
-
+    public static final String MOPED_PROPERTIES = "moped.properties";
     public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
 
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";

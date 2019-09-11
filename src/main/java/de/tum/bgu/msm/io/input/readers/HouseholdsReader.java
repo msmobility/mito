@@ -44,6 +44,12 @@ public class HouseholdsReader extends AbstractCsvReader {
         int taz = Integer.parseInt(record[posTaz]);
         int autos = Integer.parseInt(record[posAutos]);
         MitoZone zone = dataSet.getZones().get(taz);
+
+        if (!zone.isMunichZone()){
+            //logger.info(String.format("Household %d is not in the study area! Ignoring it.", id));
+            return;
+        }
+
         if (zone == null) {
             logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
             return;

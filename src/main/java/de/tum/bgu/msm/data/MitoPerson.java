@@ -22,6 +22,8 @@ public class MitoPerson implements Id {
     private final MitoOccupation occupation;
     private final int age;
     private final boolean driversLicense;
+    private boolean transitPass;
+    private boolean disable;
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
@@ -73,5 +75,13 @@ public class MitoPerson implements Id {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public boolean hasTransitPass() {
+        return transitPass;
+    }
+
+    public boolean isDisable() {
+        return disable;
     }
 }

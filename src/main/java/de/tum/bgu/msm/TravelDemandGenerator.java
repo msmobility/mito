@@ -7,6 +7,7 @@ import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.PedestrianModel;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
@@ -52,6 +53,12 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Travel Time Budget Calculation");
         TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
         ttb.run();
+
+        logger.info("Running Module: Moped Pedestrian Model");
+        PedestrianModel pedestrianModel = new PedestrianModel(dataSet);
+        pedestrianModel.runMoped();
+
+
 
         logger.info("Running Module: Microscopic Trip Distribution");
         TripDistribution distribution = new TripDistribution(dataSet);

@@ -122,7 +122,9 @@ public class ModeChoice extends Module {
             try {
                 for (MitoHousehold household : dataSet.getHouseholds().values()) {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        chooseMode(trip, calculateTripProbabilities(household, trip));
+                        if(!trip.getTripMode().equals(Mode.walk)) {
+                            chooseMode(trip, calculateTripProbabilities(household, trip));
+                        }
                     }
                 }
             } catch (Exception e) {

@@ -68,7 +68,7 @@ public class PersonsReader extends AbstractCsvReader {
         final int hhid = Integer.parseInt(record[posHhId]);
 
         if(!dataSet.getHouseholds().containsKey(hhid)) {
-            logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
+            //logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
             return;
         }
         MitoHousehold hh = dataSet.getHouseholds().get(hhid);
