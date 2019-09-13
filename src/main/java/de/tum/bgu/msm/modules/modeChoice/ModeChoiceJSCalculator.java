@@ -31,4 +31,19 @@ public class ModeChoiceJSCalculator extends JavaScriptCalculator<double[]>{
                 travelDistanceNMT,
                 peakHour);
     }
+
+    public double[] calculateProbabilities(MitoHousehold household, MitoPerson person, MitoZone origin,
+                                           MitoZone destination, TravelTimes travelTimes, double travelDistanceAuto,
+                                           double travelDistanceNMT, double peakHour, double variable){
+        return super.calculate(function,
+                household,
+                person,
+                origin,
+                destination,
+                travelTimes,
+                travelDistanceAuto,
+                travelDistanceNMT,
+                peakHour,
+                variable);
+    }
 }

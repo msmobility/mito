@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.resources;
 
+import de.tum.bgu.msm.data.Purpose;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -152,7 +154,11 @@ public class Resources {
         return baseDirectory.resolve(getString(de.tum.bgu.msm.resources.Properties.EXTERNAL_ZONES_LIST_FILE));
     }
 
-    public Path getRelativePath(String autoPeakSkim) {
-        return baseDirectory.resolve(getString(autoPeakSkim));
+    public Path getRelativePath(String property) {
+        return baseDirectory.resolve(getString(property));
+    }
+
+    public Path getTripFrequenciesFilePath(Purpose purpose) {
+        return baseDirectory.resolve(Resources.instance.getString(purpose + ".trip.frequencies"));
     }
 }

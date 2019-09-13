@@ -2,7 +2,6 @@ package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -42,15 +41,8 @@ public class HouseholdsReader extends AbstractCsvReader {
     @Override
     protected void processRecord(String[] record) {
         int id = Integer.parseInt(record[posId]);
-        int taz = Integer.parseInt(record[posTaz]);
         int autos = Integer.parseInt(record[posAutos]);
-        MitoZone zone = dataSet.getZones().get(taz);
-        if (zone == null) {
-            logger.warn(String.format("Household %d refers to non-existing zone %d! Ignoring it.", id, taz));
-            return;
-        }
-        MitoHousehold hh = new MitoHousehold(id, 0, autos, zone);
+        MitoHousehold hh = new MitoHousehold(id, 0, autos);
         dataSet.addHousehold(hh);
-        zone.addHousehold();
     }
 }

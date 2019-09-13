@@ -27,8 +27,6 @@ public class Properties {
     public static final String TRIP_PRODUCTION_OUTPUT = "trip.production.output";
     public static final String TRIP_ATTRACTION_OUTPUT = "trip.attraction.output";
 
-    public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
-
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";
     public static final String TRAIN_TRAVEL_TIME_SKIM = "train.travelTime";

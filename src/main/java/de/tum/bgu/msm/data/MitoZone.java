@@ -23,7 +23,6 @@ public class MitoZone implements Id, Location {
     private float reductionAtBorderDamper = 0;
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
-    private int numberOfPersons = 0;
 
     private final EnumMap<Purpose, Double> tripAttraction = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
@@ -40,6 +39,7 @@ public class MitoZone implements Id, Location {
         this.areaTypeSG = areaType;
     }
 
+    //TODO: is this supposed to stay in master?
     public boolean isMunichZone() {
         return "9162000".equals(this.shapeFeature.getAttribute("AGS").toString());
     }

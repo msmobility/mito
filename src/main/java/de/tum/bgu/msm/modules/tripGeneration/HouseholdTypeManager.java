@@ -38,8 +38,7 @@ public class HouseholdTypeManager {
     }
 
     private Map<HouseholdType, Integer[]> readTripFrequencies() {
-        // todo: should this not read the token from the class Properties.java?
-        Path filePath = Resources.instance.getBaseDirectory().resolve(Resources.instance.getString(purpose + ".trip.frequencies"));
+        Path filePath = Resources.instance.getTripFrequenciesFilePath(purpose);
         GenericCsvReader csvReader = new GenericCsvReader(filePath);
         csvReader.read();
         GenericCsvTable dataTable = csvReader.getTable();
