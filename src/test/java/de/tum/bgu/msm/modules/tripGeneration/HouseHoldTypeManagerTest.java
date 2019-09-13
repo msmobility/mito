@@ -17,7 +17,7 @@ public class HouseHoldTypeManagerTest {
 
     @Before
     public void setupTest() {
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
         zone = new MitoZone(1, AreaTypes.SGType.RURAL);
     }

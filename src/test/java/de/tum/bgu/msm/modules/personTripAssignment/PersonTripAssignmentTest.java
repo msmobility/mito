@@ -55,7 +55,7 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testAssignment() throws IOException {
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
         setupAndRun();
         for (MitoTrip trip : dataSet.getTrips().values()) {

@@ -24,7 +24,7 @@ public class ModeChoiceTest {
     @Before
     public void setupTest() {
         MitoUtil.initializeRandomNumber(new Random(42));
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);

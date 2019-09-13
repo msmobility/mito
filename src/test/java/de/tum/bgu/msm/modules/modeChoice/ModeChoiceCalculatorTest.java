@@ -21,7 +21,7 @@ public class ModeChoiceCalculatorTest {
 
     @Before
     public void setup() {
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("ModeChoiceAV"));
         calculator = new ModeChoiceJSCalculator(reader, Purpose.HBS);
     }

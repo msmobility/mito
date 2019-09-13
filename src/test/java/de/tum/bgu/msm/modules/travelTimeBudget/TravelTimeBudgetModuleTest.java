@@ -22,7 +22,7 @@ public class TravelTimeBudgetModuleTest {
     @Before
     public void setup() {
 
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelTimes(new TravelTimes() {
