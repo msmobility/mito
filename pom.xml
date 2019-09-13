@@ -75,6 +75,14 @@
                     <excludes>
                         <exclude>**/*$*</exclude> <!-- exclude all inner classes -->
                     </excludes>
+                    <includes>
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                        <include>**/*TestCase.java</include>
+                        <include>**/*IT.java</include>
+
+                    </includes>
 
                     <!--execute each test in separate JVM (slow, but otherwise it does not-->
                     <!--work, and no problem as long as there are only integration tests):-->
