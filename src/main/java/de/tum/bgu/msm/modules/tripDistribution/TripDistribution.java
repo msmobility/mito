@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -79,7 +78,7 @@ public final class TripDistribution extends Module {
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
-        if (Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
+        if (Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
             nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));
         }
         executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);

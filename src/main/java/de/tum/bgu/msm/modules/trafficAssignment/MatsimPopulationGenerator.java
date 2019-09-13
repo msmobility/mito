@@ -8,29 +8,24 @@ import edu.emory.mathcs.utils.ConcurrencyUtils;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordUtils;
-import org.matsim.core.utils.gis.ShapeFileReader;
-import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MatsimPopulationGenerator {
+class MatsimPopulationGenerator {
 
     private static final Logger logger = Logger.getLogger(MatsimPopulationGenerator.class);
 
-    Set<Mode> modeSet = new HashSet<>();
+    private Set<Mode> modeSet = new HashSet<>();
 
-    public MatsimPopulationGenerator() {
-        String[] networkModes = Resources.INSTANCE.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
-        String[] teleportedModes = Resources.INSTANCE.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
+    MatsimPopulationGenerator() {
+        String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
+        String[] teleportedModes = Resources.instance.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
         for (String mode : networkModes){
             modeSet.add(Mode.valueOf(mode));
         }
@@ -40,17 +35,7 @@ public class MatsimPopulationGenerator {
     }
     //private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
 
-
-    public static Map<Integer,SimpleFeature> loadZoneShapeFile(){
-        Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
-        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
-            int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
-            zoneFeatureMap.put(zoneId,feature);
-        }
-        return zoneFeatureMap;
-    }
-
-    public Population generateMatsimPopulation(DataSet dataSet, Config config){
+    Population generateMatsimPopulation(DataSet dataSet, Config config){
         Population population = PopulationUtils.createPopulation(config);
         PopulationFactory factory = population.getFactory();
         AtomicInteger assignedTripCounter = new AtomicInteger(0);
@@ -114,14 +99,14 @@ public class MatsimPopulationGenerator {
     }
 
 
-    public static String getOriginActivity(MitoTrip trip){
+    private static String getOriginActivity(MitoTrip trip){
         Purpose purpose = trip.getTripPurpose();
         if (purpose.equals(Purpose.NHBW)){
             return "work";
         } else if (purpose.equals(Purpose.NHBO)){
             return "other";
         } else if (purpose.equals(Purpose.AIRPORT)) {
-            if (trip.getTripOrigin().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)){
+            if (trip.getTripOrigin().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)){
                 return "airport";
             } else {
                 return "home";
@@ -131,7 +116,7 @@ public class MatsimPopulationGenerator {
         }
     }
 
-    public static String getDestinationActivity(MitoTrip trip){
+    private static String getDestinationActivity(MitoTrip trip){
         Purpose purpose = trip.getTripPurpose();
         if (purpose.equals(Purpose.HBW)){
             return "work";
@@ -140,7 +125,7 @@ public class MatsimPopulationGenerator {
         } else if (purpose.equals(Purpose.HBS)){
             return "shopping";
         } else if (purpose.equals(Purpose.AIRPORT)) {
-            if (trip.getTripDestination().getZoneId() == Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE)) {
+            if (trip.getTripDestination().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)) {
                 return "airport";
             } else {
                 return "home";
@@ -149,10 +134,4 @@ public class MatsimPopulationGenerator {
             return "other";
         }
     }
-
-
-
-
-
-
 }

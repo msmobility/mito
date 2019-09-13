@@ -4,11 +4,12 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoSchool;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
+
+import java.nio.file.Path;
 
 public class SchoolsReader extends AbstractCsvReader {
 
@@ -49,7 +50,7 @@ public class SchoolsReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("Reading school micro data from ascii file");
-        String fileName = Resources.INSTANCE.getString(Properties.SCHOOLS);
-        super.read(fileName, ",");
+        Path filePath = Resources.instance.getSchoolsFilePath();
+        super.read(filePath, ",");
     }
 }

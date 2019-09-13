@@ -19,7 +19,7 @@ import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
 public class ModeChoice extends Module {
 
     private final static Logger logger = Logger.getLogger(ModeChoice.class);
-    private final boolean includeAV = Resources.INSTANCE.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
+    private final boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
 
     public ModeChoice(DataSet dataSet) {
         super(dataSet);

@@ -12,11 +12,11 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
 import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
-import org.locationtech.jts.geom.Coordinate;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -27,12 +27,11 @@ import java.util.*;
 public class SummarizeData {
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(SummarizeData.class);
 
-    public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet, String scenarioName) {
-        String outputSubDirectory = "scenOutput/" + scenarioName + "/";
+    public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet) {
 
         LOGGER.info("  Writing household file");
-        String filehh = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.HOUSEHOLDS) + "_t.csv";
-        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh, false);
+        Path filehh = Resources.instance.getOutputHouseholdPath();
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh.toAbsolutePath().toString(), false);
         pwh.println("id,zone,homeX,homeY,hhSize,autos,trips,workTrips");
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
             pwh.print(hh.getId());
@@ -58,8 +57,8 @@ public class SummarizeData {
         pwh.close();
 
         LOGGER.info("  Writing person file");
-        String filepp = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.PERSONS) + "_t.csv";
-        PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp, false);
+        Path filepp = Resources.instance.getOutputPersonsPath();
+        PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp.toAbsolutePath().toString(), false);
         pwp.println("id,hhID,hhSize,hhTrips,avTrips");
         for(MitoHousehold hh: dataSet.getHouseholds().values()) {
             for (MitoPerson pp : hh.getPersons().values()) {
@@ -82,7 +81,7 @@ public class SummarizeData {
         String outputSubDirectory = "scenOutput/" + scenarioName + "/";
 
         LOGGER.info("  Writing trips file");
-        String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
+        String file = Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
         pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
         for (MitoTrip trip : dataSet.getTrips().values()) {
@@ -102,7 +101,7 @@ public class SummarizeData {
                 pwh.print(((MicroLocation) origin).getCoordinate().y);
                 pwh.print(",");
             } else{
-                if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
+                if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         origin != null){
                     Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
                     pwh.print(coordinate.getX());
@@ -130,7 +129,7 @@ public class SummarizeData {
                 pwh.print(((MicroLocation) destination).getCoordinate().y);
                 pwh.print(",");
             }else{
-                if (Resources.INSTANCE.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
+                if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         destination != null){
                     Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
                     pwh.print(coordinate.getX());
@@ -229,28 +228,28 @@ public class SummarizeData {
             travelDistancesArray[i] = value;
             i++;
         }
-        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 0, 80);
-        Histogram.createFrequencyHistogram(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 400, 0, 100);
+        Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 0, 80);
+        Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 400, 0, 100);
 
-        PieChart.createPieChart(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
+        PieChart.createPieChart(Resources.instance.getBaseDirectory() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
 
         Map<Double, Double> averageDistancesByZone = new HashMap<>();
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
             averageDistancesByZone.put(Double.valueOf(entry.getKey()), Stats.meanOf(entry.getValue()));
         }
-        PrintWriter pw1 = MitoUtil.openFileForSequentialWriting(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripsByZone"+purpose+".csv", false);
+        PrintWriter pw1 = MitoUtil.openFileForSequentialWriting(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripsByZone"+purpose+".csv", false);
         pw1.println("id,number_trips");
         for(MitoZone zone: dataSet.getZones().values()) {
             pw1.println(zone.getId()+","+tripsByZone.count(zone));
         }
         pw1.close();
-        PrintWriter pw = MitoUtil.openFileForSequentialWriting(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistanceTable"+purpose+".csv", false);
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistanceTable"+purpose+".csv", false);
         pw.println("id,avTripDistance");
         for(Map.Entry<Double, Double> entry: averageDistancesByZone.entrySet()) {
             pw.println(entry.getKey().intValue()+","+entry.getValue());
         }
         pw.close();
-        ScatterPlot.createScatterPlot(Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistancePlot"+purpose, averageDistancesByZone, "Average Trip Distances by MitoZone", "MitoZone Id", "Average Trip Distance");
+        ScatterPlot.createScatterPlot(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistancePlot"+purpose, averageDistancesByZone, "Average Trip Distances by MitoZone", "MitoZone Id", "Average Trip Distance");
 
     }
 

@@ -27,7 +27,7 @@ public class AirportTripGeneration {
     public AirportTripGeneration(DataSet dataSet) {
         this.dataSet = dataSet;
         this.TRIP_ID_COUNTER.set(dataSet.getTrips().size());
-        this.airportZoneId = Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE);
+        this.airportZoneId = Resources.instance.getInt(Properties.AIRPORT_ZONE);
         this.numberOfTripsCalculator = new AirportNumberOfTripsCalculator(new InputStreamReader(this.getClass().getResourceAsStream("AirportTripRateCalc")));
         this.airportDestinationCalculator = new AirportDestinationCalculator(new InputStreamReader(TripDistribution.class.getResourceAsStream("AirportTripDistribution")));
         this.airportLogsumCalculator = new AirportLogsumCalculator(new InputStreamReader(ModeChoice.class.getResourceAsStream("ModeChoice")));

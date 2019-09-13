@@ -20,7 +20,7 @@ public class MitoHousehold implements Id, MicroLocation {
     private int monthlyIncome_EUR;
     private int economicStatus;
     private final int autos;
-    private final MitoZone homeZone;
+    private MitoZone homeZone;
     private Coordinate homeLocation;
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
@@ -28,11 +28,10 @@ public class MitoHousehold implements Id, MicroLocation {
 
     private final Map<Integer, MitoPerson> persons  = new HashMap<>();
 
-    public MitoHousehold(int id, int monthlyIncome_EUR, int autos, MitoZone homeZone) {
+    public MitoHousehold(int id, int monthlyIncome_EUR, int autos) {
         this.hhId = id;
         this.monthlyIncome_EUR = monthlyIncome_EUR;
         this.autos = autos;
-        this.homeZone = homeZone;
     }
 
     @Override
@@ -54,6 +53,10 @@ public class MitoHousehold implements Id, MicroLocation {
 
     public int getAutos() {
         return autos;
+    }
+
+    public void setHomeZone(MitoZone homeZone) {
+        this.homeZone = homeZone;
     }
 
     public MitoZone getHomeZone() {

@@ -4,8 +4,10 @@ import de.tum.bgu.msm.data.DataSet;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author Nico
@@ -26,8 +28,8 @@ public abstract class AbstractCsvReader extends AbstractInputReader{
 
     protected abstract void processRecord(String[] record);
 
-    public void read(String fileName, String delimiter) {
-        initializeReader(fileName, delimiter);
+    public void read(Path filePath, String delimiter) {
+        initializeReader(filePath, delimiter);
         try {
             String record;
             while ((record = reader.readLine()) != null) {
@@ -46,9 +48,10 @@ public abstract class AbstractCsvReader extends AbstractInputReader{
         logger.info(this.getClass().getSimpleName() + ": Read " + numberOfRecords + " records.");
     }
 
-    private void initializeReader(String fileName, String delimiter) {
+    private void initializeReader(Path filePath, String delimiter) {
         try {
-            reader = new BufferedReader(new FileReader(fileName.trim()));
+
+            reader = Files.newBufferedReader(filePath,  StandardCharsets.ISO_8859_1);
             processHeader(reader.readLine().split(delimiter));
         } catch (IOException e) {
             logger.error("Error initializing csv reader: " + e.getMessage(), e);

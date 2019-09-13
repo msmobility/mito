@@ -45,7 +45,7 @@ public final class MitoModel {
     public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(new DataSet(), Resources.INSTANCE.getString(Properties.SCENARIO_NAME));
+        MitoModel model = new MitoModel(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
@@ -72,9 +72,9 @@ public final class MitoModel {
     }
 
     private void readStandAlone(ImplementationConfig config) {
-        dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR));
+        dataSet.setYear(Resources.instance.getInt(Properties.SCENARIO_YEAR));
         new ZonesReader(dataSet).read();
-        if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
+        if (Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
         new JobReader(dataSet, config.getJobTypeFactory()).read();
@@ -107,10 +107,6 @@ public final class MitoModel {
 
     public DataSet getData() {
         return dataSet;
-    }
-
-    public void setBaseDirectory(String baseDirectory) {
-        MitoUtil.setBaseDirectory(baseDirectory);
     }
 
     public String getScenarioName() {

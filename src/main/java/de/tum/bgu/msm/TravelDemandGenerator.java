@@ -62,21 +62,21 @@ public class TravelDemandGenerator {
         ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
 
-        boolean runTimeOfDayChoice = Resources.INSTANCE.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
+        boolean runTimeOfDayChoice = Resources.instance.getBoolean(Properties.RUN_TIME_OF_DAY_CHOICE, false);
         if (runTimeOfDayChoice) {
             logger.info("Running time of day choice");
             TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
             timeOfDayChoice.run();
         }
 
-        boolean runScaling = Resources.INSTANCE.getBoolean(Properties.RUN_TRIP_SCALING, false);
+        boolean runScaling = Resources.instance.getBoolean(Properties.RUN_TRIP_SCALING, false);
         if (runTimeOfDayChoice && runScaling) {
             logger.info("Running trip scaling");
             TripScaling tripScaling = new TripScaling(dataSet);
             tripScaling.run();
         }
 
-        boolean runAssignment = Resources.INSTANCE.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
+        boolean runAssignment = Resources.instance.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
         if (runTimeOfDayChoice && runScaling && runAssignment) {
             logger.info("Running traffic assignment in MATsim");
             TrafficAssignment trafficAssignment = new TrafficAssignment(dataSet, scenarioName);
@@ -85,18 +85,18 @@ public class TravelDemandGenerator {
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
-        if (Resources.INSTANCE.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
-            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet, scenarioName);
+        if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
+            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
             SummarizeData.writeOutTrips(dataSet, scenarioName);
         }
-        if(Resources.INSTANCE.getBoolean(Properties.CREATE_CHARTS, true)){
+        if(Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)){
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
 
-        if(Resources.INSTANCE.getBoolean(Properties.PRINT_OUT_SKIM,false)){
+        if(Resources.instance.getBoolean(Properties.PRINT_OUT_SKIM,false)){
             try {
 
-                String fileName = "./scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/" + Resources.INSTANCE.getString(Properties.SKIM_FILE_NAME);
+                String fileName = "./scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/" + Resources.instance.getString(Properties.SKIM_FILE_NAME);
                 int dimension = dataSet.getZones().size();
                 OmxMatrixWriter.createOmxFile(fileName, dimension);
 

@@ -8,6 +8,7 @@ import de.tum.bgu.msm.io.input.readers.GenericCsvReader.GenericCsvTable;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +38,8 @@ public class HouseholdTypeManager {
     }
 
     private Map<HouseholdType, Integer[]> readTripFrequencies() {
-        // todo: should this not read the token from the class Properties.java?
-        String fileName = Resources.INSTANCE.getString(purpose + ".trip.frequencies");
-        GenericCsvReader csvReader = new GenericCsvReader(fileName);
+        Path filePath = Resources.instance.getTripFrequenciesFilePath(purpose);
+        GenericCsvReader csvReader = new GenericCsvReader(filePath);
         csvReader.read();
         GenericCsvTable dataTable = csvReader.getTable();
         Map<HouseholdType, Integer[]> tripFrequency = new HashMap<>();
@@ -50,9 +50,9 @@ public class HouseholdTypeManager {
             for (int row = 0; row < dataTable.getRowCount(); row++) {
                 String purpose = dataTable.getString(row, dataTable.getColumnIndexOf("typePurpose"));
                 if (!purpose.equals(this.purpose.toString())) {
-                    logger.error("File " + fileName + " contains trip purpose " + purpose +
+                    logger.error("File " + filePath + " contains trip purpose " + purpose +
                             ", which is different from expected purpose " + this.purpose);
-                    throw new RuntimeException("File " + fileName + " contains trip purpose " + purpose +
+                    throw new RuntimeException("File " + filePath + " contains trip purpose " + purpose +
                             ", which is different from expected purpose " + this.purpose);
                 }
 
@@ -77,15 +77,15 @@ public class HouseholdTypeManager {
                 }
             }
             if (!foundThisHhType) {
-                logger.error("Could not find household type " + ht.getId() + " in file " + fileName);
+                logger.error("Could not find household type " + ht.getId() + " in file " + filePath);
             }
         }
         return tripFrequency;
     }
 
-    public void createHouseHoldTypeDefinitions() {
+    private void createHouseHoldTypeDefinitions() {
         // todo: should this not read the token from the class Properties.java?
-        String[] householdDefinitionToken = Resources.INSTANCE.getArray("hh.type." + purpose);
+        String[] householdDefinitionToken = Resources.instance.getArray("hh.type." + purpose);
         String sizeToken = householdDefinitionToken[1];
         String[] sizePortions = sizeToken.split("\\.");
         String workerToken = householdDefinitionToken[2];

@@ -2,7 +2,6 @@ package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
@@ -35,7 +34,7 @@ public class LongDistanceTimeOfDayDistributionReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.EXTERNAL_DEPARTURE_TIME_FILE),",");
+        super.read(Resources.instance.getExternalDepartureTimeFilePath(),",");
     }
 
 

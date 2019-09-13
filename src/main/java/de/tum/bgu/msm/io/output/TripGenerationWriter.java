@@ -24,9 +24,9 @@ public class TripGenerationWriter {
     public static void writeTripsByPurposeAndZone(DataSet dataSet, String scenarioName) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear(), scenarioName);
+        String fileNameProd = generateOutputFileName(Resources.instance.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear(), scenarioName);
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet.getYear(), scenarioName);
+        String fileNameAttr = generateOutputFileName(Resources.instance.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet.getYear(), scenarioName);
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");

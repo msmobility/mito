@@ -2,10 +2,10 @@ package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,8 +33,8 @@ public class PersonsReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("  Reading person micro data from ascii file");
-        String fileName = Resources.INSTANCE.getString(Properties.PERSONS);
-        super.read(fileName, ",");
+        Path filePath = Resources.instance.getPersonsFilePath();
+        super.read(filePath, ",");
         int noIncomeHouseholds = 0;
         for(MitoHousehold household: dataSet.getHouseholds().values()) {
             if(household.getMonthlyIncome_EUR() == 0) {

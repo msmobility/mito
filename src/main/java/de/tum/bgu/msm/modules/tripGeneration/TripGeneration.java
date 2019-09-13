@@ -21,7 +21,7 @@ public class TripGeneration extends Module {
 
     public TripGeneration(DataSet dataSet) {
         super(dataSet);
-        addAirportDemand = Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false);
+        addAirportDemand = Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false);
     }
 
     @Override

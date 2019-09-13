@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.modules.scaling;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -15,7 +14,7 @@ public class TripScaling extends Module {
 
     public TripScaling(DataSet dataSet) {
         super(dataSet);
-        tripScalingFactor = Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR));
+        tripScalingFactor = Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR));
     }
 
     @Override
