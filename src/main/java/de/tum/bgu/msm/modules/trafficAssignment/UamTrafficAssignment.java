@@ -42,7 +42,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				10000 : 300000;
 
 		// UAM parameters
-		matsimConfig = ConfigAddUAMParameters.addUAMParameters(
+		ConfigAddUAMParameters.addUAMParameters(
 				matsimConfig,
 				Resources.INSTANCE.getString(Properties.UAM_VEHICLES),
 				"walk,car,bike,pt",
