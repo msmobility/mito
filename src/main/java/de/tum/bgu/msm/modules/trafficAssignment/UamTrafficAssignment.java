@@ -8,6 +8,7 @@ import net.bhl.matsim.uam.router.strategy.UAMStrategy;
 import net.bhl.matsim.uam.run.RunUAMScenario;
 import net.bhl.matsim.uam.run.UAMModule;
 import net.bhl.matsim.uam.scenario.utils.ConfigAddUAMParameters;
+import org.matsim.core.config.Config;
 import org.matsim.core.controler.Controler;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				10000 : 300000;
 
 		// UAM parameters
-		ConfigAddUAMParameters.addUAMParameters(
+		matsimConfig = ConfigAddUAMParameters.addUAMParameters(
 				matsimConfig,
 				Resources.INSTANCE.getString(Properties.UAM_VEHICLES),
 				"walk,car,bike,pt",
@@ -51,7 +52,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 				strategy,
 				false
 		);
-		
+
 		matsimConfig = ConfigureMatsim.configureMatsim(matsimConfig);
 
 		String runId = "mito_assignment";
