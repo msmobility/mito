@@ -26,7 +26,7 @@ public class UamTrafficAssignment extends TrafficAssignment {
 
 	@Override
 	protected void configMatsim() {
-		String[] args = { "--city", "Munich" };
+		String[] args = {};
 		RunUAMScenario.parseArguments(args);
 		matsimConfig = RunUAMScenario.createConfig();
 
