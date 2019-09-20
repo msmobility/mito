@@ -4,6 +4,8 @@ import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -13,7 +15,7 @@ import java.util.Map;
  */
 public class StationDependentTotalHandlingTimes implements TotalHandlingTimes {
 
-    private double PENALTY_FACTOR = 1;
+    private double PENALTY_FACTOR = Resources.INSTANCE.getDouble(Properties.WAITING_TIME_PENALTY, 1.);
     private final AccessAndEgressVariables accessAndEgressVariables;
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private final Map<Integer, String> zonesToStationMap;

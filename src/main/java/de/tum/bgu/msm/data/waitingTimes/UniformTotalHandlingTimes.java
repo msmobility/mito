@@ -11,7 +11,7 @@ import de.tum.bgu.msm.resources.Resources;
  */
 public class UniformTotalHandlingTimes implements TotalHandlingTimes {
 
-    private double PENALTY_FACTOR = 1;
+    private double PENALTY_FACTOR = Resources.INSTANCE.getDouble(Properties.WAITING_TIME_PENALTY, 1.);
 
 
     @Override

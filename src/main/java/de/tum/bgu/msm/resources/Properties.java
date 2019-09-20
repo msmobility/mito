@@ -106,4 +106,7 @@ public class Properties {
     public static final String UAM_MATSIM_ROUTING = "uam.matsim.routing";
     public static final String UAM_VEHICLES = "uam.vehicles";
 
+    public static final String MIN_FLYING_DIST = "min.flying.distance";
+    public static final String CAR_2_UAM_THRESHOLD = "car.to.uam.threshold";
+    public static final String WAITING_TIME_PENALTY = "waiting.time.penalty.factor";
 }
