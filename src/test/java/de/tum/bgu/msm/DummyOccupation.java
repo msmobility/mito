@@ -38,6 +38,16 @@ public class DummyOccupation implements MitoOccupation {
     }
 
     @Override
+    public Optional<Integer> getEndTime() {
+        return Optional.empty();
+    }
+
+    @Override
+    public void setEndTime(int endTime_s) {
+
+    }
+
+    @Override
     public int getId() {
         return 0;
     }

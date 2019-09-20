@@ -18,4 +18,8 @@ public interface MitoOccupation extends MicroLocation, Id {
     Optional<Integer> getStartTime();
 
     void setStartTime(int startTime_s);
+
+    Optional<Integer> getEndTime();
+
+    void setEndTime(int endTime_s);
 }
