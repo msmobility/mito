@@ -13,6 +13,7 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     private final int id;
 
     private Integer startTime = null;
+    private Integer endTime = null;
 
     public MitoOccupationImpl(MitoZone occupationZone, Coordinate occupationLocation, int id) {
         this.occupationZone = Objects.requireNonNull(occupationZone);
@@ -48,5 +49,15 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     @Override
     public void setStartTime(int startTime_s) {
         this.startTime = startTime_s;
+    }
+
+    @Override
+    public Optional<Integer> getEndTime() {
+        return Optional.ofNullable(endTime);
+    }
+
+    @Override
+    public void setEndTime(int endTime_s) {
+        this.startTime = endTime_s;
     }
 }
