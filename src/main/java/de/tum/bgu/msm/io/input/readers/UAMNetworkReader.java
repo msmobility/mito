@@ -50,6 +50,7 @@ public class UAMNetworkReader {
     private static final double SEARCH_RADIUS_KM = 1000000;
     private final double CAR_UAM_TIME_FACTOR = 1;
     private final double MIN_FLYING_DISTANCE_M = 5000;
+    private final double TOO_HIGH_TIME = Double.MAX_VALUE;
 
 
     public UAMNetworkReader(DataSet dataSet) {
@@ -161,7 +162,7 @@ public class UAMNetworkReader {
                 int origId = originZone.getId();
                 int destId = destinationZone.getId();
                 if (!originZone.equals(destinationZone)) {
-                    double minTravelTime = 10000;
+                    double minTravelTime = TOO_HIGH_TIME;
                     double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
                     UAMStation accessStationChosen = null;
                     UAMStation egressStationChosen = null;
@@ -229,7 +230,7 @@ public class UAMNetworkReader {
                         travelDistanceUAM.setIndexed(origId, destId, 10000);
                     }
                 } else {
-                    travelTimeUam.setIndexed(origId, destId, 10000);
+                    travelTimeUam.setIndexed(origId, destId, TOO_HIGH_TIME);
                     accessVertiportUam.setIndexed(origId, destId, 10000);
                     egressVertiportUam.setIndexed(origId, destId, 10000);
                     accessTimeUam.setIndexed(origId, destId, 10000);
