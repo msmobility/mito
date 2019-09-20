@@ -99,12 +99,12 @@ public class HandlingTimesUpdater {
         //need to change the next interval if the waiting time is longer than the interval itself
         for (String station : zonesToStationMap.values()) {
             int interval = 0;
-            double previousIntervalTime_min = averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval);
+            double previousIntervalTime_min = averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval*INTERVAL_S);
             for (interval = 1; interval < averageWaitingTimesByUAMStationAndTime_min.get(station).keySet().size(); interval++) {
-                double thisIntervalTime = averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval);
+                double thisIntervalTime = averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval*INTERVAL_S);
                 if (previousIntervalTime_min > INTERVAL_S / 60){
                     thisIntervalTime += previousIntervalTime_min - INTERVAL_S/60;
-                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, thisIntervalTime);
+                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval*INTERVAL_S, thisIntervalTime);
                 }
                 previousIntervalTime_min = thisIntervalTime;
             }
