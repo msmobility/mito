@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class StationDependentTotalHandlingTimes implements TotalHandlingTimes {
 
-
+    private double PENALTY_FACTOR = 1;
     private final AccessAndEgressVariables accessAndEgressVariables;
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
     private final Map<Integer, String> zonesToStationMap;
@@ -37,14 +37,14 @@ public class StationDependentTotalHandlingTimes implements TotalHandlingTimes {
                 while (intervals.hasNext() && timeOfDay_s2 > interval){
                         interval = intervals.next();
                 }
-                return averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval);
+                return averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval)*PENALTY_FACTOR;
             } else {
                 //did not have an actual UAM-plausible-route but choose still UAM - this is not consistent between mito and uam-matsim.
                 //in MITO, the trip that is faster by car is assigned with travel time = 10000 min, so it should not be done (although
                 //error terms let the choices a bit random, thus it can be chosen?. In MATSim,
                 //the agents can choose an origin destination pair of UAM even if the assigned trip would be faster by car.
                 //all these are assumptions now and need further refinement (carlos)
-                return 10000.;
+                return Double.MAX_VALUE;
             }
         } else {
             //other modes are not considered for waiting times

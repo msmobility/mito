@@ -11,10 +11,13 @@ import de.tum.bgu.msm.resources.Resources;
  */
 public class UniformTotalHandlingTimes implements TotalHandlingTimes {
 
+    private double PENALTY_FACTOR = 1;
+
+
     @Override
     public double getWaitingTime(MitoTrip trip, Location origin, Location destination, String mode) {
         if (mode.equalsIgnoreCase(Mode.uam.toString())){
-            return Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 0);
+            return Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 0) * PENALTY_FACTOR;
         } else {
             return 0;
         }
