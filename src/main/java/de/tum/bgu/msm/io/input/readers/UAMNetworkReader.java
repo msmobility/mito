@@ -48,7 +48,7 @@ public class UAMNetworkReader {
     private final String ACCESS_MODE = "car";
     private Network network;
     private static final double SEARCH_RADIUS_KM = 1000000;
-    private final double CAR_UAM_TIME_FACTOR = Resources.INSTANCE.getDouble(Properties.CAR_2_UAM_THRESHOLD, 1.);
+    private final double CAR_UAM_TIME_FACTOR = Resources.INSTANCE.getDouble(Properties.CAR_2_UAM_THRESHOLD, 10.);
     private final double MIN_FLYING_DISTANCE_M = Resources.INSTANCE.getDouble(Properties.MIN_FLYING_DIST, 5000.);
     private final double TOO_HIGH_TIME = Double.MAX_VALUE;
 
