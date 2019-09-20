@@ -23,7 +23,7 @@ import java.util.*;
 public class HandlingTimesUpdater {
 
     private final static Logger logger = Logger.getLogger(TotalHandlingTimes.class);
-    private static final double PROCESSING_TIME_FOR_INCOMPLETE_TRIPS_S = 10000.;
+    private static final double PROCESSING_TIME_FOR_INCOMPLETE_TRIPS_S = Double.MAX_VALUE;
     private final DataSet dataSet;
     private final Map<String, Map<Integer, List<Double>>> waitingTimesByUAMStationAndTime;
     private final Map<String, Map<Integer, Double>> averageWaitingTimesByUAMStationAndTime_min;
@@ -95,6 +95,21 @@ public class HandlingTimesUpdater {
                 }
             }
         }
+
+        //need to change the next interval if the waiting time is longer than the interval itself
+        for (String station : zonesToStationMap.values()) {
+            int interval = 0;
+            double previousIntervalTime_min = averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval);
+            for (interval = 1; interval < averageWaitingTimesByUAMStationAndTime_min.get(station).keySet().size(); interval++) {
+                double thisIntervalTime = averageWaitingTimesByUAMStationAndTime_min.get(station).get(interval);
+                if (previousIntervalTime_min > INTERVAL_S / 60){
+                    thisIntervalTime += previousIntervalTime_min - INTERVAL_S/60;
+                    averageWaitingTimesByUAMStationAndTime_min.get(station).put(interval, thisIntervalTime);
+                }
+                previousIntervalTime_min = thisIntervalTime;
+            }
+        }
+
     }
 
     private void printOutTimes(String outputFileName) {
