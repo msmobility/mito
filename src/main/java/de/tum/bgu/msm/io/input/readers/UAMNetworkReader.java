@@ -26,6 +26,7 @@ import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -48,6 +49,7 @@ public class UAMNetworkReader {
     private Network network;
     private static final double SEARCH_RADIUS_KM = 1000000;
     private final double CAR_UAM_TIME_FACTOR = 1;
+    private final double MIN_FLYING_DISTANCE_M = 5000;
 
 
     public UAMNetworkReader(DataSet dataSet) {
@@ -99,8 +101,25 @@ public class UAMNetworkReader {
 
         for (UAMStation originStation : stationMap.values()) {
             for (UAMStation destinationStation : stationMap.values()) {
-                if (originStation.equals(destinationStation))
+                //no trips with origin == dest
+                if (originStation.equals(destinationStation)){
                     continue;
+                }
+                //remove shorter trips if desired
+                if (NetworkUtils.getEuclideanDistance(originStation.getLocationLink().getFromNode().getCoord(),
+                        destinationStation.getLocationLink().getFromNode().getCoord()) < MIN_FLYING_DISTANCE_M){
+                    travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
+                            stationZoneMap.get(destinationStation).getId(),
+                            Double.POSITIVE_INFINITY);
+
+                    travelDistanceUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
+                            stationZoneMap.get(destinationStation).getId(),
+                            Double.POSITIVE_INFINITY);
+
+                    logger.info("Stations " + originStation.getName()  + " and " + destinationStation.getName() +
+                            " are closer than " + MIN_FLYING_DISTANCE_M + " m.");
+                    continue;
+                }
 
                 // TODO: @Carlos, does this need to include handling time? Let's clarify how MITO deals with waiting+process times of UAM
                 //No, the handling time should be apart
