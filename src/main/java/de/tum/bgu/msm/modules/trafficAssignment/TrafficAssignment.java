@@ -63,15 +63,14 @@ public class TrafficAssignment extends Module {
         String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
         Set<String> networkModesSet = new HashSet<>();
 
-        for (String mode : networkModes){
+        for (String mode : networkModes) {
             String matsimMode = Mode.getMatsimMode(Mode.valueOf(mode));
-            if (!networkModesSet.contains(matsimMode)){
+            if (!networkModesSet.contains(matsimMode)) {
                 networkModesSet.add(matsimMode);
             }
         }
 
         matsimConfig.plansCalcRoute().setNetworkModes(networkModesSet);
-
 
 
     }
@@ -90,9 +89,10 @@ public class TrafficAssignment extends Module {
     private void runMatsim() {
         final Controler controler = new Controler(matsimScenario);
         controler.run();
-
-        CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
-        skimUpdater.run();
+        if(Resources.instance.getBoolean(Properties.PRINT_OUT_SKIM,false)) {
+            CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, matsimScenario.getNetwork(), dataSet);
+            skimUpdater.run();
+        }
         dataSet.setMatsimControler(controler);
-       }
+    }
 }

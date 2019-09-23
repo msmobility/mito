@@ -142,12 +142,12 @@ public class Resources {
 
     public Path getOutputHouseholdPath() {
         String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
-        return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve(getString(SCENARIO_YEAR)).resolve("microData").resolve("hhInclTrips.csv");
+        return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve("microData").resolve("hhInclTrips.csv");
     }
 
     public Path getOutputPersonsPath() {
         String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
-        return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve(getString(SCENARIO_YEAR)).resolve("microData").resolve("ppInclTrips.csv");
+        return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve("microData").resolve("ppInclTrips.csv");
     }
 
     public Path getExternalZonesListFilePath() {
