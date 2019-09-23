@@ -5,8 +5,8 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
-import javafx.util.Pair;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.collections.Tuple;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.Map;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.DROPPED_TRIPS_AT_BORDER_COUNTER;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
 
-class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> {
+class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> {
 
     private static final Logger logger = Logger.getLogger(TripsByPurposeGenerator.class);
     private final boolean dropAtBorder = Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER);
@@ -37,14 +37,14 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Pair<Purpos
     }
 
     @Override
-    public Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>> call() {
+    public Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> call() {
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
             generateTripsForHousehold(hh);
         }
-        return new Pair<>(purpose, tripsByHH);
+        return new Tuple<>(purpose, tripsByHH);
     }
 
 
