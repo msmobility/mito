@@ -86,7 +86,7 @@ public final class TimeOfDayChoice extends Module {
         if(tripPurpose == Purpose.HBW || tripPurpose == Purpose.HBE) {
             MitoOccupation occupation = mitoTrip.getPerson().getOccupation();
             if(occupation != null){
-                return occupation.getStartTime().orElse(MitoUtil.select(arrivalMinuteCumProbByPurpose.get(tripPurpose).toArray(), MitoUtil.getRandomObject()));
+                return occupation.getStartTime_min().orElse(MitoUtil.select(arrivalMinuteCumProbByPurpose.get(tripPurpose).toArray(), MitoUtil.getRandomObject()));
             }
         }
         return MitoUtil.select(arrivalMinuteCumProbByPurpose.get(tripPurpose).toArray(), MitoUtil.getRandomObject());
@@ -96,8 +96,8 @@ public final class TimeOfDayChoice extends Module {
         Purpose tripPurpose = mitoTrip.getTripPurpose();
         if(tripPurpose == Purpose.HBW || tripPurpose == Purpose.HBE) {
             MitoOccupation occupation = mitoTrip.getPerson().getOccupation();
-            if(occupation != null && occupation.getEndTime().isPresent()){
-                return occupation.getEndTime().get();
+            if(occupation != null && occupation.getEndTime_min().isPresent()){
+                return occupation.getEndTime_min().get();
             }
         }
         int duration = MitoUtil.select(durationMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());

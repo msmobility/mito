@@ -15,11 +15,11 @@ public interface MitoOccupation extends MicroLocation, Id {
 
     MitoZone getOccupationZone();
 
-    Optional<Integer> getStartTime();
+    Optional<Integer> getStartTime_min();
 
-    void setStartTime(int startTime_s);
+    void setStartTime_min(int startTime_min);
 
-    Optional<Integer> getEndTime();
+    Optional<Integer> getEndTime_min();
 
-    void setEndTime(int endTime_s);
+    void setEndTime_min(int endTime_min);
 }
