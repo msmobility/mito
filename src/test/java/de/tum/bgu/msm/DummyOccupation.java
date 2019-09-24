@@ -28,22 +28,22 @@ public class DummyOccupation implements MitoOccupation {
     }
 
     @Override
-    public Optional<Integer> getStartTime() {
+    public Optional<Integer> getStartTime_min() {
         return Optional.empty();
     }
 
     @Override
-    public void setStartTime(int startTime_s) {
+    public void setStartTime_min(int startTime_min) {
 
     }
 
     @Override
-    public Optional<Integer> getEndTime() {
+    public Optional<Integer> getEndTime_min() {
         return Optional.empty();
     }
 
     @Override
-    public void setEndTime(int endTime_s) {
+    public void setEndTime_min(int endTime_min) {
 
     }
 

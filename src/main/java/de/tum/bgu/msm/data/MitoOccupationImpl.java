@@ -42,22 +42,22 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     }
 
     @Override
-    public Optional<Integer> getStartTime() {
+    public Optional<Integer> getStartTime_min() {
         return Optional.ofNullable(startTime);
     }
 
     @Override
-    public void setStartTime(int startTime_s) {
-        this.startTime = startTime_s;
+    public void setStartTime_min(int startTime_min) {
+        this.startTime = startTime_min;
     }
 
     @Override
-    public Optional<Integer> getEndTime() {
+    public Optional<Integer> getEndTime_min() {
         return Optional.ofNullable(endTime);
     }
 
     @Override
-    public void setEndTime(int endTime_s) {
-        this.startTime = endTime_s;
+    public void setEndTime_min(int endTime_min) {
+        this.startTime = endTime_min;
     }
 }
