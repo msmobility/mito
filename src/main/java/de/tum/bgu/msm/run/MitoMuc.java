@@ -38,6 +38,7 @@ class MitoMuc {
             Config config;
             if (args.length > 1 && args[1] != null) {
                 config = ConfigUtils.loadConfig(args[1]);
+                ConfigureMatsim.setDemandSpecificConfigSettings(config);
             } else {
                 logger.warn("Using a fallback config with default values as no initial config has been provided.");
                 config = ConfigureMatsim.configureMatsim();
