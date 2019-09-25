@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.modules.externalFlows;
+package de.tum.bgu.msm.modules.plansConverter.externalFlows;
 
 public enum ExternalFlowZoneType {
 

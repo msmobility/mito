@@ -1,23 +1,11 @@
-package de.tum.bgu.msm.modules.trafficAssignment;
+package de.tum.bgu.msm.trafficAssignment;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.Purpose;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Network;
-import org.matsim.api.core.v01.population.Activity;
-import org.matsim.api.core.v01.population.Leg;
-import org.matsim.api.core.v01.population.Person;
-import org.matsim.api.core.v01.population.Plan;
-import org.matsim.api.core.v01.population.Population;
-import org.matsim.api.core.v01.population.PopulationFactory;
-import org.matsim.api.core.v01.population.PopulationWriter;
+import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
@@ -25,7 +13,11 @@ import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 
-import de.tum.bgu.msm.data.Purpose;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TripCSVToMATSimPlan {
 
@@ -67,15 +59,18 @@ public class TripCSVToMATSimPlan {
 				br.readLine(); // skip CSV header
 				while ((line = br.readLine()) != null) {
 					Person p = createPersonFromTrip(i++, line);
-					if (p != null)
+					if (p != null) {
 						population.addPerson(p);
+					}
 				}
 			} finally {
-				if (br != null)
+				if (br != null) {
 					br.close();
+				}
 
-				if (in != null)
+				if (in != null) {
 					in.close();
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -119,9 +114,10 @@ public class TripCSVToMATSimPlan {
 		secondAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, secondCoord).getId());
 		secondAct.setStartTime(t.departure_time + 1); // TODO include MITO's travel time estimations
 
-		if (roundTrip)
+		if (roundTrip) {
 			secondAct.setEndTime(t.departure_time_return);
 			plan.addActivity(secondAct);
+		}
 
 		if (roundTrip) {
 			Leg secondLeg = factory.createLeg(mode);
@@ -189,10 +185,12 @@ public class TripCSVToMATSimPlan {
 			// departure time comes in minutes, needed as seconds
 			this.departure_time = Double.parseDouble(data[15]) * 60; 
 
-			if (data.length >= 17)
+			if (data.length >= 17) {
 				this.departure_time_return = Double.parseDouble(data[16]) * 60;
-			else
+			}
+			else {
 				this.departure_time_return = -1;
+			}
 		}
 	}
 }

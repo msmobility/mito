@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.modules.externalFlows;
+package de.tum.bgu.msm.modules.plansConverter.externalFlows;
 
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.data.DataSet;
@@ -17,8 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LongDistanceTraffic extends Module {
+
     private static Logger logger = Logger.getLogger(LongDistanceTraffic.class);
-    private PopulationFactory matsimPopulationFactory;
+
     private Map<Integer, ExternalFlowZone> zones;
     private Map<ExternalFlowType, HashBasedTable<Integer, Integer, Float>> externalFlows;
     private Map<Integer, Double> departureTimeProbabilityByHour;
@@ -31,11 +32,20 @@ public class LongDistanceTraffic extends Module {
     private Map<ExternalFlowType, Float> inboundFlow = new HashMap<>();
     private Map<ExternalFlowType, Float> thruFlow = new HashMap<>();
 
-    public LongDistanceTraffic(DataSet dataSet) {
+    private double scalingFactor;
+
+    public LongDistanceTraffic(DataSet dataSet, double scalingFactor) {
         super(dataSet);
+        this.scalingFactor = scalingFactor;
+    }
+
+
+    @Override
+    public void run() {
         readDepartureTimeDistribution();
         readZones();
         readMatrices();
+        addLongDistancePlans();
     }
 
     private void readDepartureTimeDistribution() {
@@ -62,8 +72,9 @@ public class LongDistanceTraffic extends Module {
         }
     }
 
-    public Population addLongDistancePlans(double scalingFactor, Population matsimPopulation) {
-        matsimPopulationFactory = matsimPopulation.getFactory();
+    private void addLongDistancePlans() {
+        final Population population = dataSet.getPopulation();
+        PopulationFactory matsimPopulationFactory = population.getFactory();
         long personId = 0;
         for (ExternalFlowType type : ExternalFlowType.values()) {
             HashBasedTable<Integer, Integer, Float> matrix = externalFlows.get(type);
@@ -92,7 +103,7 @@ public class LongDistanceTraffic extends Module {
                                     matsimPopulationFactory.createActivityFromCoord("other", zones.get(destId).getCoordinatesForTripGeneration());
                             matsimPlan.addLeg(matsimPopulationFactory.createLeg(ExternalFlowType.getMatsimMode(type)));
                             matsimPlan.addActivity(destinationActivity);
-                            matsimPopulation.addPerson(matsimPerson);
+                            population.addPerson(matsimPerson);
                             personId++;
                         }
                     }
@@ -100,7 +111,6 @@ public class LongDistanceTraffic extends Module {
             }
         }
         printOutTotals();
-        return matsimPopulation;
     }
 
     private double selectDepartureTimeInSeconds() {
@@ -161,11 +171,6 @@ public class LongDistanceTraffic extends Module {
         }
     }
 
-    @Override
-    public void run() {
-
-    }
-
     private long getNumberOfTripsFromDecimal(double realValue, double scalingFactor){
         long trips = Math.round(realValue * scalingFactor);
         double decimalPart = realValue * scalingFactor - trips;
@@ -178,6 +183,4 @@ public class LongDistanceTraffic extends Module {
         }
         return trips;
     }
-
-
 }

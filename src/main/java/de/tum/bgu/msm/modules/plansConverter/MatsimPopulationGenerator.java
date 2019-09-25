@@ -1,6 +1,7 @@
-package de.tum.bgu.msm.modules.trafficAssignment;
+package de.tum.bgu.msm.modules.plansConverter;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -9,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.*;
-import org.matsim.core.config.Config;
+import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordUtils;
 
@@ -17,13 +18,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class MatsimPopulationGenerator {
+public final class MatsimPopulationGenerator extends Module {
 
     private static final Logger logger = Logger.getLogger(MatsimPopulationGenerator.class);
 
-    private Set<Mode> modeSet = new HashSet<>();
+    private final Set<Mode> modeSet = new HashSet<>();
 
-    MatsimPopulationGenerator() {
+    public MatsimPopulationGenerator(DataSet dataSet) {
+        super(dataSet);
         String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
         String[] teleportedModes = Resources.instance.getArray(Properties.MATSIM_TELEPORTED_MODES, new String[]{});
         for (String mode : networkModes){
@@ -33,10 +35,15 @@ class MatsimPopulationGenerator {
             modeSet.add(Mode.valueOf(mode));
         }
     }
-    //private Map<Integer,SimpleFeature> zoneFeatureMap = new HashMap<>();
 
-    Population generateMatsimPopulation(DataSet dataSet, Config config){
-        Population population = PopulationUtils.createPopulation(config);
+    @Override
+    public void run() {
+        Population population = generateMatsimPopulation();
+        dataSet.setPopulation(population);
+    }
+
+    private Population generateMatsimPopulation(){
+        Population population = PopulationUtils.createPopulation(ConfigUtils.createConfig());
         PopulationFactory factory = population.getFactory();
         AtomicInteger assignedTripCounter = new AtomicInteger(0);
         AtomicInteger nonAssignedTripCounter = new AtomicInteger(0);
