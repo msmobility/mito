@@ -125,4 +125,33 @@ public class ConfigureMatsim {
 
         return config;
     }
+
+    public static void setDemandSpecificConfigSettings(Config config) {
+        config.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+        config.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+
+        PlanCalcScoreConfigGroup.ActivityParams homeActivity = new PlanCalcScoreConfigGroup.ActivityParams("home");
+        homeActivity.setTypicalDuration(12 * 60 * 60);
+        config.planCalcScore().addActivityParams(homeActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams workActivity = new PlanCalcScoreConfigGroup.ActivityParams("work");
+        workActivity.setTypicalDuration(8 * 60 * 60);
+        config.planCalcScore().addActivityParams(workActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams educationActivity = new PlanCalcScoreConfigGroup.ActivityParams("education");
+        educationActivity.setTypicalDuration(8 * 60 * 60);
+        config.planCalcScore().addActivityParams(educationActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams shoppingActivity = new PlanCalcScoreConfigGroup.ActivityParams("shopping");
+        shoppingActivity.setTypicalDuration(1 * 60 * 60);
+        config.planCalcScore().addActivityParams(shoppingActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams otherActivity = new PlanCalcScoreConfigGroup.ActivityParams("other");
+        otherActivity.setTypicalDuration(1 * 60 * 60);
+        config.planCalcScore().addActivityParams(otherActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams airportActivity = new PlanCalcScoreConfigGroup.ActivityParams("airport");
+        airportActivity.setTypicalDuration(1 * 60 * 60);
+        config.planCalcScore().addActivityParams(airportActivity);
+    }
 }
