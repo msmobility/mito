@@ -1,6 +1,7 @@
-package de.tum.bgu.msm.modules.externalFlows;
+package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -31,13 +32,14 @@ public class ExternalFlowStandAlone {
 
         DataSet dataSet = new DataSet();
         dataSet.setYear(Resources.instance.getInt(Properties.SCENARIO_YEAR, 2011));
-        LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet);
+        LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet, scalingFactor);
 
         Config config = ConfigUtils.createConfig();
         Scenario scenario = ScenarioUtils.createScenario(config);
         Population matsimPopulation = scenario.getPopulation();
+        dataSet.setPopulation(matsimPopulation);
 
-        matsimPopulation = longDistanceTraffic.addLongDistancePlans(scalingFactor, matsimPopulation);
+        longDistanceTraffic.run();
 
         PopulationWriter populationWriter = new PopulationWriter(matsimPopulation);
         populationWriter.write("input/externalFlows/population.xml");

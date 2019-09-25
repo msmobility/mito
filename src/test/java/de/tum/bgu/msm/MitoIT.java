@@ -9,6 +9,6 @@ public class MitoIT {
     public void test() {
         //TODO: Use more realistic test input for skims (i.e. reduce skims to only selected 70 zones and differ by mode)
         MitoModel model = MitoModel.standAloneModel("./test/muc/test.properties", MunichImplementationConfig.get());
-        model.runModel();
+        model.run();
     }
 }

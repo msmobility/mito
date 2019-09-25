@@ -61,13 +61,12 @@ public final class MitoModel {
         return model;
     }
 
-    public void runModel() {
+    public void run() {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
         TravelDemandGenerator ttd = new TravelDemandGenerator(dataSet);
         ttd.generateTravelDemand(scenarioName);
-
         printOutline(startTime);
     }
 

@@ -1,10 +1,14 @@
-package de.tum.bgu.msm.modules.trafficAssignment;
+package de.tum.bgu.msm.trafficAssignment;
 
 import com.google.common.collect.Iterables;
+import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
+import de.tum.bgu.msm.io.output.OmxMatrixWriter;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
@@ -25,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CarSkimUpdater {
+
     private final static Logger logger = Logger.getLogger(CarSkimUpdater.class);
     private Network network;
     private final Map<Integer, List<Node>> nodesByZone = new ConcurrentHashMap<>();
@@ -35,25 +40,42 @@ public class CarSkimUpdater {
     private TravelDisutility travelDisutility;
     private TravelTime travelTime;
     private DataSet dataSet;
+    private final String scenarioName;
 
-
-    public CarSkimUpdater(Controler controler,
-                          //Map<Integer, SimpleFeature> zoneFeatureMap,
-                          Network network, DataSet dataSet) {
-        this.network = network;
+    public CarSkimUpdater(Controler controler, MitoModel model) {
+        this.network = controler.getScenario().getNetwork();
         //this.zoneFeatureMap = zoneFeatureMap;
         this.travelTime = controler.getLinkTravelTimes();
         this.travelDisutility = controler.getTravelDisutilityFactory().createTravelDisutility(travelTime);
         //creates a matrix of (n+1 zones) rows and columns
         this.carTravelTimeMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
         this.carDistanceMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
-        this.dataSet = dataSet;
+        this.dataSet = model.getData();
+        this.scenarioName = model.getScenarioName();
     }
 
     public void run() {
         calculateMatrixFromMatsim();
         assignIntrazonals(5, 10, 0.33f);
         updateMatrices();
+        printSkim();
+    }
+
+    private void printSkim() {
+        try {
+            String fileName = "./scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/" + Resources.instance.getString(Properties.SKIM_FILE_NAME);
+            int dimension = dataSet.getZones().size();
+            OmxMatrixWriter.createOmxFile(fileName, dimension);
+
+            SkimTravelTimes tt = (SkimTravelTimes) dataSet.getTravelTimes();
+            tt.printOutCarSkim(TransportMode.car, fileName, "timeByTime");
+
+            MatrixTravelDistances td = (MatrixTravelDistances) dataSet.getTravelDistancesAuto();
+            td.printOutDistanceSkim(fileName, "distanceByTime");
+
+        } catch (ClassCastException e) {
+            logger.info("Currently it is not possible to print out a matrix from an object which is not SkimTravelTime");
+        }
     }
 
     private void calculateMatrixFromMatsim() {

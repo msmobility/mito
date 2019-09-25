@@ -2,8 +2,8 @@ package de.tum.bgu.msm.io.input.readers;
 
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.modules.externalFlows.ExternalFlowType;
-import de.tum.bgu.msm.modules.externalFlows.ExternalFlowZone;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.ExternalFlowType;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.ExternalFlowZone;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;

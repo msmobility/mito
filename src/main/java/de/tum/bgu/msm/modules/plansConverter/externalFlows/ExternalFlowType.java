@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.modules.externalFlows;
+package de.tum.bgu.msm.modules.plansConverter.externalFlows;
 
 import org.matsim.api.core.v01.TransportMode;
 

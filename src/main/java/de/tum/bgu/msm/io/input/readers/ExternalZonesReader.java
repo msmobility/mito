@@ -1,8 +1,8 @@
 package de.tum.bgu.msm.io.input.readers;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.modules.externalFlows.ExternalFlowZone;
-import de.tum.bgu.msm.modules.externalFlows.ExternalFlowZoneType;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.ExternalFlowZone;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.ExternalFlowZoneType;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
