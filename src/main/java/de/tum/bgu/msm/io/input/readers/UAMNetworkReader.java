@@ -131,11 +131,11 @@ public class UAMNetworkReader {
 
                 travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
-                        (connections.getTravelTime(originStation.getId(), destinationStation.getId())) / 60);
+                        (connections.getFlightLeg(originStation.getId(), destinationStation.getId())).travelTime / 60);
 
                 travelDistanceUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
-                        connections.getDistance(originStation.getId(), destinationStation.getId()) / 1000);
+                        connections.getFlightLeg(originStation.getId(), destinationStation.getId()).distance / 1000);
             }
         }
         logger.info("The matrix is completed for zones served by UAM");
