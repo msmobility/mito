@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.modules.trafficAssignment;
 
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
@@ -82,6 +84,14 @@ public class ConfigureMatsim {
         walkParams.setBeelineDistanceFactor(1.3);
         walkParams.setTeleportedModeSpeed(5/3.6);
         config.plansCalcRoute().addModeRoutingParams(walkParams);
+
+        boolean networkIsTimeVariant = Resources.INSTANCE.getBoolean(Properties.MATSIM_NETWORK_IS_TIME_VARIANT);
+        String networkChangeEventsFile = Resources.INSTANCE.getString(Properties.MATSIM_NETWORK_CHANGE_EVENTS_FILE);
+
+        if (networkIsTimeVariant && networkChangeEventsFile != null) {
+            config.network().setTimeVariantNetwork(true);
+            config.network().setChangeEventsInputFile(networkChangeEventsFile);
+        }
 
         return config;
     }

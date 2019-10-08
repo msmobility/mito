@@ -67,6 +67,8 @@ public class Properties {
 
     public static final String RUN_TRAFFIC_ASSIGNMENT = "run.traffic.assignment";
     public static final String MATSIM_NETWORK_FILE = "matsim.network";
+    public static final String MATSIM_NETWORK_IS_TIME_VARIANT = "matsim.network.isTimeVariant";
+    public static final String MATSIM_NETWORK_CHANGE_EVENTS_FILE = "matsim.network.change.events";
     public static final String MATSIM_ITERATIONS = "matsim.iterations";
     public static final String ZONE_SHAPEFILE = "zone.shapefile";
     public static final String ZONE_SHAPEFILE_CRS = "zone.shapefile.crs";
