@@ -224,7 +224,7 @@
         <dependency>
             <groupId>com.github.BauhausLuftfahrt</groupId>
             <artifactId>MATSim-UAM</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>v1.1</version>
         </dependency>
     </dependencies>
     <properties>
