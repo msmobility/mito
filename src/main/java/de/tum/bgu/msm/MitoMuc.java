@@ -25,9 +25,10 @@ class MitoMuc {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
 
-
+        // Quick fix for Java not finishing as geotools WeakCollectionCleaner keeps threads open from reading in
+        // the zones shapefile in ZoneReader.java (line 33) to MATSim's ShapeFileReader.java (line 76).
+        System.exit(0);
     }
 }
