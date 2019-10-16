@@ -59,14 +59,14 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
-        int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
-        boolean useAtenuationFactor  = Resources.INSTANCE.getBoolean("attenuation", true);
-        double b = Resources.INSTANCE.getDouble("attenuation.factor", 1.5);
+        int iterations = Resources.INSTANCE.getInt(Properties.UAM_ITERATIONS, 1);
+        boolean useAttenuationFactor  = Resources.INSTANCE.getBoolean(Properties.ATTENTUATION, true);
+        double b = Resources.INSTANCE.getDouble(Properties.ATTENTUATION_FACTOR, 1.5);
 
-        for (int iteration = 0; iteration< iterations; iteration++) {
+        for (int iteration = 0; iteration <= iterations; iteration++) {
             double probabilityOfModeChange = 1.0;
             //reduces progresively the proportion of mode changes of the trips
-            if (iterations > 1 && useAtenuationFactor) {
+            if (iterations > 1 && useAttenuationFactor) {
                 probabilityOfModeChange = 1 / Math.pow(iteration + 1., b);
             }
 
