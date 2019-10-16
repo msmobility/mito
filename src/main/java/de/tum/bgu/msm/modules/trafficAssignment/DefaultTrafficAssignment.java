@@ -31,10 +31,6 @@ public class DefaultTrafficAssignment extends TrafficAssignment {
 		matsimConfig.parallelEventHandling().setNumberOfThreads(16);
 		matsimConfig.qsim().setUsingThreadpool(false);
 
-		matsimConfig.controler().setLastIteration(Resources.INSTANCE.getInt(Properties.MATSIM_ITERATIONS));
-		matsimConfig.controler().setWritePlansInterval(matsimConfig.controler().getLastIteration());
-		matsimConfig.controler().setWriteEventsInterval(matsimConfig.controler().getLastIteration());
-
 		matsimConfig.qsim().setStuckTime(10);
 		matsimConfig.qsim().setFlowCapFactor(
 				SILO_SAMPLING_RATE * Double.parseDouble(Resources.INSTANCE.getString(Properties.TRIP_SCALING_FACTOR)));
