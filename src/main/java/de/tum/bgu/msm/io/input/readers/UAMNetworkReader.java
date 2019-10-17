@@ -131,7 +131,7 @@ public class UAMNetworkReader {
 
                 travelTimeUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
-                        (connections.getFlightLeg(originStation.getId(), destinationStation.getId())).travelTime / 60);
+                        (connections.getFlightLeg(originStation.getId(), destinationStation.getId()).travelTime) / 60);
 
                 travelDistanceUamAtServedZones.setIndexed(stationZoneMap.get(originStation).getId(),
                         stationZoneMap.get(destinationStation).getId(),
