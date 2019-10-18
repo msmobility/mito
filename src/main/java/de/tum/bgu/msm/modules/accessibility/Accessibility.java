@@ -1,10 +1,7 @@
 package de.tum.bgu.msm.modules.accessibility;
 
 import com.google.common.math.LongMath;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.Mode;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.accessTimes.AccessAndEgressVariables;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
@@ -180,8 +177,14 @@ public class Accessibility extends Module {
                         dataSet.getAccessAndEgressVariables().
                                 getAccessVariable(origin, destination, "uam", AccessAndEgressVariables.AccessVariable.EGRESS_DIST_KM) * 0.07;
 
+                MitoTrip dummyTrip = new MitoTrip(-1, purpose);
+                dummyTrip.setTripOrigin(origin);
+                dummyTrip.setTripDestination(destination);
+                dummyTrip.setDepartureInMinutes(8 * 60);
+                //we calculate accessibilities for the peak hour of UAM, as done for car with the peak hour skim matrix
+
                 double processingTime_min = dataSet.getTotalHandlingTimes().
-                        getWaitingTime(null, origin, destination, Mode.uam.toString());
+                        getWaitingTime(dummyTrip, origin, destination, Mode.uam.toString());
 
 
                 return calculator.calculateProbabilitiesUAM(origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
