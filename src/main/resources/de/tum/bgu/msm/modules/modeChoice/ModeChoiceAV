@@ -474,9 +474,9 @@ var calculateHBSProbabilities = function (hh, person, originZone, destinationZon
         hhAutosHBS[6] * hhAutos + distToRailStopHBS[6] * distToRailStop + hhChildrenHBS[6] * hhChildren +
         tripLengthHBS[6] * travelDistanceNMT + isMunichTripHBS[6] * isMunichTrip;
 
-    utilityAVP = utilityAutoD + generalizedCostHBS_Sq[0] * (gcPrivateAV - gcAutoD); //added
+    utilityAVP = utilityAutoD + generalizedCostHBS_Sq[0] * (Math.pow(gcPrivateAV, 2) - Math.pow(gcAutoD, 2));
 
-    utilityAVS = utilityBus + generalizedCostHBS_Sq[3] * (gcSharedAV - gcBus); //added
+    utilityAVS = utilityBus + generalizedCostHBS_Sq[3] * (Math.pow(gcSharedAV, 2) - Math.pow(gcBus, 2));
 
 //Option 1:
     /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
@@ -966,10 +966,9 @@ var calculateNHBOProbabilities = function (hh, person, originZone, destinationZo
         agglomerationUrbanNHBO[6] * (areaType.name().equals("NHBO_agglomeration") + areaType.name().equals("NHBO_urban")) +
         ruralNHBO[6] * (areaType.name().equals("NHBO_rural")) + tripLengthNHBO[6] * travelDistanceNMT;
 
-    utilityAVP = utilityAutoD + generalizedCostNHBO_Sq[0] * (gcPrivateAV - gcAutoD);
+    utilityAVP = utilityAutoD + generalizedCostNHBO_Sq[0] * (Math.pow(gcPrivateAV, 2) - Math.pow(gcAutoD, 2));
 
-    utilityAVS = utilityBus + generalizedCostNHBO_Sq[3] * (gcSharedAV - gcBus);
-
+    utilityAVS = utilityBus + generalizedCostNHBO_Sq[3] * (Math.pow(gcSharedAV, 2) - Math.pow(gcBus, 2));
 
 // Option 1:
 
