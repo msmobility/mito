@@ -261,7 +261,7 @@
         <dependency>
             <groupId>com.github.BauhausLuftfahrt</groupId>
             <artifactId>MATSim-UAM</artifactId>
-            <version>v1.1</version>
+            <version>raoul_develop-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <properties>
