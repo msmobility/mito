@@ -8,6 +8,7 @@ import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.accessEgressChoice.AccessEgressChoice;
+import de.tum.bgu.msm.modules.accessibility.Accessibility;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
@@ -112,6 +113,10 @@ public class TravelDemandGenerator {
             }
             logger.info("Iteration " + iteration + " completed. Feedback waiting times to re-run mode choice");
         }
+
+        logger.info("Running Module: Accessibility Calculation");
+        Accessibility accessibility = new Accessibility(dataSet);
+        accessibility.run();
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
