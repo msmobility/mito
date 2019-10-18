@@ -1,0 +1,845 @@
+nestingCoefficient = 0.25;
+
+fuelCostEurosPerKm = 0.07;
+transitFareEurosPerKm = 0.12;
+
+sharedAVCostEurosPerKm = 1.20;
+
+VOT1500_HBW_HBE_autoD = 4.63 / 60;
+VOT5600_HBW_HBE_autoD = 8.94 / 60;
+VOT7000_HBW_HBE_autoD = 12.15 / 60;
+VOT1500_HBW_HBE_autoP = 7.01 / 60;
+VOT5600_HBW_HBE_autoP = 13.56 / 60;
+VOT7000_HBW_HBE_autoP = 18.43 / 60;
+VOT1500_HBW_HBE_transit = 8.94 / 60;
+VOT5600_HBW_HBE_transit = 17.30 / 60;
+VOT7000_HBW_HBE_transit = 23.50 / 60;
+
+VOT1500_HBW_HBE_privateAV = 3.47 / 60;
+VOT5600_HBW_HBE_privateAV = 6.71 / 60;
+VOT7000_HBW_HBE_privateAV = 9.11 / 60;
+VOT1500_HBW_HBE_sharedAV = 7.98 / 60;
+VOT5600_HBW_HBE_sharedAV = 15.43 / 60;
+VOT7000_HBW_HBE_sharedAV = 20.97 / 60;
+
+VOT1500_other_autoD = 3.26 / 60;
+VOT5600_other_autoD = 6.30 / 60;
+VOT7000_other_autoD = 8.56 / 60;
+VOT1500_other_autoP = 4.30 / 60;
+VOT5600_other_autoP = 8.31 / 60;
+VOT7000_other_autoP = 11.30 / 60;
+VOT1500_other_transit = 5.06 / 60;
+VOT5600_other_transit = 9.78 / 60;
+VOT7000_other_transit = 13.29 / 60;
+
+VOT1500_other_privateAV = 2.45 / 60;
+VOT5600_other_privateAV = 4.73 / 60;
+VOT7000_other_privateAV = 6.42 / 60;
+VOT1500_other_sharedAV = 4.68 / 60;
+VOT5600_other_sharedAV = 9.05 / 60;
+VOT7000_other_sharedAV = 12.30 / 60;
+
+
+VOT1500_HBW_HBE_uam = 7.98 / 60;//TBD
+VOT5600_HBW_HBE_uam = 15.43 / 60;//TBD
+VOT7000_HBW_HBE_uam = 20.97 / 60;//TBD
+VOT1500_other_uam = 4.68 / 60;//TBD
+VOT5600_other_uam = 9.05 / 60;//TBD
+VOT7000_other_uam = 12.3 / 60;//TBD
+
+timeRatioUamToTrain = 1.4749;
+costRatioUamToTrain = 0.4545;
+
+///////////////////////////////////////////////// HBW Mode Choice /////////////////////////////////////////////////////
+
+// Beta coefficients for modes in the order:[AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk, uam]
+interceptHBW = [0.0, 0.53, 2.78, 3.12, 3.11, 3.06, 6.30, 3.11];
+ageHBW = [0.0, -0.0037, 0.0, -0.016, -0.017, -0.014, 0.0, -0.017];
+maleHBW = [0.0, -0.16, 0.22, -0.28, -0.25, -0.18, 0.0, -0.25];
+driversLicenseHBW = [0.0, -1.03, -1.86, -2.25, -2.09, -2.14, -2.16, -2.09];
+hhSizeHBW = [0.0, 0.063, 0.25, 0.17, 0.18, 0.15, 0.0, 0.18];
+hhAutosHBW = [0.0, -0.16, -1.11, -1.27, -1.26, -1.29, -0.73, -1.26];
+distToRailStopHBW = [0.0, 0.0, 0.0, -0.36, -0.39, -0.40, 0.0, -0.39];
+coreCityHBW = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+mediumSizedCityHBW = [0.0, 0.0, -0.29, -0.70, -0.75, -1.05, -0.59, -0.75];
+townOrRuralCommunityHBW = [0.0, 0.071, -0.39, -0.86, -0.88, -1.22, -0.89, -0.88];
+generalizedCostHBW = [-0.0088, -0.0088, 0.0, -0.0088, -0.0088, -0.0088, 0.0, -0.0088];
+tripLengthHBW = [0.0, 0.0, -0.32, 0.0, 0.0, 0.0, -2.02, 0.0];
+isMunichTripHBW = [0.0, 0.04, 0.63, 0.77, 0.76, 0.77, 2.32, 0.76];
+
+
+var calculateHBWProbabilities = function(originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime,uamFareEurosPerKm){
+
+timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeAutoP = timeAutoD;
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if (timeUAM < 10000) {
+    timeUAM = timeUAM + handlingTime;
+}
+monthlyIncome_EUR = 41726/12;
+age = 40.85;
+gender = 0.472;
+driversLicense = 0.916;
+hhSize = 2.67;
+hhAutos = 1.43;
+distToRailStop = originZone.getDistanceToNearestRailStop();
+areaType = originZone.getAreaTypeSG();
+isMunichTrip = originZone.isMunichZone();
+
+
+if (monthlyIncome_EUR <= 1500) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_HBW_HBE_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_HBW_HBE_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_HBW_HBE_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_HBW_HBE_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_HBW_HBE_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_HBW_HBE_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT1500_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_HBW_HBE_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_HBW_HBE_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_HBW_HBE_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_HBW_HBE_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_HBW_HBE_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_HBW_HBE_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT5600_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_HBW_HBE_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_HBW_HBE_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_HBW_HBE_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_HBW_HBE_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_HBW_HBE_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_HBW_HBE_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT7000_HBW_HBE_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT7000_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    }
+
+ utilityAutoD = interceptHBW[0] + ageHBW[0] * age + maleHBW[0] * gender +
+        driversLicenseHBW[0] * driversLicense + hhSizeHBW[0] * hhSize + hhAutosHBW[0] * hhAutos +
+        distToRailStopHBW[0] * distToRailStop + coreCityHBW[0] * (areaType.name().equals("CORE_CITY")) +
+        mediumSizedCityHBW[0] * (areaType.name().equals("MEDIUM_SIZE_CITY")) +
+        townOrRuralCommunityHBW[0] * (areaType.name().equals("TOWN") || areaType.name().equals("RURAL")) +
+        generalizedCostHBW[0] * gcAutoD + isMunichTripHBW[0] * isMunichTrip;
+
+    utilityAutoP = interceptHBW[1] + ageHBW[1] * age + maleHBW[1] * gender +
+        driversLicenseHBW[1] * driversLicense + hhSizeHBW[1] * hhSize + hhAutosHBW[1] * hhAutos +
+        distToRailStopHBW[1] * distToRailStop + coreCityHBW[1] * (areaType.name().equals("CORE_CITY")) +
+        mediumSizedCityHBW[1] * (areaType.name().equals("MEDIUM_SIZE_CITY")) +
+        townOrRuralCommunityHBW[1] * (areaType.name().equals("TOWN") || areaType.name().equals("RURAL")) +
+        generalizedCostHBW[1] * gcAutoP + isMunichTripHBW[1] * isMunichTrip;
+
+    utilityBicycle = interceptHBW[2] + ageHBW[2] * age + maleHBW[2] * gender +
+        driversLicenseHBW[2] * driversLicense + hhSizeHBW[2] * hhSize + hhAutosHBW[2] * hhAutos +
+        distToRailStopHBW[2] * distToRailStop + coreCityHBW[2] * (areaType.name().equals("CORE_CITY")) +
+        mediumSizedCityHBW[2] * (areaType.name().equals("MEDIUM_SIZE_CITY")) +
+        townOrRuralCommunityHBW[2] * (areaType.name().equals("TOWN") || areaType.name().equals("RURAL")) +
+        tripLengthHBW[2] * travelDistanceNMT + isMunichTripHBW[2] * isMunichTrip;
+
+    utilityBus = interceptHBW[3] + ageHBW[3] * age + maleHBW[3] * gender +
+        driversLicenseHBW[3] * driversLicense + hhSizeHBW[3] * hhSize + hhAutosHBW[3] * hhAutos +
+        distToRailStopHBW[3] * distToRailStop + coreCityHBW[3] * (areaType.name().equals("CORE_CITY")) +
+        mediumSizedCityHBW[3] * (areaType.name().equals("MEDIUM_SIZE_CITY") || areaType.name().equals("RURAL")) +
+        townOrRuralCommunityHBW[3] * (areaType.name().equals("TOWN")) +
+        generalizedCostHBW[3] * gcBus + isMunichTripHBW[3] * isMunichTrip;
+
+    utilityTrain = interceptHBW[4] + ageHBW[4] * age + maleHBW[4] * gender +
+        driversLicenseHBW[4] * driversLicense + hhSizeHBW[4] * hhSize + hhAutosHBW[4] * hhAutos +
+        distToRailStopHBW[4] * distToRailStop + coreCityHBW[4] * (areaType.name().equals("CORE_CITY")) +
+        mediumSizedCityHBW[4] * (areaType.name().equals("MEDIUM_SIZE_CITY") || areaType.name().equals("RURAL")) +
+        townOrRuralCommunityHBW[4] * (areaType.name().equals("TOWN")) +
+        generalizedCostHBW[4] * gcTrain + isMunichTripHBW[4] * isMunichTrip;
+
+    utilityTramMetro = interceptHBW[5] + ageHBW[5] * age + maleHBW[5] * gender +
+        driversLicenseHBW[5] * driversLicense + hhSizeHBW[5] * hhSize + hhAutosHBW[5] * hhAutos +
+        distToRailStopHBW[5] * distToRailStop + coreCityHBW[5] * (areaType.name().equals("CORE_CITY")) +
+        mediumSizedCityHBW[5] * (areaType.name().equals("MEDIUM_SIZE_CITY")) +
+        townOrRuralCommunityHBW[5] * (areaType.name().equals("TOWN") || areaType.name().equals("RURAL")) +
+        generalizedCostHBW[5] * gcTramMetro + isMunichTripHBW[5] * isMunichTrip;
+
+    utilityWalk = interceptHBW[6] + ageHBW[6] * age + maleHBW[6] * gender +
+        driversLicenseHBW[6] * driversLicense + hhSizeHBW[6] * hhSize + hhAutosHBW[6] * hhAutos +
+        distToRailStopHBW[6] * distToRailStop + coreCityHBW[6] * (areaType.name().equals("CORE_CITY")) +
+        mediumSizedCityHBW[6] * (areaType.name().equals("MEDIUM_SIZE_CITY")) +
+        townOrRuralCommunityHBW[6] * (areaType.name().equals("TOWN") || areaType.name().equals("RURAL")) +
+        tripLengthHBW[6] * travelDistanceNMT + isMunichTripHBW[6] * isMunichTrip;
+
+    utilityAVP = utilityAutoD + generalizedCostHBW[0] * (gcPrivateAV - gcAutoD);
+
+    utilityAVS = utilityBus + generalizedCostHBW[3] * (gcSharedAV - gcBus);
+
+    utilityUAM = utilityTrain + timeRatioUamToTrain * generalizedCostHBW[4] * timeUAM + costRatioUamToTrain * generalizedCostHBW[4] * costUAM - generalizedCostHBW[4] * gcTrain;
+
+    expsumNestAuto = Math.exp(utilityAVP / nestingCoefficient) + Math.exp(utilityAutoD / nestingCoefficient) + Math.exp(utilityAutoP / nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityUAM / nestingCoefficient) + Math.exp(utilityAVS / nestingCoefficient) + Math.exp(utilityBus / nestingCoefficient) + Math.exp(utilityTrain / nestingCoefficient) + Math.exp(utilityTramMetro / nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * Math.log(expsumNestTransit));
+
+
+return expsumTopLevel;
+
+}
+
+
+///////////////////////////////////////////////// HBE Mode Choice /////////////////////////////////////////////////////
+
+// Beta coefficients for modes in the order - [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk, uam]
+interceptHBE = [0.0, 1.41, 2.15, 3.00, 2.72, 3.02, 4.23, 2.72];
+maleHBE = [0.0, -0.17, 0.0, -0.14, -0.15, -0.15, 0.0, -0.15];
+driversLicenseHBE = [0.0, -1.26, -0.43, -1.23, -0.75, -0.77, -0.55, -0.75];
+hhAutosHBE = [0.0, -0.11, -0.56, -0.52, -0.56, -0.70, -0.68, -0.56];
+distToRailStopHBE = [0.0, 0.0, 0.0, -0.28, -0.26, -0.46, 0.0, -0.26];
+generalizedCostHBE = [-0.0025, -0.0025, 0.0, -0.0025, -0.0025, -0.0025, 0.0, -0.0025];
+tripLengthHBE = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.71, 0.0];
+isMunichTripHBE = [0.0, 0.02, 0.25, 0.07, 0.08, 0.06, -0.49, 0.08];
+
+
+var calculateHBEProbabilities = function(originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime,uamFareEurosPerKm){
+timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+timeAutoP = timeAutoD;
+timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+if(timeUAM < 10000){
+timeUAM = timeUAM + handlingTime;
+}
+monthlyIncome_EUR = 41966/12;
+gender = 0.481;
+driversLicense = 0.619;
+hhAutos = 1.503;
+distToRailStop = originZone.getDistanceToNearestRailStop();
+isMunichTrip = originZone.isMunichZone();
+
+if (monthlyIncome_EUR <= 1500) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_HBW_HBE_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_HBW_HBE_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_HBW_HBE_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_HBW_HBE_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_HBW_HBE_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_HBW_HBE_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT1500_HBW_HBE_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT1500_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_HBW_HBE_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_HBW_HBE_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_HBW_HBE_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_HBW_HBE_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_HBW_HBE_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_HBW_HBE_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT5600_HBW_HBE_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT5600_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_HBW_HBE_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_HBW_HBE_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_HBW_HBE_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_HBW_HBE_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_HBW_HBE_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_HBW_HBE_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT7000_HBW_HBE_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT7000_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    }
+
+    utilityAutoD = interceptHBE[0] + maleHBE[0] * gender + driversLicenseHBE[0] * driversLicense +
+        hhAutosHBE[0] * hhAutos + distToRailStopHBE[0] * distToRailStop + generalizedCostHBE[0] * gcAutoD + isMunichTripHBE[0] * isMunichTrip;
+
+    utilityAutoP = interceptHBE[1] + maleHBE[1] * gender + driversLicenseHBE[1] * driversLicense +
+        hhAutosHBE[1] * hhAutos + distToRailStopHBE[1] * distToRailStop + generalizedCostHBE[1] * gcAutoP + isMunichTripHBE[1] * isMunichTrip;
+
+    utilityBicycle = interceptHBE[2] + maleHBE[2] * gender + driversLicenseHBE[2] * driversLicense +
+        hhAutosHBE[2] * hhAutos + distToRailStopHBE[2] * distToRailStop + tripLengthHBE[2] * travelDistanceNMT + isMunichTripHBE[2] * isMunichTrip;
+
+    utilityBus = interceptHBE[3] + maleHBE[3] * gender + driversLicenseHBE[3] * driversLicense +
+        hhAutosHBE[3] * hhAutos + distToRailStopHBE[3] * distToRailStop + generalizedCostHBE[3] * gcBus + isMunichTripHBE[3] * isMunichTrip;
+
+    utilityTrain = interceptHBE[4] + maleHBE[4] * gender + driversLicenseHBE[4] * driversLicense +
+        hhAutosHBE[4] * hhAutos + distToRailStopHBE[4] * distToRailStop + generalizedCostHBE[4] * gcTrain + isMunichTripHBE[4] * isMunichTrip;
+
+    utilityTramMetro = interceptHBE[5] + maleHBE[5] * gender + driversLicenseHBE[5] * driversLicense +
+        hhAutosHBE[5] * hhAutos + distToRailStopHBE[5] * distToRailStop + generalizedCostHBE[5] * gcTramMetro + isMunichTripHBE[5] * isMunichTrip;
+
+    utilityWalk = interceptHBE[6] + maleHBE[6] * gender + driversLicenseHBE[6] * driversLicense +
+        hhAutosHBE[6] * hhAutos + distToRailStopHBE[6] * distToRailStop + tripLengthHBE[6] * travelDistanceNMT + isMunichTripHBE[6] * isMunichTrip;
+
+    utilityAVP = utilityAutoD + generalizedCostHBE[0] * (gcPrivateAV - gcAutoD);
+
+    utilityAVS = utilityBus + generalizedCostHBE[3] * (gcSharedAV - gcBus);
+
+    utilityUAM = utilityTrain + timeRatioUamToTrain * generalizedCostHBE[4] * timeUAM + costRatioUamToTrain * generalizedCostHBE[4] * costUAM - generalizedCostHBE[4] * gcTrain;
+
+    expsumNestAuto = Math.exp(utilityAVP / nestingCoefficient) + Math.exp(utilityAutoD / nestingCoefficient) + Math.exp(utilityAutoP / nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityUAM / nestingCoefficient) + Math.exp(utilityAVS / nestingCoefficient) + Math.exp(utilityBus / nestingCoefficient) + Math.exp(utilityTrain / nestingCoefficient) + Math.exp(utilityTramMetro / nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * Math.log(expsumNestTransit));
+
+
+return expsumTopLevel;
+
+}
+
+
+///////////////////////////////////////////////// HBS Mode Choice /////////////////////////////////////////////////////
+
+// Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk, uam]
+interceptHBS = [0.0, 0.92, 2.50, 1.61, 1.17, 1.67, 6.35, 1.17];
+maleHBS = [0.0, -0.47, -0.14, -0.62, -0.47, -0.53, -0.15, -0.47];
+driversLicenseHBS = [0.0, -1.43, -1.86, -2.43, -2.46, -2.39, -2.10, -2.46];
+hhAutosHBS = [0.0, -0.03, -0.81, -1.88, -1.73, -1.88, -0.86, -1.73];
+distToRailStopHBS = [0.0, 0.0, 0.0, -0.87, -0.68, -1.02, 0.0, -0.68];
+hhChildrenHBS = [0.0, -0.051, 0.0, 0.0, 0.0, 0.0, -0.17, 0.0];
+generalizedCostHBS_Sq = [-0.0000068, -0.0000068, 0.0, -0.0000068, -0.0000068, -0.0000068, 0.0, -0.0000068];
+tripLengthHBS = [0.0, 0.0, -0.42, 0.0, 0.0, 0.0, -1.46, 0.0];
+isMunichTripHBS = [0.0, 0.05, 1.16, 1.35, 1.32, 1.36, 1.94, 1.32];
+
+var calculateHBSProbabilities = function(originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT,travelCostUAM, peakHour, handlingTime,uamFareEurosPerKm){
+
+var dataSet = Java.type('de.tum.bgu.msm.data.DataSet');
+
+timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+    if (timeUAM < 10000) {
+        timeUAM = timeUAM + handlingTime;
+    }
+monthlyIncome_EUR = 30308/12;
+gender = 0.52;
+driversLicense = 0.774;
+hhAutos = 1.057;
+hhChildren = 1.0;
+distToRailStop = originZone.getDistanceToNearestRailStop();
+isMunichTrip = originZone.isMunichZone();
+
+if (monthlyIncome_EUR <= 1500) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT1500_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT1500_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT5600_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT5600_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT7000_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT7000_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    }
+
+    utilityAutoD = interceptHBS[0] + maleHBS[0] * gender + driversLicenseHBS[0] * driversLicense +
+        hhAutosHBS[0] * hhAutos + distToRailStopHBS[0] * distToRailStop + hhChildrenHBS[0] * hhChildren +
+        generalizedCostHBS_Sq[0] * Math.pow(gcAutoD, 2) + isMunichTripHBS[0] * isMunichTrip;
+
+    utilityAutoP = interceptHBS[1] + maleHBS[1] * gender + driversLicenseHBS[1] * driversLicense +
+        hhAutosHBS[1] * hhAutos + distToRailStopHBS[1] * distToRailStop + hhChildrenHBS[1] * hhChildren +
+        generalizedCostHBS_Sq[1] * Math.pow(gcAutoP, 2) + isMunichTripHBS[1] * isMunichTrip;
+
+    utilityBicycle = interceptHBS[2] + maleHBS[2] * gender + driversLicenseHBS[2] * driversLicense +
+        hhAutosHBS[2] * hhAutos + distToRailStopHBS[2] * distToRailStop + hhChildrenHBS[2] * hhChildren +
+        tripLengthHBS[2] * travelDistanceNMT + isMunichTripHBS[2] * isMunichTrip;
+
+    utilityBus = interceptHBS[3] + maleHBS[3] * gender + driversLicenseHBS[3] * driversLicense +
+        hhAutosHBS[3] * hhAutos + distToRailStopHBS[3] * distToRailStop + hhChildrenHBS[3] * hhChildren +
+        generalizedCostHBS_Sq[3] * Math.pow(gcBus, 2) + isMunichTripHBS[3] * isMunichTrip;
+
+    utilityTrain = interceptHBS[4] + maleHBS[4] * gender + driversLicenseHBS[4] * driversLicense +
+        hhAutosHBS[4] * hhAutos + distToRailStopHBS[4] * distToRailStop + hhChildrenHBS[4] * hhChildren +
+        generalizedCostHBS_Sq[4] * Math.pow(gcTrain, 2) + isMunichTripHBS[4] * isMunichTrip;
+
+    utilityTramMetro = interceptHBS[5] + maleHBS[5] * gender + driversLicenseHBS[5] * driversLicense +
+        hhAutosHBS[5] * hhAutos + distToRailStopHBS[5] * distToRailStop + hhChildrenHBS[5] * hhChildren +
+        generalizedCostHBS_Sq[5] * Math.pow(gcTramMetro, 2) + isMunichTripHBS[5] * isMunichTrip;
+
+    utilityWalk = interceptHBS[6] + maleHBS[6] * gender + driversLicenseHBS[6] * driversLicense +
+        hhAutosHBS[6] * hhAutos + distToRailStopHBS[6] * distToRailStop + hhChildrenHBS[6] * hhChildren +
+        tripLengthHBS[6] * travelDistanceNMT + isMunichTripHBS[6] * isMunichTrip;
+
+    utilityAVP = utilityAutoD + generalizedCostHBS_Sq[0] * (Math.pow(gcPrivateAV, 2) - Math.pow(gcAutoD, 2));
+
+    utilityAVS = utilityBus + generalizedCostHBS_Sq[3] * (Math.pow(gcSharedAV, 2) - Math.pow(gcBus, 2));
+
+    utilityUAM = utilityTrain + generalizedCostHBS_Sq[4] * Math.pow((timeRatioUamToTrain * timeUAM + costRatioUamToTrain * costUAM), 2) - generalizedCostHBS_Sq[4] * Math.pow(gcTrain, 2);
+
+    expsumNestAuto = Math.exp(utilityAVP / nestingCoefficient) + Math.exp(utilityAutoD / nestingCoefficient) + Math.exp(utilityAutoP / nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityUAM / nestingCoefficient) + Math.exp(utilityAVS / nestingCoefficient) + Math.exp(utilityBus / nestingCoefficient) + Math.exp(utilityTrain / nestingCoefficient) + Math.exp(utilityTramMetro / nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * Math.log(expsumNestTransit));
+
+return expsumTopLevel;
+
+}
+
+
+///////////////////////////////////////////////// HBO Mode Choice /////////////////////////////////////////////////////
+
+// Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk, uam]
+interceptHBO = [0.0, 1.04, 1.25, 1.47, 1.22, 1.59, 4.09, 1.22];
+maleHBO = [0.0, -0.27, 0.17, -0.13, 0.0, -0.063, -0.13, 0.0];
+driversLicenseHBO = [0.0, -1.34, -1.51, -1.91, -1.66, -1.74, -1.30, -1.66];
+hhAutosHBO = [0.0, -0.029, -0.57, -1.54, -1.56, -1.72, -0.30, -1.56];
+hhSizeHBO = [0.0, 0.0, 0.0, -0.11, -0.11, -0.15, -0.19, -0.11];
+distToRailStopHBO = [0.0, 0.0, 0.0, -0.61, -0.57, -0.58, -0.065, -0.57];
+generalizedCostHBO = [-0.0012, -0.0012, 0.0, -0.0012, -0.0012, -0.0012, 0.0, -0.0012];
+tripLengthHBO = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.68, 0.0];
+isMunichTripHBO = [0.0, 0.14, 0.61, 1.25, 1.23, 1.25, 0.34, 1.23];
+
+var calculateHBOProbabilities = function(originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT,travelCostUAM, peakHour, handlingTime,uamFareEurosPerKm){
+
+timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+    if (timeUAM < 10000) {
+        timeUAM = timeUAM + handlingTime;
+    }
+monthlyIncome_EUR = 33143/12;
+gender = 0.51;
+driversLicense = 0.7358;
+hhAutos = 0.172;
+hhSize = 2.612;
+distToRailStop = originZone.getDistanceToNearestRailStop();
+    isMunichTrip = originZone.isMunichZone();
+
+    if (monthlyIncome_EUR <= 1500) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT1500_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT1500_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT5600_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT5600_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT7000_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT7000_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    }
+
+    utilityAutoD = interceptHBO[0] + maleHBO[0] * gender + driversLicenseHBO[0] * driversLicense +
+        hhAutosHBO[0] * hhAutos + hhSizeHBO[0] * hhSize + distToRailStopHBO[0] * distToRailStop +
+        generalizedCostHBO[0] * gcAutoD + isMunichTripHBO[0] * isMunichTrip;
+
+    utilityAutoP = interceptHBO[1] + maleHBO[1] * gender + driversLicenseHBO[1] * driversLicense +
+        hhAutosHBO[1] * hhAutos + hhSizeHBO[1] * hhSize + distToRailStopHBO[1] * distToRailStop +
+        generalizedCostHBO[1] * gcAutoP + isMunichTripHBO[1] * isMunichTrip;
+
+    utilityBicycle = interceptHBO[2] + maleHBO[2] * gender + driversLicenseHBO[2] * driversLicense +
+        hhAutosHBO[2] * hhAutos + hhSizeHBO[2] * hhSize + distToRailStopHBO[2] * distToRailStop +
+        tripLengthHBO[2] * travelDistanceNMT + isMunichTripHBO[2] * isMunichTrip;
+
+    utilityBus = interceptHBO[3] + maleHBO[3] * gender + driversLicenseHBO[3] * driversLicense +
+        hhAutosHBO[3] * hhAutos + hhSizeHBO[3] * hhSize + distToRailStopHBO[3] * distToRailStop +
+        generalizedCostHBO[3] * gcBus + isMunichTripHBO[3] * isMunichTrip;
+
+    utilityTrain = interceptHBO[4] + maleHBO[4] * gender + driversLicenseHBO[4] * driversLicense +
+        hhAutosHBO[4] * hhAutos + hhSizeHBO[4] * hhSize + distToRailStopHBO[4] * distToRailStop +
+        generalizedCostHBO[4] * gcTrain + isMunichTripHBO[4] * isMunichTrip;
+
+    utilityTramMetro = interceptHBO[5] + maleHBO[5] * gender + driversLicenseHBO[5] * driversLicense +
+        hhAutosHBO[5] * hhAutos + hhSizeHBO[5] * hhSize + distToRailStopHBO[5] * distToRailStop +
+        generalizedCostHBO[5] * gcTramMetro + isMunichTripHBO[5] * isMunichTrip;
+
+    utilityWalk = interceptHBO[6] + maleHBO[6] * gender + driversLicenseHBO[6] * driversLicense +
+        hhAutosHBO[6] * hhAutos + hhSizeHBO[6] * hhSize + distToRailStopHBO[6] * distToRailStop +
+        tripLengthHBO[6] * travelDistanceNMT + isMunichTripHBO[6] * isMunichTrip;
+
+    utilityAVP = utilityAutoD + generalizedCostHBO[0] * (gcPrivateAV - gcAutoD);
+
+    utilityAVS = utilityBus + generalizedCostHBO[3] * (gcSharedAV - gcBus);
+
+    utilityUAM = utilityTrain + timeRatioUamToTrain * generalizedCostHBO[4] * timeUAM + costRatioUamToTrain * generalizedCostHBO[4] * costUAM - generalizedCostHBO[4] * gcTrain;
+
+    expsumNestAuto = Math.exp(utilityAVP / nestingCoefficient) + Math.exp(utilityAutoD / nestingCoefficient) + Math.exp(utilityAutoP / nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityUAM / nestingCoefficient) + Math.exp(utilityAVS / nestingCoefficient) + Math.exp(utilityBus / nestingCoefficient) + Math.exp(utilityTrain / nestingCoefficient) + Math.exp(utilityTramMetro / nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * Math.log(expsumNestTransit));
+
+return expsumTopLevel;
+
+}
+
+
+///////////////////////////////////////////////// NHBW Mode Choice /////////////////////////////////////////////////////
+
+// Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk, uam]
+interceptNHBW = [0.0, 0.58, 1.99, 0.72, 1.11, 1.02, 7.22, 1.11];
+ageNHBW = [0.0, -0.0045, 0.0, 0.0, -0.0059, 0.0, -0.011, -0.0059];
+driversLicenseNHBW = [0.0, -0.94, -1.56, -1.61, -1.67, -1.37, -1.43, -1.67];
+hhAutosNHBW = [0.0, -0.11, -1.12, -1.23, -1.44, -1.52, -0.47, -1.44];
+distToRailStopNHBW = [0.0, 0.0, 0.0, -0.24, 0.0, -0.16, -0.37, 0.0];
+generalizedCostNHBW = [-0.0034, -0.0034, 0.0, -0.0034, -0.0034, -0.0034, 0.0, -0.0034];
+tripLengthNHBW = [0.0, 0.0, -0.28, 0.0, 0.0, 0.0, -1.54, 0.0];
+
+var calculateNHBWProbabilities = function(originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime,uamFareEurosPerKm){
+
+timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+    if (timeUAM < 10000) {
+        timeUAM = timeUAM + handlingTime;
+    }
+monthlyIncome_EUR = 39295/12;
+age = 41.17;
+driversLicense = 0.915;
+hhAutos = 1.327;
+distToRailStop = originZone.getDistanceToNearestRailStop();
+
+distToRailStop = originZone.getDistanceToNearestRailStop();
+
+    if (monthlyIncome_EUR <= 1500) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT1500_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT1500_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT5600_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT5600_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT7000_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT7000_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    }
+
+    utilityAutoD = interceptNHBW[0] + ageNHBW[0] * age + driversLicenseNHBW[0] * driversLicense +
+        hhAutosNHBW[0] * hhAutos + distToRailStopNHBW[0] * distToRailStop + generalizedCostNHBW[0] * gcAutoD;
+
+    utilityAutoP = interceptNHBW[1] + ageNHBW[1] * age + driversLicenseNHBW[1] * driversLicense +
+        hhAutosNHBW[1] * hhAutos + distToRailStopNHBW[1] * distToRailStop + generalizedCostNHBW[1] * gcAutoP;
+
+    utilityBicycle = interceptNHBW[2] + ageNHBW[2] * age + driversLicenseNHBW[2] * driversLicense +
+        hhAutosNHBW[2] * hhAutos + distToRailStopNHBW[2] * distToRailStop + tripLengthNHBW[2] * travelDistanceNMT;
+
+    utilityBus = interceptNHBW[3] + ageNHBW[3] * age + driversLicenseNHBW[3] * driversLicense +
+        hhAutosNHBW[3] * hhAutos + distToRailStopNHBW[3] * distToRailStop + generalizedCostNHBW[3] * gcBus;
+
+    utilityTrain = interceptNHBW[4] + ageNHBW[4] * age + driversLicenseNHBW[4] * driversLicense +
+        hhAutosNHBW[4] * hhAutos + distToRailStopNHBW[4] * distToRailStop + generalizedCostNHBW[4] * gcTrain;
+
+    utilityTramMetro = interceptNHBW[5] + ageNHBW[5] * age + driversLicenseNHBW[5] * driversLicense +
+        hhAutosNHBW[5] * hhAutos + distToRailStopNHBW[5] * distToRailStop + generalizedCostNHBW[5] * gcTramMetro;
+
+    utilityWalk = interceptNHBW[6] + ageNHBW[6] * age + driversLicenseNHBW[6] * driversLicense +
+        hhAutosNHBW[6] * hhAutos + distToRailStopNHBW[6] * distToRailStop + tripLengthNHBW[6] * travelDistanceNMT;
+
+    utilityAVP = utilityAutoD + generalizedCostNHBW[0] * (gcPrivateAV - gcAutoD);
+
+    utilityAVS = utilityBus + generalizedCostNHBW[3] * (gcSharedAV - gcBus);
+
+    utilityUAM = utilityTrain + timeRatioUamToTrain * generalizedCostNHBW[4] * timeUAM + costRatioUamToTrain * generalizedCostNHBW[4] * costUAM - generalizedCostNHBW[4] * gcTrain;
+
+    expsumNestAuto = Math.exp(utilityAVP / nestingCoefficient) + Math.exp(utilityAutoD / nestingCoefficient) + Math.exp(utilityAutoP / nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityUAM / nestingCoefficient) + Math.exp(utilityAVS / nestingCoefficient) + Math.exp(utilityBus / nestingCoefficient) + Math.exp(utilityTrain / nestingCoefficient) + Math.exp(utilityTramMetro / nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * Math.log(expsumNestTransit));
+
+return expsumTopLevel;
+
+}
+
+///////////////////////////////////////////////// NHBO Mode Choice /////////////////////////////////////////////////////
+
+// Beta coefficients for modes in the order: [AutoD, AutoP, Bicycle, Bus, Train, TramMetro, Walk, uam]
+interceptNHBO = [0.0, 1.21, 0.93, 0.68, 0.64, 0.84, 2.99, 0.64];
+maleNHBO = [0.0, -0.24, 0.0, -0.20, -0.23, -0.18, -0.073, -0.23];
+driversLicenseNHBO = [0.0, -1.40, -1.49, -2.02, -1.74, -1.77, -1.44, -1.74];
+hhAutosNHBO = [0.0, -0.029, -0.73, -0.80, -0.85, -0.86, -0.40, -0.85];
+distToRailStopNHBO = [0.0, 0.0, 0.0, -0.40, -0.44, -0.48, 0.0, -0.44];
+agglomerationUrbanNHBO = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+ruralNHBO = [0.0, 0.0, 0.0, -0.70, -0.91, -1.12, 0.0, -0.91];
+generalizedCostNHBO_Sq = [-0.000017, -0.000017, 0.0, -0.000017, -0.000017, -0.000017, 0.0, -0.000017];
+tripLengthNHBO = [0.0, 0.0, -0.15, 0.0, 0.0, 0.0, -0.57, 0.0];
+
+var calculateNHBOProbabilities = function(originZone, destinationZone, travelTimes, accessTimes, travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm){
+
+timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+    timeAutoP = timeAutoD;
+    timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "tramMetro");
+    timeUAM = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+    if (timeUAM < 10000) {
+        timeUAM = timeUAM + handlingTime;
+    }
+monthlyIncome_EUR = 33070/12;
+gender = 0.509;
+driversLicense = 0.738;
+hhAutos = 1.217;
+distToRailStop = originZone.getDistanceToNearestRailStop();
+    areaType = originZone.getAreaTypeR();
+
+    if (monthlyIncome_EUR <= 1500) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT1500_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT1500_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT1500_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT1500_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 1500 && monthlyIncome_EUR <= 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT5600_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT5600_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT5600_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT5600_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    } else if (monthlyIncome_EUR > 5600) {
+        gcAutoD = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoD;
+        gcAutoP = timeAutoP + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_autoP;
+        gcBus = timeBus + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTrain = timeTrain + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcTramMetro = timeTramMetro + (travelDistanceAuto * transitFareEurosPerKm) / VOT7000_other_transit;
+        gcPrivateAV = timeAutoD + (travelDistanceAuto * fuelCostEurosPerKm) / VOT7000_other_privateAV; // change only in VOT
+        gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT7000_other_sharedAV; // change in VOT and cost
+        if (travelCostUAM < 10000) {
+            costUAM = (travelCostUAM) / VOT7000_HBW_HBE_uam;
+        } else {
+            costUAM = travelCostUAM;
+        }
+    }
+
+    utilityAutoD = interceptNHBO[0] + maleNHBO[0] * gender + driversLicenseNHBO[0] * driversLicense +
+        hhAutosNHBO[0] * hhAutos + distToRailStopNHBO[0] * distToRailStop +
+        agglomerationUrbanNHBO[0] * (areaType.name().equals("AGGLOMERATION") + areaType.name().equals("URBAN")) +
+        ruralNHBO[0] * (areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[0] * Math.pow(gcAutoD, 2);
+
+    utilityAutoP = interceptNHBO[1] + maleNHBO[1] * gender + driversLicenseNHBO[1] * driversLicense +
+        hhAutosNHBO[1] * hhAutos + distToRailStopNHBO[1] * distToRailStop +
+        agglomerationUrbanNHBO[1] * (areaType.name().equals("AGGLOMERATION") + areaType.name().equals("URBAN")) +
+        ruralNHBO[1] * (areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[1] * Math.pow(gcAutoP, 2);
+
+    utilityBicycle = interceptNHBO[2] + maleNHBO[2] * gender + driversLicenseNHBO[2] * driversLicense +
+        hhAutosNHBO[2] * hhAutos + distToRailStopNHBO[2] * distToRailStop +
+        agglomerationUrbanNHBO[2] * (areaType.name().equals("AGGLOMERATION") + areaType.name().equals("URBAN")) +
+        ruralNHBO[2] * (areaType.name().equals("RURAL")) + tripLengthNHBO[2] * travelDistanceNMT;
+
+    utilityBus = interceptNHBO[3] + maleNHBO[3] * gender + driversLicenseNHBO[3] * driversLicense +
+        hhAutosNHBO[3] * hhAutos + distToRailStopNHBO[3] * distToRailStop +
+        agglomerationUrbanNHBO[3] * (areaType.name().equals("AGGLOMERATION") + areaType.name().equals("URBAN")) +
+        ruralNHBO[3] * (areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[3] * Math.pow(gcBus, 2);
+
+    utilityTrain = interceptNHBO[4] + maleNHBO[4] * gender + driversLicenseNHBO[4] * driversLicense +
+        hhAutosNHBO[4] * hhAutos + distToRailStopNHBO[4] * distToRailStop +
+        agglomerationUrbanNHBO[4] * (areaType.name().equals("AGGLOMERATION") + areaType.name().equals("URBAN")) +
+        ruralNHBO[4] * (areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[4] * Math.pow(gcTrain, 2);
+
+    utilityTramMetro = interceptNHBO[5] + maleNHBO[5] * gender + driversLicenseNHBO[5] * driversLicense +
+        hhAutosNHBO[5] * hhAutos + distToRailStopNHBO[5] * distToRailStop +
+        agglomerationUrbanNHBO[5] * (areaType.name().equals("AGGLOMERATION") + areaType.name().equals("URBAN")) +
+        ruralNHBO[5] * (areaType.name().equals("RURAL")) + generalizedCostNHBO_Sq[5] * Math.pow(gcTramMetro, 2);
+
+    utilityWalk = interceptNHBO[6] + maleNHBO[6] * gender + driversLicenseNHBO[6] * driversLicense +
+        hhAutosNHBO[6] * hhAutos + distToRailStopNHBO[6] * distToRailStop +
+        agglomerationUrbanNHBO[6] * (areaType.name().equals("AGGLOMERATION") + areaType.name().equals("URBAN")) +
+        ruralNHBO[6] * (areaType.name().equals("RURAL")) + tripLengthNHBO[6] * travelDistanceNMT;
+
+    utilityAVP = utilityAutoD + generalizedCostNHBO_Sq[0] * (Math.pow(gcPrivateAV, 2) - Math.pow(gcAutoD, 2));
+
+    utilityAVS = utilityBus + generalizedCostNHBO_Sq[3] * (Math.pow(gcSharedAV, 2) - Math.pow(gcBus, 2));
+
+    utilityUAM = utilityTrain + generalizedCostNHBO_Sq[4] * Math.pow((timeRatioUamToTrain * timeUAM + costRatioUamToTrain * costUAM), 2) - generalizedCostNHBO_Sq[4] * Math.pow(gcTrain, 2);
+
+    expsumNestAuto = Math.exp(utilityAVP / nestingCoefficient) + Math.exp(utilityAutoD / nestingCoefficient) + Math.exp(utilityAutoP / nestingCoefficient);
+    expsumNestTransit = Math.exp(utilityUAM / nestingCoefficient) + Math.exp(utilityAVS / nestingCoefficient) + Math.exp(utilityBus / nestingCoefficient) + Math.exp(utilityTrain / nestingCoefficient) + Math.exp(utilityTramMetro / nestingCoefficient);
+    expsumTopLevel = Math.exp(nestingCoefficient * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * Math.log(expsumNestTransit));
+
+
+return expsumTopLevel;
+
+}
+
+
+//AIRPORT
+
+var calculateAIRPORTUtilities = function(originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm){
+
+    asc_autoDriver      = 0. ;
+    asc_autoPassenger   = -0.0657 + 2.76;
+    asc_bus             = 2.246879 - 3.09;
+    asc_train           = 2.992159 - 1.29;
+    asc_privateAV       = 0. ;
+    asc_sharedAV        =  -1.37275;
+    asc_uam             =  2.992159 - 1.29;
+
+    //times are in minutes
+    beta_time               = -0.0002 * 60;
+    exp_time_autoDriver     = 10.44896;
+    exp_time_autoPassenger  = 10.44896;
+    exp_time_bus            = 0;
+    exp_time_train          = 3.946016;
+    exp_time_privateAV      = 10.44896;
+    exp_time_sharedAV       = 10.44896;
+    exp_time_uam            = 3.946016;
+
+    //distance is in minutes
+    beta_distance               = -0.00002
+    exp_distance_autoDriver     = 0;
+    exp_distance_autoPassenger  = 1.939056;
+    exp_distance_bus            = 9.662964;
+    exp_distance_train          = 7.706087;
+    exp_distance_privateAV      = 0;
+    exp_distance_sharedAV       = 4.649129;
+    exp_distance_uam            = 7.706087;
+
+
+    //Order of variables in the return variable autoDriver, autoPassenger bus, train, privateAV, sharedAV, uam
+
+        u_autoDriver    = asc_autoDriver + exp_time_autoDriver * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+            exp_distance_autoDriver * Math.exp(beta_distance * travelDistanceAuto);
+        u_autoPassenger = asc_autoPassenger + exp_time_autoPassenger * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+            exp_distance_autoPassenger * Math.exp(beta_distance * travelDistanceAuto);
+        u_bus           = asc_bus + exp_time_bus * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus")) +
+            exp_distance_bus * Math.exp(beta_distance * travelDistanceAuto);
+        u_train         = asc_train + exp_time_train * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train")) +
+            exp_distance_train * Math.exp(beta_distance * travelDistanceAuto);
+        u_privateAV     = u_autoDriver;
+        u_sharedAV      = asc_sharedAV + exp_time_sharedAV * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car")) +
+             exp_distance_sharedAV * Math.exp(beta_distance * travelDistanceAuto);
+        u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(handlingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
+             exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
+
+    return [Math.exp(u_autoDriver), Math.exp(u_autoPassenger), Math.exp(u_bus), Math.exp(u_train), Math.exp(u_privateAV), Math.exp(u_sharedAV), Math.exp(u_uam)];
+}
+
+
+var calculateAIRPORTProbabilities = function(originZone, destinationZone, travelTimes, accessTimes,
+ travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm){
+
+
+        //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, sharedAV, privateAV, TramMetro, Walk, privateAV, sharedAV, UAM]
+        //calculate utilities for each mode
+        utilities = calculateAIRPORTUtilities(originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour,  handlingTime, uamFareEurosPerKm);
+
+        sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
+
+       return Math.log(sum_u);
+
+}
+
+var returnLogsumAIRPORT = function(originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm){
+
+        //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk, privateAV, sharedAV, UAM]
+        utilities = calculateAIRPORTUtilities(originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm);
+
+        sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
+
+       return Math.log(sum_u);
+}
