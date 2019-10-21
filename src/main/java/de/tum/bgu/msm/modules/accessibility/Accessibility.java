@@ -60,7 +60,7 @@ public class Accessibility extends Module {
             fileNameScenario = fileName +  "Base.csv";
         }
         PrintWriter pwha = MitoUtil.openFileForSequentialWriting(fileNameScenario, false);
-        pwha.println("origin");
+        pwha.print("origin");
         for (Purpose purpose : Purpose.values()) {
             pwha.print(",");
             pwha.print(purpose);
