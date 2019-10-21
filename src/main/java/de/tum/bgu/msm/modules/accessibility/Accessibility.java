@@ -42,7 +42,40 @@ public class Accessibility extends Module {
         logger.info(" Calculating logsumAccessibility");
         initializeMatrices();
         accessibilityByOrigin();
-        printAccessibilityValues();
+    }
+
+
+    public void print(String scenarioName){
+        logger.info("  Writing logsumAccessibility file");
+        String fileName = "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/accessibility/accessibility";
+        String fileNameScenario = "";
+
+        if (includeUAM){
+            if (includeAV) {
+                fileNameScenario = fileName + "UAMyesAVS.csv";
+            } else {
+                fileNameScenario = fileName + "noUAMyesAVS.csv";
+            }
+        } else {
+            fileNameScenario = fileName +  "Base.csv";
+        }
+        PrintWriter pwha = MitoUtil.openFileForSequentialWriting(fileNameScenario, false);
+        pwha.println("origin");
+        for (Purpose purpose : Purpose.values()) {
+            pwha.print(",");
+            pwha.print(purpose);
+        }
+        pwha.println("");
+
+        for (MitoZone origin : dataSet.getZones().values()) {
+            pwha.print(origin.getId());
+            for (Purpose purpose : Purpose.values()) {
+                pwha.print(",");
+                pwha.print(accessibilitiesByPurpose.get(purpose).get(origin.getId()));
+            }
+            pwha.println("");
+        }
+        pwha.close();
     }
 
     private void initializeMatrices() {
@@ -72,37 +105,6 @@ public class Accessibility extends Module {
         executor.execute();
     }
 
-    private void printAccessibilityValues(){
-        String outputSubDirectory = "skims/";
-        logger.info("  Writing logsumAccessibility file");
-        String fileaa = "";
-        if (includeUAM){
-            if (includeAV) {
-                fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "accessibilitiesUAMyesAVS.csv";
-            } else {
-                fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + "accessibilitiesUAMnoAVS.csv";
-            }
-        } else {
-            fileaa = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory +  "accessibilitiesBase.csv";
-        }
-        PrintWriter pwha = MitoUtil.openFileForSequentialWriting(fileaa, false);
-        pwha.println("origin");
-        for (Purpose purpose : Purpose.values()) {
-            pwha.print(",");
-            pwha.print(purpose);
-        }
-        pwha.println("");
-
-        for (MitoZone origin : dataSet.getZones().values()) {
-            pwha.print(origin.getId());
-            for (Purpose purpose : Purpose.values()) {
-                pwha.print(",");
-                pwha.print(accessibilitiesByPurpose.get(purpose).get(origin.getId()));
-            }
-            pwha.println("");
-        }
-        pwha.close();
-    }
 
     class AccessibilityByOrigin extends RandomizableConcurrentFunction<Void> {
 

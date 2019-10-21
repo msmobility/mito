@@ -117,6 +117,7 @@ public class TravelDemandGenerator {
         logger.info("Running Module: Accessibility Calculation");
         Accessibility accessibility = new Accessibility(dataSet);
         accessibility.run();
+        accessibility.print(scenarioName);
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
