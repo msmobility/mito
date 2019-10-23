@@ -243,10 +243,10 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>1.13</version>
-        </dependency>
+		    <groupId>com.vividsolutions</groupId>
+		    <artifactId>jts</artifactId>
+		    <version>1.13</version>
+		</dependency>        
         <!--  <dependency>
 		    <groupId>com.locationtech.jts</groupId>
 		    <artifactId>jts-core</artifactId>
@@ -255,7 +255,7 @@
         <dependency>
             <groupId>com.github.BauhausLuftfahrt</groupId>
             <artifactId>MATSim-UAM</artifactId>
-            <version>v1.1</version>
+            <version>96452d9</version>
         </dependency>
     </dependencies>
     <properties>

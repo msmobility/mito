@@ -61,18 +61,28 @@ public class TravelDemandGenerator {
         distribution.run();
 
         int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
-        boolean useAtenuationFactor  = Resources.INSTANCE.getBoolean("attenuation", true);
+        boolean useAtenuationFactor  = Resources.INSTANCE.getBoolean("attenuation", false);
+        boolean useSAenuationFactor = Resources.INSTANCE.getBoolean("s.attenuation", false);
         double b = Resources.INSTANCE.getDouble("attenuation.factor", 1.5);
+        int centralIteration = Math.round(iterations/2);
 
-        for (int iteration = 0; iteration< iterations; iteration++) {
+
+        for (int iteration = 0; iteration < iterations; iteration++) {
             double probabilityOfModeChange = 1.0;
             //reduces progresively the proportion of mode changes of the trips
-            if (iterations > 1 && useAtenuationFactor) {
-                probabilityOfModeChange = 1 / Math.pow(iteration + 1., b);
+            if (iterations > 1 && iteration > 0 ) {
+                if (useAtenuationFactor) {
+                    probabilityOfModeChange = 1 / Math.pow(iteration + 1., b);
+                }
+                if (useSAenuationFactor) {
+                    probabilityOfModeChange = 1 - 1 / (1 + Math.exp(b * (iteration + 1 - centralIteration)));
+                }
             }
 
+            logger.warn("Mode choice allowed for " + probabilityOfModeChange*100 + "% of agents in this iteration!");
+
             logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-            ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfModeChange);
+            ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfModeChange, iteration);
             modeChoice.run();
             modeChoice.printModalShares(iteration, scenarioName);
 
