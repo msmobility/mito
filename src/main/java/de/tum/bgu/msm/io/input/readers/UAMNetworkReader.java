@@ -51,7 +51,7 @@ public class UAMNetworkReader {
     private final double CAR_UAM_TIME_FACTOR = Resources.INSTANCE.getDouble(Properties.CAR_2_UAM_THRESHOLD, 10.);
     private final double MIN_FLYING_DISTANCE_M = Resources.INSTANCE.getDouble(Properties.MIN_FLYING_DIST, 5000.);
     private final double TOO_HIGH_TIME = Double.MAX_VALUE;
-
+    private boolean chooseAlwaysClosestStation = Resources.INSTANCE.getBoolean("choose.always.closest.station", true);
 
     public UAMNetworkReader(DataSet dataSet) {
         this.dataSet = dataSet;
@@ -162,7 +162,7 @@ public class UAMNetworkReader {
                 int origId = originZone.getId();
                 int destId = destinationZone.getId();
                 if (!originZone.equals(destinationZone)) {
-                    double minTravelTime = TOO_HIGH_TIME;
+                    double minReferenceTime = TOO_HIGH_TIME;
                     double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
                     UAMStation accessStationChosen = null;
                     UAMStation egressStationChosen = null;
@@ -176,11 +176,14 @@ public class UAMNetworkReader {
                                 double accessDistance = travelDistancesAuto.getTravelDistance(originZone.getId(), accessZone.getId());
                                 double egressDistance = travelDistancesAuto.getTravelDistance(egressZone.getId(), destinationZone.getId());
                                 if (accessDistance < SEARCH_RADIUS_KM && egressDistance < SEARCH_RADIUS_KM) {
-                                    double travelTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
-                                            travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
+                                    double referenceTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
                                             travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
-                                    if (travelTimeAtThisRoute < minTravelTime) {
-                                        minTravelTime = travelTimeAtThisRoute;
+                                    if (!chooseAlwaysClosestStation){
+                                        referenceTimeAtThisRoute += travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId());
+                                    }
+
+                                    if (referenceTimeAtThisRoute < minReferenceTime) {
+                                        minReferenceTime = referenceTimeAtThisRoute;
                                         accessStationChosen = accessStation;
                                         egressStationChosen = egressStation;
                                     }
@@ -190,9 +193,14 @@ public class UAMNetworkReader {
                     }
                     MitoZone accessZone = stationZoneMap.get(accessStationChosen);
                     MitoZone egressZone = stationZoneMap.get(egressStationChosen);
-                    //if (minTravelTime < carTravelTime) {
-                    if (accessStationChosen != null && egressStationChosen != null && minTravelTime < carTravelTime * CAR_UAM_TIME_FACTOR){
-                        travelTimeUam.setIndexed(origId, destId, minTravelTime);
+                    //if (minReferenceTime < carTravelTime) {
+                    if (accessStationChosen != null && egressStationChosen != null && minReferenceTime < carTravelTime * CAR_UAM_TIME_FACTOR){
+
+                        double selectedTravelTime = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
+                                travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
+                                travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+
+                        travelTimeUam.setIndexed(origId, destId, selectedTravelTime);
 
                         accessVertiportUam.setIndexed(origId,
                                 destId,
