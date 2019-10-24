@@ -63,6 +63,7 @@ public class TravelDemandGenerator {
         int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
         boolean useAtenuationFactor  = Resources.INSTANCE.getBoolean("attenuation", false);
         boolean useSAenuationFactor = Resources.INSTANCE.getBoolean("s.attenuation", false);
+        boolean useFlatProbabilityForReChoosingMode = Resources.INSTANCE.getBoolean("fix.share.rechoose.mode", false);
         double b = Resources.INSTANCE.getDouble("attenuation.factor", 1.5);
         int centralIteration = Math.round(iterations/2);
 
@@ -76,6 +77,9 @@ public class TravelDemandGenerator {
                 }
                 if (useSAenuationFactor) {
                     probabilityOfModeChange = 1 - 1 / (1 + Math.exp(b * (iteration + 1 - centralIteration)));
+                }
+                if (useFlatProbabilityForReChoosingMode) {
+                    probabilityOfModeChange = b;
                 }
             }
 
