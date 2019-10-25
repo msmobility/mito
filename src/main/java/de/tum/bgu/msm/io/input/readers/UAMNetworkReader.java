@@ -19,6 +19,7 @@ import net.bhl.matsim.uam.analysis.uamroutes.run.RunCalculateUAMRoutes;
 import net.bhl.matsim.uam.data.UAMStationConnectionGraph;
 import net.bhl.matsim.uam.infrastructure.UAMStation;
 import net.bhl.matsim.uam.infrastructure.readers.UAMXMLReader;
+import net.bhl.matsim.uam.router.UAMModes;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -27,6 +28,7 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -34,7 +36,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -67,7 +71,13 @@ public class UAMNetworkReader {
         this.network = scenario.getNetwork();
         String uamStationAndVehicleFileName = Resources.INSTANCE.getString(Properties.UAM_VEHICLES);
 
-        UAMXMLReader uamxmlReader = new UAMXMLReader(network);
+        TransportModeNetworkFilter filter = new TransportModeNetworkFilter(network);
+        Set<String> modes = new HashSet<>();
+        modes.add(UAMModes.UAM_MODE);
+        Network networkUAM = NetworkUtils.createNetwork();
+        filter.filter(networkUAM, modes);
+
+        UAMXMLReader uamxmlReader = new UAMXMLReader(networkUAM);
         uamxmlReader.readFile(uamStationAndVehicleFileName);
 
         Map<Id<UAMStation>, UAMStation> stationMap = uamxmlReader.getStations();
@@ -98,7 +108,7 @@ public class UAMNetworkReader {
         IndexedDoubleMatrix2D travelDistanceUamAtServedZones = new IndexedDoubleMatrix2D(stationZoneMap.values(), stationZoneMap.values());
 
         //calculate distances and times between all UAM stations
-        UAMStationConnectionGraph connections = RunCalculateUAMRoutes.calculateRoutes(network, uamxmlReader);
+        UAMStationConnectionGraph connections = RunCalculateUAMRoutes.calculateRoutes(uamxmlReader);
 
         for (UAMStation originStation : stationMap.values()) {
             for (UAMStation destinationStation : stationMap.values()) {
