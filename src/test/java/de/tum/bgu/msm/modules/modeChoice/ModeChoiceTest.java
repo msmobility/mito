@@ -78,8 +78,8 @@ public class ModeChoiceTest {
 
     @Test
     public void testModeChoice() throws Exception {
-        ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfChoosing);
-        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, false,true, 1.);
+        ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfChoosing, 0);
+        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, false,true, 1., 0);
         modeChoiceByPurpose.call();
 
     }
