@@ -242,14 +242,6 @@ public class ModeChoice extends Module {
                 double processingTime_min = dataSet.getTotalHandlingTimes().
                         getWaitingTime(trip, trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
 
-                if (processingTime_min > 60. && Resources.INSTANCE.getBoolean("apply.threshold", false)) {
-                    processingTime_min = 10000;
-                }
-
-                if (Resources.INSTANCE.getBoolean("apply.s.penalty", false)) {
-                    processingTime_min = processingTime_min * (1 + 10000 / (1 + Math.exp(-0.2 * (processingTime_min - 90))));
-                }
-
                 return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
                         travelDistanceNMT, uamCost_eur, dataSet.getPeakHour(), processingTime_min, uamFare_eurkm);
             } else {

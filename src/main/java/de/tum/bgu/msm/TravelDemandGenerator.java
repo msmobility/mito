@@ -61,26 +61,14 @@ public class TravelDemandGenerator {
         distribution.run();
 
         int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
-        boolean useAtenuationFactor  = Resources.INSTANCE.getBoolean("attenuation", false);
-        boolean useSAenuationFactor = Resources.INSTANCE.getBoolean("s.attenuation", false);
-        boolean useFlatProbabilityForReChoosingMode = Resources.INSTANCE.getBoolean("fix.share.rechoose.mode", false);
-        double b = Resources.INSTANCE.getDouble("attenuation.factor", 1.5);
-        int centralIteration = Math.round(iterations/2);
-
+        boolean restrictProportionOfModeShare = Resources.INSTANCE.getBoolean("fix.share.rechoose.mode", false);
+        double share = Resources.INSTANCE.getDouble("attenuation.factor", 1.5);
 
         for (int iteration = 0; iteration < iterations; iteration++) {
             double probabilityOfModeChange = 1.0;
             //reduces progresively the proportion of mode changes of the trips
-            if (iterations > 1 && iteration > 0 ) {
-                if (useAtenuationFactor) {
-                    probabilityOfModeChange = 1 / Math.pow(iteration + 1., b);
-                }
-                if (useSAenuationFactor) {
-                    probabilityOfModeChange = 1 - 1 / (1 + Math.exp(b * (iteration + 1 - centralIteration)));
-                }
-                if (useFlatProbabilityForReChoosingMode) {
-                    probabilityOfModeChange = b;
-                }
+            if (iterations > 1 && iteration > 0  && restrictProportionOfModeShare) {
+                    probabilityOfModeChange = share;
             }
 
             logger.warn("Mode choice allowed for " + probabilityOfModeChange*100 + "% of agents in this iteration!");
