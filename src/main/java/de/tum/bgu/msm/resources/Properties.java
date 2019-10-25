@@ -106,6 +106,8 @@ public class Properties {
     public static final String UAM_COST_KM = "uam.cost.km";
     public static final String UAM_COST_BASE = "uam.cost.base";
 
+    public static final String FIX_SHARE_RECHOOSE_MODE = "fix.share.rechoose.mode";
+
     public static final String UAM_MATSIM = "uam.matsim";
     public static final String UAM_MATSIM_ROUTING = "uam.matsim.routing";
     public static final String UAM_VEHICLES = "uam.vehicles";
