@@ -8,6 +8,7 @@ import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.accessEgressChoice.AccessEgressChoice;
+import de.tum.bgu.msm.modules.accessibility.Accessibility;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
@@ -60,18 +61,20 @@ public class TravelDemandGenerator {
         distribution.run();
 
         int iterations = Resources.INSTANCE.getInt(Properties.UAM_ITERATIONS, 1);
-        boolean useAttenuationFactor  = Resources.INSTANCE.getBoolean(Properties.ATTENTUATION, true);
-        double b = Resources.INSTANCE.getDouble(Properties.ATTENTUATION_FACTOR, 1.5);
+        boolean restrictProportionOfModeShare = Resources.INSTANCE.getBoolean(Properties.FIX_SHARE_RECHOOSE_MODE, false);
+        double share = Resources.INSTANCE.getDouble(Properties.ATTENTUATION_FACTOR, 0.33);
 
-        for (int iteration = 0; iteration <= iterations; iteration++) {
+        for (int iteration = 0; iteration < iterations; iteration++) {
             double probabilityOfModeChange = 1.0;
             //reduces progresively the proportion of mode changes of the trips
-            if (iterations > 1 && useAttenuationFactor) {
-                probabilityOfModeChange = 1 / Math.pow(iteration + 1., b);
+            if (iterations > 1 && iteration > 0  && restrictProportionOfModeShare) {
+                    probabilityOfModeChange = share;
             }
 
+            logger.warn("Mode choice allowed for " + probabilityOfModeChange*100 + "% of agents in this iteration!");
+
             logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-            ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfModeChange);
+            ModeChoice modeChoice = new ModeChoice(dataSet, probabilityOfModeChange, iteration);
             modeChoice.run();
             modeChoice.printModalShares(iteration, scenarioName);
 
@@ -112,6 +115,11 @@ public class TravelDemandGenerator {
             }
             logger.info("Iteration " + iteration + " completed. Feedback waiting times to re-run mode choice");
         }
+
+        logger.info("Running Module: Accessibility Calculation");
+        Accessibility accessibility = new Accessibility(dataSet);
+        accessibility.run();
+        accessibility.print(scenarioName);
 
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);

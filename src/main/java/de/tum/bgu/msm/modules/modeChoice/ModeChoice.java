@@ -26,10 +26,12 @@ public class ModeChoice extends Module {
     private final boolean includeAV = Resources.INSTANCE.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
     private final boolean includeUAM = Resources.INSTANCE.getBoolean(UAM_CHOICE, true);
     private final double probabilityOfChoosing;
+    private final int iteration;
 
-    public ModeChoice(DataSet dataSet, double probabilityOfChoosing) {
+    public ModeChoice(DataSet dataSet, double probabilityOfChoosing, int iteration) {
         super(dataSet);
         this.probabilityOfChoosing = probabilityOfChoosing;
+        this.iteration = iteration;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class ModeChoice extends Module {
     private void modeChoiceByPurpose() {
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         for (Purpose purpose : Purpose.values()) {
-            executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, includeAV, includeUAM, probabilityOfChoosing));
+            executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, includeAV, includeUAM, probabilityOfChoosing, iteration));
         }
         executor.execute();
     }
@@ -108,10 +110,10 @@ public class ModeChoice extends Module {
         logger.info("Mode shares for UAM per purpose:");
         for (Purpose purpose : Purpose.values()) {
 
-                Double share = dataSet.getModeShareForPurpose(purpose, Mode.uam);
-                if (share != null) {
-                    logger.info(purpose + ": " + share);
-                }
+            Double share = dataSet.getModeShareForPurpose(purpose, Mode.uam);
+            if (share != null) {
+                logger.info(purpose + ": " + share);
+            }
         }
         logger.info("#################################################");
         logger.info("Number of UAM trips per purpose:");
@@ -126,8 +128,8 @@ public class ModeChoice extends Module {
         logger.info("#################################################");
 
         double uam = 0.;
-        for (MitoTrip trip : this.dataSet.getTrips().values()){
-            if(trip.getTripMode()== Mode.uam){
+        for (MitoTrip trip : this.dataSet.getTrips().values()) {
+            if (trip.getTripMode() == Mode.uam) {
                 uam++;
             }
         }
@@ -140,13 +142,14 @@ public class ModeChoice extends Module {
         String fileName = "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/modeChoice/modalShares" + iteration + ".csv";
 
         PrintWriter pw = null;
-        pw = MitoUtil.openFileForSequentialWriting(fileName, false);;
+        pw = MitoUtil.openFileForSequentialWriting(fileName, false);
+        ;
         pw.println("iteration,purpose,mode,share");
-        for (Purpose purpose : Purpose.values()){
-            for (Mode mode : Mode.values()){
+        for (Purpose purpose : Purpose.values()) {
+            for (Mode mode : Mode.values()) {
                 StringBuilder sb = new StringBuilder();
                 Double share = dataSet.getModeShareForPurpose(purpose, mode);
-                if(share != null){
+                if (share != null) {
                     sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(share);
                 } else {
                     sb.append(iteration).append(",").append(purpose).append(",").append(mode).append(",").append(0.);
@@ -168,21 +171,23 @@ public class ModeChoice extends Module {
         private final AccessAndEgressVariables accessAndEgressVariables;
         private int countTripsSkipped;
         private final double probabilityOfChoosing;
+        private final int iteration;
 
-        ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, boolean includeAV, boolean includeUAM, double probabilityOfChoosing) {
+        ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, boolean includeAV, boolean includeUAM, double probabilityOfChoosing, int iteration) {
             super(MitoUtil.getRandomObject().nextLong());
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
             this.accessAndEgressVariables = dataSet.getAccessAndEgressVariables();
             this.probabilityOfChoosing = probabilityOfChoosing;
+            this.iteration = iteration;
             if (includeAV) {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoiceAV")), purpose);
             } else if (includeUAM) {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoiceUAMIncremental")), purpose);
-            } else{
+            } else {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoice")), purpose);
             }
@@ -221,7 +226,7 @@ public class ModeChoice extends Module {
                     destinationId);
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
-            if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)){
+            if (Resources.INSTANCE.getBoolean(UAM_CHOICE, true)) {
                 final double flyingDistanceUAM_km = dataSet.getFlyingDistanceUAM().getTravelDistance(originId,
                         destinationId);
                 final double uamFare_eurkm = Double.parseDouble(Resources.INSTANCE.getString(Properties.UAM_COST_KM));
@@ -237,9 +242,8 @@ public class ModeChoice extends Module {
                 double processingTime_min = dataSet.getTotalHandlingTimes().
                         getWaitingTime(trip, trip.getTripOrigin(), trip.getTripDestination(), Mode.uam.toString());
 
-
                 return calculator.calculateProbabilitiesUAM(household, trip.getPerson(), origin, destination, travelTimes, accessAndEgressVariables, travelDistanceAuto,
-                        travelDistanceNMT, uamCost_eur, dataSet.getPeakHour(), processingTime_min,uamFare_eurkm);
+                        travelDistanceNMT, uamCost_eur, dataSet.getPeakHour(), processingTime_min, uamFare_eurkm);
             } else {
                 return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                         travelDistanceNMT, dataSet.getPeakHour());
@@ -248,7 +252,6 @@ public class ModeChoice extends Module {
 
         private void chooseMode(MitoTrip trip, double[] probabilities, double probabilityOfChoosing) {
             if (random.nextDouble() < probabilityOfChoosing) {
-
                 if (probabilities == null) {
                     countTripsSkipped++;
                     return;
@@ -264,7 +267,7 @@ public class ModeChoice extends Module {
                 if (sum > 0) {
                     trip.setTripMode(Mode.valueOf(MitoUtil.select(probabilities, random, sum)));
                 } else {
-                    //logger.error("Negative probabilities for trip " + trip.getId());
+                    logger.error("Negative probabilities for trip " + trip.getId());
                     trip.setTripMode(null);
                 }
             }

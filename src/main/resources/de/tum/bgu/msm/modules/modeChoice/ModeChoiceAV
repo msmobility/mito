@@ -474,9 +474,9 @@ var calculateHBSProbabilities = function (hh, person, originZone, destinationZon
         hhAutosHBS[6] * hhAutos + distToRailStopHBS[6] * distToRailStop + hhChildrenHBS[6] * hhChildren +
         tripLengthHBS[6] * travelDistanceNMT + isMunichTripHBS[6] * isMunichTrip;
 
-    utilityAVP = utilityAutoD + generalizedCostHBS_Sq[0] * (gcPrivateAV - gcAutoD); //added
+    utilityAVP = utilityAutoD + generalizedCostHBS_Sq[0] * (Math.pow(gcPrivateAV, 2) - Math.pow(gcAutoD, 2));
 
-    utilityAVS = utilityBus + generalizedCostHBS_Sq[3] * (gcSharedAV - gcBus); //added
+    utilityAVS = utilityBus + generalizedCostHBS_Sq[3] * (Math.pow(gcSharedAV, 2) - Math.pow(gcBus, 2));
 
 //Option 1:
     /*logsumAuto = Math.log(Math.exp(utilityAutoD/nestingCoefficient) + Math.exp(utilityAutoP/nestingCoefficient));
@@ -966,10 +966,9 @@ var calculateNHBOProbabilities = function (hh, person, originZone, destinationZo
         agglomerationUrbanNHBO[6] * (areaType.name().equals("NHBO_agglomeration") + areaType.name().equals("NHBO_urban")) +
         ruralNHBO[6] * (areaType.name().equals("NHBO_rural")) + tripLengthNHBO[6] * travelDistanceNMT;
 
-    utilityAVP = utilityAutoD + generalizedCostNHBO_Sq[0] * (gcPrivateAV - gcAutoD);
+    utilityAVP = utilityAutoD + generalizedCostNHBO_Sq[0] * (Math.pow(gcPrivateAV, 2) - Math.pow(gcAutoD, 2));
 
-    utilityAVS = utilityBus + generalizedCostNHBO_Sq[3] * (gcSharedAV - gcBus);
-
+    utilityAVS = utilityBus + generalizedCostNHBO_Sq[3] * (Math.pow(gcSharedAV, 2) - Math.pow(gcBus, 2));
 
 // Option 1:
 
@@ -1058,4 +1057,125 @@ var calculateNHBOProbabilities = function (hh, person, originZone, destinationZo
 
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilitySharedAV], "double[]");
 
+}
+
+//AIRPORT
+
+var calculateAIRPORTUtilities = function (hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm, travelCostUAM) {
+
+    asc_autoDriver = 0.;
+    asc_autoPassenger = 0.706154;
+    asc_bus = 1.890414;
+    asc_train = 2.028797;
+    asc_privateAV = 0.;
+    asc_sharedAV = 1.282504;
+    asc_uam = 1.282504;
+
+    //times are in minutes
+    beta_time = -0.0002 * 60;
+    exp_time_autoDriver = 0;
+    exp_time_autoPassenger = 0;
+    exp_time_bus = 0;
+    exp_time_train = 0;
+    exp_time_privateAV = 0;
+    exp_time_sharedAV = 0;
+    exp_time_uam = 0;
+
+    //distance is in minutes
+    beta_distance = -0.00002;
+    exp_distance_autoDriver = 0;
+    exp_distance_autoPassenger = 0;
+    exp_distance_bus = 0;
+    exp_distance_train = 0;
+    exp_distance_privateAV = 0;
+    exp_distance_sharedAV = 0;
+    exp_distance_uam = 0;
+
+    //generalized cost in minutes and values of time
+    b_gcost_all = -0.018834;
+    VOT_AIRPORT_autoDriver = 63./60;
+    VOT_AIRPORT_autoPassengerAndOther = 83.1 / 60;
+    VOT_AIRPORT_publicTransport = 97.8 / 60;
+
+    //Order of variables in the return variable autoDriver, autoPassenger bus, train, privateAV, sharedAV, uam
+
+    travelTimeCar = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "car");
+    u_autoDriver = asc_autoDriver +
+        exp_time_autoDriver * Math.exp(beta_time * travelTimeCar) +
+        exp_distance_autoDriver * Math.exp(beta_distance * travelDistanceAuto) +
+        b_gcost_all * (travelTimeCar + travelDistanceAuto * fuelCostEurosPerKm / VOT_AIRPORT_autoDriver);
+
+    u_autoPassenger = asc_autoPassenger +
+        exp_time_autoPassenger * Math.exp(beta_time * travelTimeCar) +
+        exp_distance_autoPassenger * Math.exp(beta_distance * travelDistanceAuto) +
+        b_gcost_all * (travelTimeCar + travelDistanceAuto * fuelCostEurosPerKm / VOT_AIRPORT_autoPassengerAndOther);
+
+    travelTimeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "bus");
+    u_bus = asc_bus +
+        exp_time_bus * Math.exp(beta_time * travelTimeBus) +
+        exp_distance_bus * Math.exp(beta_distance * travelDistanceAuto) +
+        b_gcost_all * (travelTimeBus + travelDistanceAuto * transitFareEurosPerKm / VOT_AIRPORT_publicTransport);
+
+    travelTimeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour, "train");
+    u_train = asc_train +
+        exp_time_train * Math.exp(beta_time * travelTimeTrain) +
+        exp_distance_train * Math.exp(beta_distance * travelDistanceAuto) +
+        b_gcost_all * (travelTimeTrain + travelDistanceAuto * transitFareEurosPerKm / VOT_AIRPORT_publicTransport);
+
+    u_privateAV = u_autoDriver;
+    //u_privateAV = Number.NEGATIVE_INFINITY;
+
+
+    u_sharedAV = asc_sharedAV +
+        exp_time_sharedAV * Math.exp(beta_time * travelTimeCar) +
+        exp_distance_sharedAV * Math.exp(beta_distance * travelDistanceAuto) +
+        b_gcost_all * (travelTimeCar + travelDistanceAuto*sharedAVCostEurosPerKm / VOT_AIRPORT_autoPassengerAndOther);
+    //u_sharedAV = Number.NEGATIVE_INFINITY;
+
+    //this was done when referenc mode was train
+    //u_uam           = asc_uam + exp_time_uam * Math.exp(beta_time * 1.4749 *(handlingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam"))) +
+    //exp_distance_uam * Math.exp(beta_distance * 0.4545 * travelDistanceAuto * uamFareEurosPerKm/transitFareEurosPerKm);
+
+    travelTimeUAM = handlingTime + travelTimes.getTravelTime(originZone, destinationZone, peakHour, "uam");
+    //u_uam = asc_uam +
+        exp_time_uam * Math.exp(beta_time * 0.8621 * travelTimeUAM) +
+        exp_distance_uam * Math.exp(beta_distance * 0.1626 * travelDistanceAuto * uamFareEurosPerKm / sharedAVCostEurosPerKm) +
+        b_gcost_all * (travelTimeUAM + travelCostUAM / VOT_AIRPORT_autoPassengerAndOther);
+    u_uam = Number.NEGATIVE_INFINITY;
+
+    return [Math.exp(u_autoDriver), Math.exp(u_autoPassenger), Math.exp(u_bus), Math.exp(u_train), Math.exp(u_privateAV), Math.exp(u_sharedAV), Math.exp(u_uam)];
+}
+
+
+var calculateAIRPORTProbabilities = function (hh, person, originZone, destinationZone, travelTimes, accessTimes,
+                                              travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
+
+
+    //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, sharedAV, privateAV, TramMetro, Walk, privateAV, sharedAV, UAM]
+    //calculate utilities for each mode
+    utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm, travelCostUAM);
+
+    sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
+
+    probabilityAutoD = utilities[0] / sum_u;
+    probabilityAutoP = utilities[1] / sum_u;
+    probabilityBus = utilities[2] / sum_u;
+    probabilityTrain = utilities[3] / sum_u;
+    probabilityPrivateAV = utilities[4] / sum_u;
+    probabilitySharedAV = utilities[5] / sum_u;
+    probabilityUAM = utilities[6] / sum_u;
+
+    return Java.to([probabilityAutoD, probabilityAutoP, 0., probabilityBus, probabilityTrain, 0., 0., probabilityPrivateAV, probabilitySharedAV, probabilityUAM], "double[]");
+
+}
+
+var returnLogsumAIRPORT = function (hh, person, originZone, destinationZone, travelTimes, accessTimes,
+                                    travelDistanceAuto, travelDistanceNMT, travelCostUAM, peakHour, handlingTime, uamFareEurosPerKm) {
+
+    //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk, privateAV, sharedAV, UAM]
+    utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour, handlingTime, uamFareEurosPerKm, travelCostUAM);
+
+    sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4] + utilities[5] + utilities[6];
+
+    return Math.log(sum_u);
 }

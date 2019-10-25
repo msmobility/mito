@@ -30,7 +30,7 @@ public class HandlingTimesUpdater {
     private static final int INTERVAL_S = 60 * 60;
     private static final int NUMBER_OF_INTERVALS = 30 * 60 * 60 / INTERVAL_S;
     private final Map<Integer, String> zonesToStationMap;
-    private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble(Properties.UAM_BOARDINGTIME, 13) * 60;
+    private final double MINIMUM_WAITING_TIME_S = Resources.INSTANCE.getDouble(Properties.MIN_HANDLING_TIME, 16) * 60;
 
     public HandlingTimesUpdater(DataSet dataSet) {
         this.dataSet = dataSet;
