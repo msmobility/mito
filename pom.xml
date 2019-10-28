@@ -48,6 +48,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>ImageJ-Public</id>
+            <url>http://maven.imagej.net/content/repositories/public/</url>
+        </repository>
     </repositories>
 
     <profiles>
@@ -160,11 +164,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.parallelcolt/parallelcolt -->
         <dependency>
             <groupId>net.sourceforge.parallelcolt</groupId>
             <artifactId>parallelcolt</artifactId>
-            <version>0.10.1</version>
+            <version>0.11.4</version>
         </dependency>
+
         <dependency>
             <groupId>omx</groupId>
             <artifactId>omx</artifactId>
@@ -255,7 +261,7 @@
         <dependency>
             <groupId>com.github.BauhausLuftfahrt</groupId>
             <artifactId>MATSim-UAM</artifactId>
-            <version>v1.1</version>
+            <version>master-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <properties>

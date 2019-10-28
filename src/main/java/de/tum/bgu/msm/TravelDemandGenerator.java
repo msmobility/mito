@@ -60,9 +60,9 @@ public class TravelDemandGenerator {
         TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
-        int iterations = Resources.INSTANCE.getInt("uam.feedback.iterations", 1);
-        boolean restrictProportionOfModeShare = Resources.INSTANCE.getBoolean("fix.share.rechoose.mode", false);
-        double share = Resources.INSTANCE.getDouble("attenuation.factor", 0.33);
+        int iterations = Resources.INSTANCE.getInt(Properties.UAM_ITERATIONS, 1);
+        boolean restrictProportionOfModeShare = Resources.INSTANCE.getBoolean(Properties.FIX_SHARE_RECHOOSE_MODE, false);
+        double share = Resources.INSTANCE.getDouble(Properties.ATTENTUATION_FACTOR, 0.33);
 
         for (int iteration = 0; iteration < iterations; iteration++) {
             double probabilityOfModeChange = 1.0;

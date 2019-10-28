@@ -119,6 +119,7 @@ public class EconomicStatusReader extends AbstractCsvReader {
         // Jahren mit dem Faktor 0,5 gewichtet.
         float weightedHhSize = MitoUtil.rounder(Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f), 1);
         String incomeCategory = getMidIncomeCategory(hh.getMonthlyIncome_EUR());
+
         if (countAdults == 0){
             return 1;
         } else {
