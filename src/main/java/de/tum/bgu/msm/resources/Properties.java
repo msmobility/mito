@@ -118,4 +118,6 @@ public class Properties {
     public static final String WAITING_TIME_PENALTY = "waiting.time.penalty.factor";
     public static final String MIN_HANDLING_TIME = "min.handling.time";
 
+    public static final String ALWAYS_CHOOSE_CLOSEST_STATION = "choose.always.closest.station";
+
 }
