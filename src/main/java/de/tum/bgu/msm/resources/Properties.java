@@ -103,6 +103,7 @@ public class Properties {
     public static final String ATTENTUATION = "attenuation";
     public static final String ATTENTUATION_FACTOR = "attenuation.factor";
     public static final String UAM_BOARDINGTIME = "uam.boardingTime";
+    public static final String UAM_OVERWRITE_BOARDING_TIME = "overwrite.boarding.time";
     public static final String UAM_COST_KM = "uam.cost.km";
     public static final String UAM_COST_BASE = "uam.cost.base";
 
@@ -116,4 +117,5 @@ public class Properties {
     public static final String CAR_2_UAM_THRESHOLD = "car.to.uam.threshold";
     public static final String WAITING_TIME_PENALTY = "waiting.time.penalty.factor";
     public static final String MIN_HANDLING_TIME = "min.handling.time";
+
 }

@@ -86,12 +86,13 @@ public final class MitoModel {
         new PersonsReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
         dataSet.setAccessAndEgressVariables(new AccessAndEgressVariables());
-        dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes());
         new SkimsReader(dataSet).read();
         readAdditionalData();
         UAMNetworkReader uamReader = new UAMNetworkReader(dataSet);
         uamReader.read();
-        uamReader.printOutSampleForDebugging("./debugTimesUam.csv");
+        //uamReader.printOutSampleForDebugging("./debugTimesUam.csv");
+        //handling times need to be set up after reading the UAM network file as xml
+        dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes(dataSet));
 
     }
 
