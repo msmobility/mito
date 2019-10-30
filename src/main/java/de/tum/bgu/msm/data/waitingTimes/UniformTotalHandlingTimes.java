@@ -30,8 +30,9 @@ public class UniformTotalHandlingTimes implements TotalHandlingTimes {
             uniqueHandlingTime_min = (firstStation.getPostFlightTime() +
                     firstStation.getPreFlightTime() +
                     firstStation.getDefaultWaitTime()) * PENALTY_FACTOR / 60;
-            logger.warn("MITO is taken the UAM waiting time, pre-flight time and post-flight from the first station. This will" +
-                    "be wrong if different stations have different times. The selected waiting time is " + uniqueHandlingTime_min);
+            logger.warn("MITO is reading the UAM waiting time, pre-flight time and post-flight from the first station. This will" +
+                    "be wrong if different stations have different times. The selected waiting time (including penalty factor) is " +
+                    uniqueHandlingTime_min);
         }
 
 
