@@ -172,7 +172,7 @@ public class UAMNetworkReader {
                 int origId = originZone.getId();
                 int destId = destinationZone.getId();
                 if (!originZone.equals(destinationZone)) {
-                    double minReferenceTime = TOO_HIGH_TIME;
+                    double minReferenceDistance = TOO_HIGH_TIME;
                     double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
                     UAMStation accessStationChosen = null;
                     UAMStation egressStationChosen = null;
@@ -186,14 +186,13 @@ public class UAMNetworkReader {
                                 double accessDistance = travelDistancesAuto.getTravelDistance(originZone.getId(), accessZone.getId());
                                 double egressDistance = travelDistancesAuto.getTravelDistance(egressZone.getId(), destinationZone.getId());
                                 if (accessDistance < SEARCH_RADIUS_KM && egressDistance < SEARCH_RADIUS_KM) {
-                                    double referenceTimeAtThisRoute = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
-                                            travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+                                    double currentReferenceDistance = accessDistance + egressDistance;
                                     if (!chooseAlwaysClosestStation){
-                                        referenceTimeAtThisRoute += travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId());
+                                        currentReferenceDistance += travelDistanceUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId());
                                     }
 
-                                    if (referenceTimeAtThisRoute < minReferenceTime) {
-                                        minReferenceTime = referenceTimeAtThisRoute;
+                                    if (currentReferenceDistance < minReferenceDistance) {
+                                        minReferenceDistance = currentReferenceDistance;
                                         accessStationChosen = accessStation;
                                         egressStationChosen = egressStation;
                                     }
@@ -204,7 +203,7 @@ public class UAMNetworkReader {
                     MitoZone accessZone = stationZoneMap.get(accessStationChosen);
                     MitoZone egressZone = stationZoneMap.get(egressStationChosen);
                     //if (minReferenceTime < carTravelTime) {
-                    if (accessStationChosen != null && egressStationChosen != null && minReferenceTime < carTravelTime * CAR_UAM_TIME_FACTOR){
+                    if (accessStationChosen != null && egressStationChosen != null && minReferenceDistance < carTravelTime * CAR_UAM_TIME_FACTOR){
 
                         double selectedTravelTime = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
                                 travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
