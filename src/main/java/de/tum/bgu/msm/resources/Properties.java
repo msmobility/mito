@@ -119,5 +119,5 @@ public class Properties {
     public static final String MIN_HANDLING_TIME = "min.handling.time";
 
     public static final String ALWAYS_CHOOSE_CLOSEST_STATION = "choose.always.closest.station";
-
+    public static final String MINIMIZE_UAM_TRAVEL_TIME = "minimize.uam.travel.time";
 }

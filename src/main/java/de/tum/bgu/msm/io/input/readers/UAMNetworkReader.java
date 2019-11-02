@@ -56,6 +56,7 @@ public class UAMNetworkReader {
     private final double MIN_FLYING_DISTANCE_M = Resources.INSTANCE.getDouble(Properties.MIN_FLYING_DIST, 5000.);
     private final double TOO_HIGH_TIME = Double.MAX_VALUE;
     private boolean chooseAlwaysClosestStation = Resources.INSTANCE.getBoolean(Properties.ALWAYS_CHOOSE_CLOSEST_STATION, true);
+    private boolean minimizeUamTravelTime = Resources.INSTANCE.getBoolean(Properties.MINIMIZE_UAM_TRAVEL_TIME, false);
 
     public UAMNetworkReader(DataSet dataSet) {
         this.dataSet = dataSet;
@@ -172,7 +173,7 @@ public class UAMNetworkReader {
                 int origId = originZone.getId();
                 int destId = destinationZone.getId();
                 if (!originZone.equals(destinationZone)) {
-                    double minReferenceDistance = TOO_HIGH_TIME;
+                    double minReference = TOO_HIGH_TIME;
                     double carTravelTime = travelTimes.getTravelTime(originZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
                     UAMStation accessStationChosen = null;
                     UAMStation egressStationChosen = null;
@@ -186,13 +187,23 @@ public class UAMNetworkReader {
                                 double accessDistance = travelDistancesAuto.getTravelDistance(originZone.getId(), accessZone.getId());
                                 double egressDistance = travelDistancesAuto.getTravelDistance(egressZone.getId(), destinationZone.getId());
                                 if (accessDistance < SEARCH_RADIUS_KM && egressDistance < SEARCH_RADIUS_KM) {
-                                    double currentReferenceDistance = accessDistance + egressDistance;
-                                    if (!chooseAlwaysClosestStation){
-                                        currentReferenceDistance += travelDistanceUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId());
+
+                                    double currentReference = 0;
+                                    if (minimizeUamTravelTime)
+                                        currentReference = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
+                                                travelTimes.getTravelTime(egressZone, destinationZone, TIME_OF_DAY_S, ACCESS_MODE);
+                                    else // minimize distance
+                                        currentReference = accessDistance + egressDistance;
+
+                                    if (!chooseAlwaysClosestStation) {
+                                        if (minimizeUamTravelTime)
+                                            currentReference = travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId());
+                                        else // minimize distance
+                                            currentReference += travelDistanceUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId());
                                     }
 
-                                    if (currentReferenceDistance < minReferenceDistance) {
-                                        minReferenceDistance = currentReferenceDistance;
+                                    if (currentReference < minReference) {
+                                        minReference = currentReference;
                                         accessStationChosen = accessStation;
                                         egressStationChosen = egressStation;
                                     }
@@ -203,7 +214,7 @@ public class UAMNetworkReader {
                     MitoZone accessZone = stationZoneMap.get(accessStationChosen);
                     MitoZone egressZone = stationZoneMap.get(egressStationChosen);
                     //if (minReferenceTime < carTravelTime) {
-                    if (accessStationChosen != null && egressStationChosen != null && minReferenceDistance < carTravelTime * CAR_UAM_TIME_FACTOR){
+                    if (accessStationChosen != null && egressStationChosen != null && minReference < carTravelTime * CAR_UAM_TIME_FACTOR){
 
                         double selectedTravelTime = travelTimes.getTravelTime(originZone, accessZone, TIME_OF_DAY_S, ACCESS_MODE) +
                                 travelTimeUamAtServedZones.getIndexed(accessZone.getId(), egressZone.getId()) +
