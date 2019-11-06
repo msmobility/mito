@@ -109,7 +109,7 @@ public class UAMNetworkReader {
         IndexedDoubleMatrix2D travelDistanceUamAtServedZones = new IndexedDoubleMatrix2D(stationZoneMap.values(), stationZoneMap.values());
 
         //calculate distances and times between all UAM stations
-        UAMStationConnectionGraph connections = RunCalculateUAMRoutes.calculateRoutes(network, uamxmlReader);
+        UAMStationConnectionGraph connections = RunCalculateUAMRoutes.calculateRoutes(uamxmlReader);
 
         for (UAMStation originStation : stationMap.values()) {
             for (UAMStation destinationStation : stationMap.values()) {
