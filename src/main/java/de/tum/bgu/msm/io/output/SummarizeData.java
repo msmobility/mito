@@ -257,5 +257,43 @@ public class SummarizeData {
         for(Purpose purpose: Purpose.values()) {
             writeCharts(dataSet, purpose, scenarioName);
         }
+
+        //if (Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TNC_SERVICE_AREA).equals("munich")) {
+
+            for (Purpose purpose : Purpose.values()) {
+                writeChartsTNC(dataSet, purpose, scenarioName);
+            }
+
+            String outputSubDirectory = "scenOutput/" + scenarioName + "/";
+            PrintWriter pw1 = MitoUtil.openFileForSequentialWriting(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/Munich_modalSplit.csv", false);
+            pw1.println("purpose,mode,share");
+            for (Purpose purpose : Purpose.values()) {
+                for (Mode mode : Mode.values()) {
+                    Double share = dataSet.getModeShareForPurposeTNC(purpose, mode);
+                    if (share != null) {
+                        pw1.println(purpose + "," + mode + "," + share);
+                    } else {
+                        pw1.println(purpose + "," + mode + "," + 0);
+                    }
+                }
+            }
+            pw1.close();
+        //}
+    }
+
+    private static void writeChartsTNC(DataSet dataSet, Purpose purpose, String scenarioName) {
+        String outputSubDirectory = "scenOutput/" + scenarioName + "/";
+
+        SortedMultiset<Mode> modes = TreeMultiset.create();
+        for (Mode mode: Mode.values()){
+            Double share = dataSet.getModeShareForPurposeTNC(purpose, mode);
+            if (share != null) {
+                modes.add(mode, (int) (dataSet.getModeShareForPurposeTNC(purpose, mode) * 100));
+            }
+        }
+
+        PieChart.createPieChart(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/Munich_" + purpose, modes, "Mode Choice " + purpose);
+
+
     }
 }

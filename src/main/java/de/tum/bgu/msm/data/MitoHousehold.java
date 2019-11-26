@@ -22,6 +22,7 @@ public class MitoHousehold implements Id, MicroLocation {
     private final int autos;
     private MitoZone homeZone;
     private Coordinate homeLocation;
+    private final Map<String, Object> additionalAttributes = new HashMap<>();
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
@@ -138,4 +139,13 @@ public class MitoHousehold implements Id, MicroLocation {
             return false;
         }
     }
+
+    public Map<String, Object> getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(String key, Object value){
+        this.additionalAttributes.put(key, value);
+    }
+
 }

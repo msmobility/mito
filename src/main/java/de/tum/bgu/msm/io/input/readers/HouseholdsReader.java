@@ -3,6 +3,7 @@ package de.tum.bgu.msm.io.input.readers;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -41,8 +42,15 @@ public class HouseholdsReader extends AbstractCsvReader {
     @Override
     protected void processRecord(String[] record) {
         int id = Integer.parseInt(record[posId]);
-        int autos = Integer.parseInt(record[posAutos]);
-        MitoHousehold hh = new MitoHousehold(id, 0, autos);
-        dataSet.addHousehold(hh);
+        if (id%Double.parseDouble(Resources.instance.getString(Properties.HOUSEHOLD_SCALER)) == 0) {
+            int autos = Integer.parseInt(record[posAutos]);
+            MitoHousehold hh = new MitoHousehold(id, 0, autos);
+            int AVautos = 0;
+            if (MitoUtil.getRandomObject().nextDouble() < Double.parseDouble(Resources.instance.getString(Properties.AV_PRIVATE_PENETRATION_RATE))){
+                AVautos = 1;
+            }
+            hh.setAdditionalAttributes(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.HH_ADDITIONAL_ATTRIBUTE_AV), AVautos);
+            dataSet.addHousehold(hh);
+        }
     }
 }

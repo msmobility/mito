@@ -49,20 +49,22 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
         //vacant dwellings
         if (hhId > 0) {
             MitoHousehold hh = dataSet.getHouseholds().get(hhId);
-            if (hh == null) {
+/*            if (hh == null) {
                 logger.warn(String.format("Household %d does not exist in mito.", hhId));
                 return;
+            }*/
+            if (hh !=null) {
+                int taz = Integer.parseInt(record[posTAZId]);
+                MitoZone zone = dataSet.getZones().get(taz);
+                if (zone == null) {
+                    logger.warn(String.format("Household %d is supposed to live in zone %d but this zone does not exist.", hhId, taz));
+                }
+                Coordinate homeLocation = new Coordinate(
+                        Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
+                hh.setHomeLocation(homeLocation);
+                hh.setHomeZone(zone);
+                zone.addHousehold();
             }
-            int taz = Integer.parseInt(record[posTAZId]);
-            MitoZone zone = dataSet.getZones().get(taz);
-            if(zone == null) {
-                logger.warn(String.format("Household %d is supposed to live in zone %d but this zone does not exist.", hhId, taz));
-            }
-            Coordinate homeLocation = new Coordinate(
-            		Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
-            hh.setHomeLocation(homeLocation);
-            hh.setHomeZone(zone);
-            zone.addHousehold();
         }
     }
 }

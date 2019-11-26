@@ -74,4 +74,12 @@ public class Properties {
     public static final String AIRPORT_X = "airport.x";
     public static final String MATSIM_NETWORK_MODES = "matsim.network.modes";
     public static final String MATSIM_TELEPORTED_MODES = "matsim.teleported.modes";
+
+    public static final String TNC_SERVICE_AREA = "tnc.service.area";
+    public static final String HH_ADDITIONAL_ATTRIBUTE_AV = "hh.additional.attribute.av.ownership";
+    public static final String TNC_DETOUR_FACTOR = "tnc.detour.factor";
+    public static final String TNC_WAITING_TIME = "tnc.waiting.time";
+    public static final String TNC_COST = "tnc.cost";
+    public static final String AV_PRIVATE_PENETRATION_RATE = "av.private.penetration.rate";
+    public static final String HOUSEHOLD_SCALER = "hh.scaling.factor";
 }

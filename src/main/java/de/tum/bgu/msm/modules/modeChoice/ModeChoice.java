@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -27,7 +28,7 @@ public class ModeChoice extends Module {
 
     @Override
     public void run() {
-        logger.info(" Calculating mode choice probabilities for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro, 7. Walk ");
+        logger.info(" Calculating mode choice probabilities for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro, 7. Walk, 8. Private AV, 9. TNC ");
         modeChoiceByPurpose();
         printModeShares();
     }
@@ -58,11 +59,41 @@ public class ModeChoice extends Module {
                             dataSet.addModeShareForPurpose(purpose, mode, (double) count / totalTrips));
         });
 
+        //filter valid trips by purpose
+        Map<Purpose, List<MitoTrip>> tripsByPurposeTNC = dataSet.getTrips().values().stream()
+                .filter(trip -> trip.getTripMode() != null)
+                .filter(trip -> dataSet.getZones().get(trip.getTripOrigin().getZoneId()).isMunichZone())
+                .filter(trip -> dataSet.getZones().get(trip.getTripDestination().getZoneId()).isMunichZone())
+                .collect(Collectors.groupingBy(MitoTrip::getTripPurpose));
+
+        tripsByPurposeTNC.forEach((purpose, trips) -> {
+            final long totalTrips = trips.size();
+            trips.parallelStream()
+                    //group number of trips by mode
+                    .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
+                    //calculate and add share to data set table
+                    .forEach((mode, count) ->
+                            dataSet.addModeShareForPurposeTNC(purpose, mode, (double) count / totalTrips));
+        });
+
         for (Purpose purpose : Purpose.values()) {
             logger.info("#################################################");
             logger.info("Mode shares for purpose " + purpose + ":");
             for (Mode mode : Mode.values()) {
                 Double share = dataSet.getModeShareForPurpose(purpose, mode);
+                if (share != null) {
+                    logger.info(mode + " = " + share * 100 + "%");
+                }
+            }
+        }
+
+
+        for (Purpose purpose : Purpose.values()) {
+            logger.info("#################################################");
+            logger.info("#Munich trips#");
+            logger.info("Mode shares for purpose " + purpose + ":");
+            for (Mode mode : Mode.values()) {
+                Double share = dataSet.getModeShareForPurposeTNC(purpose, mode);
                 if (share != null) {
                     logger.info(mode + " = " + share * 100 + "%");
                 }
@@ -109,7 +140,7 @@ public class ModeChoice extends Module {
             this.travelTimes = dataSet.getTravelTimes();
             if (includeAV) {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoiceAV")), purpose);
+                        .getResourceAsStream("ModeChoice_av_tnc")), purpose);
             } else {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoice")), purpose);
@@ -145,8 +176,16 @@ public class ModeChoice extends Module {
                     destinationId);
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
+            final double tncCost = Double.parseDouble(Resources.instance.getString(Properties.TNC_COST));
+            final double tncWaitingTime = Double.parseDouble(Resources.instance.getString(Properties.TNC_WAITING_TIME));
+            final double tncDetourFactor = Double.parseDouble(Resources.instance.getString(Properties.TNC_DETOUR_FACTOR));
+            double income = household.getMonthlyIncome_EUR();
+            double scenario = 0;
+            if (Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TNC_SERVICE_AREA).equals("munich")){
+                scenario = 1;
+            }
             return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
-                    travelDistanceNMT, dataSet.getPeakHour());
+                    travelDistanceNMT, dataSet.getPeakHour(),scenario, tncCost, tncWaitingTime, tncDetourFactor);
         }
 
         private void chooseMode(MitoTrip trip, double[] probabilities) {

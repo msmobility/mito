@@ -31,6 +31,8 @@ public class DataSet {
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
+    private final Table<Purpose, Mode, Double> modeSharesByPurposeTNC
+            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
 
     private int year;
 
@@ -192,8 +194,16 @@ public class DataSet {
         modeSharesByPurpose.put(purpose, mode, share);
     }
 
+    public void addModeShareForPurposeTNC(Purpose purpose, Mode mode, Double share){
+        modeSharesByPurposeTNC.put(purpose, mode, share);
+    }
+
     public Double getModeShareForPurpose(Purpose purpose, Mode mode){
         return modeSharesByPurpose.get(purpose, mode);
+    }
+
+    public Double getModeShareForPurposeTNC(Purpose purpose, Mode mode){
+        return modeSharesByPurposeTNC.get(purpose, mode);
     }
 
     public int getYear() {
