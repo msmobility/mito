@@ -82,4 +82,5 @@ public class Properties {
     public static final String TNC_COST = "tnc.cost";
     public static final String AV_PRIVATE_PENETRATION_RATE = "av.private.penetration.rate";
     public static final String HOUSEHOLD_SCALER = "hh.scaling.factor";
+
 }
