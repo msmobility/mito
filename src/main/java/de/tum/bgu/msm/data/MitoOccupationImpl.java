@@ -58,6 +58,6 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
 
     @Override
     public void setEndTime_min(int endTime_min) {
-        this.startTime = endTime_min;
+        this.endTime = endTime_min;
     }
 }

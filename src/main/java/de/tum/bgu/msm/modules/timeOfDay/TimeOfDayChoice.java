@@ -94,18 +94,24 @@ public final class TimeOfDayChoice extends Module {
 
     private int chooseDepartureTimeForReturnTrip(MitoTrip mitoTrip, int arrivalTime) {
         Purpose tripPurpose = mitoTrip.getTripPurpose();
+        int departureTime;
         if(tripPurpose == Purpose.HBW || tripPurpose == Purpose.HBE) {
             MitoOccupation occupation = mitoTrip.getPerson().getOccupation();
-            if(occupation != null && occupation.getEndTime_min().isPresent()){
-                return occupation.getEndTime_min().get();
+            if(occupation != null) {
+                departureTime = occupation.getEndTime_min().orElse(arrivalTime + MitoUtil.select(durationMinuteCumProbByPurpose.get(tripPurpose).toArray(), MitoUtil.getRandomObject()));
+            } else {
+                int duration = MitoUtil.select(durationMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
+                departureTime = arrivalTime + duration;
             }
-        }
-        int duration = MitoUtil.select(durationMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
-        //if departure is after midnight
-        if (arrivalTime + duration > 24 * 60) {
-            return arrivalTime + duration - 24 * 60;
         } else {
-            return arrivalTime + duration;
+            int duration = MitoUtil.select(durationMinuteCumProbByPurpose.get(mitoTrip.getTripPurpose()).toArray(), MitoUtil.getRandomObject());
+            departureTime = arrivalTime + duration;
+        }
+        //if departure is after midnight
+        if (departureTime > 24 * 60) {
+            return departureTime - 24 * 60;
+        } else {
+            return departureTime;
         }
     }
 
