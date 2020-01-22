@@ -213,10 +213,10 @@ else {
 probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
 probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
-    if (hh.getAdditionalAttributes().get("autos") == 0){
-        probabilityAutoD = 0;
-        probabilityAutoP = 0
-    }
+     if (hh.getAdditionalAttributes().get("autos") - hh.getAdditionalAttributes().get("AVs") == 0){
+         probabilityAutoD = 0;
+         probabilityAutoP = 0
+     }
 
 return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilityTNCs], "double[]");
 
@@ -363,10 +363,10 @@ var calculateHBEProbabilities = function(hh, person, originZone, destinationZone
     probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
     probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
-        if (hh.getAdditionalAttributes().get("autos") == 0){
-            probabilityAutoD = 0;
-            probabilityAutoP = 0
-        }
+     if (hh.getAdditionalAttributes().get("autos") - hh.getAdditionalAttributes().get("AVs") == 0){
+         probabilityAutoD = 0;
+         probabilityAutoP = 0
+     }
     
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilityTNCs], "double[]");
 }
@@ -514,10 +514,10 @@ var calculateHBSProbabilities = function(hh, person, originZone, destinationZone
     
     return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilityTNCs], "double[]");
 
-    if (hh.getAdditionalAttributes().get("autos") == 0){
-        probabilityAutoD = 0;
-        probabilityAutoP = 0
-    }
+     if (hh.getAdditionalAttributes().get("autos") - hh.getAdditionalAttributes().get("AVs") == 0){
+         probabilityAutoD = 0;
+         probabilityAutoP = 0
+     }
 
 
 }
@@ -664,10 +664,10 @@ var calculateHBOProbabilities = function(hh, person, originZone, destinationZone
    return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilityTNCs], "double[]");
 
 
-    if (hh.getAdditionalAttributes().get("autos") == 0){
-        probabilityAutoD = 0;
-        probabilityAutoP = 0
-    }
+     if (hh.getAdditionalAttributes().get("autos") - hh.getAdditionalAttributes().get("AVs") == 0){
+         probabilityAutoD = 0;
+         probabilityAutoP = 0
+     }
 }
 
 
@@ -803,10 +803,10 @@ var calculateNHBWProbabilities = function(hh, person, originZone, destinationZon
    
    return Java.to([probabilityAutoD, probabilityAutoP, probabilityBicycle, probabilityBus, probabilityTrain, probabilityTramMetro, probabilityWalk, probabilityPrivateAV, probabilityTNCs], "double[]");
 
-    if (hh.getAdditionalAttributes().get("autos") == 0){
-        probabilityAutoD = 0;
-        probabilityAutoP = 0
-    }
+     if (hh.getAdditionalAttributes().get("autos") - hh.getAdditionalAttributes().get("AVs") == 0){
+         probabilityAutoD = 0;
+         probabilityAutoP = 0
+     }
 
 }
 
@@ -956,7 +956,7 @@ if(expsumNestAuto > 0) {
  probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
  probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
 
-     if (hh.getAdditionalAttributes().get("autos") == 0){
+     if (hh.getAdditionalAttributes().get("autos") - hh.getAdditionalAttributes().get("AVs") == 0){
          probabilityAutoD = 0;
          probabilityAutoP = 0
      }
