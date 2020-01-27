@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class ConfigureMatsim {
 
-    private final static double SILO_SAMPLING_RATE = 1.;
+    private final static double SILO_SAMPLING_RATE = 0.05;
 
     public static Config configureMatsim() {
 
