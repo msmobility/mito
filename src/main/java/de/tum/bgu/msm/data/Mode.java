@@ -49,6 +49,8 @@ public enum Mode implements Id {
     public static String getMatsimMode(Mode mitoMode){
         switch (mitoMode) {
             case autoDriver:
+            case privateAV:
+            case sharedAV:
                 return TransportMode.car;
             case autoPassenger:
                 return "car_passenger";
