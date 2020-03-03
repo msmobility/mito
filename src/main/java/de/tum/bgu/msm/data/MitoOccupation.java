@@ -3,7 +3,7 @@ package de.tum.bgu.msm.data;
 
 import org.locationtech.jts.geom.Coordinate;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 public interface MitoOccupation extends MicroLocation, Id {
 
@@ -15,11 +15,11 @@ public interface MitoOccupation extends MicroLocation, Id {
 
     MitoZone getOccupationZone();
 
-    Optional<Integer> getStartTime_min();
+    OptionalInt getStartTime_min();
 
     void setStartTime_min(int startTime_min);
 
-    Optional<Integer> getEndTime_min();
+    OptionalInt getEndTime_min();
 
     void setEndTime_min(int endTime_min);
 }
