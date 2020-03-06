@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.moped.data.MopedZone;
 import org.matsim.api.core.v01.population.Person;
 
 /**
@@ -24,6 +25,9 @@ public class MitoTrip implements Id {
     private int departureInMinutesReturnTrip = -1;
 
     private Person matsimPerson;
+
+    private int tripOriginMopedZoneId;
+    private int tripDestinationMopedZoneId;
 
     public MitoTrip(int tripId, Purpose tripPurpose) {
         this.tripId = tripId;
@@ -125,5 +129,21 @@ public class MitoTrip implements Id {
         } else {
             return false;
         }
+    }
+
+    public int getTripDestinationMopedZoneId() {
+        return tripDestinationMopedZoneId;
+    }
+
+    public void setTripDestinationMopedZoneId(int tripDestinationMopedZoneId) {
+        this.tripDestinationMopedZoneId = tripDestinationMopedZoneId;
+    }
+
+    public int getTripOriginMopedZoneId() {
+        return tripOriginMopedZoneId;
+    }
+
+    public void setTripOriginMopedZoneId(int tripOriginMopedZoneId) {
+        this.tripOriginMopedZoneId = tripOriginMopedZoneId;
     }
 }

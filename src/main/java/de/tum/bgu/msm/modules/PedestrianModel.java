@@ -35,6 +35,7 @@ public class PedestrianModel {
     private Map<Integer, MopedHousehold>  households = new HashMap<>();
     private Quadtree mopedZoneQuadTree = new Quadtree();
     private SparseFloatMatrix2D mopedTravelDistance;
+    private int counter = 0;
 
     public PedestrianModel(DataSet dataSet) {
         this.dataSet = dataSet;
@@ -55,11 +56,15 @@ public class PedestrianModel {
     private void feedDataBackToMito() {
         for(MopedTrip mopedTrip : mopedModel.getDataSet().getTrips().values()){
             MitoTrip mitoTrip = dataSet.getTrips().get(mopedTrip.getId());
+            if(mopedTrip.getTripOrigin()!=null){
+                mitoTrip.setTripOrigin(dataSet.getZones().get(mopedTrip.getTripOrigin().getMitoZoneId()));
+                mitoTrip.setTripOriginMopedZoneId(mopedTrip.getTripOrigin().getZoneId());
+            }
             if(mopedTrip.isWalkMode()){
                 mitoTrip.setTripMode(Mode.walk);
                 if(mopedTrip.getTripOrigin()!=null&&mopedTrip.getTripDestination()!=null) {
-                    mitoTrip.setTripDestination(dataSet.getZones().get(mopedTrip.getTripOrigin().getMitoZoneId()));
-                    mitoTrip.setTripOrigin(dataSet.getZones().get(mopedTrip.getTripDestination().getMitoZoneId()));
+                    mitoTrip.setTripDestination(dataSet.getZones().get(mopedTrip.getTripDestination().getMitoZoneId()));
+                    mitoTrip.setTripDestinationMopedZoneId(mopedTrip.getTripDestination().getZoneId());
                 }else{
                     //logger.warn("trip id: " + mitoTrip.getTripId()+ " purpose: " + mitoTrip.getTripPurpose() + " has no origin or destination: " + mopedTrip.getTripOrigin() + "," + mopedTrip.getTripDestination());
                 }
@@ -72,6 +77,7 @@ public class PedestrianModel {
     private void updateData(int year) {
         prepareMopedZoneSearchTree();
         convertHhs();
+        logger.info(counter + " trips has been converted to moped");
         logger.info("  MITO data being sent to MoPeD");
         InputManager.InputFeed feed = new InputManager.InputFeed(households, year);
         mopedModel.feedDataFromMITO(feed);
@@ -111,6 +117,7 @@ public class PedestrianModel {
 
     private MopedTrip convertToMopedTt(MitoTrip tt) {
         Purpose mopedPurpose = Purpose.valueOf(tt.getTripPurpose().name());
+        counter++;
         return new MopedTrip(tt.getTripId(),mopedPurpose);
     }
 
@@ -155,16 +162,20 @@ public class PedestrianModel {
         logger.info("  Writing moped trips file");
         String file = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/mopedTrips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,destination,purpose,person,distance,mode");
+        pwh.println("id,origin,originMoped,destination,destinationMoped,purpose,person,distance,mode");
+        logger.info("total trip: " + dataSet.getTrips().values());
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
             Location origin = trip.getTripOrigin();
             String originId = "null";
+            String originMopedId = "null";
             if(origin != null) {
                 originId = String.valueOf(origin.getZoneId());
             }
             pwh.print(originId);
+            pwh.print(",");
+            pwh.print(trip.getTripOriginMopedZoneId());
             pwh.print(",");
             Location destination = trip.getTripDestination();
             String destinationId = "null";
@@ -172,6 +183,8 @@ public class PedestrianModel {
                 destinationId = String.valueOf(destination.getZoneId());
             }
             pwh.print(destinationId);
+            pwh.print(",");
+            pwh.print(trip.getTripDestinationMopedZoneId());
             pwh.print(",");
             pwh.print(trip.getTripPurpose());
             pwh.print(",");
