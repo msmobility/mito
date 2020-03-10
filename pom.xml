@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
-            <version>1.0.14</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.matsim</groupId>
@@ -190,8 +190,13 @@
         </dependency>
         <dependency>
             <groupId>org.matsim.contrib</groupId>
+            <artifactId>drt</artifactId>
+            <version>12.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
             <artifactId>accessibility</artifactId>
-            <version>${matsimVersion}</version>
+            <version>0.11.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.media</groupId>
@@ -206,6 +211,6 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <matsimVersion>11.0</matsimVersion>
+        <matsimVersion>12.0-SNAPSHOT</matsimVersion>
     </properties>
 </project>
