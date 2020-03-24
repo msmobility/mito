@@ -20,25 +20,27 @@ public class GenerateFleet {
 
     public static void main(String[] args)  {
 
-        Integer amountOfVehicles = 500;
+        Integer amountOfVehicles = 10000;
         Integer seats = 6;
 
         List<Link> linkList = new ArrayList<>();
 
         Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());
-        new MatsimNetworkReader(scenario.getNetwork()).readFile("/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/baseMatsimInput/mito_assignment.output_network.xml");
-        Link hubLink = scenario.getNetwork().getLinks().get(Id.createLinkId("109917"));
-        Link hubLink2 = scenario.getNetwork().getLinks().get(Id.createLinkId("110609"));
-        Link hubLink3 = scenario.getNetwork().getLinks().get(Id.createLinkId("25044"));
-        Link hubLink4 = scenario.getNetwork().getLinks().get(Id.createLinkId("28440"));
+        new MatsimNetworkReader(scenario.getNetwork()).readFile("/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/moia-msm/cleverShuttleOperationArea/croppedDenseNetwork.xml.gz");
+        Link hubLink = scenario.getNetwork().getLinks().get(Id.createLinkId("42251"));
+        Link hubLink2 = scenario.getNetwork().getLinks().get(Id.createLinkId("110407"));
+        Link hubLink3 = scenario.getNetwork().getLinks().get(Id.createLinkId("123725"));
+        Link hubLink4 = scenario.getNetwork().getLinks().get(Id.createLinkId("306831"));
+        Link hubLink5 = scenario.getNetwork().getLinks().get(Id.createLinkId("400634"));
+        Link hubLink6 = scenario.getNetwork().getLinks().get(Id.createLinkId("182186"));
 
 
         linkList.add(hubLink);
         linkList.add(hubLink2);
         linkList.add(hubLink3);
         linkList.add(hubLink4);
-
-
+        linkList.add(hubLink5);
+        linkList.add(hubLink6);
 
 
         Network net = scenario.getNetwork();
@@ -53,12 +55,12 @@ public class GenerateFleet {
                     .startLinkId(linkList.get(rand.nextInt(linkList.size())).getId())
                     .capacity(seats)
                     .serviceBeginTime(0)
-                    .serviceEndTime(90000)
+                    .serviceEndTime(108000)
                     .build();
             vehicles.add(v);
         }
 
-        new FleetWriter(vehicles.stream()).write("/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/baseMatsimInput/fleet_drt.xml.gz");
+        new FleetWriter(vehicles.stream()).write("/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/moia-msm/baseMatsimInput/fleet_drt_"+amountOfVehicles+".xml.gz");
 
         System.out.println("done");
     }
