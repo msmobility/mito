@@ -4,7 +4,7 @@ package de.tum.bgu.msm.data;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.util.Objects;
-import java.util.Optional;
+import java.util.OptionalInt;
 
 public abstract class MitoOccupationImpl implements MitoOccupation {
 
@@ -12,8 +12,8 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     private final Coordinate occupationLocation;
     private final int id;
 
-    private Integer startTime = null;
-    private Integer endTime = null;
+    private int startTime = Integer.MIN_VALUE;
+    private int endTime = Integer.MIN_VALUE;
 
     public MitoOccupationImpl(MitoZone occupationZone, Coordinate occupationLocation, int id) {
         this.occupationZone = Objects.requireNonNull(occupationZone);
@@ -42,8 +42,12 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     }
 
     @Override
-    public Optional<Integer> getStartTime_min() {
-        return Optional.ofNullable(startTime);
+    public OptionalInt getStartTime_min() {
+        if(startTime >= 0) {
+            return OptionalInt.of(endTime);
+        } else {
+            return OptionalInt.empty();
+        }
     }
 
     @Override
@@ -52,8 +56,12 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     }
 
     @Override
-    public Optional<Integer> getEndTime_min() {
-        return Optional.ofNullable(endTime);
+    public OptionalInt getEndTime_min() {
+        if(endTime >= 0) {
+            return OptionalInt.of(endTime);
+        } else {
+            return OptionalInt.empty();
+        }
     }
 
     @Override
