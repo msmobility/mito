@@ -15,12 +15,44 @@ import org.matsim.vis.otfvis.OTFVisConfigGroup;
 
 public class RunDrtNoise {
 
+    private static String configPath  = "mito_assignment.output_config.xml";
+    private static String demandPath;
+    private static String networkPath = "croppedDenseNetwork.xml.gz";
+    private static String stopPath = "stops_pt.xml";
+    private static String fleetPath;
+    private static String outputDir;
+    private static Boolean stopbased;
+
     public static void main(String[] args) {
-        String configPath = "/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/baseMatsimInput/mito_assignment.output_config.xml";
-        String demandPath = "/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/plans_drt_inside_SA_2.xml";
-        String networkPath = "/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/baseMatsimInput/mito_assignment.output_network.xml";
-        String fleetPath = "/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/baseMatsimInput/fleet_drt.xml.gz";
-        String outputDir = "/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/output";
+        if (args.length > 0){ //ONLY FOR CMD CASES
+
+            demandPath = args[0];
+            fleetPath = args[1];
+            stopbased = Boolean.parseBoolean(args[2]);
+            outputDir = args[3];
+
+
+
+
+        } else {
+
+            String base = "";
+            configPath = base + "mito_assignment.output_config.xml";
+            networkPath = base + "croppedDenseNetwork.xml.gz";
+            fleetPath = base + "fleet_drt_10000.xml.gz";
+            outputDir = base + "outputTest";
+            demandPath = base + "croppedPopulation_drt_00001pct.xml.gz";
+            stopPath = base + "stops_pt.xml";
+            outputDir = "outputTest/";
+            stopbased = false;
+
+        }
+
+
+
+
+
+
 
         DrtConfigGroup drtCfg = new DrtConfigGroup();
         MultiModeDrtConfigGroup multiModeDrtConfigGroup = new MultiModeDrtConfigGroup();
@@ -46,8 +78,15 @@ public class RunDrtNoise {
         config.controler().setOutputDirectory(outputDir);
         drt.setVehiclesFile(fleetPath);
         drt.setIdleVehiclesReturnToDepots(false);
+        drt.setPlotDetailedCustomerStats(true);
+
         drt.setOperationalScheme(DrtConfigGroup.OperationalScheme.door2door);
-        drt.setPlotDetailedCustomerStats(false);
+
+
+        if (stopbased) {
+            drt.setOperationalScheme(DrtConfigGroup.OperationalScheme.stopbased);
+        }
+        drt.setTransitStopFile(stopPath);
 
         Scenario scenario = DrtControlerCreator.createScenarioWithDrtRouteFactory(config);
         ScenarioUtils.loadScenario(scenario);
