@@ -27,7 +27,9 @@ public class CsvGzSkimMatrixReader {
 
     public IndexedDoubleMatrix2D readAndConvertToDoubleMatrix2D(String fileName, double factor, Collection<? extends Id> zoneLookup){
         matrix = new IndexedDoubleMatrix2D(zoneLookup, zoneLookup);
-        read(fileName, ";", factor);
+        //the csv files do not include the cells without values. They need to set up to a very high number
+        matrix.assign(Double.MAX_VALUE);
+        read(fileName, ",", factor);
         return matrix;
     }
 
@@ -41,7 +43,7 @@ public class CsvGzSkimMatrixReader {
     private void processRecord(String[] record, double factor) {
         int origin = Integer.parseInt(record[positionOrigin]);
         int destination = Integer.parseInt(record[positionDestination]);
-        double time = Double.parseDouble(record[positionOrigin]) * factor;
+        double time = Double.parseDouble(record[positionvalue]) * factor;
 
         matrix.setIndexed(origin, destination, time);
 
