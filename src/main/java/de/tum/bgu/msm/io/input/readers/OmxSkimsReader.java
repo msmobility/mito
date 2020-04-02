@@ -45,9 +45,9 @@ public class OmxSkimsReader extends AbstractOmxReader implements SkimsReader {
 
     private void readTravelTimeSkims() {
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("car", Resources.instance.getRelativePath(Properties.AUTO_PEAK_SKIM).toString(), "timeByTime", 1/60.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bus", Resources.instance.getRelativePath(Properties.BUS_TRAVEL_TIME_SKIM).toString(), "mat1", 1.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetro", Resources.instance.getRelativePath(Properties.TRAM_METRO_TRAVEL_TIME_SKIM).toString(), "mat1", 1.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.instance.getRelativePath(Properties.TRAIN_TRAVEL_TIME_SKIM).toString(), "mat1", 1.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bus", Resources.instance.getRelativePath(Properties.BUS_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetro", Resources.instance.getRelativePath(Properties.TRAM_METRO_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.instance.getRelativePath(Properties.TRAIN_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
     }
 
     private void readTravelDistances(){
