@@ -54,9 +54,9 @@ public final class MitoModel {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         MitoModel model = new MitoModel(dataSet, scenarioName);
-        new SkimsReader(dataSet).readOnlyTransitTravelTimes();
-        new SkimsReader(dataSet).readSkimDistancesNMT();
-        new SkimsReader(dataSet).readSkimDistancesAuto();
+        new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
+        new OmxSkimsReader(dataSet).readSkimDistancesNMT();
+        new OmxSkimsReader(dataSet).readSkimDistancesAuto();
         model.readAdditionalData();
         return model;
     }
@@ -82,7 +82,7 @@ public final class MitoModel {
         new HouseholdsCoordReader(dataSet).read();
         new PersonsReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
-        new SkimsReader(dataSet).read();
+        new OmxSkimsReader(dataSet).read();
         readAdditionalData();
     }
 

@@ -1,8 +1,7 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import de.tum.bgu.msm.data.Location;
-import de.tum.bgu.msm.data.Region;
-import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.io.input.readers.CsvGzSkimMatrixReader;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import de.tum.bgu.msm.util.matrices.Matrices;
@@ -57,6 +56,21 @@ public class SkimTravelTimes implements TravelTimes {
         final IndexedDoubleMatrix2D skim = Matrices.convertOmxToDoubleMatrix2D(timeOmxSkimTransit, lookup, factor);
         matricesByMode.put(mode, skim);
         omx.close();
+        travelTimesFromRegion.clear();
+        travelTimesToRegion.clear();
+    }
+
+    /**
+     * Reads a skim matrix from an csv.gz file and stores it for the given mode and year. To allow conversion between units
+     * use the factor to multiply all values.
+     * @param mode the mode for which the travel times are read
+     * @param file the path to the file
+     * @param factor a scalar factor which every entry is multiplied with
+     */
+    public final void readSkimFromCsvGz(final String mode, final String file, final double factor,Collection<? extends Id> zoneLookup) {
+        logger.info("Reading " + mode + " skim");
+        IndexedDoubleMatrix2D skim = new CsvGzSkimMatrixReader().readAndConvertToDoubleMatrix2D(file, factor, zoneLookup);
+        matricesByMode.put(mode, skim);
         travelTimesFromRegion.clear();
         travelTimesToRegion.clear();
     }
