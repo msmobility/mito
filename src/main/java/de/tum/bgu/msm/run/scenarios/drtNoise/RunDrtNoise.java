@@ -22,6 +22,8 @@ public class RunDrtNoise {
     private static String fleetPath;
     private static String outputDir;
     private static Boolean stopbased;
+    private static Boolean rejections;
+    private static Integer numberOfIterations;
 
     public static void main(String[] args) {
         if (args.length > 0){ //ONLY FOR CMD CASES
@@ -30,13 +32,16 @@ public class RunDrtNoise {
             fleetPath = args[1];
             stopbased = Boolean.parseBoolean(args[2]);
             outputDir = args[3];
+            rejections = Boolean.parseBoolean(args[4]);
+            numberOfIterations = Integer.parseInt(args[5]);
+
 
 
 
 
         } else {
 
-            String base = "";
+            String base = "/Users/felixzwick/input/";
             configPath = base + "mito_assignment.output_config.xml";
             networkPath = base + "croppedDenseNetwork.xml.gz";
             fleetPath = base + "fleet_drt_10000.xml.gz";
@@ -60,9 +65,9 @@ public class RunDrtNoise {
         final Config config = ConfigUtils.loadConfig(configPath, multiModeDrtConfigGroup,
                 new DvrpConfigGroup());
 
-        config.controler().setLastIteration(2); // Number of simulation iterations
-        config.controler().setWriteEventsInterval(2); // Write Events file every x-Iterations
-        config.controler().setWritePlansInterval(2); // Write Plan file every x-Iterations
+        config.controler().setLastIteration(numberOfIterations); // Number of simulation iterations
+        config.controler().setWriteEventsInterval(numberOfIterations); // Write Events file every x-Iterations
+        config.controler().setWritePlansInterval(numberOfIterations); // Write Plan file every x-Iterations
 
 
         config.plans().setInputFile(demandPath);
@@ -72,9 +77,9 @@ public class RunDrtNoise {
         drt.setMaxTravelTimeAlpha(1.5);
         drt.setMaxWaitTime(600.0);
         drt.setStopDuration(30.0);
-        drt.setRejectRequestIfMaxWaitOrTravelTimeViolated(true);
+        drt.setRejectRequestIfMaxWaitOrTravelTimeViolated(rejections);
         drt.setTransitStopFile(null); //door-to-door approach for now?
-        drt.setMaxWalkDistance(300.0);
+        drt.setMaxWalkDistance(1000.0);
         config.controler().setOutputDirectory(outputDir);
         drt.setVehiclesFile(fleetPath);
         drt.setIdleVehiclesReturnToDepots(false);
