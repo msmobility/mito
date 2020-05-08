@@ -1,6 +1,9 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.Id;
+import de.tum.bgu.msm.data.Location;
+import de.tum.bgu.msm.data.Region;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.readers.CsvGzSkimMatrixReader;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
@@ -101,7 +104,7 @@ public class SkimTravelTimes implements TravelTimes {
                         minToCar = travelTimeToRegionCar;
                     }
                     double travelTimeFromRegionPt = matricesByMode.get(TransportMode.pt).getIndexed(zoneInRegion.getZoneId(), zoneId);
-                    if (travelTimeFromRegionCar < minFromPt) {
+                    if (travelTimeFromRegionPt < minFromPt) {
                         minFromPt = travelTimeFromRegionPt;
                     }
                     double travelTimeToRegionPt = matricesByMode.get(TransportMode.pt).getIndexed(zoneId, zoneInRegion.getZoneId());
