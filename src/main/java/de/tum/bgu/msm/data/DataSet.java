@@ -5,6 +5,7 @@ import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
 import org.matsim.api.core.v01.population.Population;
 
 import java.util.*;
@@ -39,6 +40,7 @@ public class DataSet {
     private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
 
     private Population population;
+    private final ModeChoiceCalibrationData modeChoiceCalibrationData = new ModeChoiceCalibrationData();
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
@@ -235,4 +237,12 @@ public class DataSet {
     public Population getPopulation() {
         return population;
     }
+
+    public ModeChoiceCalibrationData getModeChoiceCalibrationData() {
+        return modeChoiceCalibrationData;
+    }
+
+
+
+
 }

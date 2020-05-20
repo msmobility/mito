@@ -33,7 +33,7 @@ public class AirportTripGeneration {
         this.airportLogsumCalculator = new AirportLogsumCalculator(new InputStreamReader(ModeChoice.class.getResourceAsStream("ModeChoice")));
     }
 
-    public void run() {
+    public void run(double scaleFacotForTripGeneration) {
 
         Map<Integer, Map<MitoHousehold, Double>> hosuseholdProbabilities = calculateHouseholdProbabilities();
         Map<Integer, Integer> popByZone = calculatePopulationByZone();
@@ -41,7 +41,7 @@ public class AirportTripGeneration {
         Map<Integer, Double> zonalProbabilities = calculateZonalProbability(hosuseholdProbabilities.keySet(), popByZone);
 
 
-        int tripsToFromAirport = numberOfTripsCalculator.calculateTripRate(dataSet.getYear());
+        int tripsToFromAirport = (int) (numberOfTripsCalculator.calculateTripRate(dataSet.getYear()) * scaleFacotForTripGeneration);
         while (counter < tripsToFromAirport) {
             MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), Purpose.AIRPORT);
             dataSet.addTrip(trip);

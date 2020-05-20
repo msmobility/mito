@@ -3,6 +3,19 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.io.output.SummarizeData;
+import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
+import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
+import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
+import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
+import de.tum.bgu.msm.modules.scaling.TripScaling;
+import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
+import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
+import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
@@ -29,35 +42,24 @@ import java.util.Random;
  * - totalEmplByZone
  * - sizeOfZonesInAcre
  */
-public final class MitoModel {
+public final class MitoModelForModeChoiceCalibration {
 
-    private static final Logger logger = Logger.getLogger(MitoModel.class);
+    private static final Logger logger = Logger.getLogger(MitoModelForModeChoiceCalibration.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
-    private MitoModel(DataSet dataSet, String scenarioName) {
+    private MitoModelForModeChoiceCalibration(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static MitoModelForModeChoiceCalibration standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelForModeChoiceCalibration model = new MitoModelForModeChoiceCalibration(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
-        return model;
-    }
-
-    public static MitoModel initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
-        logger.info(" Initializing MITO from SILO");
-        Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(dataSet, scenarioName);
-        new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
-        new OmxSkimsReader(dataSet).readSkimDistancesNMT();
-        new OmxSkimsReader(dataSet).readSkimDistancesAuto();
-        model.readAdditionalData();
         return model;
     }
 
@@ -65,8 +67,47 @@ public final class MitoModel {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        TravelDemandGenerator ttd = new TravelDemandGenerator(dataSet);
-        ttd.generateTravelDemand(scenarioName);
+        logger.info("Running Module: Microscopic Trip Generation");
+        TripGeneration tg = new TripGeneration(dataSet);
+        tg.run();
+        if (dataSet.getTrips().isEmpty()) {
+            logger.warn("No trips created. End of program.");
+            return;
+        }
+
+        logger.info("Running Module: Person to Trip Assignment");
+        PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
+        personTripAssignment.run();
+
+        logger.info("Running Module: Travel Time Budget Calculation");
+        TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
+        ttb.run();
+
+        logger.info("Running Module: Microscopic Trip Distribution");
+        TripDistribution distribution = new TripDistribution(dataSet);
+        distribution.run();
+
+        ModeChoice modeChoice = new ModeChoice(dataSet);
+        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+
+        for (int iteration = 0; iteration < Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 1); iteration++){
+            modeChoice.run();
+            dataSet.getModeChoiceCalibrationData().updateCalibrationCoefficients(dataSet, iteration);
+            logger.info("Finish iteration " + iteration);
+        }
+
+        dataSet.getModeChoiceCalibrationData().close();
+
+        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
+        SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
+
+        if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
+            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
+            SummarizeData.writeOutTrips(dataSet, scenarioName);
+        }
+        if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
+            SummarizeData.writeCharts(dataSet, scenarioName);
+        }
         printOutline(startTime);
     }
 
