@@ -16,7 +16,7 @@ public class ModeChoiceCalibrationData {
     private Map<String, Map<Purpose, Map<Mode, Double>>> calibrationFactors;
     private Map<Integer, String> zoneToRegionMap;
 
-    private PrintWriter pw;
+    private PrintWriter pw = null;
 
     private static Logger logger = Logger.getLogger(ModeChoiceCalibrationData.class);
 
@@ -25,14 +25,6 @@ public class ModeChoiceCalibrationData {
         this.calibrationFactors = new HashMap<>();
         this.simulatedTripsByRegionPurposeAndMode = new HashMap<>();
         zoneToRegionMap = new HashMap<>();
-
-        try {
-            pw = new PrintWriter(new File("mode_choice_calibration.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        pw.println("iteration,region,purpose,mode,observed_share,sim_share,k,trips");
-
     }
 
 
@@ -58,6 +50,15 @@ public class ModeChoiceCalibrationData {
     }
 
     public void updateCalibrationCoefficients(DataSet dataSet, int iteration) {
+
+        if (pw == null){
+            try {
+                pw = new PrintWriter(new File("mode_choice_calibration.csv"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            pw.println("iteration,region,purpose,mode,observed_share,sim_share,k,trips");
+        }
 
         simulatedTripsByRegionPurposeAndMode.clear();
 
