@@ -70,7 +70,7 @@ public class ModeChoiceCalculatorTest {
             public TravelTimes duplicate() {
                 return null;
             }
-        }, 5., 5., 0);
+        }, 5., 5., 0, null);
         for(int i = 0; i < result.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
         }

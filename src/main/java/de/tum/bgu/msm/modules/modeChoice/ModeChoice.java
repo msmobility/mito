@@ -21,6 +21,8 @@ public class ModeChoice extends Module {
     private final static Logger logger = Logger.getLogger(ModeChoice.class);
     private final boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
 
+    private ModeChoiceCalibrationData modeChoiceCalibrationData;
+
     public ModeChoice(DataSet dataSet) {
         super(dataSet);
     }
@@ -68,30 +70,6 @@ public class ModeChoice extends Module {
                 }
             }
         }
-
-
-        //auxiliar code for calibration
-//        double shareAutoDriver = 0.15;
-//        double shareAutoPassenger = 0.43;
-//        double shareNonMotorized = 0.0;
-//        double shareMetro = 0.0;
-//        double shareBus = 0.03;
-//        double shareTrain = 1 - shareAutoDriver - shareAutoPassenger - shareNonMotorized - shareMetro - shareBus;
-//
-//        double k_autoDriver = shareAutoDriver - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoDriver);
-//        double k_autoPassenger = shareAutoPassenger - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.autoPassenger);
-//        double k_bicycle = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bicycle);
-//        double k_walk = shareNonMotorized - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.walk);
-//        double k_bus = shareBus - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.bus);
-//        double k_metro = shareMetro - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.tramOrMetro);
-//        double k_train = shareTrain - dataSet.getModeShareForPurpose(Purpose.AIRPORT, Mode.train);
-//
-//        logger.info(k_autoDriver + "," +
-//                k_autoPassenger + "," + k_bicycle +
-//                "," + k_bus + "," + k_train + "," + k_metro + "," +
-//                k_walk );
-
-
     }
 
     static class ModeChoiceByPurpose extends RandomizableConcurrentFunction<Void> {
@@ -137,7 +115,9 @@ public class ModeChoice extends Module {
                 countTripsSkipped++;
                 return null;
             }
+
             final int originId = trip.getTripOrigin().getZoneId();
+
             final int destinationId = trip.getTripDestination().getZoneId();
             final MitoZone origin = dataSet.getZones().get(originId);
             final MitoZone destination = dataSet.getZones().get(destinationId);
@@ -146,7 +126,7 @@ public class ModeChoice extends Module {
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
             return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
-                    travelDistanceNMT, dataSet.getPeakHour());
+                    travelDistanceNMT, dataSet.getPeakHour(), dataSet.getModeChoiceCalibrationData().getCalibrationFactorsAsArray(trip.getTripPurpose(), trip.getTripOrigin()));
         }
 
         private void chooseMode(MitoTrip trip, double[] probabilities) {

@@ -36,17 +36,17 @@ public class RawTripGenerator {
         this.dataSet = dataSet;
     }
 
-    public void run () {
-        generateByPurposeMultiThreaded();
+    public void run (double scaleFactorForGeneration) {
+        generateByPurposeMultiThreaded(scaleFactorForGeneration);
         logTripGeneration();
     }
 
-    private void generateByPurposeMultiThreaded() {
+    private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {
         final ConcurrentExecutor<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
                 ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
         for(Purpose purpose: PURPOSES) {
-            tasks.add(new TripsByPurposeGenerator(dataSet, purpose));
+            tasks.add(new TripsByPurposeGenerator(dataSet, purpose, scaleFactorForGeneration));
         }
         final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
         for(Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
