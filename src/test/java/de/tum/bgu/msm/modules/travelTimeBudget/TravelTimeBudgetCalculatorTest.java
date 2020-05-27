@@ -15,7 +15,7 @@ public class TravelTimeBudgetCalculatorTest {
 
     private DataSet dataSet;
     private MitoZone dummyZone;
-    private TravelTimeBudgetJSCalculator calculator;
+    private TravelTimeBudgetCalculatorImpl calculator;
 
     @Before
     public void setup() {
@@ -23,7 +23,7 @@ public class TravelTimeBudgetCalculatorTest {
         Resources.initializeResources("./test/muc/test.properties");
 
         Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        calculator = new TravelTimeBudgetJSCalculator(reader);
+        calculator = new TravelTimeBudgetCalculatorImpl();
 
         dataSet = new DataSet();
         addZone();

@@ -1,18 +1,17 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
+import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
-import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
-import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
-import de.tum.bgu.msm.modules.scaling.TripScaling;
-import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
@@ -88,6 +87,20 @@ public final class MitoModelForModeChoiceCalibration {
         distribution.run();
 
         ModeChoice modeChoice = new ModeChoice(dataSet);
+        for(Purpose purpose: Purpose.values()) {
+
+            final CalibratingModeChoiceCalculatorImpl baseCalculator;
+            if(purpose == Purpose.AIRPORT) {
+                baseCalculator = new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(),
+                        dataSet.getModeChoiceCalibrationData());
+            } else {
+                baseCalculator = new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(),
+                        dataSet.getModeChoiceCalibrationData());
+            }
+            modeChoice.registerModeChoiceCalculator(purpose,
+                    baseCalculator);
+        }
+
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
 
         for (int iteration = 0; iteration < Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 1); iteration++){

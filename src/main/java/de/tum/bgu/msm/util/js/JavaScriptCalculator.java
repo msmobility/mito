@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Skeleton class for java script calculations
+ * Skeleton class for java script calculations.
+ * NOTE: will be removed soon!
  */
+@Deprecated
 public abstract class JavaScriptCalculator<T> {
 
     protected static final Logger logger = Logger.getLogger(JavaScriptCalculator.class);

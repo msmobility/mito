@@ -1,6 +1,0 @@
-var getNumberOfTripsToAirport = function(year){
-
-     //returns the number of trips to the airport for the specified year (includes trips to the airport and from the airport)
-
-     return 56600;
-}

@@ -42,6 +42,7 @@ public class TravelDemandGenerator {
             return;
         }
 
+
         logger.info("Running Module: Person to Trip Assignment");
         PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
         personTripAssignment.run();
