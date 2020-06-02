@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
@@ -29,14 +30,14 @@ public class ModeChoice extends Module {
         super(dataSet);
         boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
 
-        if(includeAV) {
-            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new AirportModeChoiceCalculator());
+        if(!includeAV) {
+            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
         } else {
             modeChoiceCalculatorByPurpose.put(Purpose.HBW, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.HBE, new AVModeChoiceCalculatorImpl());
