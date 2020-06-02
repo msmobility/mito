@@ -3,13 +3,18 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingAirportModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
-import java.io.InputStreamReader;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,12 +24,37 @@ import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
 public class ModeChoice extends Module {
 
     private final static Logger logger = Logger.getLogger(ModeChoice.class);
-    private final boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
 
-    private ModeChoiceCalibrationData modeChoiceCalibrationData;
+    private final Map<Purpose, ModeChoiceCalculator> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
 
     public ModeChoice(DataSet dataSet) {
         super(dataSet);
+        boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
+
+        if(!includeAV) {
+            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingAirportModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
+        } else {
+            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new AirportModeChoiceCalculator());
+        }
+    }
+
+    public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {
+        final ModeChoiceCalculator prev = modeChoiceCalculatorByPurpose.put(purpose, modeChoiceCalculator);
+        if(prev != null) {
+            logger.info("Overwrote mode choice calculator for purpose " + purpose + " with " + modeChoiceCalculator.getClass());
+        }
     }
 
     @Override
@@ -37,7 +67,7 @@ public class ModeChoice extends Module {
     private void modeChoiceByPurpose() {
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         for (Purpose purpose : Purpose.values()) {
-            executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, includeAV));
+            executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, modeChoiceCalculatorByPurpose.get(purpose)));
         }
         executor.execute();
     }
@@ -76,22 +106,16 @@ public class ModeChoice extends Module {
 
         private final Purpose purpose;
         private final DataSet dataSet;
-        private final ModeChoiceJSCalculator calculator;
         private final TravelTimes travelTimes;
+        private final ModeChoiceCalculator modeChoiceCalculator;
         private int countTripsSkipped;
 
-        ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, boolean includeAV) {
+        ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, ModeChoiceCalculator modeChoiceCalculator) {
             super(MitoUtil.getRandomObject().nextLong());
             this.purpose = purpose;
             this.dataSet = dataSet;
             this.travelTimes = dataSet.getTravelTimes();
-            if (includeAV) {
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoiceAV")), purpose);
-            } else {
-                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoice")), purpose);
-            }
+            this.modeChoiceCalculator = modeChoiceCalculator;
         }
 
         @Override
@@ -110,7 +134,7 @@ public class ModeChoice extends Module {
             return null;
         }
 
-        double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
+        private double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
             if (trip.getTripOrigin() == null || trip.getTripDestination() == null) {
                 countTripsSkipped++;
                 return null;
@@ -125,9 +149,9 @@ public class ModeChoice extends Module {
                     destinationId);
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
-            return calculator.calculateProbabilities(household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
-                    travelDistanceNMT, dataSet.getPeakHour(), dataSet.getModeChoiceCalibrationData().getCalibrationFactorsAsArray(trip.getTripPurpose(), trip.getTripOrigin()));
-        }
+            return modeChoiceCalculator.calculateProbabilities(purpose, household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
+                    travelDistanceNMT, dataSet.getPeakHour());
+    }
 
         private void chooseMode(MitoTrip trip, double[] probabilities) {
             if (probabilities == null) {

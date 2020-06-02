@@ -41,6 +41,9 @@ public class MitoZone implements Id, Location {
 
     //TODO: is this supposed to stay in master?
     public boolean isMunichZone() {
+        if(this.shapeFeature == null ) {
+            return false;
+        }
         return "9162000".equals(this.shapeFeature.getAttribute("AGS").toString());
     }
 

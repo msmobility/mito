@@ -6,24 +6,20 @@ import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import static org.junit.Assert.assertEquals;
 
 public class TravelTimeBudgetCalculatorTest {
 
     private DataSet dataSet;
     private MitoZone dummyZone;
-    private TravelTimeBudgetJSCalculator calculator;
+    private TravelTimeBudgetCalculatorImpl calculator;
 
     @Before
     public void setup() {
 
         Resources.initializeResources("./test/muc/test.properties");
 
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        calculator = new TravelTimeBudgetJSCalculator(reader);
+        calculator = new TravelTimeBudgetCalculatorImpl();
 
         dataSet = new DataSet();
         addZone();

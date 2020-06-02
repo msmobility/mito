@@ -46,6 +46,14 @@ public class ConfigureMatsim {
             strategySettings.setWeight(0.1);
             config.strategy().addStrategySettings(strategySettings);
         }
+//        {
+//            config.timeAllocationMutator().setMutationRange(1800);
+//            config.timeAllocationMutator().setAffectingDuration(true);
+//            StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+//            strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.TimeAllocationMutator_ReRoute);
+//            strategySettings.setWeight(0.1);
+//            config.strategy().addStrategySettings(strategySettings);
+//        }
 
         config.strategy().setFractionOfIterationsToDisableInnovation(0.8);
         config.strategy().setMaxAgentPlanMemorySize(4);
