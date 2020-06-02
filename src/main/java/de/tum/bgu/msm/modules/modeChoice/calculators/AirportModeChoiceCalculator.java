@@ -20,16 +20,18 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
             throw  new IllegalArgumentException("Airport mode choice calculator can only be used for airport purposes.");
         }
 
-        //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk]
+        //Order of variables in the return variable
+        //Auto driver, Auto passenger, bicyle, bus, train, tram or metro, walk
+
 
         double[] utilities = calculateUtilities(purpose, hh,
                 person, originZone, destinationZone,
                 travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour);
 
-        double sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4];
+        double sum_u = utilities[0] + utilities[1] + utilities[3] + utilities[4];
 
 
-        double probabilityAutoD = (utilities[0] + utilities[2]) / sum_u;
+        double probabilityAutoD = utilities[0] / sum_u;
         double probabilityAutoP = utilities[1] / sum_u;
         double probabilityBus = utilities[3] / sum_u;
         double probabilityTrain = utilities[4] / sum_u;
@@ -45,10 +47,10 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
         }
 
         double asc_autoDriver = 0.;
-        double asc_autoPassenger = -0.0657;
-        double asc_autoOther = -1.37275;
-        double asc_bus = 2.246879;
-        double asc_train = 2.992159;
+        double asc_autoPassenger = -0.0657 - 1.120;
+        double asc_autoOther = -1.37275 - 2.606;
+        double asc_bus = 2.246879 - 5.946;
+        double asc_train = 2.992159 - 4.392;
 
         //times are in minutes
         double beta_time = -0.0002 * 60;
@@ -66,7 +68,7 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
         double exp_distance_bus = 9.662964;
         double exp_distance_train = 7.706087;
 
-        //Order of variables in the return variable autoDriver, autoPassenger, autoOther, bus, train
+        //Order of variables in the return variable Auto driver, Auto passenger, bicyle, bus, train, tram or metro, walk
 
         double u_autoDriver = asc_autoDriver + exp_time_autoDriver * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "car")) +
                 exp_distance_autoDriver * Math.exp(beta_distance * travelDistanceAuto);
@@ -79,7 +81,8 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
         double u_train = asc_train + exp_time_train * Math.exp(beta_time * travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "train")) +
                 exp_distance_train * Math.exp(beta_distance * travelDistanceAuto);
 
-        return new double[]{Math.exp(u_autoDriver), Math.exp(u_autoDriver), Math.exp(u_autoOther), Math.exp(u_bus), Math.exp(u_train)};
+        //Auto driver, Auto passenger, bicyle, bus, train, tram or metro, walk
+        return new double[]{Math.exp(u_autoDriver) + Math.exp(u_autoOther), Math.exp(u_autoPassenger), 0. , Math.exp(u_bus), Math.exp(u_train),  0., 0.};
     }
 
     @Override

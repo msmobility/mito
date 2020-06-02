@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingAirportModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
@@ -37,7 +38,7 @@ public class ModeChoice extends Module {
             modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingAirportModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
         } else {
             modeChoiceCalculatorByPurpose.put(Purpose.HBW, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.HBE, new AVModeChoiceCalculatorImpl());
