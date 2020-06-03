@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.DummyZone;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
@@ -60,9 +61,9 @@ public class ModeChoiceTest {
     }
 
     @Test
-    public void testModeChoice() throws Exception {
+    public void testModeChoice() {
         ModeChoice modeChoice = new ModeChoice(dataSet);
-        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, false);
+        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, new ModeChoiceCalculatorImpl());
     }
 
 

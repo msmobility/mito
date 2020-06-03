@@ -4,7 +4,7 @@ import de.tum.bgu.msm.data.MitoOccupation;
 import de.tum.bgu.msm.data.MitoZone;
 import org.locationtech.jts.geom.Coordinate;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 public class DummyOccupation implements MitoOccupation {
 
@@ -28,8 +28,8 @@ public class DummyOccupation implements MitoOccupation {
     }
 
     @Override
-    public Optional<Integer> getStartTime_min() {
-        return Optional.empty();
+    public OptionalInt getStartTime_min() {
+        return OptionalInt.empty();
     }
 
     @Override
@@ -38,8 +38,8 @@ public class DummyOccupation implements MitoOccupation {
     }
 
     @Override
-    public Optional<Integer> getEndTime_min() {
-        return Optional.empty();
+    public OptionalInt getEndTime_min() {
+        return OptionalInt.empty();
     }
 
     @Override

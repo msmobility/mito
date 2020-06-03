@@ -6,8 +6,6 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import org.apache.log4j.Logger;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -21,18 +19,16 @@ import java.util.concurrent.Executors;
  * @author Rolf Moeckel
  * Created on Apr 2, 2017 in Mannheim, Germany
  */
-
 public class TravelTimeBudgetModule extends Module {
 
     private static final Logger logger = Logger.getLogger(TravelTimeBudgetModule.class);
 
     private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
-    private final TravelTimeBudgetJSCalculator travelTimeCalc;
+    private final TravelTimeBudgetCalculatorImpl travelTimeCalc;
 
     public TravelTimeBudgetModule(DataSet dataSet) {
         super(dataSet);
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TravelTimeBudgetCalc"));
-        travelTimeCalc = new TravelTimeBudgetJSCalculator(reader);
+        travelTimeCalc = new TravelTimeBudgetCalculatorImpl();
     }
 
     @Override

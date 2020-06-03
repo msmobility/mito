@@ -1,39 +1,46 @@
-package de.tum.bgu.msm.modules.tripGeneration;
+package de.tum.bgu.msm.modules.tripGeneration.airport;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AirportTripGeneration {
 
     private final DataSet dataSet;
-    final static AtomicInteger TRIP_ID_COUNTER = new AtomicInteger();
+    private final static AtomicInteger TRIP_ID_COUNTER = new AtomicInteger();
     private int counter = 0;
     private final static Logger LOGGER = Logger.getLogger(AirportTripGeneration.class);
     private final int airportZoneId;
-    private AirportNumberOfTripsCalculator numberOfTripsCalculator;
-    private AirportDestinationCalculator airportDestinationCalculator;
-    private AirportLogsumCalculator airportLogsumCalculator;
+
+    private final AirportTripGenerator numberOfTripsCalculator;
+    private final AirportDestinationCalculator airportDestinationCalculator;
+    private final AirportModeChoiceCalculator airportModeChoiceCalculator;
 
     public AirportTripGeneration(DataSet dataSet) {
-        this.dataSet = dataSet;
-        this.TRIP_ID_COUNTER.set(dataSet.getTrips().size());
-        this.airportZoneId = Resources.instance.getInt(Properties.AIRPORT_ZONE);
-        this.numberOfTripsCalculator = new AirportNumberOfTripsCalculator(new InputStreamReader(this.getClass().getResourceAsStream("AirportTripRateCalc")));
-        this.airportDestinationCalculator = new AirportDestinationCalculator(new InputStreamReader(TripDistribution.class.getResourceAsStream("AirportTripDistribution")));
-        this.airportLogsumCalculator = new AirportLogsumCalculator(new InputStreamReader(ModeChoice.class.getResourceAsStream("ModeChoice")));
+        this(dataSet, new AirportTripGeneratorImpl(),
+                new AirportDestinationCalculatorImpl(),
+                new AirportModeChoiceCalculator());
     }
 
-    public void run() {
+    public AirportTripGeneration(DataSet dataSet, AirportTripGenerator tripGenerator,
+                                 AirportDestinationCalculator airportDestinationCalculator,
+                                 AirportModeChoiceCalculator airportModeChoiceCalculator) {
+        this.dataSet = dataSet;
+        TRIP_ID_COUNTER.set(dataSet.getTrips().size());
+        this.airportZoneId = Resources.instance.getInt(Properties.AIRPORT_ZONE);
+        this.numberOfTripsCalculator = tripGenerator;
+        this.airportDestinationCalculator = airportDestinationCalculator;
+        this.airportModeChoiceCalculator = airportModeChoiceCalculator;
+    }
+
+    public void run(double scaleFacotForTripGeneration) {
 
         Map<Integer, Map<MitoHousehold, Double>> hosuseholdProbabilities = calculateHouseholdProbabilities();
         Map<Integer, Integer> popByZone = calculatePopulationByZone();
@@ -41,7 +48,7 @@ public class AirportTripGeneration {
         Map<Integer, Double> zonalProbabilities = calculateZonalProbability(hosuseholdProbabilities.keySet(), popByZone);
 
 
-        int tripsToFromAirport = numberOfTripsCalculator.calculateTripRate(dataSet.getYear());
+        int tripsToFromAirport = (int) (numberOfTripsCalculator.calculateTripRate(dataSet.getYear()) * scaleFacotForTripGeneration);
         while (counter < tripsToFromAirport) {
             MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), Purpose.AIRPORT);
             dataSet.addTrip(trip);
@@ -68,13 +75,21 @@ public class AirportTripGeneration {
             MitoZone mitoZone = dataSet.getZones().get(zoneId);
             TravelTimes travelTimes = dataSet.getTravelTimes();
             double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(airportZoneId, zoneId);
-            double logsum = airportLogsumCalculator.calculateLogsumForThisZone(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour());
+            double logsum = calculateLogsumForThisZone(dataSet.getZones().get(airportZoneId), mitoZone, travelTimes, travelDistance, dataSet.getPeakHour());
             int popEmp = popByZone.get(zoneId) + mitoZone.getTotalEmpl();
             double probability = airportDestinationCalculator.calculateUtilityOfThisZone(popEmp, logsum, mitoZone.getAreaTypeSG());
             zonalProbability.put(mitoZone.getId(), probability);
         }
         LOGGER.info("Assigned probabilities to zones");
         return zonalProbability;
+    }
+
+    private double calculateLogsumForThisZone(MitoZone origin, MitoZone destination, TravelTimes travelTimes, double travelDistance, double peakHour) {
+        double[] utilities = airportModeChoiceCalculator.calculateUtilities(Purpose.AIRPORT, null
+                , null, origin, destination, travelTimes, travelDistance, -1, peakHour);
+
+        double sum = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4];
+        return Math.log(sum);
     }
 
     private Map<Integer, Map<MitoHousehold, Double>> calculateHouseholdProbabilities() {
@@ -86,7 +101,7 @@ public class AirportTripGeneration {
             if (!householdProbabilityByZone.containsKey(zoneId)){
                 householdProbabilityByZone.put(zoneId, new HashMap<>());
             }
-            householdProbabilityByZone.get(zoneId).put(mitoHousehold, Double.valueOf(mitoHousehold.getEconomicStatus()));
+            householdProbabilityByZone.get(zoneId).put(mitoHousehold, (double) mitoHousehold.getEconomicStatus());
         }
 
         LOGGER.info("Assigned probabilities to households");

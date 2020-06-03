@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
+import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -27,13 +28,15 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Tuple<Purpo
     private final Purpose purpose;
 
     private final HouseholdTypeManager householdTypeManager;
+    private double scaleFactorForGeneration;
 
 
-    TripsByPurposeGenerator(DataSet dataSet, Purpose purpose) {
+    TripsByPurposeGenerator(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
         householdTypeManager = new HouseholdTypeManager(purpose);
+        this.scaleFactorForGeneration = scaleFactorForGeneration;
     }
 
     @Override
@@ -42,13 +45,13 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Tuple<Purpo
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-            generateTripsForHousehold(hh);
+            generateTripsForHousehold(hh, scaleFactorForGeneration);
         }
         return new Tuple<>(purpose, tripsByHH);
     }
 
 
-    private void generateTripsForHousehold(MitoHousehold hh) {
+    private void generateTripsForHousehold(MitoHousehold hh, double scaleFactorForGeneration) {
         HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
         if (hhType == null) {
             logger.error("Could not create trips for Household " + hh.getId() + " for Purpose " + purpose + ": No Household Type applicable");
@@ -67,10 +70,13 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Tuple<Purpo
         List<MitoTrip> trips = new ArrayList<>();
         int numberOfTrips  = selectNumberOfTrips(tripFrequencies);
         for (int i = 0; i < numberOfTrips; i++) {
-            MitoTrip trip = createTrip(hh);
-            if (trip != null) {
-                trips.add(trip);
+            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration){
+                MitoTrip trip = createTrip(hh);
+                if (trip != null) {
+                    trips.add(trip);
+                }
             }
+
         }
         tripsByHH.put(hh, trips);
     }

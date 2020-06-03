@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static de.tum.bgu.msm.data.Purpose.*;
 
@@ -36,21 +37,24 @@ public class RawTripGenerator {
         this.dataSet = dataSet;
     }
 
-    public void run () {
-        generateByPurposeMultiThreaded();
+    public void run (double scaleFactorForGeneration) {
+        generateByPurposeMultiThreaded(scaleFactorForGeneration);
         logTripGeneration();
     }
 
-    private void generateByPurposeMultiThreaded() {
+    private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {
         final ConcurrentExecutor<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
                 ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
         for(Purpose purpose: PURPOSES) {
-            tasks.add(new TripsByPurposeGenerator(dataSet, purpose));
+            tasks.add(new TripsByPurposeGenerator(dataSet, purpose, scaleFactorForGeneration));
         }
         final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
         for(Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
             final Purpose purpose = result.getFirst();
+
+            final int sum = result.getSecond().values().stream().flatMapToInt(e -> IntStream.of(e.size())).sum();
+            logger.info("Created " + sum + " trips for " + purpose);
             final Map<MitoHousehold, List<MitoTrip>> tripsByHouseholds = result.getSecond();
             for(Map.Entry<MitoHousehold, List<MitoTrip>> tripsByHousehold: tripsByHouseholds.entrySet()) {
                 tripsByHousehold.getKey().setTripsByPurpose(tripsByHousehold.getValue(), purpose);

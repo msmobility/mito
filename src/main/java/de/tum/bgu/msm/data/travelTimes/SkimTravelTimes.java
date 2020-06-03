@@ -1,8 +1,10 @@
 package de.tum.bgu.msm.data.travelTimes;
 
+import de.tum.bgu.msm.data.Id;
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.Region;
 import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.io.input.readers.CsvGzSkimMatrixReader;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import de.tum.bgu.msm.util.matrices.Matrices;
@@ -61,6 +63,21 @@ public class SkimTravelTimes implements TravelTimes {
         travelTimesToRegion.clear();
     }
 
+    /**
+     * Reads a skim matrix from an csv.gz file and stores it for the given mode and year. To allow conversion between units
+     * use the factor to multiply all values.
+     * @param mode the mode for which the travel times are read
+     * @param file the path to the file
+     * @param factor a scalar factor which every entry is multiplied with
+     */
+    public final void readSkimFromCsvGz(final String mode, final String file, final double factor,Collection<? extends Id> zoneLookup) {
+        logger.info("Reading " + mode + " skim");
+        IndexedDoubleMatrix2D skim = new CsvGzSkimMatrixReader().readAndConvertToDoubleMatrix2D(file, factor, zoneLookup);
+        matricesByMode.put(mode, skim);
+        travelTimesFromRegion.clear();
+        travelTimesToRegion.clear();
+    }
+
     // called from within SILO!
     public void updateRegionalTravelTimes(Collection<Region> regions, Collection<Zone> zones) {
         logger.info("Updating minimal zone to region travel times...");
@@ -87,7 +104,7 @@ public class SkimTravelTimes implements TravelTimes {
                         minToCar = travelTimeToRegionCar;
                     }
                     double travelTimeFromRegionPt = matricesByMode.get(TransportMode.pt).getIndexed(zoneInRegion.getZoneId(), zoneId);
-                    if (travelTimeFromRegionCar < minFromPt) {
+                    if (travelTimeFromRegionPt < minFromPt) {
                         minFromPt = travelTimeFromRegionPt;
                     }
                     double travelTimeToRegionPt = matricesByMode.get(TransportMode.pt).getIndexed(zoneId, zoneInRegion.getZoneId());
