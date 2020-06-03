@@ -1,8 +1,10 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.run.scenarios.drtNoise;
 
+import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
@@ -11,53 +13,25 @@ import org.apache.log4j.Logger;
 
 import java.util.Random;
 
-/**
- * Implements the Microsimulation Transport Orchestrator (MITO)
- *
- * @author Rolf Moeckel
- * Created on Sep 18, 2016 in Munich, Germany
- * <p>
- * To run MITO, the following data need either to be passed in from another program or
- * need to be read from files and passed in (using method initializeStandAlone):
- * - zones
- * - autoTravelTimes
- * - transitTravelTimes
- * - timoHouseholds
- * - retailEmplByZone
- * - officeEmplByZone
- * - otherEmplByZone
- * - totalEmplByZone
- * - sizeOfZonesInAcre
- */
-public final class MitoModel {
+public class MitoModelDrt {
 
-    private static final Logger logger = Logger.getLogger(MitoModel.class);
+
+    private static final Logger logger = Logger.getLogger(de.tum.bgu.msm.run.scenarios.drtNoise.MitoModelDrt.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
-    private MitoModel(DataSet dataSet, String scenarioName) {
+    private MitoModelDrt(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static MitoModelDrt standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelDrt model = new MitoModelDrt(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
-        return model;
-    }
-
-    public static MitoModel initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
-        logger.info(" Initializing MITO from SILO");
-        Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(dataSet, scenarioName);
-        new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
-        new OmxSkimsReader(dataSet).readSkimDistancesNMT();
-        new OmxSkimsReader(dataSet).readSkimDistancesAuto();
-        model.readAdditionalData();
         return model;
     }
 
@@ -65,7 +39,8 @@ public final class MitoModel {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        TravelDemandGenerator ttd = new TravelDemandGenerator.Builder(dataSet).build();
+        final TravelDemandGenerator.Builder builder = new TravelDemandGenerator.Builder(dataSet);
+        TravelDemandGenerator ttd = ((ModeChoice)builder.getModeChoice()).registerModeChoiceCalculator();
         ttd.generateTravelDemand(scenarioName);
         printOutline(startTime);
     }
@@ -117,7 +92,6 @@ public final class MitoModel {
     public void setRandomNumberGenerator(Random random) {
         MitoUtil.initializeRandomNumber(random);
     }
-
-
-
 }
+
+

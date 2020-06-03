@@ -1,10 +1,9 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+
+import java.util.EnumMap;
 
 public interface ModeChoiceCalculator {
 
@@ -18,15 +17,15 @@ public interface ModeChoiceCalculator {
      * [5] probability tram or metro
      * [6] probability walk
      */
-    double[] calculateProbabilities(Purpose purpose,
-                                    MitoHousehold household,
-                                    MitoPerson person,
-                                    MitoZone originZone,
-                                    MitoZone destinationZone,
-                                    TravelTimes travelTimes,
-                                    double travelDistanceAuto,
-                                    double travelDistanceNMT,
-                                    double peakHour_s);
+    EnumMap<Mode, Double> calculateProbabilities(Purpose purpose,
+                                                 MitoHousehold household,
+                                                 MitoPerson person,
+                                                 MitoZone originZone,
+                                                 MitoZone destinationZone,
+                                                 TravelTimes travelTimes,
+                                                 double travelDistanceAuto,
+                                                 double travelDistanceNMT,
+                                                 double peakHour_s);
 
     /**
      * For the time being implementations of this interface should adhere to the following order in the result array:
@@ -38,7 +37,7 @@ public interface ModeChoiceCalculator {
      * [5] probability tram or metro
      * [6] probability walk
      */
-    double[] calculateUtilities(Purpose purpose,
+    EnumMap<Mode, Double> calculateUtilities(Purpose purpose,
                                     MitoHousehold household,
                                     MitoPerson person,
                                     MitoZone originZone,
@@ -59,7 +58,7 @@ public interface ModeChoiceCalculator {
      * [5] probability tram or metro
      * [6] probability walk
      */
-    double[] calculateGeneralizedCosts(Purpose purpose,
+    EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose,
                                 MitoHousehold household,
                                 MitoPerson person,
                                 MitoZone originZone,
