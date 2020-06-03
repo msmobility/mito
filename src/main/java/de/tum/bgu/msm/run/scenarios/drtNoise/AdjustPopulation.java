@@ -51,51 +51,57 @@ public class AdjustPopulation {
         Point[] polygon = getPolygonFromShape ("/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/cleverShuttleOperationArea/cleverShuttle.shp");
         int n = polygon.length;
 
-        for (int a =0; a<106;a++) {
-            System.out.println(polygon[a].x+"  "+polygon[a].y);
-        }
-        Config config = ConfigUtils.loadConfig( "/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/baseMatsimInput/mito_assignment.output_config.xml") ;
+//        for (int a =0; a<106;a++) {
+//            System.out.println(polygon[a].x+"  "+polygon[a].y);
+//        }
+        Config config = ConfigUtils.loadConfig( "/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/moia-msm/cleverShuttleOperationArea/mito_assignment.output_config.xml") ;
 
         Integer numberOfDrtUsers = 0;
+        Integer numberOfDrtRides = 0;
+        Integer numberOfPlans = 0;
         Scenario scenario = ScenarioUtils.loadScenario( config ) ;
 
         Boolean insideServiceArea;
-        for( Person person : scenario.getPopulation().getPersons().values() ){
+        for(Person person : scenario.getPopulation().getPersons().values() ){
 
-            for( Plan plan : person.getPlans() ){
+            for(Plan plan : person.getPlans() ){
+            numberOfPlans++;
 
-
-                System.out.println("######"+plan.getPerson()+"######");
+//                System.out.println("######"+plan.getPerson()+"######");
 
                 insideServiceArea = true;
-                for( PlanElement planElement : plan.getPlanElements() ){
-//
-
-                    if (planElement instanceof Activity){
-                        Coord coord = ((Activity) planElement).getCoord();
-                        Point origin = new Point(coord.getX(),coord.getY());
-                        if (!isInside(polygon,n,origin)){
-                            insideServiceArea = false;
-                        }
-
-                    }
-                }
+//                for( PlanElement planElement : plan.getPlanElements() ){
+//////
+////
+////                    if (planElement instanceof Activity){
+////                        Coord coord = ((Activity) planElement).getCoord();
+////                        Point origin = new Point(coord.getX(),coord.getY());
+////                        if (!isInside(polygon,n,origin)){
+////                            insideServiceArea = false;
+////                        }
+////
+////                    }
+////                }
                 if (insideServiceArea) {
                     for (PlanElement planElement : plan.getPlanElements()) {
 
                         if (planElement instanceof Leg) {
 
                             ((Leg) planElement).setMode("drt");
+                            numberOfDrtRides++;
                         }
                     }
                     numberOfDrtUsers++;
                 }
-
             }
         }
         System.out.println("numberOfDrtUsers: "+numberOfDrtUsers);
-        PopulationWriter populationWriter = new PopulationWriter(scenario.getPopulation(), scenario.getNetwork());
-        populationWriter.write("/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/plans_drt_inside_SA_test.xml.gz");
+        System.out.println("numberOfDrtRides: "+numberOfDrtRides);
+        System.out.println("numberOfPlans: "+numberOfPlans);
+
+//        PopulationWriter populationWriter = new PopulationWriter(scenario.getPopulation(), scenario.getNetwork());
+//        populationWriter.write("/Volumes/GoogleDrive/Meine Ablage/PhD/MITO_DRT_Project/moia-msm/cleverShuttleOperationArea/drtPopulation.xml.gz");
+        System.out.println("done");
 
     }
     public static Point[] getPolygonFromShape (String shapeLocation) throws IOException {
