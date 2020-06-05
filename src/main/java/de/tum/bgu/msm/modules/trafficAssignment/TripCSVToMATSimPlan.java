@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import de.tum.bgu.msm.data.MitoTrip;
@@ -55,6 +56,8 @@ public class TripCSVToMATSimPlan {
 		Population population = PopulationUtils.createPopulation(config);
 		factory = population.getFactory();
 
+		Random random = new Random(0);
+
 		try {
 			FileReader in = null;
 			BufferedReader br = null;
@@ -66,9 +69,13 @@ public class TripCSVToMATSimPlan {
 				int i = 0;
 				br.readLine(); // skip CSV header
 				while ((line = br.readLine()) != null) {
-					Person p = createPersonFromTrip(i++, line);
-					if (p != null)
-						population.addPerson(p);
+					if (random.nextDouble() < 0.05){
+						Person p = createPersonFromTrip(i++, line);
+						if (p != null)
+							population.addPerson(p);
+					}
+
+
 				}
 			} finally {
 				if (br != null)
@@ -91,6 +98,9 @@ public class TripCSVToMATSimPlan {
 		Trip t = new Trip(line);
 
 		String mode = decodeMode(t.mode);
+
+		if (!mode.equalsIgnoreCase("car")) return null;
+
 		Id<Person> matsimId = Id.createPersonId(t.person + "_" + i);
 
 		Person p = factory.createPerson(Id.createPersonId(matsimId));
@@ -199,12 +209,12 @@ public class TripCSVToMATSimPlan {
 			this.purpose = data[7];
 			this.person = data[8];
 			this.distance = Double.parseDouble(data[9]);
-			this.mode = data[14];
+			this.mode = data[16];
 			// departure time comes in minutes, needed as seconds
-			this.departure_time = Double.parseDouble(data[15]) * 60; 
+			this.departure_time = Double.parseDouble(data[19]) * 60;
 
-			if (data.length >= 17 && !data[16].equals("NA"))
-				this.departure_time_return = Double.parseDouble(data[16]) * 60;
+			if (data.length >= 17 && !data[20].equals("NA"))
+				this.departure_time_return = Double.parseDouble(data[20]) * 60;
 			else
 				this.departure_time_return = -1;
 		}

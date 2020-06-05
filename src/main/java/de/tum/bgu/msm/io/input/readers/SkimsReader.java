@@ -46,7 +46,7 @@ public class SkimsReader extends AbstractOmxReader {
     }
 
     private void readTravelTimeSkims() {
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("car", Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "timeByTime", 1 / 60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("car", Resources.INSTANCE.getString(Properties.AUTO_PEAK_SKIM), "mat1", 1 / 60.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bus", Resources.INSTANCE.getString(Properties.BUS_TRAVEL_TIME_SKIM), "mat1", 1.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetro", Resources.INSTANCE.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM), "mat1", 1.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.INSTANCE.getString(Properties.TRAIN_TRAVEL_TIME_SKIM), "mat1", 1.);
@@ -134,9 +134,9 @@ public class SkimsReader extends AbstractOmxReader {
     }
 
     private void readTravelDistances() {
-        IndexedDoubleMatrix2D distanceSkimAuto = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM), "distanceByTime", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimAuto = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM), "mat1", 1. / 1000.);
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
-        IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM), "distanceByDistance", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.INSTANCE.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM), "mat1", 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
 
 

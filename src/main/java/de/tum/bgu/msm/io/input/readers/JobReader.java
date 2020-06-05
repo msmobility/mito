@@ -64,7 +64,7 @@ public class JobReader extends AbstractCsvReader {
             try {
                 zone.addEmployeeForType(factory.getType(type.toUpperCase().replaceAll("\"","")));
             } catch (IllegalArgumentException e) {
-                logger.error("Job Type " + type + " used in job microdata but is not defined");
+                //logger.error("Job Type " + type + " used in job microdata but is not defined");
             }
             Coordinate coordinate = (new Coordinate(Double.parseDouble(record[posJobCoordX]),
             		Double.parseDouble(record[posJobCoordY])));

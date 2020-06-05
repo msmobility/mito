@@ -13,9 +13,11 @@ public enum Mode implements Id {
     train,
     tramOrMetro,
     walk,
-    privateAV,
-    sharedAV,
-    uam;//Urban Air Mobility (Flying taxi)
+    TNC,
+    uam;
+    //privateAV,
+    //sharedAV,
+    //uam;//Urban Air Mobility (Flying taxi)
 
     //for testing Mengying's model
 //    auto,
@@ -27,8 +29,7 @@ public enum Mode implements Id {
     public int getId(){
         return this.ordinal();
     }
-
-    public static Mode valueOf(int code){
+public static Mode valueOf(int code){
         switch (code){
             case 0:
                 return autoDriver;
@@ -45,17 +46,19 @@ public enum Mode implements Id {
             case 6:
                 return walk;
             case 7:
-                return privateAV;
+                return TNC;
+            //case 8:
+                //return sharedAV;
             case 8:
-                return sharedAV;
-            case 9:
                 return uam;
             default:
                 throw new RuntimeException("Mode for code " + code + "not specified.");
         }
     }
 
-    public static String getMatsimMode(Mode mitoMode){
+
+/// it was initially here
+   public static String getMatsimMode(Mode mitoMode){
         switch (mitoMode) {
             case autoDriver:
                 return TransportMode.car;
@@ -71,12 +74,13 @@ public enum Mode implements Id {
                 return TransportMode.walk;
             case bicycle:
                 return TransportMode.bike;
+            case TNC:
+                return TransportMode.taxi;
             case uam:
             	return "uam";
-            case privateAV:
-                return TransportMode.car;
-            case sharedAV:
-                return TransportMode.car;
+
+            //case sharedAV:
+                //return TransportMode.car;
             default:
                 //TODO needs more attention probably
                 return TransportMode.walk;
@@ -84,6 +88,7 @@ public enum Mode implements Id {
         }
 
     }
+
 
     //for testing Mengying's model
 //    public static Mode valueOf(int code){

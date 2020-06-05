@@ -87,8 +87,9 @@ public class MatsimPopulationGenerator {
 
                     Leg leg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                     boolean thisLegIsPlausible = true;
-                    if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                        thisLegIsPlausible = addUAMLegParamters(leg, dataSet, trip, false);
+                    // Alona disabled two following lines
+                    //if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
+                        //thisLegIsPlausible = addUAMLegParamters(leg, dataSet, trip, false);
 
                     if (thisLegIsPlausible) {
                         population.addPerson(person);
@@ -112,8 +113,9 @@ public class MatsimPopulationGenerator {
 
                             Leg returnLeg = factory.createLeg(Mode.getMatsimMode(trip.getTripMode()));
                             boolean thisreturnLegIsPlausible = true;
-                            if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
-                                thisreturnLegIsPlausible = addUAMLegParamters(returnLeg, dataSet, trip, true);
+                            // Alona disabled two following lines
+                            //if (trip.getTripMode() == Mode.uam && !Resources.INSTANCE.getBoolean("uam.matsim.router", false))
+                            //    thisreturnLegIsPlausible = addUAMLegParamters(returnLeg, dataSet, trip, true);
 
                             if (thisreturnLegIsPlausible) {
                                 plan.addLeg(returnLeg);

@@ -189,7 +189,7 @@ public class ModeChoice extends Module {
                         .getResourceAsStream("ModeChoiceUAMIncremental")), purpose);
             } else {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
-                        .getResourceAsStream("ModeChoice")), purpose);
+                        .getResourceAsStream("ModeChoiceShortDistance")), purpose); // changed name, it was "ModeChoice",
             }
         }
 

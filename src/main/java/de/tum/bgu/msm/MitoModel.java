@@ -88,11 +88,15 @@ public final class MitoModel {
         dataSet.setAccessAndEgressVariables(new AccessAndEgressVariables());
         new SkimsReader(dataSet).read();
         readAdditionalData();
-        UAMNetworkReader uamReader = new UAMNetworkReader(dataSet);
-        uamReader.read();
+        // Alona disabled two following lines
+        //UAMNetworkReader uamReader = new UAMNetworkReader(dataSet);
+        //uamReader.read();
+
         //uamReader.printOutSampleForDebugging("./debugTimesUam.csv");
         //handling times need to be set up after reading the UAM network file as xml
-        dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes(dataSet));
+
+        //Alona disable the following line
+        //dataSet.setTotalHandlingTimes(new UniformTotalHandlingTimes(dataSet));
 
     }
 
