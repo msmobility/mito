@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -9,10 +8,7 @@ import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.DROPPED_TRIPS_AT_BORDER_COUNTER;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
@@ -44,8 +40,10 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Tuple<Purpo
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
-        for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-            generateTripsForHousehold(hh, scaleFactorForGeneration);
+        final Iterator<MitoHousehold> iterator = dataSet.getHouseholds().values().iterator();
+        for (; iterator.hasNext(); ) {
+            MitoHousehold next = iterator.next();
+            generateTripsForHousehold(next, scaleFactorForGeneration);
         }
         return new Tuple<>(purpose, tripsByHH);
     }

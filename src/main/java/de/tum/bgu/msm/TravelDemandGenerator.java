@@ -227,5 +227,8 @@ public final class TravelDemandGenerator {
         if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
+        if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
+            SummarizeData.writeMatsimPlans(dataSet, scenarioName);
+        }
     }
 }

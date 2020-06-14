@@ -1,30 +1,40 @@
 package de.tum.bgu.msm.run.scenarios.drtNoise;
 
-import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
 import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Geometry;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.gis.ShapeFileReader;
 
 public class RunMitoDrt {
 
     private static final Logger logger = Logger.getLogger(RunMitoDrt.class);
 
+    private static final String serviceAreaShapeFile = "D:\\resultStorage\\moia-msm\\cleverShuttleOperationArea\\cleverShuttle.shp";
+
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = MitoModel.standAloneModel(args[0], MunichImplementationConfig.get());
+
+        final Geometry geometry = (Geometry) ShapeFileReader
+                .getAllFeatures(serviceAreaShapeFile)
+                .iterator().next().getDefaultGeometry();
+
+        MitoModelDrt model = MitoModelDrt.standAloneModel(args[0], MunichImplementationConfig.get(), geometry);
         model.run();
         final DataSet dataSet = model.getData();
 
-        boolean runAssignment = Resources.instance.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
+        ServiceAreaModeChoiceResults.printServiceAreaModeChoiceResults(dataSet, geometry, Resources.instance.getString(Properties.SCENARIO_NAME));
+
+//        boolean runAssignment = Resources.instance.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
+        boolean runAssignment = false;
 
         if (runAssignment) {
             logger.info("Running traffic assignment in MATsim");
@@ -47,10 +57,6 @@ public class RunMitoDrt {
             Controler controler = new Controler(matsimScenario);
             controler.run();
 
-            if (Resources.instance.getBoolean(Properties.PRINT_OUT_SKIM, false)) {
-                CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, model);
-                skimUpdater.run();
-            }
         }
     }
 }

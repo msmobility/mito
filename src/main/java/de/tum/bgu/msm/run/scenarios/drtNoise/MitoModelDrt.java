@@ -2,35 +2,40 @@ package de.tum.bgu.msm.run.scenarios.drtNoise;
 
 import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Geometry;
 
 import java.util.Random;
 
 public class MitoModelDrt {
 
-
     private static final Logger logger = Logger.getLogger(de.tum.bgu.msm.run.scenarios.drtNoise.MitoModelDrt.class);
     private final String scenarioName;
 
     private DataSet dataSet;
+    private Geometry serviceArea;
 
-    private MitoModelDrt(DataSet dataSet, String scenarioName) {
+    private MitoModelDrt(DataSet dataSet, String scenarioName, Geometry serviceArea) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
+        this.serviceArea = serviceArea;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModelDrt standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static MitoModelDrt standAloneModel(String propertiesFile, ImplementationConfig config, Geometry serviceArea) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModelDrt model = new MitoModelDrt(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelDrt model = new MitoModelDrt(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME), serviceArea);
         model.readStandAlone(config);
         return model;
     }
@@ -40,7 +45,16 @@ public class MitoModelDrt {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
         final TravelDemandGenerator.Builder builder = new TravelDemandGenerator.Builder(dataSet);
-        TravelDemandGenerator ttd = ((ModeChoice)builder.getModeChoice()).registerModeChoiceCalculator();
+        final ModeChoice modeChoice = (ModeChoice) builder.getModeChoice();
+        for(Purpose purpose: Purpose.values()) {
+            if(purpose != Purpose.AIRPORT) {
+                modeChoice.registerModeChoiceCalculator(purpose,
+                        new DrtTopNestModeChoiceCalculatorImpl(new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(),
+                                dataSet.getModeChoiceCalibrationData()), serviceArea));
+//                modeChoice.registerModeChoiceCalculator(purpose, new ModeChoiceCalculatorImpl());
+            }
+        }
+        TravelDemandGenerator ttd = builder.build();
         ttd.generateTravelDemand(scenarioName);
         printOutline(startTime);
     }

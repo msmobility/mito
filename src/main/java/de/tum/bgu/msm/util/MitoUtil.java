@@ -3,6 +3,10 @@ package de.tum.bgu.msm.util;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.matsim.core.controler.Controler;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -17,6 +21,9 @@ import java.util.*;
 
 public final class MitoUtil {
 
+    private static final String LOG_FILE_NAME = "siloLog.log";
+    private static final String LOG_WARN_FILE_NAME = "siloWarnLog.log";
+
     private MitoUtil() {
     }
 
@@ -27,6 +34,35 @@ public final class MitoUtil {
     public static void initializeRandomNumber() {
         int seed = Resources.instance.getInt(Properties.RANDOM_SEED);
         rand = new Random(seed);
+    }
+
+    /**
+     * heavily "inspired" by MATSim's solution to this
+     */
+    public static void initLogging(String outputDirectory) {
+
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+
+        org.apache.logging.log4j.core.appender.FileAppender appender =
+                org.apache.logging.log4j.core.appender.FileAppender.newBuilder()
+                        .setName(LOG_FILE_NAME)
+                        .setLayout(Controler.DEFAULTLOG4JLAYOUT)
+                        .withFileName(outputDirectory + LOG_FILE_NAME)
+                        .withAppend(false)
+                        .build();
+        appender.start();
+        config.getRootLogger().addAppender(appender, org.apache.logging.log4j.Level.ALL, null);
+
+        org.apache.logging.log4j.core.appender.FileAppender warnErrorAppender =
+                org.apache.logging.log4j.core.appender.FileAppender.newBuilder()
+                        .setName(LOG_WARN_FILE_NAME)
+                        .setLayout(Controler.DEFAULTLOG4JLAYOUT)
+                        .withFileName(outputDirectory + LOG_WARN_FILE_NAME)
+                        .withAppend(false)
+                        .build();
+        warnErrorAppender.start();
+        config.getRootLogger().addAppender(warnErrorAppender, org.apache.logging.log4j.Level.WARN, null);
     }
 
     public static void initializeRandomNumber(Random randSetting) {

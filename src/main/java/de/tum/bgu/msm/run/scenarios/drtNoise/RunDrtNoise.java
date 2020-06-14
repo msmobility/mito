@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.run.scenarios.drtNoise;
 
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.contrib.drt.analysis.DrtModeAnalysisModule;
 import org.matsim.contrib.drt.optimizer.rebalancing.mincostflow.MinCostFlowRebalancingParams;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.drt.run.DrtControlerCreator;
@@ -11,7 +10,6 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.vis.otfvis.OTFVisConfigGroup;
 
 public class RunDrtNoise {
 
@@ -52,10 +50,6 @@ public class RunDrtNoise {
             stopbased = false;
 
         }
-
-
-
-
 
 
 

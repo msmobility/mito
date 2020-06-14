@@ -11,9 +11,8 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.TransportMode;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
-public class MandatoryBudgetCalculator implements Callable<Void>{
+public class MandatoryBudgetCalculator implements Runnable {
 
     private static final Logger logger = Logger.getLogger(TravelTimeBudgetModule.class);
 
@@ -41,7 +40,7 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
     }
 
     @Override
-    public Void call() {
+    public void run() {
         for (MitoHousehold household : households) {
             double budget = 0;
             for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
@@ -62,7 +61,6 @@ public class MandatoryBudgetCalculator implements Callable<Void>{
                     + defaultBudget + " minutes in the " + purpose + " travel time budgets"
                     + " because no " + mitoOccupationStatus + " was assigned (or occupation zone missing).");
         }
-        return null;
     }
 
     private boolean specifiedByOccupation(MitoTrip trip) {

@@ -6,14 +6,18 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.run.scenarios.drtNoise.DrtTopNestModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.EnumMap;
+
 public class ModeChoiceCalculatorTest {
 
     private ModeChoiceCalculator calculator;
+    private ModeChoiceCalculator drtCalculator;
 
     private final double[] reference = new double[]{
             0.5851514772392093,
@@ -29,6 +33,7 @@ public class ModeChoiceCalculatorTest {
     public void setup() {
         Resources.initializeResources("./test/muc/test.properties");
         calculator = new ModeChoiceCalculatorImpl();
+        drtCalculator = new DrtTopNestModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), null);
     }
 
     @Test
@@ -43,7 +48,7 @@ public class ModeChoiceCalculatorTest {
         trip.setTripOrigin(zone);
         trip.setTripDestination(zone);
 
-        double[] result = calculator.calculateProbabilities(Purpose.HBS, hh, pp, zone, zone, new TravelTimes() {
+        final TravelTimes travelTimes = new TravelTimes() {
             @Override
             public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
                 switch (mode) {
@@ -80,9 +85,22 @@ public class ModeChoiceCalculatorTest {
             public TravelTimes duplicate() {
                 return null;
             }
-        }, 5., 5., 0);
-        for(int i = 0; i < result.length; i++) {
-            Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
+        };
+
+        EnumMap<Mode, Double> resultGc = calculator.calculateGeneralizedCosts(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
+        EnumMap<Mode, Double> resultGc2 = drtCalculator.calculateGeneralizedCosts(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
+
+
+        EnumMap<Mode, Double> resultU = calculator.calculateUtilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
+        EnumMap<Mode, Double> resultU2 = drtCalculator.calculateUtilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
+
+
+        EnumMap<Mode, Double> result = calculator.calculateProbabilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
+        EnumMap<Mode, Double> result2 = drtCalculator.calculateProbabilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
+
+
+        for(int i = 0; i < reference.length; i++) {
+            Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result.get(Mode.valueOf(i)), 0.000001);
         }
 
     }
