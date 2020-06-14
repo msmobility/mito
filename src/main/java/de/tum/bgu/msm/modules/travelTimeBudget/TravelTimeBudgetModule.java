@@ -67,15 +67,16 @@ public class TravelTimeBudgetModule extends Module {
                     household.getTravelTimeBudgetForPurpose(Purpose.HBE);
             discretionaryTTB = Math.max(discretionaryTTB, 0);
 
-            double calcDiscretionaryTTB = 0;
-            for (Purpose purpose : discretionaryPurposes) {
-                calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
-            }
-            for (Purpose purpose : discretionaryPurposes) {
-                double budget = household.getTravelTimeBudgetForPurpose(purpose);
-                if (budget != 0) {
-                    budget = budget * discretionaryTTB / calcDiscretionaryTTB;
-                    household.setTravelTimeBudgetByPurpose(purpose, budget);
+                double calcDiscretionaryTTB = 0;
+                for (Purpose purpose : discretionaryPurposes) {
+                    calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
+                }
+                for (Purpose purpose : discretionaryPurposes) {
+                    double budget = household.getTravelTimeBudgetForPurpose(purpose);
+                    if (budget != 0) {
+                        budget = budget * discretionaryTTB / calcDiscretionaryTTB;
+                        household.setTravelTimeBudgetByPurpose(purpose, budget);
+                    }
                 }
             }
         }
