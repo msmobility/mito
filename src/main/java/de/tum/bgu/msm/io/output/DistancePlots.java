@@ -2,6 +2,7 @@ package de.tum.bgu.msm.io.output;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
+import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -30,7 +31,8 @@ public class DistancePlots {
         new File(directory).mkdirs();
         logger.info("Writing trip length plots to " + directory);
 
-        List<Chart> individualCharts = new ArrayList<>();
+        List<Chart> individualChartsByPurpose = new ArrayList<>();
+        List<Chart> individualChartsByMode = new ArrayList<>();
 
         // Create Chart
         CategoryChart stackedChart = new CategoryChartBuilder().width(1600).height(900).title("Trip Length Frequency Distributions")
@@ -68,13 +70,43 @@ public class DistancePlots {
                 Histogram histogram = new Histogram(distances, 50, 0, 50);
                 stackedChart.addSeries(purpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
                 individualChart.addSeries(purpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
-                individualCharts.add(individualChart);
+                individualChartsByPurpose.add(individualChart);
+            }
+        }
+
+
+        final Map<Mode, List<MitoTrip>> tripsByMode = dataSet.getTrips().values().stream()
+                .filter(trip -> trip.getTripOrigin() != null && trip.getTripDestination() != null)
+                .collect(Collectors.groupingBy(MitoTrip::getTripMode));
+
+        for(Mode mode: Mode.values()) {
+            if(tripsByMode.containsKey(mode)) {
+
+                // Create Chart
+                CategoryChart individualChart = new CategoryChartBuilder().width(800).height(600).title("Trip Length Frequency Distribution - " + mode.name())
+                        .xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
+
+                // Customize Chart
+                individualChart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideE);
+                individualChart.getStyler().setAvailableSpaceFill(1);
+                individualChart.getStyler().setXAxisLabelRotation(90);
+
+                List<Double> distances = new ArrayList<>();
+                for (MitoTrip t : tripsByMode.get(mode)) {
+                    double travelDistance = dataSet.getTravelDistancesAuto()
+                            .getTravelDistance(t.getTripOrigin().getZoneId(), t.getTripDestination().getZoneId());
+                    distances.add(travelDistance);
+                }
+                Histogram histogram = new Histogram(distances, 50, 0, 50);
+                individualChart.addSeries(mode.name(), histogram.getxAxisData(), histogram.getyAxisData());
+                individualChartsByMode.add(individualChart);
             }
         }
 
         try {
             BitmapEncoder.saveBitmap(stackedChart, directory + "/tripLengthsStacked", BitmapEncoder.BitmapFormat.PNG);
-            BitmapEncoder.saveBitmap(individualCharts,(int) (individualCharts.size()/3),3, directory + "/tripLengthsIndividual", BitmapEncoder.BitmapFormat.PNG);
+            BitmapEncoder.saveBitmap(individualChartsByPurpose,(int) (individualChartsByPurpose.size()/3),3, directory + "/tripLengthsIndividualByPurpose", BitmapEncoder.BitmapFormat.PNG);
+            BitmapEncoder.saveBitmap(individualChartsByMode,(int) (individualChartsByMode.size()/3),3, directory + "/tripLengthsIndividualByMode", BitmapEncoder.BitmapFormat.PNG);
 
         } catch (IOException e) {
             e.printStackTrace();
