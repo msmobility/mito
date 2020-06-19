@@ -1,5 +1,7 @@
 package de.tum.bgu.msm.io.output;
 
+import com.google.common.math.DoubleMath;
+import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Mode;
@@ -16,6 +18,7 @@ import org.knowm.xchart.style.Styler;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,15 +38,15 @@ public class DistancePlots {
         List<Chart> individualChartsByMode = new ArrayList<>();
 
         // Create Chart
-        CategoryChart stackedChart = new CategoryChartBuilder().width(1600).height(900).title("Trip Length Frequency Distributions")
+        CategoryChart stackedChartByPurpose = new CategoryChartBuilder().width(1600).height(900).title("Trip Length Frequency Distributions")
                 .xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
 
 
         // Customize Chart
-        stackedChart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideE);
-        stackedChart.getStyler().setAvailableSpaceFill(1);
-        stackedChart.getStyler().setStacked(true);
-        stackedChart.getStyler().setXAxisLabelRotation(90);
+        stackedChartByPurpose.getStyler().setLegendPosition(Styler.LegendPosition.OutsideE);
+        stackedChartByPurpose.getStyler().setAvailableSpaceFill(1);
+        stackedChartByPurpose.getStyler().setStacked(true);
+        stackedChartByPurpose.getStyler().setXAxisLabelRotation(90);
 
         final Map<Purpose, List<MitoTrip>> tripsByPurpose = dataSet.getTrips().values().stream()
                 .filter(trip -> trip.getTripOrigin() != null && trip.getTripDestination() != null)
@@ -53,8 +56,7 @@ public class DistancePlots {
             if(tripsByPurpose.containsKey(purpose)) {
 
                 // Create Chart
-                CategoryChart individualChart = new CategoryChartBuilder().width(800).height(600).title("Trip Length Frequency Distribution - " + purpose.name())
-                        .xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
+                CategoryChart individualChart = new CategoryChartBuilder().width(800).height(600).xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
 
                 // Customize Chart
                 individualChart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideE);
@@ -67,13 +69,25 @@ public class DistancePlots {
                             .getTravelDistance(t.getTripOrigin().getZoneId(), t.getTripDestination().getZoneId());
                     distances.add(travelDistance);
                 }
-                Histogram histogram = new Histogram(distances, 50, 0, 50);
-                stackedChart.addSeries(purpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
+                Histogram histogram = new Histogram(distances, 50, 0, 100);
+                stackedChartByPurpose.addSeries(purpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
                 individualChart.addSeries(purpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
+                double avg = Stats.meanOf(distances);
+                individualChart.setTitle("Trip Length Frequency Distribution - " + purpose.name() + " - Avg: " + avg);
                 individualChartsByPurpose.add(individualChart);
             }
         }
 
+        // Create Chart
+        CategoryChart stackedChartByMode = new CategoryChartBuilder().width(1600).height(900).title("Trip Length Frequency Distributions")
+                .xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
+
+
+        // Customize Chart
+        stackedChartByMode.getStyler().setLegendPosition(Styler.LegendPosition.OutsideE);
+        stackedChartByMode.getStyler().setAvailableSpaceFill(1);
+        stackedChartByMode.getStyler().setStacked(true);
+        stackedChartByMode.getStyler().setXAxisLabelRotation(90);
 
         final Map<Mode, List<MitoTrip>> tripsByMode = dataSet.getTrips().values().stream()
                 .filter(trip -> trip.getTripOrigin() != null && trip.getTripDestination() != null)
@@ -83,8 +97,7 @@ public class DistancePlots {
             if(tripsByMode.containsKey(mode)) {
 
                 // Create Chart
-                CategoryChart individualChart = new CategoryChartBuilder().width(800).height(600).title("Trip Length Frequency Distribution - " + mode.name())
-                        .xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
+                CategoryChart individualChart = new CategoryChartBuilder().width(800).height(600).xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
 
                 // Customize Chart
                 individualChart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideE);
@@ -97,16 +110,43 @@ public class DistancePlots {
                             .getTravelDistance(t.getTripOrigin().getZoneId(), t.getTripDestination().getZoneId());
                     distances.add(travelDistance);
                 }
-                Histogram histogram = new Histogram(distances, 50, 0, 50);
+                Histogram histogram = new Histogram(distances, 50, 0, 100);
+                stackedChartByMode.addSeries(mode.name(), histogram.getxAxisData(), histogram.getyAxisData());
+
                 individualChart.addSeries(mode.name(), histogram.getxAxisData(), histogram.getyAxisData());
+                double avg = Stats.meanOf(distances);
+                individualChart.setTitle("Trip Length Frequency Distribution - " + mode.name() + " - Avg: " + avg);
                 individualChartsByMode.add(individualChart);
             }
         }
 
         try {
-            BitmapEncoder.saveBitmap(stackedChart, directory + "/tripLengthsStacked", BitmapEncoder.BitmapFormat.PNG);
-            BitmapEncoder.saveBitmap(individualChartsByPurpose,(int) (individualChartsByPurpose.size()/3),3, directory + "/tripLengthsIndividualByPurpose", BitmapEncoder.BitmapFormat.PNG);
-            BitmapEncoder.saveBitmap(individualChartsByMode,(int) (individualChartsByMode.size()/3),3, directory + "/tripLengthsIndividualByMode", BitmapEncoder.BitmapFormat.PNG);
+            BitmapEncoder.saveBitmap(stackedChartByPurpose, directory + "/tripLengthsStackedByPurpose", BitmapEncoder.BitmapFormat.PNG);
+            BitmapEncoder.saveBitmap(stackedChartByMode, directory + "/tripLengthsStackedByMode", BitmapEncoder.BitmapFormat.PNG);
+
+            Histogram fakeHistogram = new Histogram(new ArrayList<>(Collections.nCopies(50, 0)), 50, 0, 100);
+            List<Double> fakeXData = fakeHistogram.getxAxisData();
+            List<Double> fakeYData = new ArrayList<>(Collections.nCopies(50, 0.));
+
+            int numberOfRowsPurposes = (int) Math.ceil(individualChartsByPurpose.size() / 3.);
+            int numberOfEmptyChartsPurposes = numberOfRowsPurposes*3-individualChartsByPurpose.size();
+            for(int i = 0; i<numberOfEmptyChartsPurposes;i++){
+                CategoryChart EmptyChart = new CategoryChartBuilder().width(800).height(600).xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
+                EmptyChart.addSeries("NA",fakeXData, fakeYData);
+                EmptyChart.setTitle("Empty Chart");
+                individualChartsByPurpose.add(EmptyChart);
+            }
+            BitmapEncoder.saveBitmap(individualChartsByPurpose, numberOfRowsPurposes, 3, directory + "/tripLengthsIndividualByPurpose", BitmapEncoder.BitmapFormat.PNG);
+
+            int numberOfRowsModes = (int) Math.ceil(individualChartsByMode.size() / 3.);
+            int numberOfEmptyChartsModes = numberOfRowsModes*3-individualChartsByMode.size();
+            for(int i = 0; i<numberOfEmptyChartsModes;i++){
+                CategoryChart EmptyChart = new CategoryChartBuilder().width(800).height(600).xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
+                EmptyChart.addSeries("NA",fakeXData, fakeYData);
+                EmptyChart.setTitle("Empty Chart");
+                individualChartsByMode.add(EmptyChart);
+            }
+            BitmapEncoder.saveBitmap(individualChartsByMode,numberOfRowsModes,3, directory + "/tripLengthsIndividualByMode", BitmapEncoder.BitmapFormat.PNG);
 
         } catch (IOException e) {
             e.printStackTrace();
