@@ -1,9 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.output.SummarizeData;
-import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
-import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
@@ -200,20 +198,26 @@ public final class TravelDemandGenerator {
         travelTimeBudget.run();
 
         logger.info("Running Module: Microscopic Trip Distribution");
+        TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
 
         logger.info("Running time of day choice");
+        TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
         timeOfDayChoice.run();
 
         logger.info("Running trip scaling");
+        TripScaling tripScaling = new TripScaling(dataSet);
         tripScaling.run();
 
+        MatsimPopulationGenerator matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet);
         matsimPopulationGenerator.run();
 
         if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
+            LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
             longDistanceTraffic.run();
         }
 
@@ -225,6 +229,8 @@ public final class TravelDemandGenerator {
             SummarizeData.writeOutTrips(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
+            DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
+            ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {

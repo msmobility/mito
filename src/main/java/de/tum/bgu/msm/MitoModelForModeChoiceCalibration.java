@@ -4,9 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
-import de.tum.bgu.msm.io.output.SummarizeData;
-import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
-import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
@@ -119,6 +117,8 @@ public final class MitoModelForModeChoiceCalibration {
             SummarizeData.writeOutTrips(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
+            ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
+            DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
         printOutline(startTime);
