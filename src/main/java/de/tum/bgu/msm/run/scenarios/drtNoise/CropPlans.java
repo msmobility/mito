@@ -10,7 +10,6 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.*;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkUtils;
-import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.population.io.PopulationReader;
@@ -28,26 +27,27 @@ public class CropPlans {
 
     public static void main(String[] args) {
 
-        final Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("C:\\Users\\Nico\\tum\\moia-msm\\cleverShuttleOperationArea\\cleverShuttle.shp");
+        final Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("D:\\resultStorage\\moia-msm\\cleverShuttleOperationArea\\cleverShuttle.shp");
         final SimpleFeature feature = features.iterator().next();
 
         final Geometry initialGeometry = (Geometry) feature.getDefaultGeometry();
 
         Network fullNetwork = NetworkUtils.createNetwork();
-        new MatsimNetworkReader(fullNetwork).readFile("C:\\Users\\Nico\\tum\\fabilut\\gitproject\\muc\\input\\mito\\trafficAssignment\\pt\\studyNetworkDenseMerged2020.xml.gz");
+        new MatsimNetworkReader(fullNetwork).readFile("C:\\Users\\Nico\\tum\\fabilut\\gitproject\\muc\\input\\mito\\trafficAssignment\\studyNetworkDense.xml");
         // new MatsimNetworkReader(fullNetwork).readFile("C:\\Users\\Nico\\tum\\fabilut\\gitproject\\muc\\input\\mito\\trafficAssignment\\pt\\mergedNetwork2018.xml.gz");
 
 
-        Network croppedNetwork = NetworkUtils.createNetwork();
-        new MatsimNetworkReader(croppedNetwork).readFile("C:\\Users\\Nico\\tum\\moia-msm\\cleverShuttleOperationArea\\croppedDenseNetwork.xml.gz");
+//        Network croppedNetwork = NetworkUtils.createNetwork();
+        Network croppedNetwork = fullNetwork;
+//        new MatsimNetworkReader(croppedNetwork).readFile("D:\\resultStorage\\moia-msm\\cleverShuttleOperationArea\\croppedDenseNetwork.xml.gz");
         //new MatsimNetworkReader(croppedNetwork).readFile("C:\\Users\\Nico\\tum\\moia-msm\\cleverShuttleOperationArea\\croppedCoarse.xml.gz");
 
-        new NetworkCleaner().run(croppedNetwork);
+//        new NetworkCleaner().run(croppedNetwork);
         //new NetworkWriter(croppedNetwork).writeV2("C:\\Users\\Nico\\tum\\moia-msm\\cleverShuttleOperationArea\\croppedDenseNetwork.xml.gz");
 
 
         MutableScenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
-        new PopulationReader(scenario).readFile("C:\\Users\\Nico\\tum\\fabilut\\gitproject\\muc\\scenOutput\\defaultMito100p\\2011\\trafficAssignment\\mito_assignment.output_plans.xml.gz");
+        new PopulationReader(scenario).readFile("D:\\resultStorage\\moia-msm\\cleverShuttleOperationArea\\iterateFull\\output_plans.xml.gz");
         //new PopulationReader(scenario).readFile("D:\\resultStorage\\silo\\defaultMitoCoarse\\2011\\trafficAssignment\\mito_assignment.output_plans.xml.gz");
 
         Population croppedPopulation = PopulationUtils.createPopulation(ConfigUtils.createConfig());
@@ -162,7 +162,7 @@ public class CropPlans {
                 croppedPopulation.addPerson(personCopy);
             }
         }
-        new PopulationWriter(croppedPopulation).write("C:\\Users\\Nico\\tum\\moia-msm\\cleverShuttleOperationArea\\croppedPopulation.xml.gz");
+        new PopulationWriter(croppedPopulation).write("D:\\resultStorage\\moia-msm\\realisticModeChoice\\outputCar\\croppedPopulationNew.xml.gz");
     }
 
     private static boolean isInArea(PreparedGeometry geometry, Activity activity, Network network) {

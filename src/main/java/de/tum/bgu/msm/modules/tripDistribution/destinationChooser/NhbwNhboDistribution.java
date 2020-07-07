@@ -22,7 +22,7 @@ import static de.tum.bgu.msm.data.Purpose.*;
  */
 public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<Void> {
 
-    private final static double VARIANCE_DOUBLED = 10 * 2;
+    private final static double VARIANCE_DOUBLED = 500 * 2;
     private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);

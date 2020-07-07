@@ -40,8 +40,6 @@ public final class MitoModel {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
-        MitoUtil.initLogging(Resources.instance.getBaseDirectory()
-                + "scenOutput/"+ scenarioName + "/" + dataSet.getYear());
     }
 
     public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
