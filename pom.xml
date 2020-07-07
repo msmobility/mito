@@ -76,7 +76,6 @@
                 <configuration>
                     <source>11</source>
                     <target>11</target>
-                    <release>11</release>
                     <showWarnings>false</showWarnings>
                     <showDeprecation>false</showDeprecation>
                     <encoding>UTF-8</encoding>
