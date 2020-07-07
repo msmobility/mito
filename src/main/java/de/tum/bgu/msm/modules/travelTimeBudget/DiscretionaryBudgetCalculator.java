@@ -4,9 +4,8 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
-public class DiscretionaryBudgetCalculator implements Callable<Void> {
+public class DiscretionaryBudgetCalculator implements Runnable {
 
     private final Purpose purpose;
     private final Collection<MitoHousehold> households;
@@ -23,13 +22,11 @@ public class DiscretionaryBudgetCalculator implements Callable<Void> {
         travelTimeCalc = travelTimeBudgetCalculator;
     }
 
-
-        @Override
-    public Void call() {
+    @Override
+    public void run() {
         households.forEach(hh -> {
             double budget = travelTimeCalc.calculateBudget(hh, purpose.name());
             hh.setTravelTimeBudgetByPurpose(purpose, budget);
         });
-        return null;
     }
 }

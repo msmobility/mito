@@ -10,6 +10,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.io.PrintWriter;
@@ -31,9 +32,14 @@ public class SummarizeData {
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh.toAbsolutePath().toString(), false);
         pwh.println("id,zone,homeX,homeY,hhSize,autos,trips,workTrips");
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
+            final MitoZone homeZone = hh.getHomeZone();
+            if(homeZone == null) {
+                LOGGER.warn("Skipping household " + hh.getId() + " as no home zone is defined");
+                break;
+            }
             pwh.print(hh.getId());
             pwh.print(",");
-            pwh.print(hh.getHomeZone());
+            pwh.print(homeZone);
             pwh.print(",");
             pwh.print(hh.getHomeLocation().x);
             pwh.print(",");
@@ -100,7 +106,7 @@ public class SummarizeData {
             } else{
                 if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         origin != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     pwh.print(coordinate.getX());
                     pwh.print(",");
                     pwh.print(coordinate.getY());
@@ -128,7 +134,7 @@ public class SummarizeData {
             }else{
                 if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         destination != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     pwh.print(coordinate.getX());
                     pwh.print(",");
                     pwh.print(coordinate.getY());
@@ -246,5 +252,12 @@ public class SummarizeData {
         for(Purpose purpose: Purpose.values()) {
             writeCharts(dataSet, purpose, scenarioName);
         }
+    }
+
+    public static void writeMatsimPlans(DataSet dataSet, String scenarioName) {
+        LOGGER.info("  Writing matsim plans file");
+
+        String outputSubDirectory = Resources.instance.getBaseDirectory() + "/scenOutput/" + scenarioName + "/"+ dataSet.getYear()+"/";
+        new PopulationWriter(dataSet.getPopulation()).write(outputSubDirectory + "matsimPlans.xml.gz");
     }
 }

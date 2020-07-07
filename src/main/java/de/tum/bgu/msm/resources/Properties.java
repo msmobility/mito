@@ -2,6 +2,8 @@ package de.tum.bgu.msm.resources;
 
 public class Properties {
 
+    public static final String WRITE_MATSIM_POPULATION = "write.matsim.population";
+
     static final String ZONES = "zonal.data.file";
     static final String ZONE_SHAPEFILE = "zone.shapefile";
     static final String REDUCTION_NEAR_BORDER_DAMPERS = "reduction.near.outer.border";

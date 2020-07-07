@@ -1,21 +1,20 @@
 package de.tum.bgu.msm.modules.modeChoice.calculators;
 
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
+
+import java.util.EnumMap;
 
 public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
 
 ///////////////////////////////////////////////// AIRPORT Mode Choice /////////////////////////////////////////////////////
 
     @Override
-    public double[] calculateProbabilities(Purpose purpose, MitoHousehold hh, MitoPerson person,
-                                           MitoZone originZone, MitoZone destinationZone,
-                                           TravelTimes travelTimes, double travelDistanceAuto,
-                                           double travelDistanceNMT, double peakHour) {
+    public EnumMap<Mode, Double> calculateProbabilities(Purpose purpose, MitoHousehold hh, MitoPerson person,
+                                                        MitoZone originZone, MitoZone destinationZone,
+                                                        TravelTimes travelTimes, double travelDistanceAuto,
+                                                        double travelDistanceNMT, double peakHour) {
         if(purpose != Purpose.AIRPORT) {
             throw  new IllegalArgumentException("Airport mode choice calculator can only be used for airport purposes.");
         }
@@ -24,23 +23,32 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
         //Auto driver, Auto passenger, bicyle, bus, train, tram or metro, walk
 
 
-        double[] utilities = calculateUtilities(purpose, hh,
+        EnumMap<Mode, Double> utilities = calculateUtilities(purpose, hh,
                 person, originZone, destinationZone,
                 travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour);
 
-        double sum_u = utilities[0] + utilities[1] + utilities[3] + utilities[4];
+        double sum_u = utilities.get(Mode.autoDriver) + utilities.get(Mode.autoPassenger)
+                + utilities.get(Mode.bus) + utilities.get(Mode.train);
 
 
-        double probabilityAutoD = utilities[0] / sum_u;
-        double probabilityAutoP = utilities[1] / sum_u;
-        double probabilityBus = utilities[3] / sum_u;
-        double probabilityTrain = utilities[4] / sum_u;
+        double probabilityAutoD = utilities.get(Mode.autoDriver) / sum_u;
+        double probabilityAutoP = utilities.get(Mode.autoPassenger) / sum_u;
+        double probabilityBus = utilities.get(Mode.bus) / sum_u;
+        double probabilityTrain = utilities.get(Mode.train) / sum_u;
 
-        return new double[]{probabilityAutoD, probabilityAutoP, 0., probabilityBus, probabilityTrain, 0., 0.};
+        EnumMap<Mode, Double> probabilities = new EnumMap<>(Mode.class);
+        probabilities.put(Mode.autoDriver, probabilityAutoD);
+        probabilities.put(Mode.autoPassenger, probabilityAutoP);
+        probabilities.put(Mode.bus, probabilityBus);
+        probabilities.put(Mode.train, probabilityTrain);
+        probabilities.put(Mode.walk, 0.);
+        probabilities.put(Mode.bicycle, 0.);
+        probabilities.put(Mode.tramOrMetro, 0.);
+        return probabilities;
     }
 
     @Override
-    public double[] calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
 
         if(purpose != Purpose.AIRPORT) {
             throw  new IllegalArgumentException("Airport mode choice calculator can only be used for airport purposes.");
@@ -82,11 +90,22 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
                 exp_distance_train * Math.exp(beta_distance * travelDistanceAuto);
 
         //Auto driver, Auto passenger, bicyle, bus, train, tram or metro, walk
-        return new double[]{Math.exp(u_autoDriver) + Math.exp(u_autoOther), Math.exp(u_autoPassenger), 0. , Math.exp(u_bus), Math.exp(u_train),  0., 0.};
+
+        //TODO: returned Airport utilities are actually exponentiated utilities
+        EnumMap<Mode, Double> utilities = new EnumMap<>(Mode.class);
+        utilities.put(Mode.autoDriver, Math.exp(u_autoDriver) + Math.exp(u_autoOther));
+        utilities.put(Mode.autoPassenger, Math.exp(u_autoPassenger));
+        utilities.put(Mode.bicycle, 0.);
+        utilities.put(Mode.bus, Math.exp(u_bus));
+        utilities.put(Mode.train, Math.exp(u_train));
+        utilities.put(Mode.tramOrMetro, 0.);
+        utilities.put(Mode.walk, 0.);
+
+        return utilities;
     }
 
     @Override
-    public double[] calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         throw new RuntimeException("Not implemented!");
     }
 }

@@ -85,10 +85,9 @@ public class AirportTripGeneration {
     }
 
     private double calculateLogsumForThisZone(MitoZone origin, MitoZone destination, TravelTimes travelTimes, double travelDistance, double peakHour) {
-        double[] utilities = airportModeChoiceCalculator.calculateUtilities(Purpose.AIRPORT, null
+        EnumMap<Mode, Double> utilities = airportModeChoiceCalculator.calculateUtilities(Purpose.AIRPORT, null
                 , null, origin, destination, travelTimes, travelDistance, -1, peakHour);
-
-        double sum = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4];
+        double sum = utilities.values().stream().mapToDouble(d -> d).sum();
         return Math.log(sum);
     }
 

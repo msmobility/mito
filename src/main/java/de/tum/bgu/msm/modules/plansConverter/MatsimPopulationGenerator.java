@@ -63,7 +63,8 @@ public final class MatsimPopulationGenerator extends Module {
                     if(trip.getTripOrigin() instanceof MicroLocation) {
                         originCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripOrigin()).getCoordinate());
                     } else {
-                        originCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                        originCoord =
+                                CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     }
 
                     Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, originCoord);
@@ -78,7 +79,7 @@ public final class MatsimPopulationGenerator extends Module {
                     if(trip.getTripDestination() instanceof MicroLocation) {
                         destinationCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripDestination()).getCoordinate());
                     } else {
-                        destinationCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                        destinationCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     }
                     Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoord);
 

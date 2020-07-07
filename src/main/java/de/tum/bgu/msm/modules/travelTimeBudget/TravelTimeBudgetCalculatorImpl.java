@@ -1,10 +1,14 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
+import de.tum.bgu.msm.data.AreaTypes;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
+import org.apache.log4j.Logger;
 
 class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
+
+    private final static Logger logger = Logger.getLogger(TravelTimeBudgetCalculatorImpl.class);
 
     @Override
     public double calculateBudget(MitoHousehold household, String purpose) {
@@ -42,8 +46,13 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
         double economicStatusParam;
         int economicStatus = household.getEconomicStatus();
         double area;
-        int areaType = household.getHomeZone().getAreaTypeSG().code();
-        if (purpose == "Total") {
+        AreaTypes.SGType areaType = null;
+        if(household.getHomeZone() != null) {
+            areaType = household.getHomeZone().getAreaTypeSG();
+        }
+
+
+        if ("Total".equals(purpose)) {
             intercept = 4.3818;
             youngAdultsParam = 0.051;
             carsParam = -0.0125;
@@ -78,12 +87,19 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 economicStatusParam = 0;
             }
 
-            if (areaType == 20) {
+
+            if (areaType == AreaTypes.SGType.MEDIUM_SIZED_CITY) {
                 area = -0.0878;
-            } else if (areaType == 30) {
+            } else if (areaType ==  AreaTypes.SGType.TOWN) {
                 area = -0.0832;
-            } else if (areaType == 40) {
+            } else if (areaType ==  AreaTypes.SGType.RURAL) {
                 area = -0.1061;
+            } else if (areaType == null) {
+                logger.warn("Unknown area type of household "
+                        + household.getId()
+                        + "'s homezone. Budget estimation might be wrong. " +
+                        "(Check if household has dwelling)");
+                area = 0;
             } else {
                 area = 0;
             }
@@ -122,12 +138,18 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 economicStatusParam = 0;
             }
 
-            if (areaType == 20) {
+            if (areaType == AreaTypes.SGType.MEDIUM_SIZED_CITY) {
                 area = -0.1474;
-            } else if (areaType == 30) {
+            } else if (areaType == AreaTypes.SGType.TOWN) {
                 area = -0.1594;
-            } else if (areaType == 40) {
+            } else if (areaType == AreaTypes.SGType.RURAL) {
                 area = -0.1133;
+            } else if (areaType == null) {
+                logger.warn("Unknown area type of household "
+                        + household.getId()
+                        + "'s homezone. Budget estimation might be wrong. " +
+                        "(Check if household has dwelling)");
+                area = 0;
             } else {
                 area = 0;
             }
@@ -163,10 +185,16 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 economicStatusParam = 0;
             }
 
-            if (areaType == 30) {
+            if (areaType == AreaTypes.SGType.TOWN) {
                 area = -0.136;
-            } else if (areaType == 40) {
+            } else if (areaType == AreaTypes.SGType.RURAL) {
                 area = 0.046;
+            } else if (areaType == null) {
+                logger.warn("Unknown area type of household "
+                        + household.getId()
+                        + "'s homezone. Budget estimation might be wrong. " +
+                        "(Check if household has dwelling)");
+                area = 0;
             } else {
                 area = 0;
             }
@@ -242,10 +270,16 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 economicStatusParam = 0;
             }
 
-            if (areaType == 20) {
+            if (areaType == AreaTypes.SGType.MEDIUM_SIZED_CITY) {
                 area = -0.05425;
-            } else if (areaType == 40) {
+            } else if (areaType == AreaTypes.SGType.RURAL) {
                 area = -0.13383;
+            } else if (areaType == null) {
+                logger.warn("Unknown area type of household "
+                        + household.getId()
+                        + "'s homezone. Budget estimation might be wrong. " +
+                        "(Check if household has dwelling)");
+                area = 0;
             } else {
                 area = 0;
             }

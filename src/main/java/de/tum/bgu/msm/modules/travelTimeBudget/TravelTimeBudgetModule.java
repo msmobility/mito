@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Runs calculation of travel time budget for the Microsimulation Transport Orchestrator (MITO)
@@ -38,21 +38,24 @@ public class TravelTimeBudgetModule extends Module {
 
 
     private void calculateTravelTimeBudgets() {
-        logger.info("  Started microscopic travel time budget calculation.");
+        logger.info("Started microscopic travel time budget calculation.");
         final ExecutorService service = Executors.newFixedThreadPool(Purpose.values().length);
-        List<Callable<Void>> tasks = new ArrayList<>();
+        List<Future<?>> results = new ArrayList<>();
         for (Purpose purpose : discretionaryPurposes) {
-            tasks.add(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values()));
+            results.add(service.submit(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values())));
         }
-        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes(), dataSet.getPeakHour()));
-        tasks.add(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()));
-        try {
-            service.invokeAll(tasks);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            service.shutdownNow();
-        }
+        results.add(service.submit(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes(), dataSet.getPeakHour())));
+        results.add(service.submit((new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()))));
+        service.shutdown();
+        results.forEach(r -> {
+            try {
+                r.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                service.shutdownNow();
+            }
+        });
 
         logger.info("  Adjusting travel time budgets.");
         adjustDiscretionaryPurposeBudgets();
@@ -61,22 +64,27 @@ public class TravelTimeBudgetModule extends Module {
     }
 
     private void adjustDiscretionaryPurposeBudgets() {
-        for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            double totalTravelTimeBudget = travelTimeCalc.calculateBudget(household, "Total");
-            double discretionaryTTB = totalTravelTimeBudget - household.getTravelTimeBudgetForPurpose(Purpose.HBW) -
-                    household.getTravelTimeBudgetForPurpose(Purpose.HBE);
-            discretionaryTTB = Math.max(discretionaryTTB, 0);
 
-            double calcDiscretionaryTTB = 0;
-            for (Purpose purpose : discretionaryPurposes) {
-                calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
-            }
-            for (Purpose purpose : discretionaryPurposes) {
-                double budget = household.getTravelTimeBudgetForPurpose(purpose);
-                if (budget != 0) {
-                    budget = budget * discretionaryTTB / calcDiscretionaryTTB;
-                    household.setTravelTimeBudgetByPurpose(purpose, budget);
+        for (MitoHousehold household : dataSet.getHouseholds().values()) {
+            try {
+                double totalTravelTimeBudget = travelTimeCalc.calculateBudget(household, "Total");
+                double discretionaryTTB = totalTravelTimeBudget - household.getTravelTimeBudgetForPurpose(Purpose.HBW) -
+                        household.getTravelTimeBudgetForPurpose(Purpose.HBE);
+                discretionaryTTB = Math.max(discretionaryTTB, 0);
+
+                double calcDiscretionaryTTB = 0;
+                for (Purpose purpose : discretionaryPurposes) {
+                    calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
                 }
+                for (Purpose purpose : discretionaryPurposes) {
+                    double budget = household.getTravelTimeBudgetForPurpose(purpose);
+                    if (budget != 0) {
+                        budget = budget * discretionaryTTB / calcDiscretionaryTTB;
+                        household.setTravelTimeBudgetByPurpose(purpose, budget);
+                    }
+                }
+            } catch (NullPointerException e) {
+                System.out.println("upps");
             }
         }
     }
