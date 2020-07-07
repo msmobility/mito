@@ -6,7 +6,6 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.run.scenarios.drtNoise.DrtTopNestModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +32,6 @@ public class ModeChoiceCalculatorTest {
     public void setup() {
         Resources.initializeResources("./test/muc/test.properties");
         calculator = new ModeChoiceCalculatorImpl();
-        drtCalculator = new DrtTopNestModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), null);
     }
 
     @Test

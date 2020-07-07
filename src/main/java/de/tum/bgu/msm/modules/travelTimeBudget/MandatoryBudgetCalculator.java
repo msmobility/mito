@@ -65,6 +65,7 @@ public class MandatoryBudgetCalculator implements Runnable {
 
     private boolean specifiedByOccupation(MitoTrip trip) {
         return trip.getPerson().getMitoOccupationStatus().equals(mitoOccupationStatus)
+                && trip.getPerson().getOccupation() != null
                 && trip.getPerson().getOccupation().getOccupationZone() != null;
     }
 }
