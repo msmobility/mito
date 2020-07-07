@@ -233,6 +233,6 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <matsimVersion>12.0-SNAPSHOT</matsimVersion>
+        <matsimVersion>12.0</matsimVersion>
     </properties>
 </project>

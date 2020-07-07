@@ -198,26 +198,20 @@ public final class TravelDemandGenerator {
         travelTimeBudget.run();
 
         logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet);
         distribution.run();
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        ModeChoice modeChoice = new ModeChoice(dataSet);
         modeChoice.run();
 
         logger.info("Running time of day choice");
-        TimeOfDayChoice timeOfDayChoice = new TimeOfDayChoice(dataSet);
         timeOfDayChoice.run();
 
         logger.info("Running trip scaling");
-        TripScaling tripScaling = new TripScaling(dataSet);
         tripScaling.run();
 
-        MatsimPopulationGenerator matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet);
         matsimPopulationGenerator.run();
 
         if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
-            LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
             longDistanceTraffic.run();
         }
 
