@@ -85,17 +85,7 @@ public class ModeChoiceCalculatorTest {
             }
         };
 
-        EnumMap<Mode, Double> resultGc = calculator.calculateGeneralizedCosts(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
-        EnumMap<Mode, Double> resultGc2 = drtCalculator.calculateGeneralizedCosts(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
-
-
-        EnumMap<Mode, Double> resultU = calculator.calculateUtilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
-        EnumMap<Mode, Double> resultU2 = drtCalculator.calculateUtilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
-
-
         EnumMap<Mode, Double> result = calculator.calculateProbabilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
-        EnumMap<Mode, Double> result2 = drtCalculator.calculateProbabilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
-
 
         for(int i = 0; i < reference.length; i++) {
             Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result.get(Mode.valueOf(i)), 0.000001);
