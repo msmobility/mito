@@ -43,6 +43,8 @@ public class RawTripGenerator {
     }
 
     private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {
+        logger.info("Building R data frame");
+        dataSet.buildRdataFrame();
         final ConcurrentExecutor<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
                 ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();

@@ -7,8 +7,11 @@ import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
 import org.matsim.api.core.v01.population.Population;
+import org.renjin.primitives.vector.RowNamesVector;
+import org.renjin.sexp.*;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class DataSet {
 
@@ -186,6 +189,22 @@ public class DataSet {
 
     }
 
+    public static int countMembersByAttribute(MitoHousehold household,int minAge,int maxAge) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getAge() >= minAge & person.getAge() <= maxAge).count();
+    }
+
+    public static int countMembersByAttribute(MitoHousehold household,int minAge,int maxAge, MitoOccupationStatus occupation) {
+        return (int) household.getPersons().values().stream().filter(person ->
+                person.getAge() >= minAge & person.getAge() <= maxAge &
+                        person.getMitoOccupationStatus().equals(occupation)).count();
+    }
+
+    public static int countMembersByFilter(MitoHousehold household, Predicate<MitoPerson> filter) {
+        return (int) household.getPersons().values().stream().filter(filter).count();
+    }
+
+
     public static int getLicenseHoldersForHousehold(MitoHousehold household) {
         return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
     }
@@ -241,6 +260,226 @@ public class DataSet {
     public ModeChoiceCalibrationData getModeChoiceCalibrationData() {
         return modeChoiceCalibrationData;
     }
+
+    private int determineAreaType(MitoHousehold hh) {
+        int areaType = -1;
+        if (hh.getHomeZone() != null) {
+            areaType = hh.getHomeZone().getAreaTypeSG().code() / 10;
+        } else {
+            System.out.println("Home MitoZone for Household  " + hh.getId() + " is null!");
+        }
+        return areaType;
+    }
+
+    private ListVector RDataFrame;
+    public ListVector getRdataFrame() {return this.RDataFrame; }
+
+    // Method to create R data frame
+    public void buildRdataFrame() {
+
+        //Create Builders for each Variable
+        IntArrayVector.Builder hhId = new IntArrayVector.Builder();
+
+        IntArrayVector.Builder hhSize = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize1 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize2 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize3 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize4 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize5 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize345 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize45 = new IntArrayVector.Builder();
+
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBW = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBE = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBS = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBR = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBO = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetNHBW = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO = new DoubleArrayVector.Builder();
+
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBO_Size1 = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBO_Size2 = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetHBO_Size345 = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO_Size1 = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO_Size2 = new DoubleArrayVector.Builder();
+        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO_Size345 = new DoubleArrayVector.Builder();
+
+        IntArrayVector.Builder hhPersons0to6 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons6to17 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons18to29_worker = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons18to29_student = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons18to29_unemployed = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons30to64_worker = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons30to64_student = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons30to64_unemployed = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons65up = new IntArrayVector.Builder();
+
+        IntArrayVector.Builder hhPersonsFemale = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersonsWithMobilityRestriction = new IntArrayVector.Builder();
+
+        IntArrayVector.Builder hhEconomicStatus = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhEconomicStatus2 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhEconomicStatus3 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhEconomicStatus4 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhEconomicStatus5 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhEconomicStatus45 = new IntArrayVector.Builder();
+
+        IntArrayVector.Builder hhAutos = new IntArrayVector.Builder();
+        DoubleArrayVector.Builder hhPropAutos = new DoubleArrayVector.Builder();
+
+        IntArrayVector.Builder hhRegionType = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhRegionType2 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhRegionType3 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhRegionType4 = new IntArrayVector.Builder();
+
+        // Loop through dataSet and assign values
+        final Iterator<MitoHousehold> iterator = this.getHouseholds().values().iterator();
+        for (; iterator.hasNext(); ) {
+            MitoHousehold hh = iterator.next();
+
+            hhId.add(hh.getId());
+            int householdSize = hh.getHhSize();
+            hhSize.add(householdSize);
+            hhSize1.add(householdSize == 1 ? 1 : 0);
+            hhSize2.add(householdSize == 2 ? 1 : 0);
+            hhSize3.add(householdSize == 3 ? 1 : 0);
+            hhSize4.add(householdSize == 4 ? 1 : 0);
+            hhSize5.add(householdSize >= 5 ? 1 : 0);
+            hhSize345.add(householdSize >= 3 ? 1 : 0);
+            hhSize45.add(householdSize >= 4 ? 1 : 0);
+
+            // todo: include predicted TTBs (once TTB is moved before TripGen). The following numbers are just averages.
+            hhTravelTimeBudgetHBW.add(26);
+            hhTravelTimeBudgetHBE.add(7);
+            hhTravelTimeBudgetHBS.add(14);
+            hhTravelTimeBudgetHBR.add(31);
+            hhTravelTimeBudgetHBO.add(30);
+            hhTravelTimeBudgetNHBW.add(6);
+            hhTravelTimeBudgetNHBO.add(23);
+
+            hhTravelTimeBudgetHBO_Size1.add(30);
+            hhTravelTimeBudgetHBO_Size2.add(30);
+            hhTravelTimeBudgetHBO_Size345.add(30);
+            hhTravelTimeBudgetNHBO_Size1.add(23);
+            hhTravelTimeBudgetNHBO_Size2.add(23);
+            hhTravelTimeBudgetNHBO_Size345.add(23);
+
+            hhPersons0to6.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() < 6));
+            hhPersons6to17.add(DataSet.countMembersByFilter(hh,  mitoPerson ->
+                    mitoPerson.getAge() >= 6 & mitoPerson.getAge() <= 17));
+            hhPersons18to29_worker.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 18 & mitoPerson.getAge() <= 29 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.WORKER)));
+            hhPersons18to29_student.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 18 & mitoPerson.getAge() <= 29 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)));
+            hhPersons18to29_unemployed.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 18 & mitoPerson.getAge() <= 29 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)));
+            hhPersons30to64_worker.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 30 & mitoPerson.getAge() <= 64 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.WORKER)));
+            hhPersons30to64_student.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 30 & mitoPerson.getAge() <= 64 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)));
+            hhPersons30to64_unemployed.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 30 & mitoPerson.getAge() <= 64 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)));
+            hhPersons65up.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 65));
+
+
+            hhPersonsFemale.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getMitoGender().equals(MitoGender.FEMALE)));
+            hhPersonsWithMobilityRestriction.add(0); //todo: include actual disability status (currently 0)
+
+            int economicStatus = hh.getEconomicStatus();
+            hhEconomicStatus.add(economicStatus);
+            hhEconomicStatus2.add(economicStatus == 2 ? 1 : 0);
+            hhEconomicStatus3.add(economicStatus == 3 ? 1 : 0);
+            hhEconomicStatus4.add(economicStatus == 4 ? 1 : 0);
+            hhEconomicStatus5.add(economicStatus == 5 ? 1 : 0);
+            hhEconomicStatus45.add(economicStatus >= 4 ? 1 : 0);
+
+            hhAutos.add(hh.getAutos());
+            hhPropAutos.add(Math.min(1.0,((double) hh.getAutos() / DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 15))));
+
+            int hhAreaType = determineAreaType(hh);
+            hhRegionType.add(hhAreaType);
+            hhRegionType2.add(hhAreaType == 2 ? 1 : 0);
+            hhRegionType3.add(hhAreaType == 3 ? 1 : 0);
+            hhRegionType4.add(hhAreaType == 4 ? 1 : 0);
+        }
+
+        // Add all vectors to a R data frame
+        ListVector.NamedBuilder RModelDataBuilder = new ListVector.NamedBuilder();
+        RModelDataBuilder.setAttribute(Symbols.CLASS, StringVector.valueOf("data.frame"));
+        RModelDataBuilder.setAttribute(Symbols.ROW_NAMES, new RowNamesVector(this.getHouseholds().size()));
+        RModelDataBuilder.add("hh.id",hhId.build());
+        RModelDataBuilder.add("hh.size",hhSize.build());
+        RModelDataBuilder.add("hh.size.1",hhSize1.build());
+        RModelDataBuilder.add("hh.size.2",hhSize2.build());
+        RModelDataBuilder.add("hh.size.3",hhSize3.build());
+        RModelDataBuilder.add("hh.size.4",hhSize4.build());
+        RModelDataBuilder.add("hh.size.5",hhSize5.build());
+        RModelDataBuilder.add("hh.size.345",hhSize345.build());
+        RModelDataBuilder.add("hh.size.45",hhSize45.build());
+
+        RModelDataBuilder.add("hh.TTB.HBW",hhTravelTimeBudgetHBW.build());
+        RModelDataBuilder.add("hh.TTB.HBE",hhTravelTimeBudgetHBE.build());
+        RModelDataBuilder.add("hh.TTB.HBS",hhTravelTimeBudgetHBS.build());
+        RModelDataBuilder.add("hh.TTB.HBR",hhTravelTimeBudgetHBR.build());
+        RModelDataBuilder.add("hh.TTB.HBO",hhTravelTimeBudgetHBO.build());
+        RModelDataBuilder.add("hh.TTB.NHBW",hhTravelTimeBudgetNHBW.build());
+        RModelDataBuilder.add("hh.TTB.NHBO",hhTravelTimeBudgetNHBO.build());
+
+        RModelDataBuilder.add("hh.TTB.HBO.size.1",hhTravelTimeBudgetHBO_Size1.build());
+        RModelDataBuilder.add("hh.TTB.HBO.size.2",hhTravelTimeBudgetHBO_Size2.build());
+        RModelDataBuilder.add("hh.TTB.HBO.size.345",hhTravelTimeBudgetHBO_Size345.build());
+
+        RModelDataBuilder.add("hh.TTB.NHBO.size.1",hhTravelTimeBudgetNHBO_Size1.build());
+        RModelDataBuilder.add("hh.TTB.NHBO.size.2",hhTravelTimeBudgetNHBO_Size2.build());
+        RModelDataBuilder.add("hh.TTB.NHBO.size.345",hhTravelTimeBudgetNHBO_Size345.build());
+
+        RModelDataBuilder.add("hh.pers_under6",hhPersons0to6.build());
+        RModelDataBuilder.add("hh.pers_6to17",hhPersons6to17.build());
+        RModelDataBuilder.add("hh.pers_18to29_w",hhPersons18to29_worker.build());
+        RModelDataBuilder.add("hh.pers_18to29_s",hhPersons18to29_student.build());
+        RModelDataBuilder.add("hh.pers_18to29_u",hhPersons18to29_unemployed.build());
+        RModelDataBuilder.add("hh.pers_30to64_w",hhPersons30to64_worker.build());
+        RModelDataBuilder.add("hh.pers_30to64_s",hhPersons30to64_student.build());
+        RModelDataBuilder.add("hh.pers_30to64_u",hhPersons30to64_unemployed.build());
+        RModelDataBuilder.add("hh.pers_65up",hhPersons65up.build());
+
+        RModelDataBuilder.add("hh.pers_female",hhPersonsFemale.build());
+        RModelDataBuilder.add("hh.pers_mobility_restriction",hhPersonsWithMobilityRestriction.build());
+
+        RModelDataBuilder.add("hh.economic_status",hhEconomicStatus.build());
+        RModelDataBuilder.add("hh.economic_status.2",hhEconomicStatus2.build());
+        RModelDataBuilder.add("hh.economic_status.3",hhEconomicStatus3.build());
+        RModelDataBuilder.add("hh.economic_status.4",hhEconomicStatus4.build());
+        RModelDataBuilder.add("hh.economic_status.5",hhEconomicStatus5.build());
+
+        RModelDataBuilder.add("hh.autos",hhAutos.build());
+        RModelDataBuilder.add("hh.prop_autos",hhPropAutos.build());
+
+        RModelDataBuilder.add("hh.BBSR",hhRegionType.build());
+        RModelDataBuilder.add("hh.BBSR.2",hhRegionType2.build());
+        RModelDataBuilder.add("hh.BBSR.3",hhRegionType3.build());
+        RModelDataBuilder.add("hh.BBSR.4",hhRegionType4.build());
+
+        this.RDataFrame = RModelDataBuilder.build();
+
+    }
+
+
+
+
+
+
+
 
 
 
