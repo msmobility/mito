@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class NetworkAnalyser {
     private static final Network network = NetworkUtils.createNetwork();
     private static final ArrayList<Link> questionableLinks = new ArrayList<>();
-    private static double LENGTH_THRESHOLD = 10000.0;
-    private static int LANES_THRESHOLD = 4;
+    private static final double LENGTH_THRESHOLD = 10000.0;
+    private static final  int LANES_THRESHOLD = 4;
 
 
     private static final String CSV_SEPARATOR = "\t";
