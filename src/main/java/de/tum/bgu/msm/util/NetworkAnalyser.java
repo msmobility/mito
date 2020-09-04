@@ -5,7 +5,6 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -13,6 +12,9 @@ import java.util.ArrayList;
 public class NetworkAnalyser {
     private static final Network network = NetworkUtils.createNetwork();
     private static final ArrayList<Link> questionableLinks = new ArrayList<>();
+    private static double LENGTH_THRESHOLD = 10000.0;
+    private static int LANES_THRESHOLD = 4;
+
 
     private static final String CSV_SEPARATOR = "\t";
     private static final String QUESTIONABLE_LINKS_FILE_NAME = "questionableLinks.csv";
@@ -91,9 +93,9 @@ public class NetworkAnalyser {
         // First argument contains the network file
         readNetworkFile(args[0]);
         logger.info("Checking links' length");
-        checkLength(10000);
+        checkLength(LENGTH_THRESHOLD);
         logger.info("Checking number of lanes");
-        checkLanes(4);
+        checkLanes(LANES_THRESHOLD);
         logger.info("Writing results to .csv");
         // Second argument contains the output folder
         writeToCsv(args[1] + QUESTIONABLE_LINKS_FILE_NAME);
