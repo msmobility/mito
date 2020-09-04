@@ -7,6 +7,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class NetworkAnalyser {
@@ -29,7 +30,8 @@ public class NetworkAnalyser {
         // Check length of each lane, if less than zero or more than threshold the link needs to be checked 
         for (Link link : network.getLinks().values()) {
             if (link.getLength() < 0 || link.getLength() > threshold) {
-                questionableLinks.add(link);
+                if (!questionableLinks.contains(link))
+                    questionableLinks.add(link);
             }
         }
     }
@@ -42,7 +44,8 @@ public class NetworkAnalyser {
                 if (Math.abs(nextLink.getNumberOfLanes() - link.getNumberOfLanes()) > threshold) {
                     for (Link nextToNextLink : nextLink.getToNode().getOutLinks().values()) {
                         if (Math.abs(nextLink.getNumberOfLanes() - nextToNextLink.getNumberOfLanes()) > threshold) {
-                            questionableLinks.add(nextLink);
+                            if (!questionableLinks.contains(nextLink))
+                                questionableLinks.add(nextLink);
                         }
                     }
                 }
@@ -52,8 +55,8 @@ public class NetworkAnalyser {
 
     public static void writeToCsv(String path) {
         try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "UTF-8"));
-            bw.write("Id, From, To, Length, Capacity, Freespeed, Modes, Capacity, Flow Capacity");
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8));
+            bw.write("Id, From, To, Length, Capacity, FreeSpeed, Modes, Lanes, Flow Capacity");
             bw.newLine();
             for (Link link : questionableLinks) {
                 StringBuffer oneLine = new StringBuffer();
@@ -81,18 +84,22 @@ public class NetworkAnalyser {
             bw.flush();
             bw.close();
         } catch (UnsupportedEncodingException | FileNotFoundException e) {
+            logger.error("Encoding/File not found exception");
         } catch (IOException e) {
+            logger.error("I/O Error at the .csv file");
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
+        logger.info("Reading network");
+        // First argument contains the network file
         readNetworkFile(args[0]);
-        System.out.println("Network read");
+        logger.info("Checking links' length");
         checkLength(10000);
-        System.out.println("Length checked");
+        logger.info("Checking number of lanes");
         checkLanes(4);
-        System.out.println("lanesChecked");
-        writeToCsv("./" + QUESTIONABLE_LINKS_FILE_NAME);
-        System.out.println("Written in .csv");
+        logger.info("Writing results to .csv");
+        // Second argument contains the output folder
+        writeToCsv(args[1] + QUESTIONABLE_LINKS_FILE_NAME);
     }
 }
