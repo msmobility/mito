@@ -31,6 +31,7 @@ public class NetworkAnalyser {
         // Check length of each lane, if less than zero or more than threshold the link needs to be checked 
         for (Link link : network.getLinks().values()) {
             if (link.getLength() < 0 || link.getLength() > threshold) {
+                logger.info("Adding link #" + link.getId());
                 if (!questionableLinks.contains(link))
                     questionableLinks.add(link);
             }
@@ -45,6 +46,7 @@ public class NetworkAnalyser {
                 if (Math.abs(nextLink.getNumberOfLanes() - link.getNumberOfLanes()) > threshold) {
                     for (Link nextToNextLink : nextLink.getToNode().getOutLinks().values()) {
                         if (Math.abs(nextLink.getNumberOfLanes() - nextToNextLink.getNumberOfLanes()) > threshold) {
+                            logger.info("Adding link #" + link.getId());
                             if (!questionableLinks.contains(nextLink))
                                 questionableLinks.add(nextLink);
                         }
@@ -60,7 +62,7 @@ public class NetworkAnalyser {
             bw.write("Id, From, To, Length, Capacity, FreeSpeed, Modes, Lanes, Flow Capacity");
             bw.newLine();
             for (Link link : questionableLinks) {
-                StringBuffer oneLine = new StringBuffer();
+                StringBuilder oneLine = new StringBuilder();
                 oneLine.append(link.getId()).append(CSV_SEPARATOR);
                 oneLine.append(link.getFromNode().getId()).append(CSV_SEPARATOR);
                 oneLine.append(link.getToNode().getId()).append(CSV_SEPARATOR);
@@ -71,6 +73,7 @@ public class NetworkAnalyser {
                 oneLine.append(link.getNumberOfLanes()).append(CSV_SEPARATOR);
                 oneLine.append(link.getFlowCapacityPerSec()).append(CSV_SEPARATOR);
 
+                logger.info("Writing link #" + link.getId() + " to file");
                 bw.write(oneLine.toString());
                 bw.newLine();
             }
