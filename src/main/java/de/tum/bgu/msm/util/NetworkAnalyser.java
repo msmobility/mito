@@ -11,15 +11,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class NetworkAnalyser {
-    private static Network network = NetworkUtils.createNetwork();
-    private static ArrayList<Link> questionableLinks = new ArrayList<>();
+    private static final Network network = NetworkUtils.createNetwork();
+    private static final ArrayList<Link> questionableLinks = new ArrayList<>();
 
-    private static final String CSV_SEPARATOR = ", ";
+    private static final String CSV_SEPARATOR = "\t";
     private static final String QUESTIONABLE_LINKS_FILE_NAME = "questionableLinks.csv";
 
     private static final Logger logger = Logger.getLogger(NetworkAnalyser.class);
 
     public NetworkAnalyser() {
+
     }
 
     private static void readNetworkFile(String path) {
@@ -60,23 +61,15 @@ public class NetworkAnalyser {
             bw.newLine();
             for (Link link : questionableLinks) {
                 StringBuffer oneLine = new StringBuffer();
-                oneLine.append(link.getId());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getFromNode().getId());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getToNode().getId());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getLength());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getCapacity());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getFreespeed());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getAllowedModes());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getCapacity());
-                oneLine.append(CSV_SEPARATOR);
-                oneLine.append(link.getFlowCapacityPerSec());
+                oneLine.append(link.getId()).append(CSV_SEPARATOR);
+                oneLine.append(link.getFromNode().getId()).append(CSV_SEPARATOR);
+                oneLine.append(link.getToNode().getId()).append(CSV_SEPARATOR);
+                oneLine.append(link.getLength()).append(CSV_SEPARATOR);
+                oneLine.append(link.getCapacity()).append(CSV_SEPARATOR);
+                oneLine.append(link.getFreespeed()).append(CSV_SEPARATOR);
+                oneLine.append(link.getAllowedModes()).append(CSV_SEPARATOR);
+                oneLine.append(link.getNumberOfLanes()).append(CSV_SEPARATOR);
+                oneLine.append(link.getFlowCapacityPerSec()).append(CSV_SEPARATOR);
 
                 bw.write(oneLine.toString());
                 bw.newLine();
