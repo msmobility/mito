@@ -184,12 +184,17 @@ public final class TravelDemandGenerator {
 
     public void generateTravelDemand(String scenarioName) {
 
+        long startTime = System.currentTimeMillis();
         logger.info("Running Module: Microscopic Trip Generation");
         tripGeneration.run();
         if (dataSet.getTrips().isEmpty()) {
             logger.warn("No trips created. End of program.");
             return;
         }
+        long endTime = System.currentTimeMillis();
+        double duration = (endTime - startTime) / 1000;
+        logger.info("Completed TG in " + duration + " seconds");
+        System.exit(-1);
 
         logger.info("Running Module: Person to Trip Assignment");
         personTripAssignment.run();
