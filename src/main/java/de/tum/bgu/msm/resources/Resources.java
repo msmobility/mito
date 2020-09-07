@@ -169,4 +169,12 @@ public class Resources {
     public Path getCalibrationRegionsPath() {
         return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.MC_CALIBRATON_REGIONS_FILE));
     }
+
+    public Path getTripGenerationCoefficientsHurdleBinaryLogit() {
+        return baseDirectory.resolve("./input/tripGeneration/isMobile_hurdle_corin_20200907.csv");
+    }
+
+    public Path getTripGenerationCoefficientsHurdleNegativeBinomial() {
+        return baseDirectory.resolve("./input/tripGeneration/negBin_hurdle_corin_20200907.csv");
+    }
 }
