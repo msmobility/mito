@@ -77,7 +77,7 @@ class TripsByPurposeGenerator extends RandomizableConcurrentFunction<Tuple<Purpo
             logger.info("Building " + purpose + " probability matrix in R");
             engine.eval("probability_matrix <- predict(model, type = \"prob\", newdata = model_data)");
 
-            // Dump R output to a .rda file (this is an example for reading a largeR R script from resources folder)
+//             Dump R output to a .rda file (this is an example for reading a largeR R script from resources folder)
 //            engine.put("purpose",purpose.toString());
 //            engine.eval(new InputStreamReader(this.getClass().getResourceAsStream("tripGenModel.R")));
 
