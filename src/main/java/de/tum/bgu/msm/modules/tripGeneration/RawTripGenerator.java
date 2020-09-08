@@ -47,7 +47,7 @@ public class RawTripGenerator {
                 ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
         for(Purpose purpose: PURPOSES) {
-            tasks.add(new TripsByPurposeGeneratorHurdleModel(dataSet, purpose, scaleFactorForGeneration));
+            tasks.add(new TripsByPurposeGeneratorSampleEnumeration(dataSet, purpose, scaleFactorForGeneration));
         }
         final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
         for(Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
