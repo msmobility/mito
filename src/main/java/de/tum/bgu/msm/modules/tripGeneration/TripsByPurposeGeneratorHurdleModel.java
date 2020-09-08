@@ -65,7 +65,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         double randomNumber = random.nextDouble();
         double probabilityTravel = Math.exp(utilityTravel) / (1. + Math.exp(utilityTravel));
         if (randomNumber < probabilityTravel) {
-            estimateAndCreatePositiveNumberOfTrips(hh, randomNumber/probabilityTravel);
+            estimateAndCreatePositiveNumberOfTrips(hh, random.nextDouble());
         }
     }
 
@@ -255,7 +255,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         }
 
         //is this the right value?
-        double theta = negBinCoef.get("Log(theta)");
+        double theta = Math.exp(negBinCoef.get("Log(theta)"));
 
         averageNumberOfTrips = Math.exp(averageNumberOfTrips);
 
