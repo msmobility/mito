@@ -194,7 +194,6 @@ public final class TravelDemandGenerator {
         long endTime = System.currentTimeMillis();
         double duration = (endTime - startTime) / 1000;
         logger.info("Completed TG in " + duration + " seconds");
-        System.exit(-1);
 
         logger.info("Running Module: Person to Trip Assignment");
         personTripAssignment.run();
