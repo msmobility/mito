@@ -43,7 +43,9 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
         final Iterator<MitoHousehold> iterator = dataSet.getHouseholds().values().iterator();
         for (; iterator.hasNext(); ) {
             MitoHousehold next = iterator.next();
-            generateTripsForHousehold(next, scaleFactorForGeneration);
+            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration) {
+                generateTripsForHousehold(next, scaleFactorForGeneration);
+            }
         }
         return new Tuple<>(purpose, tripsByHH);
     }
@@ -66,15 +68,12 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
         }
 
         List<MitoTrip> trips = new ArrayList<>();
-        int numberOfTrips  = selectNumberOfTrips(tripFrequencies);
+        int numberOfTrips = selectNumberOfTrips(tripFrequencies);
         for (int i = 0; i < numberOfTrips; i++) {
-            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration){
-                MitoTrip trip = createTrip(hh);
-                if (trip != null) {
-                    trips.add(trip);
-                }
+            MitoTrip trip = createTrip(hh);
+            if (trip != null) {
+                trips.add(trip);
             }
-
         }
         tripsByHH.put(hh, trips);
     }

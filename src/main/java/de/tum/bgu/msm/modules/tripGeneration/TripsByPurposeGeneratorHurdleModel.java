@@ -53,7 +53,9 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         final Iterator<MitoHousehold> iterator = dataSet.getHouseholds().values().iterator();
         for (; iterator.hasNext(); ) {
             MitoHousehold next = iterator.next();
-            generateTripsForHousehold(next);
+            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration) {
+                generateTripsForHousehold(next);
+            }
         }
         logger.warn("Cases with more than ten trips per household - might be a problem if too frequent: " + casesWithMoreThanTen +
                 " for purpose " + purpose);
@@ -138,7 +140,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                 break;
         }
 
-        double proportionOfAutos = Math.min(1, hh.getAutos() / hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge()>= 15).count());
+        double proportionOfAutos = Math.min(1, hh.getAutos() / hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge() >= 15).count());
         utilityTravel += binLogCoef.get("proportion_of_autos") * proportionOfAutos;
 
         AreaTypes.SGType type = hh.getHomeZone().getAreaTypeSG();
@@ -233,7 +235,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         }
 
         //check this
-        double proportionOfAutos = Math.min(1, hh.getAutos() / hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge()>= 15).count());
+        double proportionOfAutos = Math.min(1, hh.getAutos() / hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge() >= 15).count());
         averageNumberOfTrips += negBinCoef.get("proportion_of_autos") * proportionOfAutos;
 
         AreaTypes.SGType type = hh.getHomeZone().getAreaTypeSG();
@@ -265,13 +267,13 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         NegativeBinomialDist nb = new NegativeBinomialDist(theta, 1 - p);
         double pOfAtLeastZero = nb.cdf(0); //to cut by y = 1
         int i = 1;
-        while (i < 10){
-            if (randomNumber < (nb.cdf(i) - pOfAtLeastZero) / (1 - pOfAtLeastZero)){
+        while (i < 10) {
+            if (randomNumber < (nb.cdf(i) - pOfAtLeastZero) / (1 - pOfAtLeastZero)) {
                 break;
             }
             i++;
         }
-        if (averageNumberOfTrips >= 10){
+        if (averageNumberOfTrips >= 10) {
             casesWithMoreThanTen++;
         }
         int numberOfTrips = i;
@@ -297,13 +299,10 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
 
         List<MitoTrip> trips = new ArrayList<>();
         for (int i = 0; i < numberOfTrips; i++) {
-            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration) {
-                MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
-                if (trip != null) {
-                    trips.add(trip);
-                }
+            MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
+            if (trip != null) {
+                trips.add(trip);
             }
-
         }
         tripsByHH.put(hh, trips);
     }

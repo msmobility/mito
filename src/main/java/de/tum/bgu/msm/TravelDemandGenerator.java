@@ -227,12 +227,12 @@ public final class TravelDemandGenerator {
             SummarizeData.writeOutTrips(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
-            DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
-            ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
+            //DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
+            //ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
-            SummarizeData.writeMatsimPlans(dataSet, scenarioName);
+            //SummarizeData.writeMatsimPlans(dataSet, scenarioName);
         }
     }
 }
