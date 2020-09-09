@@ -14,7 +14,6 @@ public class Properties {
     static final String HOUSEHOLDS = "household.file.ascii";
     static final String PERSONS = "person.file.ascii";
     static final String DWELLINGS = "dwelling.file.ascii";
-    public static final String SCALE_FACTOR_IN_SP = "sp.scale.factor";
 
     public static final String SCENARIO_NAME = "scenario.name";
     public static final String SCENARIO_YEAR = "year";
