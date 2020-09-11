@@ -311,7 +311,9 @@ public class DataSet {
         IntArrayVector.Builder hhPersons18to29_unemployed = new IntArrayVector.Builder();
         IntArrayVector.Builder hhPersons30to64_worker = new IntArrayVector.Builder();
         IntArrayVector.Builder hhPersons30to64_student = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons18to64_student = new IntArrayVector.Builder();
         IntArrayVector.Builder hhPersons30to64_unemployed = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhPersons18to64_unemployed = new IntArrayVector.Builder();
         IntArrayVector.Builder hhPersons65up = new IntArrayVector.Builder();
 
         IntArrayVector.Builder hhPersonsFemale = new IntArrayVector.Builder();
@@ -320,6 +322,7 @@ public class DataSet {
         IntArrayVector.Builder hhEconomicStatus = new IntArrayVector.Builder();
         IntArrayVector.Builder hhEconomicStatus2 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhEconomicStatus3 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhEconomicStatus23 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhEconomicStatus4 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhEconomicStatus5 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhEconomicStatus45 = new IntArrayVector.Builder();
@@ -383,8 +386,14 @@ public class DataSet {
             hhPersons30to64_student.add(DataSet.countMembersByFilter(hh, mitoPerson ->
                     mitoPerson.getAge() >= 30 & mitoPerson.getAge() <= 64 &
                             mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)));
+            hhPersons18to64_student.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 18 & mitoPerson.getAge() <= 64 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)));
             hhPersons30to64_unemployed.add(DataSet.countMembersByFilter(hh, mitoPerson ->
                     mitoPerson.getAge() >= 30 & mitoPerson.getAge() <= 64 &
+                            mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)));
+            hhPersons18to64_unemployed.add(DataSet.countMembersByFilter(hh, mitoPerson ->
+                    mitoPerson.getAge() >= 18 & mitoPerson.getAge() <= 64 &
                             mitoPerson.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)));
             hhPersons65up.add(DataSet.countMembersByFilter(hh, mitoPerson ->
                     mitoPerson.getAge() >= 65));
@@ -398,6 +407,7 @@ public class DataSet {
             hhEconomicStatus.add(economicStatus);
             hhEconomicStatus2.add(economicStatus == 2 ? 1 : 0);
             hhEconomicStatus3.add(economicStatus == 3 ? 1 : 0);
+            hhEconomicStatus23.add(economicStatus == 2 || economicStatus == 3 ? 1 : 0);
             hhEconomicStatus4.add(economicStatus == 4 ? 1 : 0);
             hhEconomicStatus5.add(economicStatus == 5 ? 1 : 0);
             hhEconomicStatus45.add(economicStatus >= 4 ? 1 : 0);
@@ -450,7 +460,9 @@ public class DataSet {
         RModelDataBuilder.add("hh.pers_18to29_u",hhPersons18to29_unemployed.build());
         RModelDataBuilder.add("hh.pers_30to64_w",hhPersons30to64_worker.build());
         RModelDataBuilder.add("hh.pers_30to64_s",hhPersons30to64_student.build());
+        RModelDataBuilder.add("hh.pers_18to64_s",hhPersons18to64_student.build());
         RModelDataBuilder.add("hh.pers_30to64_u",hhPersons30to64_unemployed.build());
+        RModelDataBuilder.add("hh.pers_18to64_u",hhPersons18to64_unemployed.build());
         RModelDataBuilder.add("hh.pers_65up",hhPersons65up.build());
 
         RModelDataBuilder.add("hh.pers_female",hhPersonsFemale.build());
@@ -459,6 +471,7 @@ public class DataSet {
         RModelDataBuilder.add("hh.economic_status",hhEconomicStatus.build());
         RModelDataBuilder.add("hh.economic_status.2",hhEconomicStatus2.build());
         RModelDataBuilder.add("hh.economic_status.3",hhEconomicStatus3.build());
+        RModelDataBuilder.add("hh.economic_status.23",hhEconomicStatus23.build());
         RModelDataBuilder.add("hh.economic_status.4",hhEconomicStatus4.build());
         RModelDataBuilder.add("hh.economic_status.5",hhEconomicStatus5.build());
 
