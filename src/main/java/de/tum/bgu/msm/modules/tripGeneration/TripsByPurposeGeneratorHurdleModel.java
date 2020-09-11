@@ -67,7 +67,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         double randomNumber = random.nextDouble();
         double probabilityTravel = Math.exp(utilityTravel) / (1. + Math.exp(utilityTravel));
         if (randomNumber < probabilityTravel) {
-            estimateAndCreatePositiveNumberOfTrips(hh, random.nextDouble());
+            estimateAndCreatePositiveNumberOfTrips(hh);
         }
     }
 
@@ -164,8 +164,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         return utilityTravel;
     }
 
-    private void estimateAndCreatePositiveNumberOfTrips(MitoHousehold hh, double randomNumber) {
-
+    private void estimateAndCreatePositiveNumberOfTrips(MitoHousehold hh) {
+        double randomNumber = random.nextDouble();
         double averageNumberOfTrips = 0.;
         int size = hh.getHhSize();
         switch (size) {
@@ -277,11 +277,11 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
             casesWithMoreThanTen++;
         }
         int numberOfTrips = i;
-        generateTripsForHousehold(hh, scaleFactorForGeneration, numberOfTrips);
+        generateTripsForHousehold(hh, numberOfTrips);
 
     }
 
-    private void generateTripsForHousehold(MitoHousehold hh, double scaleFactorForGeneration, int numberOfTrips) {
+    private void generateTripsForHousehold(MitoHousehold hh, int numberOfTrips) {
         HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
         if (hhType == null) {
             logger.error("Could not create trips for Household " + hh.getId() + " for Purpose " + purpose + ": No Household Type applicable");
