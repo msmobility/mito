@@ -45,8 +45,8 @@ public class JobReader extends AbstractCsvReader {
         posZone = MitoUtil.findPositionInArray("zone", header);
         posWorker = MitoUtil.findPositionInArray("personId", header);
         posType = MitoUtil.findPositionInArray("type", header);
-        posJobCoordX = MitoUtil.findPositionInArray("coordX", header);
-        posJobCoordY = MitoUtil.findPositionInArray("coordY", header);
+        //posJobCoordX = MitoUtil.findPositionInArray("coordX", header);
+        //posJobCoordY = MitoUtil.findPositionInArray("coordY", header);
     }
 
     @Override
@@ -59,16 +59,18 @@ public class JobReader extends AbstractCsvReader {
             MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone == null) {
                 logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
-                return;
+                //return null;
             }
 
             try {
                 zone.addEmployeeForType(factory.getType(type.toUpperCase().replaceAll("\"","")));
             } catch (IllegalArgumentException e) {
-                logger.error("Job Type " + type + " used in job microdata but is not defined");
+                //logger.error("Job Type " + type + " used in job microdata but is not defined");
             }
-            Coordinate coordinate = (new Coordinate(Double.parseDouble(record[posJobCoordX]),
-            		Double.parseDouble(record[posJobCoordY])));
+
+            Coordinate coordinate = zone.getRandomCoord();
+            //Coordinate coordinate = (new Coordinate(Double.parseDouble(record[posJobCoordX]),
+            		//Double.parseDouble(record[posJobCoordY])));
 
             MitoJob job = new MitoJob(zone, coordinate, id);
             dataSet.addJob(job);

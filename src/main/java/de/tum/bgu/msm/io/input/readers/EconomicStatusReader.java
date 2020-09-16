@@ -96,6 +96,7 @@ public class EconomicStatusReader extends AbstractCsvReader {
         economicStatusDefinition.put(hhSizeFactor + "_Inc6000-6600", codeInc6000_6600);
         economicStatusDefinition.put(hhSizeFactor + "_Inc6600-7000", codeInc6600_7000);
         economicStatusDefinition.put(hhSizeFactor + "_Inc7000+", codeInc7000plus);
+        //return null;
     }
 
     private int getEconomicStatus(MitoHousehold hh) {
