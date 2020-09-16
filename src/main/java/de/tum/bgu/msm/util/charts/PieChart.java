@@ -3,7 +3,7 @@ package de.tum.bgu.msm.util.charts;
 import com.google.common.collect.Multiset;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
@@ -45,7 +45,8 @@ public final class PieChart {
             outputFile.getParentFile().mkdirs();
         }
         try {
-            ChartUtilities.saveChartAsJPEG(outputFile, chart, 1600, 800);
+            ChartUtils.saveChartAsJPEG(outputFile, chart, 1600, 800);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

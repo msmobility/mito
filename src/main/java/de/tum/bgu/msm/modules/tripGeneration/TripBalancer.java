@@ -35,7 +35,7 @@ public class TripBalancer {
 
             double factor = Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
 
-            double ratio = tripsByPurp/ factor / attrSum;
+            double ratio = tripsByPurp / factor / attrSum;
             adjustAttractions(ratio, purpose);
         }
     }

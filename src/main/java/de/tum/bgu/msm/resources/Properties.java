@@ -2,6 +2,8 @@ package de.tum.bgu.msm.resources;
 
 public class Properties {
 
+    public static final String WRITE_MATSIM_POPULATION = "write.matsim.population";
+
     static final String ZONES = "zonal.data.file";
     static final String ZONE_SHAPEFILE = "zone.shapefile";
     static final String REDUCTION_NEAR_BORDER_DAMPERS = "reduction.near.outer.border";
@@ -22,11 +24,12 @@ public class Properties {
 
     public static final String AUTO_PEAK_SKIM = "auto.peak.travelTime";
 
-
     public static final String TRIP_ATTRACTION_RATES = "trip.attraction.rates";
     public static final String TRIP_PRODUCTION_OUTPUT = "trip.production.output";
     public static final String TRIP_ATTRACTION_OUTPUT = "trip.attraction.output";
     public static final String SCALE_FACTOR_FOR_TRIP_GENERATION = "tg.scale.factor";
+    public static final String TG_BINARY_LOGIT_COEFFICIENTS = "tg.binary.logit.coeffs";
+    public static final String TG_NEGATIVE_BINOMIAL_COEFFICIENTS = "tg.negative.binomial.coeffs";
 
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";

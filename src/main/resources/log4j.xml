@@ -10,7 +10,7 @@
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
 
-            <param name="ConversionPattern" value="%d{dd-MMM-yyyy HH:mm:ss}, %p, %m%n"/>
+            <param name="ConversionPattern" value="%d{dd-MMM-yyyy HH:mm:ss}, %C, %p, %m%n"/>
 
         </layout>        
     </appender>

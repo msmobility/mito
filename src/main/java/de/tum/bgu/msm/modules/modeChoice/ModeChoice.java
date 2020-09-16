@@ -139,7 +139,7 @@ public class ModeChoice extends Module {
             return null;
         }
 
-        private double[] calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
+        private EnumMap<Mode, Double> calculateTripProbabilities(MitoHousehold household, MitoTrip trip) {
             if (trip.getTripOrigin() == null || trip.getTripDestination() == null) {
                 countTripsSkipped++;
                 return null;
@@ -158,21 +158,20 @@ public class ModeChoice extends Module {
                     travelDistanceNMT, dataSet.getPeakHour());
         }
 
-        private void chooseMode(MitoTrip trip, double[] probabilities) {
+        private void chooseMode(MitoTrip trip, EnumMap<Mode, Double> probabilities) {
             if (probabilities == null) {
                 countTripsSkipped++;
                 return;
             }
-            //found Nan when there is no transit!!
-            for (int i = 0; i < probabilities.length; i++) {
-                if (Double.isNaN(probabilities[i])) {
-                    probabilities[i] = 0;
-                }
-            }
 
-            double sum = MitoUtil.getSum(probabilities);
+            //found Nan when there is no transit!!
+            probabilities.replaceAll((mode, probability) ->
+                    probability.isNaN() ? 0: probability);
+
+            double sum = MitoUtil.getSum(probabilities.values());
             if (sum > 0) {
-                trip.setTripMode(Mode.valueOf(MitoUtil.select(probabilities, random, sum)));
+                final Mode select = MitoUtil.select(probabilities, random);
+                trip.setTripMode(select);
             } else {
                 logger.error("Negative probabilities for trip " + trip.getId());
                 trip.setTripMode(null);

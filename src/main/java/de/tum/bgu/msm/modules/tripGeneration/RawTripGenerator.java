@@ -30,11 +30,13 @@ public class RawTripGenerator {
     final static AtomicInteger TRIP_ID_COUNTER = new AtomicInteger();
 
     private final DataSet dataSet;
+    private TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory;
 
     private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
 
-    public RawTripGenerator(DataSet dataSet) {
+    public RawTripGenerator(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory) {
         this.dataSet = dataSet;
+        this.tripsByPurposeGeneratorFactory = tripsByPurposeGeneratorFactory;
     }
 
     public void run (double scaleFactorForGeneration) {
@@ -47,7 +49,7 @@ public class RawTripGenerator {
                 ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
         for(Purpose purpose: PURPOSES) {
-            tasks.add(new TripsByPurposeGenerator(dataSet, purpose, scaleFactorForGeneration));
+            tasks.add(tripsByPurposeGeneratorFactory.createTripGeneratorForThisPurpose(dataSet, purpose, scaleFactorForGeneration));
         }
         final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
         for(Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {

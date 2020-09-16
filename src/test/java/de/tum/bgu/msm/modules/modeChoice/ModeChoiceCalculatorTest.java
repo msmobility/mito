@@ -11,9 +11,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.EnumMap;
+
 public class ModeChoiceCalculatorTest {
 
     private ModeChoiceCalculator calculator;
+    private ModeChoiceCalculator drtCalculator;
 
     private final double[] reference = new double[]{
             0.5851514772392093,
@@ -43,7 +46,7 @@ public class ModeChoiceCalculatorTest {
         trip.setTripOrigin(zone);
         trip.setTripDestination(zone);
 
-        double[] result = calculator.calculateProbabilities(Purpose.HBS, hh, pp, zone, zone, new TravelTimes() {
+        final TravelTimes travelTimes = new TravelTimes() {
             @Override
             public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {
                 switch (mode) {
@@ -80,9 +83,12 @@ public class ModeChoiceCalculatorTest {
             public TravelTimes duplicate() {
                 return null;
             }
-        }, 5., 5., 0);
-        for(int i = 0; i < result.length; i++) {
-            Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result[i], 0.000001);
+        };
+
+        EnumMap<Mode, Double> result = calculator.calculateProbabilities(Purpose.HBS, hh, pp, zone, zone, travelTimes, 5., 5., 0);
+
+        for(int i = 0; i < reference.length; i++) {
+            Assert.assertEquals("Result " + i + " is totally wrong.",reference[i], result.get(Mode.valueOf(i)), 0.000001);
         }
 
     }

@@ -1,12 +1,11 @@
 package de.tum.bgu.msm.modules.modeChoice.calculators.av;
 
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
+
+import java.util.EnumMap;
 
 public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
 
@@ -51,7 +50,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
 
 
     @Override
-    public double[] calculateProbabilities(
+    public EnumMap<Mode, Double> calculateProbabilities(
             Purpose purpose,
             MitoHousehold household,
             MitoPerson person,
@@ -63,7 +62,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
             double peakHour_s) {
 
 
-        double[] utilities = baseCalculator.calculateUtilities(
+        EnumMap<Mode, Double> utilities = baseCalculator.calculateUtilities(
                 purpose,
                 household,
                 person,
@@ -74,7 +73,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
                 travelDistanceNMT,
                 peakHour_s);
 
-        double[] baseProbs = baseCalculator.calculateProbabilities(
+        EnumMap<Mode, Double> baseProbs = baseCalculator.calculateProbabilities(
                 purpose,
                 household,
                 person,
@@ -86,7 +85,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
                 peakHour_s
         );
 
-        double[] generalizedCosts = calculateGeneralizedCosts(
+        EnumMap<Mode, Double> generalizedCosts = calculateGeneralizedCosts(
                 purpose,
                 household,
                 person,
@@ -98,25 +97,25 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
                 peakHour_s
         );
 
-        final double utilityAutoD = utilities[0];
-        final double utilityAutoP = utilities[1];
-        final double utilityBicycle = utilities[2];
-        final double utilityBus = utilities[3];
-        final double utilityTrain = utilities[4];
-        final double utilityTramMetro = utilities[5];
-        final double utilityWalk = utilities[6];
+        final double utilityAutoD = utilities.get(Mode.autoDriver);
+        final double utilityAutoP = utilities.get(Mode.autoPassenger);
+        final double utilityBicycle = utilities.get(Mode.bicycle);
+        final double utilityBus = utilities.get(Mode.bus);
+        final double utilityTrain = utilities.get(Mode.train);
+        final double utilityTramMetro = utilities.get(Mode.tramOrMetro);
+        final double utilityWalk = utilities.get(Mode.walk);
 
-        final double gcAutoD = generalizedCosts[0];
-        final double gcAutoP = generalizedCosts[1];
-        final double gcBus = generalizedCosts[3];
-        final double gcTrain = generalizedCosts[4];
-        final double gcTramMetro = generalizedCosts[5];
-        final double gcSharedAV = generalizedCosts[6];
-        final double gcPrivateAV = generalizedCosts[7];
+        final double gcAutoD = generalizedCosts.get(Mode.autoDriver);
+        final double gcAutoP = generalizedCosts.get(Mode.autoPassenger);
+        final double gcBus = generalizedCosts.get(Mode.bus);
+        final double gcTrain = generalizedCosts.get(Mode.train);
+        final double gcTramMetro = generalizedCosts.get(Mode.tramOrMetro);
+        final double gcSharedAV = generalizedCosts.get(Mode.sharedAV);
+        final double gcPrivateAV = generalizedCosts.get(Mode.privateAV);
 
         double logsumAuto = Math.log(Math.exp(utilityAutoD / nestingCoefficient) + Math.exp(utilityAutoP / nestingCoefficient));
-        double logsumTransit = Math.log(Math.exp(utilities[3] / nestingCoefficient) + Math.exp(utilities[4] / nestingCoefficient)
-                + Math.exp(utilities[5] / nestingCoefficient));
+        double logsumTransit = Math.log(Math.exp(utilityBus / nestingCoefficient) + Math.exp(utilityTrain / nestingCoefficient)
+                + Math.exp(utilityTramMetro / nestingCoefficient));
 
         double baseProbabilityAutoNest = Math.exp(nestingCoefficient * logsumAuto) / (Math.exp(nestingCoefficient * logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * logsumTransit));
         double baseProbabilityTransitNest = Math.exp(nestingCoefficient * logsumTransit) / (Math.exp(nestingCoefficient * logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * logsumTransit));
@@ -141,35 +140,34 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
         double probabilityBus = probabilityTransitNest / (1 + Math.exp(betaGeneralizedCost[purpIdx][3] * (gcSharedAV - gcBus) / nestingCoefficient) + Math.exp((utilityTrain - utilityBus) / nestingCoefficient) + Math.exp((utilityTramMetro - utilityBus) / nestingCoefficient));
         double probabilityTrain = probabilityTransitNest / (1 + Math.exp(betaGeneralizedCost[purpIdx][4] * (gcSharedAV - gcTrain) / nestingCoefficient) + Math.exp((utilityBus - utilityTrain) / nestingCoefficient) + Math.exp((utilityTramMetro - utilityTrain) / nestingCoefficient));
         double probabilityTramMetro = probabilityTransitNest / (1 + Math.exp(betaGeneralizedCost[purpIdx][5] * (gcSharedAV - gcTramMetro) / nestingCoefficient) + Math.exp((utilityBus - utilityTramMetro) / nestingCoefficient) + Math.exp((utilityTrain - utilityTramMetro) / nestingCoefficient));
-        double probabilityBicycle = baseProbs[2] / sumOfRelativeExpOfUtilities;
-        double probabilityWalk = baseProbs[6] / sumOfRelativeExpOfUtilities;
+        double probabilityBicycle = baseProbs.get(Mode.bicycle) / sumOfRelativeExpOfUtilities;
+        double probabilityWalk = baseProbs.get(Mode.walk) / sumOfRelativeExpOfUtilities;
 
-        return new double[]{
-                probabilityAutoD,
-                probabilityAutoP,
-                probabilityBicycle,
-                probabilityBus,
-                probabilityTrain,
-                probabilityTramMetro,
-                probabilityWalk,
-                probabilityPrivateAV,
-                probabilitySharedAV
-        };
+        baseProbs.put(Mode.autoDriver, probabilityAutoD);
+        baseProbs.put(Mode.autoPassenger, probabilityAutoP);
+        baseProbs.put(Mode.bicycle, probabilityBicycle);
+        baseProbs.put(Mode.bus, probabilityBus);
+        baseProbs.put(Mode.train, probabilityTrain);
+        baseProbs.put(Mode.tramOrMetro, probabilityTramMetro);
+        baseProbs.put(Mode.walk, probabilityWalk);
+        baseProbs.put(Mode.privateAV, probabilityPrivateAV);
+        baseProbs.put(Mode.sharedAV, probabilitySharedAV);
+        return baseProbs;
     }
 
     @Override
-    public double[] calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         throw new RuntimeException("Not implemented!");
     }
 
     @Override
-    public double[] calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
 
         int monthlyIncome_EUR = household.getMonthlyIncome_EUR();
         int purpIdx = purpose.ordinal();
         double timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "car");
 
-        double[] baseGeneralizedCosts = baseCalculator.calculateGeneralizedCosts(
+        EnumMap<Mode, Double> baseGeneralizedCosts = baseCalculator.calculateGeneralizedCosts(
                 purpose,
                 household,
                 person,
@@ -200,10 +198,8 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
             gcSharedAV = timeAutoD + (travelDistanceAuto * sharedAVCostEurosPerKm) / VOT7000_sharedAV[purpIdx];
         }
 
-        double[] generalizedCosts = new double[baseGeneralizedCosts.length + 2];
-        System.arraycopy(baseGeneralizedCosts, 0, generalizedCosts, 0, baseGeneralizedCosts.length);
-        generalizedCosts[generalizedCosts.length-2] = gcPrivateAV;
-        generalizedCosts[generalizedCosts.length-1] = gcSharedAV;
-        return generalizedCosts;
+        baseGeneralizedCosts.put(Mode.privateAV, gcPrivateAV);
+        baseGeneralizedCosts.put(Mode.sharedAV, gcSharedAV);
+        return baseGeneralizedCosts;
     }
 }
