@@ -63,14 +63,25 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     }
 
     private void findDestination(MitoHousehold household, MitoTrip trip) {
+
+
+        //todo make this trips intrazonal until school file for Germany is ready
         if (isFixedByOccupation(trip)) {
-            trip.setTripDestination(trip.getPerson().getOccupation());
+            if (trip.getTripPurpose().equals(Purpose.HBE)) {
+                trip.setTripDestination(trip.getTripOrigin());
+            } else {
+                trip.setTripDestination(trip.getPerson().getOccupation());
+            }
         } else {
-            TripDistribution.randomOccupationDestinationTrips.incrementAndGet();
-            IndexedDoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
-            final int internalIndex = MitoUtil.select(probabilities.toNonIndexedArray(), random, probabilities.zSum());
-            final MitoZone destination = zonesCopy.get(probabilities.getIdForInternalIndex(internalIndex));
-            trip.setTripDestination(destination);
+            if (trip.getTripPurpose().equals(Purpose.HBE)) {
+                trip.setTripDestination(trip.getTripOrigin());
+            } else {
+                TripDistribution.randomOccupationDestinationTrips.incrementAndGet();
+                IndexedDoubleMatrix1D probabilities = baseProbabilities.viewRow(household.getHomeZone().getId());
+                final int internalIndex = MitoUtil.select(probabilities.toNonIndexedArray(), random, probabilities.zSum());
+                final MitoZone destination = zonesCopy.get(probabilities.getIdForInternalIndex(internalIndex));
+                trip.setTripDestination(destination);
+            }
         }
     }
 
