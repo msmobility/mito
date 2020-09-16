@@ -1,4 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-public interface TripsByPurposeGenerator  {
+import java.util.concurrent.Callable;
+
+public interface TripsByPurposeGenerator extends Callable {
 }

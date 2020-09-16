@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.run;
 
 import de.tum.bgu.msm.MitoModel;
-import de.tum.bgu.msm.TravelDemandGenerator;
+import de.tum.bgu.msm.MitoModel2017;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -15,19 +15,13 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
-/**
- * Implements the Transport in Microsimulation Orchestrator (MITO)
- *
- * @author Rolf Moeckel
- * Created on Feb 12, 2017 in Munich, Germany
- */
-class MitoMuc {
+public class Mito2017 {
 
-    private static final Logger logger = Logger.getLogger(MitoMuc.class);
+    private static final Logger logger = Logger.getLogger(Mito2017.class);
 
     public static void main(String[] args) {
-        logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
-        MitoModel model = MitoModel.standAloneModel(args[0], MunichImplementationConfig.get());
+        logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");
+        MitoModel2017 model = MitoModel2017.standAloneModel(args[0], MunichImplementationConfig.get());
         model.run();
         final DataSet dataSet = model.getData();
 
@@ -61,3 +55,4 @@ class MitoMuc {
         }
     }
 }
+
