@@ -171,10 +171,10 @@ public class Resources {
     }
 
     public Path getTripGenerationCoefficientsHurdleBinaryLogit() {
-        return baseDirectory.resolve("./input/tripGeneration/isMobile_hurdle_corin_20200907.csv");
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_BINARY_LOGIT_COEFFICIENTS));
     }
 
     public Path getTripGenerationCoefficientsHurdleNegativeBinomial() {
-        return baseDirectory.resolve("./input/tripGeneration/negBin_hurdle_corin_20200907.csv");
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_NEGATIVE_BINOMIAL_COEFFICIENTS));
     }
 }

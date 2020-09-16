@@ -88,7 +88,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                 utilityTravel += binLogCoef.get("size_4");
                 break;
             case 5:
-                utilityTravel += binLogCoef.get("size_5+");
+                utilityTravel += binLogCoef.get("size_5");
                 break;
         }
         for (MitoPerson p : hh.getPersons().values()) {
@@ -113,7 +113,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                     utilityTravel += binLogCoef.get("pers_30to64_u");
                 }
             } else {
-                utilityTravel += binLogCoef.get("pers_65+");
+                utilityTravel += binLogCoef.get("pers_65up");
             }
             if (p.getMitoGender().equals(MitoGender.FEMALE)) {
                 utilityTravel += binLogCoef.get("pers_female");
@@ -127,21 +127,21 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                 utilityTravel += 0.;
                 break;
             case 2:
-                utilityTravel += binLogCoef.get("economic_status_2");
+                utilityTravel += binLogCoef.get("economicStatus_2");
                 break;
             case 3:
-                utilityTravel += binLogCoef.get("economic_status_3");
+                utilityTravel += binLogCoef.get("economicStatus_3");
                 break;
             case 4:
-                utilityTravel += binLogCoef.get("economic_status_4");
+                utilityTravel += binLogCoef.get("economicStatus_4");
                 break;
             case 5:
-                utilityTravel += binLogCoef.get("economic_status_5");
+                utilityTravel += binLogCoef.get("economicStatus_5");
                 break;
         }
 
         double proportionOfAutos = Math.min(1, hh.getAutos() / hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge() >= 15).count());
-        utilityTravel += binLogCoef.get("proportion_of_autos") * proportionOfAutos;
+        utilityTravel += binLogCoef.get("propAutos") * proportionOfAutos;
 
         AreaTypes.SGType type = hh.getHomeZone().getAreaTypeSG();
 
@@ -182,7 +182,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                 averageNumberOfTrips += negBinCoef.get("size_4");
                 break;
             case 5:
-                averageNumberOfTrips += negBinCoef.get("size_5+");
+                averageNumberOfTrips += negBinCoef.get("size_5");
                 break;
         }
         for (MitoPerson p : hh.getPersons().values()) {
@@ -207,7 +207,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                     averageNumberOfTrips += negBinCoef.get("pers_30to64_u");
                 }
             } else {
-                averageNumberOfTrips += negBinCoef.get("pers_65+");
+                averageNumberOfTrips += negBinCoef.get("pers_65up");
             }
             if (p.getMitoGender().equals(MitoGender.FEMALE)) {
                 averageNumberOfTrips += negBinCoef.get("pers_female");
@@ -221,22 +221,22 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                 averageNumberOfTrips += 0.;
                 break;
             case 2:
-                averageNumberOfTrips += negBinCoef.get("economic_status_2");
+                averageNumberOfTrips += negBinCoef.get("economicStatus_2");
                 break;
             case 3:
-                averageNumberOfTrips += negBinCoef.get("economic_status_3");
+                averageNumberOfTrips += negBinCoef.get("economicStatus_3");
                 break;
             case 4:
-                averageNumberOfTrips += negBinCoef.get("economic_status_4");
+                averageNumberOfTrips += negBinCoef.get("economicStatus_4");
                 break;
             case 5:
-                averageNumberOfTrips += negBinCoef.get("economic_status_5");
+                averageNumberOfTrips += negBinCoef.get("economicStatus_5");
                 break;
         }
 
         //check this
         double proportionOfAutos = Math.min(1, hh.getAutos() / hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge() >= 15).count());
-        averageNumberOfTrips += negBinCoef.get("proportion_of_autos") * proportionOfAutos;
+        averageNumberOfTrips += negBinCoef.get("propAutos") * proportionOfAutos;
 
         AreaTypes.SGType type = hh.getHomeZone().getAreaTypeSG();
 
@@ -257,7 +257,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         }
 
         //is this the right value?
-        double theta = Math.exp(negBinCoef.get("Log(theta)"));
+        double theta = negBinCoef.get("theta");
 
         averageNumberOfTrips = Math.exp(averageNumberOfTrips);
 
