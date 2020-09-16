@@ -69,6 +69,9 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                 if(hasBudgetForPurpose(household)) {
                     updateBudgets(household);
                     updateDestinationProbabilities(household.getHomeZone().getId());
+                    if (household.getHomeZone() == null){
+                        logger.warn("The hh does not have a zone?");
+                    }
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         trip.setTripOrigin(household);
                         MitoZone zone = findDestination();
