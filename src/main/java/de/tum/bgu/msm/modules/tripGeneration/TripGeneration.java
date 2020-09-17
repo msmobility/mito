@@ -21,11 +21,13 @@ public class TripGeneration extends Module {
     private final boolean addAirportDemand;
 
     private double scaleFactorForTripGeneration;
+    private final TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory;
 
-    public TripGeneration(DataSet dataSet) {
+    public TripGeneration(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory) {
         super(dataSet);
         addAirportDemand = Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false);
         scaleFactorForTripGeneration = Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
+        this.tripsByPurposeGeneratorFactory = tripsByPurposeGeneratorFactory;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class TripGeneration extends Module {
     }
 
     private void generateRawTrips() {
-        RawTripGenerator rawTripGenerator = new RawTripGenerator(dataSet);
+        RawTripGenerator rawTripGenerator = new RawTripGenerator(dataSet, tripsByPurposeGeneratorFactory);
         rawTripGenerator.run(scaleFactorForTripGeneration);
     }
 

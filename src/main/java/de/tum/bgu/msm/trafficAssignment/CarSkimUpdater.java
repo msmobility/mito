@@ -43,7 +43,7 @@ public class CarSkimUpdater {
     private DataSet dataSet;
     private final String scenarioName;
 
-    public CarSkimUpdater(Controler controler, MitoModel model) {
+    public CarSkimUpdater(Controler controler, DataSet dataSet, String scenarioName) {
         this.network = controler.getScenario().getNetwork();
         //this.zoneFeatureMap = zoneFeatureMap;
         this.travelTime = controler.getLinkTravelTimes();
@@ -51,8 +51,8 @@ public class CarSkimUpdater {
         //creates a matrix of (n+1 zones) rows and columns
         this.carTravelTimeMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
         this.carDistanceMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
-        this.dataSet = model.getData();
-        this.scenarioName = model.getScenarioName();
+        this.dataSet = dataSet;
+        this.scenarioName = scenarioName;
     }
 
     public void run() {

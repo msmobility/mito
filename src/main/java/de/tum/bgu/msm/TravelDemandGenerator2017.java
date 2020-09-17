@@ -1,7 +1,9 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.output.*;
+import de.tum.bgu.msm.io.output.SummarizeData;
+import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
+import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
@@ -12,6 +14,7 @@ import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
+import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryHurdle;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -23,9 +26,9 @@ import org.apache.log4j.Logger;
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  */
-public final class TravelDemandGenerator {
+public final class TravelDemandGenerator2017 {
 
-    private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
+    private static final Logger logger = Logger.getLogger(TravelDemandGenerator2017.class);
     private final DataSet dataSet;
 
     private final Module tripGeneration;
@@ -38,7 +41,7 @@ public final class TravelDemandGenerator {
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
 
-    private TravelDemandGenerator(
+    private TravelDemandGenerator2017(
             DataSet dataSet,
             Module tripGeneration,
             Module personTripAssignment,
@@ -51,7 +54,6 @@ public final class TravelDemandGenerator {
             Module longDistanceTraffic) {
 
         this.dataSet = dataSet;
-
         this.tripGeneration = tripGeneration;
         this.personTripAssignment = personTripAssignment;
         this.travelTimeBudget = travelTimeBudget;
@@ -80,7 +82,7 @@ public final class TravelDemandGenerator {
 
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
-            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration());
+            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryHurdle());
             personTripAssignment = new PersonTripAssignment(dataSet);
             travelTimeBudget = new TravelTimeBudgetModule(dataSet);
             distribution = new TripDistribution(dataSet);
@@ -93,8 +95,8 @@ public final class TravelDemandGenerator {
             }
         }
 
-        public TravelDemandGenerator build() {
-            return new TravelDemandGenerator(dataSet,
+        public TravelDemandGenerator2017 build() {
+            return new TravelDemandGenerator2017(dataSet,
                     tripGeneration,
                     personTripAssignment,
                     travelTimeBudget,
@@ -195,6 +197,8 @@ public final class TravelDemandGenerator {
         long endTime = System.currentTimeMillis();
         double duration = (endTime - startTime) / 1000;
         logger.info("Completed TG in " + duration + " seconds");
+
+        System.exit(0);
 
         logger.info("Running Module: Person to Trip Assignment");
         personTripAssignment.run();
