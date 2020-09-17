@@ -284,25 +284,11 @@ public class DataSet {
         IntArrayVector.Builder hhSize1 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhSize2 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhSize3 = new IntArrayVector.Builder();
+        IntArrayVector.Builder hhSize23 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhSize4 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhSize5 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhSize345 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhSize45 = new IntArrayVector.Builder();
-
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBW = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBE = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBS = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBR = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBO = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetNHBW = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO = new DoubleArrayVector.Builder();
-
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBO_Size1 = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBO_Size2 = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetHBO_Size345 = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO_Size1 = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO_Size2 = new DoubleArrayVector.Builder();
-        DoubleArrayVector.Builder hhTravelTimeBudgetNHBO_Size345 = new DoubleArrayVector.Builder();
 
         IntArrayVector.Builder hhPersons0to6 = new IntArrayVector.Builder();
         IntArrayVector.Builder hhPersons6to17 = new IntArrayVector.Builder();
@@ -345,27 +331,12 @@ public class DataSet {
             hhSize.add(householdSize);
             hhSize1.add(householdSize == 1 ? 1 : 0);
             hhSize2.add(householdSize == 2 ? 1 : 0);
+            hhSize23.add(householdSize == 2 | householdSize == 3 ? 1 : 0);
             hhSize3.add(householdSize == 3 ? 1 : 0);
             hhSize4.add(householdSize == 4 ? 1 : 0);
             hhSize5.add(householdSize >= 5 ? 1 : 0);
             hhSize345.add(householdSize >= 3 ? 1 : 0);
             hhSize45.add(householdSize >= 4 ? 1 : 0);
-
-            // todo: include predicted TTBs (once TTB is moved before TripGen). The following numbers are just averages.
-            hhTravelTimeBudgetHBW.add(26);
-            hhTravelTimeBudgetHBE.add(7);
-            hhTravelTimeBudgetHBS.add(14);
-            hhTravelTimeBudgetHBR.add(31);
-            hhTravelTimeBudgetHBO.add(30);
-            hhTravelTimeBudgetNHBW.add(6);
-            hhTravelTimeBudgetNHBO.add(23);
-
-            hhTravelTimeBudgetHBO_Size1.add(30);
-            hhTravelTimeBudgetHBO_Size2.add(30);
-            hhTravelTimeBudgetHBO_Size345.add(30);
-            hhTravelTimeBudgetNHBO_Size1.add(23);
-            hhTravelTimeBudgetNHBO_Size2.add(23);
-            hhTravelTimeBudgetNHBO_Size345.add(23);
 
             hhPersons0to6.add(DataSet.countMembersByFilter(hh, mitoPerson ->
                     mitoPerson.getAge() < 6));
@@ -429,29 +400,14 @@ public class DataSet {
         RModelDataBuilder.setAttribute(Symbols.ROW_NAMES, new RowNamesVector(this.getHouseholds().size()));
         RModelDataBuilder.add("hh.id",hhId.build());
         RModelDataBuilder.add("hh.size",hhSize.build());
-        RModelDataBuilder.add("hh.size.1",hhSize1.build());
-        RModelDataBuilder.add("hh.size.2",hhSize2.build());
-        RModelDataBuilder.add("hh.size.3",hhSize3.build());
-        RModelDataBuilder.add("hh.size.4",hhSize4.build());
-        RModelDataBuilder.add("hh.size.5",hhSize5.build());
-        RModelDataBuilder.add("hh.size.345",hhSize345.build());
-        RModelDataBuilder.add("hh.size.45",hhSize45.build());
-
-        RModelDataBuilder.add("hh.TTB.HBW",hhTravelTimeBudgetHBW.build());
-        RModelDataBuilder.add("hh.TTB.HBE",hhTravelTimeBudgetHBE.build());
-        RModelDataBuilder.add("hh.TTB.HBS",hhTravelTimeBudgetHBS.build());
-        RModelDataBuilder.add("hh.TTB.HBR",hhTravelTimeBudgetHBR.build());
-        RModelDataBuilder.add("hh.TTB.HBO",hhTravelTimeBudgetHBO.build());
-        RModelDataBuilder.add("hh.TTB.NHBW",hhTravelTimeBudgetNHBW.build());
-        RModelDataBuilder.add("hh.TTB.NHBO",hhTravelTimeBudgetNHBO.build());
-
-        RModelDataBuilder.add("hh.TTB.HBO.size.1",hhTravelTimeBudgetHBO_Size1.build());
-        RModelDataBuilder.add("hh.TTB.HBO.size.2",hhTravelTimeBudgetHBO_Size2.build());
-        RModelDataBuilder.add("hh.TTB.HBO.size.345",hhTravelTimeBudgetHBO_Size345.build());
-
-        RModelDataBuilder.add("hh.TTB.NHBO.size.1",hhTravelTimeBudgetNHBO_Size1.build());
-        RModelDataBuilder.add("hh.TTB.NHBO.size.2",hhTravelTimeBudgetNHBO_Size2.build());
-        RModelDataBuilder.add("hh.TTB.NHBO.size.345",hhTravelTimeBudgetNHBO_Size345.build());
+        RModelDataBuilder.add("hh.size_1",hhSize1.build());
+        RModelDataBuilder.add("hh.size_2",hhSize2.build());
+        RModelDataBuilder.add("hh.size_3",hhSize3.build());
+        RModelDataBuilder.add("hh.size_23",hhSize3.build());
+        RModelDataBuilder.add("hh.size_4",hhSize4.build());
+        RModelDataBuilder.add("hh.size_5",hhSize5.build());
+        RModelDataBuilder.add("hh.size_345",hhSize345.build());
+        RModelDataBuilder.add("hh.size_45",hhSize45.build());
 
         RModelDataBuilder.add("hh.pers_under6",hhPersons0to6.build());
         RModelDataBuilder.add("hh.pers_6to17",hhPersons6to17.build());
@@ -466,22 +422,22 @@ public class DataSet {
         RModelDataBuilder.add("hh.pers_65up",hhPersons65up.build());
 
         RModelDataBuilder.add("hh.pers_female",hhPersonsFemale.build());
-        RModelDataBuilder.add("hh.pers_mobility_restriction",hhPersonsWithMobilityRestriction.build());
+        RModelDataBuilder.add("hh.pers_mobilityRestriction",hhPersonsWithMobilityRestriction.build());
 
-        RModelDataBuilder.add("hh.economic_status",hhEconomicStatus.build());
-        RModelDataBuilder.add("hh.economic_status.2",hhEconomicStatus2.build());
-        RModelDataBuilder.add("hh.economic_status.3",hhEconomicStatus3.build());
-        RModelDataBuilder.add("hh.economic_status.23",hhEconomicStatus23.build());
-        RModelDataBuilder.add("hh.economic_status.4",hhEconomicStatus4.build());
-        RModelDataBuilder.add("hh.economic_status.5",hhEconomicStatus5.build());
+        RModelDataBuilder.add("hh.economicStatus",hhEconomicStatus.build());
+        RModelDataBuilder.add("hh.economicStatus_2",hhEconomicStatus2.build());
+        RModelDataBuilder.add("hh.economicStatus_3",hhEconomicStatus3.build());
+        RModelDataBuilder.add("hh.economicStatus_23",hhEconomicStatus23.build());
+        RModelDataBuilder.add("hh.economicStatus_4",hhEconomicStatus4.build());
+        RModelDataBuilder.add("hh.economicStatus_5",hhEconomicStatus5.build());
 
         RModelDataBuilder.add("hh.autos",hhAutos.build());
-        RModelDataBuilder.add("hh.prop_autos",hhPropAutos.build());
+        RModelDataBuilder.add("hh.propAutos",hhPropAutos.build());
 
         RModelDataBuilder.add("hh.BBSR",hhRegionType.build());
-        RModelDataBuilder.add("hh.BBSR.2",hhRegionType2.build());
-        RModelDataBuilder.add("hh.BBSR.3",hhRegionType3.build());
-        RModelDataBuilder.add("hh.BBSR.4",hhRegionType4.build());
+        RModelDataBuilder.add("hh.BBSR_2",hhRegionType2.build());
+        RModelDataBuilder.add("hh.BBSR_3",hhRegionType3.build());
+        RModelDataBuilder.add("hh.BBSR_4",hhRegionType4.build());
 
         this.RDataFrame = RModelDataBuilder.build();
 
