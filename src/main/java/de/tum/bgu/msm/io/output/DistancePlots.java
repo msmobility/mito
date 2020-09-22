@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.io.output;
 
-import com.google.common.math.DoubleMath;
 import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoTrip;
@@ -40,7 +39,6 @@ public class DistancePlots {
         // Create Chart
         CategoryChart stackedChartByPurpose = new CategoryChartBuilder().width(1600).height(900).title("Trip Length Frequency Distributions")
                 .xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
-
 
         // Customize Chart
         stackedChartByPurpose.getStyler().setLegendPosition(Styler.LegendPosition.OutsideE);
