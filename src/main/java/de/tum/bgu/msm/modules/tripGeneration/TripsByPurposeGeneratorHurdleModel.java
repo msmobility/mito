@@ -73,7 +73,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
 
     private double getUtilityTravelBinaryLogit(MitoHousehold hh) {
         double utilityTravel = 0.;
-        int size = hh.getHhSize();
+        int size = Math.min(hh.getHhSize(),5);
         switch (size) {
             case 1:
                 utilityTravel += binLogCoef.get("size_1");
