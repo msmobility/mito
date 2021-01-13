@@ -230,11 +230,6 @@
             <artifactId>xchart</artifactId>
             <version>3.6.3</version>
         </dependency>
-        <dependency>
-            <groupId>ca.umontreal.iro.simul</groupId>
-            <artifactId>ssj</artifactId>
-            <version>3.3.1</version>
-        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
