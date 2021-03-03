@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
@@ -16,6 +17,9 @@ import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampl
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -80,16 +84,17 @@ public final class TravelDemandGenerator {
 
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
-            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration());
-            personTripAssignment = new PersonTripAssignment(dataSet);
-            travelTimeBudget = new TravelTimeBudgetModule(dataSet);
-            distribution = new TripDistribution(dataSet);
-            modeChoice = new ModeChoice(dataSet);
-            timeOfDayChoice = new TimeOfDayChoice(dataSet);
-            tripScaling = new TripScaling(dataSet);
-            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet);
+            List<Purpose> purposes = Purpose.getAllPurposes();
+            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration(), purposes);
+            personTripAssignment = new PersonTripAssignment(dataSet, purposes);
+            travelTimeBudget = new TravelTimeBudgetModule(dataSet, purposes);
+            distribution = new TripDistribution(dataSet, purposes);
+            modeChoice = new ModeChoice(dataSet, purposes);
+            timeOfDayChoice = new TimeOfDayChoice(dataSet, purposes);
+            tripScaling = new TripScaling(dataSet, purposes);
+            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, purposes);
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
-                longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+                longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
             }
         }
 

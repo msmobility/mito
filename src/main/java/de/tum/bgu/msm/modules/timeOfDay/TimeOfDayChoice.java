@@ -10,6 +10,7 @@ import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
 import java.util.EnumMap;
+import java.util.List;
 
 
 public final class TimeOfDayChoice extends Module {
@@ -26,8 +27,8 @@ public final class TimeOfDayChoice extends Module {
     private long counter = 0;
     private int issues = 0;
 
-    public TimeOfDayChoice(DataSet dataSet) {
-        super(dataSet);
+    public TimeOfDayChoice(DataSet dataSet, List<Purpose> purposes) {
+        super(dataSet, purposes);
     }
 
     @Override

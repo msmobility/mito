@@ -30,7 +30,7 @@ public class TripGenerationWriter {
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
-        for (Purpose purpose: Purpose.values()) {
+        for (Purpose purpose: Purpose.getAllPurposes()) {
             pwProd.print("," + purpose + "P");
             pwAttr.print("," + purpose + "A");
         }
@@ -38,8 +38,8 @@ public class TripGenerationWriter {
         Map<Integer, Map<Purpose, Integer>> tripProdByZoneAndPurp = new HashMap<>(dataSet.getZones().size());
 
         for(Integer zoneId: dataSet.getZones().keySet()) {
-            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.values().length);
-            for(Purpose purpose: Purpose.values()) {
+            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.getAllPurposes().size());
+            for(Purpose purpose: Purpose.getAllPurposes()) {
                 initialValues.put(purpose, 0);
             }
             tripProdByZoneAndPurp.put(zoneId, initialValues);
@@ -60,7 +60,7 @@ public class TripGenerationWriter {
             final int zoneId = zone.getId();
             pwProd.print(zoneId);
             pwAttr.print(zoneId);
-            for (Purpose purpose: Purpose.values()) {
+            for (Purpose purpose: Purpose.getAllPurposes()) {
                 int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(purpose);
                 totalTrips += tripProdTmp;
                 pwProd.print("," + tripProdTmp);

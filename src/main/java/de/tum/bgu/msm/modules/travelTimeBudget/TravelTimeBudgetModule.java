@@ -26,8 +26,8 @@ public class TravelTimeBudgetModule extends Module {
     private EnumSet<Purpose> discretionaryPurposes = EnumSet.of(Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO);
     private final TravelTimeBudgetCalculatorImpl travelTimeCalc;
 
-    public TravelTimeBudgetModule(DataSet dataSet) {
-        super(dataSet);
+    public TravelTimeBudgetModule(DataSet dataSet, List<Purpose> purposes) {
+        super(dataSet, purposes);
         travelTimeCalc = new TravelTimeBudgetCalculatorImpl();
     }
 
@@ -41,11 +41,14 @@ public class TravelTimeBudgetModule extends Module {
         logger.info("Started microscopic travel time budget calculation.");
         final ExecutorService service = Executors.newFixedThreadPool(Purpose.values().length);
         List<Future<?>> results = new ArrayList<>();
-        for (Purpose purpose : discretionaryPurposes) {
-            results.add(service.submit(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values())));
+        for (Purpose purpose : purposes){
+            if (Purpose.getDiscretionaryPurposes().contains(purpose)){
+                results.add(service.submit(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values())));
+            } else if (Purpose.getMandatoryPurposes().contains(purpose)){
+                results.add(service.submit(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes(), dataSet.getPeakHour())));
+                results.add(service.submit((new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()))));
+            }
         }
-        results.add(service.submit(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes(), dataSet.getPeakHour())));
-        results.add(service.submit((new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()))));
         service.shutdown();
         results.forEach(r -> {
             try {
@@ -58,12 +61,18 @@ public class TravelTimeBudgetModule extends Module {
         });
 
         logger.info("  Adjusting travel time budgets.");
-        adjustDiscretionaryPurposeBudgets();
+        //adjustDiscretionaryPurposeBudgets();
         logger.info("  Finished microscopic travel time budget calculation.");
 
     }
 
-    private void adjustDiscretionaryPurposeBudgets() {
+    public void adjustDiscretionaryPurposeBudgets(List<Purpose> purposes) {
+
+        for (Purpose purpose : purposes){
+            if (Purpose.getMandatoryPurposes().contains(purpose)){
+                throw new RuntimeException("This method is not applicable if mandatory purposes are being processed");
+            }
+        }
 
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             try {
@@ -73,10 +82,10 @@ public class TravelTimeBudgetModule extends Module {
                 discretionaryTTB = Math.max(discretionaryTTB, 0);
 
                 double calcDiscretionaryTTB = 0;
-                for (Purpose purpose : discretionaryPurposes) {
+                for (Purpose purpose : purposes) {
                     calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
                 }
-                for (Purpose purpose : discretionaryPurposes) {
+                for (Purpose purpose : purposes) {
                     double budget = household.getTravelTimeBudgetForPurpose(purpose);
                     if (budget != 0) {
                         budget = budget * discretionaryTTB / calcDiscretionaryTTB;

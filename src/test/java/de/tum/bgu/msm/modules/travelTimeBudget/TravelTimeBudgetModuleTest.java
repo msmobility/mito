@@ -10,6 +10,8 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static de.tum.bgu.msm.data.Purpose.HBE;
 import static de.tum.bgu.msm.data.Purpose.HBW;
 import static org.junit.Assert.assertEquals;
@@ -57,7 +59,7 @@ public class TravelTimeBudgetModuleTest {
         addHouseholds();
         addPersons();
 
-        TravelTimeBudgetModule travelTimeBudget = new TravelTimeBudgetModule(dataSet);
+        TravelTimeBudgetModule travelTimeBudget = new TravelTimeBudgetModule(dataSet, Purpose.getAllPurposes());
         travelTimeBudget.run();
     }
 

@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.plansConverter.externalFlows;
 
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.readers.ExternalFlowMatrixReader;
 import de.tum.bgu.msm.io.input.readers.ExternalZonesReader;
 import de.tum.bgu.msm.io.input.readers.LongDistanceTimeOfDayDistributionReader;
@@ -14,6 +15,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LongDistanceTraffic extends Module {
@@ -34,8 +36,8 @@ public class LongDistanceTraffic extends Module {
 
     private double scalingFactor;
 
-    public LongDistanceTraffic(DataSet dataSet, double scalingFactor) {
-        super(dataSet);
+    public LongDistanceTraffic(DataSet dataSet, double scalingFactor, List<Purpose> purposes) {
+        super(dataSet, purposes);
         this.scalingFactor = scalingFactor;
     }
 

@@ -31,12 +31,14 @@ public class RawTripGenerator {
 
     private final DataSet dataSet;
     private TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory;
+    private final List<Purpose> purposes;
 
-    private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
+    //private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
 
-    public RawTripGenerator(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory) {
+    public RawTripGenerator(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory, List<Purpose> purposes) {
         this.dataSet = dataSet;
         this.tripsByPurposeGeneratorFactory = tripsByPurposeGeneratorFactory;
+        this.purposes = purposes;
     }
 
     public void run (double scaleFactorForGeneration) {
@@ -46,9 +48,9 @@ public class RawTripGenerator {
 
     private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {
         final ConcurrentExecutor<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
-                ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+                ConcurrentExecutor.fixedPoolService(purposes.size());
         List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
-        for(Purpose purpose: PURPOSES) {
+        for(Purpose purpose: purposes) {
             tasks.add(tripsByPurposeGeneratorFactory.createTripGeneratorForThisPurpose(dataSet, purpose, scaleFactorForGeneration));
         }
         final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);

@@ -40,8 +40,8 @@ public final class TripDistribution extends Module {
 
     private final static Logger logger = Logger.getLogger(TripDistribution.class);
 
-    public TripDistribution(DataSet dataSet) {
-        super(dataSet);
+    public TripDistribution(DataSet dataSet, List<Purpose> purposes) {
+        super(dataSet, purposes);
     }
 
     @Override
