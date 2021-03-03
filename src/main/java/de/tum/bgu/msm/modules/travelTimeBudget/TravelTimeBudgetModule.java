@@ -66,7 +66,7 @@ public class TravelTimeBudgetModule extends Module {
 
     }
 
-    public void adjustDiscretionaryPurposeBudgets(List<Purpose> purposes) {
+    public void adjustDiscretionaryPurposeBudgets() {
 
         for (Purpose purpose : purposes){
             if (Purpose.getMandatoryPurposes().contains(purpose)){
