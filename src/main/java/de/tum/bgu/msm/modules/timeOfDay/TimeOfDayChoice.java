@@ -44,7 +44,10 @@ public final class TimeOfDayChoice extends Module {
 
     private void chooseDepartureTimes() {
 
-        dataSet.getTrips().values().forEach(trip -> {
+        for (Purpose purpose : purposes){
+            dataSet.getHouseholds().values().forEach(hh-> {
+                List<MitoTrip> trips = hh.getTripsForPurpose(purpose);
+                for (MitoTrip trip : trips){
 
                     if (trip.getTripOrigin() != null && trip.getTripDestination() != null
                             && trip.getTripMode() != null) {
@@ -54,7 +57,7 @@ public final class TimeOfDayChoice extends Module {
                             departureTimeInMinutes = chooseDepartureTime(trip);
                         } else {
                             int arrivalTimeInMinutes = chooseArrivalTime(trip);
-                           departureTimeInMinutes = arrivalTimeInMinutes - (int) estimateTravelTimeForDeparture(trip, arrivalTimeInMinutes);
+                            departureTimeInMinutes = arrivalTimeInMinutes - (int) estimateTravelTimeForDeparture(trip, arrivalTimeInMinutes);
                         }
                         //if departure is before midnight
                         if (departureTimeInMinutes < 0) {
@@ -65,7 +68,6 @@ public final class TimeOfDayChoice extends Module {
                             trip.setDepartureInMinutesReturnTrip(chooseDepartureTimeForReturnTrip(trip, departureTimeInMinutes));
                         }
 
-
                     } else {
                         issues++;
                     }
@@ -74,7 +76,8 @@ public final class TimeOfDayChoice extends Module {
                         logger.info(counter + " times of day assigned");
                     }
                 }
-        );
+            });
+        }
         logger.warn(issues + " trips have no time of day since they have no origin, destination or mode");
     }
 

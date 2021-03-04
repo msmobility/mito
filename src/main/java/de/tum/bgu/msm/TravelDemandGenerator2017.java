@@ -43,7 +43,8 @@ public final class TravelDemandGenerator2017 {
     private final Module travelTimeBudgetDiscretionary;
     private final Module distributionDiscretionary;
     private final Module modeChoiceDiscretionary;
-    private final Module timeOfDayChoice;
+    private final Module timeOfDayChoiceMandatory;
+    private final Module timeOfDayChoiceDiscretionary;
     private final Module tripScaling;
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
@@ -55,12 +56,13 @@ public final class TravelDemandGenerator2017 {
             Module travelTimeBudgetMandatory,
             Module distributionMandatory,
             Module modeChoiceMandatory,
+            Module timeOfDayChoiceMandatory,
             Module tripGenerationDiscretionary,
-            Module tripGenerationDiscretionary1, Module personTripAssignmentDiscretionary,
+            Module personTripAssignmentDiscretionary,
             Module travelTimeBudgetDiscretionary,
             Module distributionDiscretionary,
             Module modeChoiceDiscretionary,
-            Module timeOfDayChoice,
+            Module timeOfDayChoiceDiscretionary,
             Module tripScaling,
             Module matsimPopulationGenerator,
             Module longDistanceTraffic) {
@@ -71,12 +73,13 @@ public final class TravelDemandGenerator2017 {
         this.travelTimeBudgetMandatory = travelTimeBudgetMandatory;
         this.distributionMandatory = distributionMandatory;
         this.modeChoiceMandatory = modeChoiceMandatory;
-        this.tripGenerationDiscretionary = tripGenerationDiscretionary1;
+        this.timeOfDayChoiceMandatory = timeOfDayChoiceMandatory;
+        this.tripGenerationDiscretionary = tripGenerationDiscretionary;
         this.personTripAssignmentDiscretionary = personTripAssignmentDiscretionary;
         this.travelTimeBudgetDiscretionary = travelTimeBudgetDiscretionary;
         this.distributionDiscretionary = distributionDiscretionary;
         this.modeChoiceDiscretionary = modeChoiceDiscretionary;
-        this.timeOfDayChoice = timeOfDayChoice;
+        this.timeOfDayChoiceDiscretionary = timeOfDayChoiceDiscretionary;
         this.tripScaling = tripScaling;
         this.matsimPopulationGenerator = matsimPopulationGenerator;
         this.longDistanceTraffic = longDistanceTraffic;
@@ -92,14 +95,15 @@ public final class TravelDemandGenerator2017 {
         private Module travelTimeBudgetMandatory;
         private Module distributionMandatory;
         private Module modeChoiceMandatory;
+        private Module timeOfDayChoiceMandatory;
 
         private Module tripGenerationDiscretionary;
         private Module personTripAssignmentDiscretionary;
         private Module travelTimeBudgetDiscretionary;
         private Module distributionDiscretionary;
         private Module modeChoiceDiscretionary;
+        private Module timeOfDayChoiceDiscretionary;
 
-        private Module timeOfDayChoice;
         private Module tripScaling;
         private Module matsimPopulationGenerator;
         private Module longDistanceTraffic;
@@ -113,15 +117,16 @@ public final class TravelDemandGenerator2017 {
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes());
             modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
+            timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryHurdle(), Purpose.getDiscretionaryPurposes());
             personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes());
             modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
-
+            timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
-            timeOfDayChoice = new TimeOfDayChoice(dataSet, purposes);
+
             tripScaling = new TripScaling(dataSet, purposes);
             matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, purposes);
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
@@ -136,13 +141,13 @@ public final class TravelDemandGenerator2017 {
                     travelTimeBudgetMandatory,
                     distributionMandatory,
                     modeChoiceMandatory,
-                    tripGenerationDiscretionary,
+                    timeOfDayChoiceMandatory,
                     tripGenerationDiscretionary,
                     personTripAssignmentDiscretionary,
                     travelTimeBudgetDiscretionary,
                     distributionDiscretionary,
                     modeChoiceDiscretionary,
-                    timeOfDayChoice,
+                    timeOfDayChoiceDiscretionary,
                     tripScaling,
                     matsimPopulationGenerator,
                     longDistanceTraffic);
@@ -168,8 +173,8 @@ public final class TravelDemandGenerator2017 {
             this.modeChoiceMandatory = modeChoice;
         }
 
-        public void setTimeOfDayChoice(Module timeOfDayChoice) {
-            this.timeOfDayChoice = timeOfDayChoice;
+        public void setTimeOfDayChoiceMandatory(Module timeOfDayChoiceMandatory) {
+            this.timeOfDayChoiceMandatory = timeOfDayChoiceMandatory;
         }
 
         public void setTripScaling(Module tripScaling) {
@@ -208,8 +213,8 @@ public final class TravelDemandGenerator2017 {
             return modeChoiceMandatory;
         }
 
-        public Module getTimeOfDayChoice() {
-            return timeOfDayChoice;
+        public Module getTimeOfDayChoiceMandatory() {
+            return timeOfDayChoiceMandatory;
         }
 
         public Module getTripScaling() {
@@ -241,6 +246,9 @@ public final class TravelDemandGenerator2017 {
         distributionMandatory.run();
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoiceMandatory.run();
+        logger.info("Running time of day choice");
+        timeOfDayChoiceMandatory.run();
+
 
         tripGenerationDiscretionary.run();
         logger.info("Completed TG");
@@ -253,9 +261,9 @@ public final class TravelDemandGenerator2017 {
         distributionDiscretionary.run();
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoiceDiscretionary.run();
-
         logger.info("Running time of day choice");
-        timeOfDayChoice.run();
+        timeOfDayChoiceDiscretionary.run();
+
 
         logger.info("Running trip scaling");
         tripScaling.run();
