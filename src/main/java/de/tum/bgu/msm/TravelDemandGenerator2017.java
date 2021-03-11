@@ -16,6 +16,7 @@ import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryHurdle;
+import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -112,15 +113,15 @@ public final class TravelDemandGenerator2017 {
             this.dataSet = dataSet;
             //from here
             List<Purpose> purposes = Purpose.getAllPurposes();
-            tripGenerationMandatory = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryHurdle(), Purpose.getMandatoryPurposes());
-            personTripAssignmentMandatory = new PersonTripAssignment(dataSet, Purpose.getMandatoryPurposes());
+            tripGenerationMandatory = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getMandatoryPurposes());
+            //personTripAssignmentMandatory = new PersonTripAssignment(dataSet, Purpose.getMandatoryPurposes());
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes());
             modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
-            tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryHurdle(), Purpose.getDiscretionaryPurposes());
-            personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
+            tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getDiscretionaryPurposes());
+            //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes());
             modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
@@ -236,9 +237,8 @@ public final class TravelDemandGenerator2017 {
         logger.info("Running Module: Microscopic Trip Generation");
 
         tripGenerationMandatory.run();
-        logger.info("Completed TG");
-        logger.info("Running Module: Person to Trip Assignment");
-        personTripAssignmentMandatory.run();
+        //logger.info("Running Module: Person to Trip Assignment");
+        //personTripAssignmentMandatory.run();
         logger.info("Running Module: Travel Time Budget Calculation");
         travelTimeBudgetMandatory.run();
         //((TravelTimeBudgetModule) travelTimeBudget).adjustDiscretionaryPurposeBudgets(Purpose.getMandatoryPurposes());
@@ -251,9 +251,8 @@ public final class TravelDemandGenerator2017 {
 
 
         tripGenerationDiscretionary.run();
-        logger.info("Completed TG");
-        logger.info("Running Module: Person to Trip Assignment");
-        personTripAssignmentDiscretionary.run();
+        //logger.info("Running Module: Person to Trip Assignment");
+        //personTripAssignmentDiscretionary.run();
         logger.info("Running Module: Travel Time Budget Calculation");
         travelTimeBudgetDiscretionary.run();
         ((TravelTimeBudgetModule) travelTimeBudgetDiscretionary).adjustDiscretionaryPurposeBudgets();
