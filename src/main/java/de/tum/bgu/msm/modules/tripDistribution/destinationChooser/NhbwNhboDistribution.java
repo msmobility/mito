@@ -26,6 +26,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private final static double VARIANCE_DOUBLED = 500 * 2;
     private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
+    private static final boolean USE_BUDGETS_IN_DESTINATION_CHOICE = false;
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
@@ -81,8 +82,31 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
-                if (hasBudgetForPurpose(household)) {
-                    updateBudgets(household);
+                if (USE_BUDGETS_IN_DESTINATION_CHOICE){
+                    if (hasBudgetForPurpose(household)) {
+                        updateBudgets(household);
+                        for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                            Location origin = findOrigin(household, trip);
+                            if (origin == null) {
+                                logger.debug("No origin found for trip" + trip);
+                                TripDistribution.failedTripsCounter.incrementAndGet();
+                                continue;
+                            }
+                            trip.setTripOrigin(origin);
+                            MitoZone destination = findDestination(trip.getTripOrigin().getZoneId());
+                            trip.setTripDestination(destination);
+                            if (destination == null) {
+                                logger.debug("No destination found for trip" + trip);
+                                TripDistribution.failedTripsCounter.incrementAndGet();
+                                continue;
+                            }
+                            postProcessTrip(trip);
+                            TripDistribution.distributedTripsCounter.incrementAndGet();
+                        }
+                    } else {
+                        TripDistribution.failedTripsCounter.incrementAndGet();
+                    }
+                } else {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         Location origin = findOrigin(household, trip);
                         if (origin == null) {
@@ -91,19 +115,17 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                             continue;
                         }
                         trip.setTripOrigin(origin);
-                        MitoZone destination = findDestination(trip.getTripOrigin().getZoneId());
+                        MitoZone destination = findDestinationWithoutBudget(trip.getTripOrigin().getZoneId());
                         trip.setTripDestination(destination);
                         if (destination == null) {
                             logger.debug("No destination found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();
                             continue;
                         }
-                        postProcessTrip(trip);
                         TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
-                } else {
-                    TripDistribution.failedTripsCounter.incrementAndGet();
                 }
+
             }
             counter++;
         }
@@ -171,6 +193,14 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
             baseProbs[i] = baseProbs[i] * factor;
         });
 
+        int destinationInternalId = MitoUtil.select(baseProbs, random);
+        return zonesCopy.get(row.getIdForInternalIndex(destinationInternalId));
+    }
+
+
+    private MitoZone findDestinationWithoutBudget(int origin) {
+        final IndexedDoubleMatrix1D row = baseProbabilities.get(purpose).viewRow(origin);
+        double[] baseProbs = row.toNonIndexedArray();
         int destinationInternalId = MitoUtil.select(baseProbs, random);
         return zonesCopy.get(row.getIdForInternalIndex(destinationInternalId));
     }

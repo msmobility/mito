@@ -30,6 +30,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
+    private static final boolean USE_BUDGETS_IN_DESTINATION_CHOICE = false;
 
     private final double peakHour;
     private final Purpose purpose;
@@ -78,11 +79,29 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
-                if (hasBudgetForPurpose(household)) {
-                    updateBudgets(household);
-                    updateDestinationProbabilities(household.getHomeZone().getId());
+                if (USE_BUDGETS_IN_DESTINATION_CHOICE){
+                    if (hasBudgetForPurpose(household)) {
+                        updateBudgets(household);
+                        updateDestinationProbabilities(household.getHomeZone().getId());
+                        for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                            trip.setTripOrigin(household);
+                            MitoZone zone = findDestination();
+                            trip.setTripDestination(zone);
+                            if (zone == null) {
+                                logger.debug("No destination found for trip" + trip);
+                                TripDistribution.failedTripsCounter.incrementAndGet();
+                                continue;
+                            }
+                            postProcessTrip(trip);
+                            TripDistribution.distributedTripsCounter.incrementAndGet();
+                        }
+                    } else {
+                        TripDistribution.failedTripsCounter.incrementAndGet();
+                    }
+                } else {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         trip.setTripOrigin(household);
+                        updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId());
                         MitoZone zone = findDestination();
                         trip.setTripDestination(zone);
                         if (zone == null) {
@@ -90,11 +109,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                             TripDistribution.failedTripsCounter.incrementAndGet();
                             continue;
                         }
-                        postProcessTrip(trip);
                         TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
-                } else {
-                    TripDistribution.failedTripsCounter.incrementAndGet();
                 }
             }
             counter++;
@@ -139,6 +155,15 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
             double factor = SQRT_INV * FastMath.exp(-(diff * diff) / VARIANCE_DOUBLED);
             destinationProbabilities[i] = baseProbs[i] * factor;
         });
+    }
+
+    private void updateDestinationProbabilitiesWithoutBudgets(int origin) {
+        final IndexedDoubleMatrix1D row = baseProbabilities.viewRow(origin);
+        double[] baseProbs = row.toNonIndexedArray();
+        IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
+            destinationProbabilities[i] = baseProbs[i];
+                });
+
     }
 
     private void updateBudgets(MitoHousehold household) {
