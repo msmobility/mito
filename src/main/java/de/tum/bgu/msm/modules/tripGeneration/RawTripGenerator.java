@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import org.apache.log4j.Logger;
@@ -56,13 +53,17 @@ public class RawTripGenerator {
         final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
         for(Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
             final Purpose purpose = result.getFirst();
-
             final int sum = result.getSecond().values().stream().flatMapToInt(e -> IntStream.of(e.size())).sum();
             logger.info("Created " + sum + " trips for " + purpose);
             final Map<MitoHousehold, List<MitoTrip>> tripsByHouseholds = result.getSecond();
             for(Map.Entry<MitoHousehold, List<MitoTrip>> tripsByHousehold: tripsByHouseholds.entrySet()) {
-                tripsByHousehold.getKey().setTripsByPurpose(tripsByHousehold.getValue(), purpose);
-                dataSet.addTrips(tripsByHousehold.getValue());
+                List<MitoTrip> tripsInThisHousehold = tripsByHousehold.getValue();
+                tripsByHousehold.getKey().setTripsByPurpose(tripsInThisHousehold, purpose);
+                dataSet.addTrips(tripsInThisHousehold);
+                for (MitoTrip mitoTrip : tripsInThisHousehold) {
+                    MitoPerson person = mitoTrip.getPerson();
+                    person.addTrip(mitoTrip);
+                }
             }
         }
     }

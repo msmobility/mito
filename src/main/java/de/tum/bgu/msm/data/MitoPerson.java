@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)

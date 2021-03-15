@@ -308,25 +308,35 @@ public class TripsByPurposeGeneratorPersonBasedHurdleModel extends RandomizableC
 
         for (String mode : timesHBW.keySet()) {
             if (mode.equals("car")) {
+                utilityTravel += coefficients.get("p.isMobile_HBW_car");
                 utilityTravel += coefficients.get("p.sqrtTTB_HBW_car") * Math.sqrt(timesHBW.get("car"));
             } else if (mode.equals("PT")) {
-                utilityTravel += coefficients.get("p.sqrtTTB_HBW_car") * Math.sqrt(timesHBW.get("PT"));
+                utilityTravel += coefficients.get("p.isMobile_HBW_PT");
+                utilityTravel += coefficients.get("p.sqrtTTB_HBW_PT") * Math.sqrt(timesHBW.get("PT"));
             } else if (mode.equals("cycle")) {
-                utilityTravel += coefficients.get("p.sqrtTTB_HBW_car") * Math.sqrt(timesHBW.get("cycle"));
+                utilityTravel += coefficients.get("p.isMobile_HBW_cycle");
+                utilityTravel += coefficients.get("p.sqrtTTB_HBW_cycle") * Math.sqrt(timesHBW.get("cycle"));
             } else if (mode.equals("walk")) {
-                utilityTravel += coefficients.get("p.sqrtTTB_HBW_car") * Math.sqrt(timesHBW.get("walk"));
+                utilityTravel += coefficients.get("p.isMobile_HBW_walk");
+                utilityTravel += coefficients.get("p.sqrtTTB_HBW_walk") * Math.sqrt(timesHBW.get("walk"));
             }
         }
 
         for (String mode : timesHBE.keySet()) {
             if (mode.equals("car")) {
+                utilityTravel += coefficients.get("p.isMobile_HBE_car");
                 utilityTravel += coefficients.get("p.sqrtTTB_HBE_car") * Math.sqrt(timesHBE.get("car"));
+                utilityTravel += coefficients.get("p.TTB_HBE_car") * timesHBE.get("car");
             } else if (mode.equals("PT")) {
-                utilityTravel += coefficients.get("p.sqrtTTB_HBE_car") * Math.sqrt(timesHBE.get("PT"));
+                utilityTravel += coefficients.get("p.isMobile_HBE_PT");
+                utilityTravel += coefficients.get("p.sqrtTTB_HBE_PT") * Math.sqrt(timesHBE.get("PT"));
+                utilityTravel += coefficients.get("p.TTB_HBE_PT") * timesHBE.get("PT");
             } else if (mode.equals("cycle")) {
-                utilityTravel += coefficients.get("p.sqrtTTB_HBE_car") * Math.sqrt(timesHBE.get("cycle"));
+                utilityTravel += coefficients.get("p.isMobile_HBE_cycle");
+                utilityTravel += coefficients.get("p.sqrtTTB_HBE_cycle") * Math.sqrt(timesHBE.get("cycle"));
             } else if (mode.equals("walk")) {
-                utilityTravel += coefficients.get("p.sqrtTTB_HBE_car") * Math.sqrt(timesHBE.get("walk"));
+                utilityTravel += coefficients.get("p.isMobile_HBE_walk");
+                utilityTravel += coefficients.get("p.sqrtTTB_HBE_walk") * Math.sqrt(timesHBE.get("walk"));
             }
         }
 
@@ -383,7 +393,7 @@ public class TripsByPurposeGeneratorPersonBasedHurdleModel extends RandomizableC
         List<MitoTrip> currentTrips = tripsByHH.get(hh);
         for (int i = 0; i < numberOfTrips; i++) {
             MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
-            person.addTrip(trip);
+            //person.addTrip(trip);
             trip.setPerson(person);
             if (trip != null) {
                 currentTrips.add(trip);
