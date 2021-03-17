@@ -4,28 +4,28 @@ import de.tum.bgu.msm.data.Purpose;
 
 public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalculator {
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBS = -0.045 / 1.12 / 1.3;
+    private final static double TRAVEL_DISTANCE_PARAM_HBS = -0.01 * 2.70;
     private final static double IMPEDANCE_PARAM_HBS = 14.5;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBO = -0.062 / 7.05 / 1.2;
+    private final static double TRAVEL_DISTANCE_PARAM_HBO = -0.01 * 0.43;
     private final static double IMPEDANCE_PARAM_HBO = 53;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.07;
+    private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.01 * 1.68;
     private final static double IMPEDANCE_PARAM_HBW = 9;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBE = -0.149;
+    private final static double TRAVEL_DISTANCE_PARAM_HBE = -0.01 * 2.88;
     private final static double IMPEDANCE_PARAM_HBE = 28.3;
 
-    private final static double travelDistanceParamNhbw = -0.03;
+    private final static double travelDistanceParamNhbw = -0.01 * 2.82;
     private final static double impedanceParamNhbw = 15.1;
 
-    private final static double travelDistanceParamNhbo = -0.004 / 1.23 / 1.2;
+    private final static double travelDistanceParamNhbo = -0.01 * 0.28;
     private final static double impedanceParamNhbo = 110;
 
-    private final double distanceParam;
-    private final double impedanceParam;
+    private double distanceParam;
+    private double impedanceParam;
 
-    DestinationUtilityCalculatorImpl(Purpose purpose) {
+    DestinationUtilityCalculatorImpl(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
         switch (purpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;
@@ -55,6 +55,10 @@ public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalcu
             default:
                 throw new RuntimeException("not implemented!");
         }
+
+        distanceParam = distanceParam * travelDistanceCalibrationK;
+        impedanceParam = impedanceParam * impendanceCalibrationK;
+
     }
 
     @Override

@@ -16,10 +16,7 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,8 +38,26 @@ public final class TripDistribution extends Module {
 
     private final static Logger logger = Logger.getLogger(TripDistribution.class);
 
+    private final Map<Purpose, Double> travelDistanceCalibrationParameters;
+    private final Map<Purpose, Double> impedanceCalibrationParameters;
+
+    public TripDistribution(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
+                            Map<Purpose, Double> impedanceCalibrationParameters) {
+        super(dataSet, purposes);
+        this.travelDistanceCalibrationParameters = travelDistanceCalibrationParameters;
+        this.impedanceCalibrationParameters = impedanceCalibrationParameters;
+    }
+
     public TripDistribution(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
+        travelDistanceCalibrationParameters = new HashMap<>();
+        impedanceCalibrationParameters = new HashMap<>();
+        for (Purpose purpose : Purpose.getAllPurposes()){
+            travelDistanceCalibrationParameters.put(purpose, 1.0);
+            impedanceCalibrationParameters.put(purpose, 1.0);
+        }
+
+
     }
 
     @Override
@@ -59,7 +74,9 @@ public final class TripDistribution extends Module {
         for (Purpose purpose : purposes) {
             if (!purpose.equals(Purpose.AIRPORT)){
                 //Distribution of trips to the airport does not need a matrix of weights
-                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet));
+                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
+                        travelDistanceCalibrationParameters.get(purpose),
+                        impedanceCalibrationParameters.get(purpose)));
             }
         }
         ConcurrentExecutor<Tuple<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
