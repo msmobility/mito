@@ -4,22 +4,22 @@ import de.tum.bgu.msm.data.Purpose;
 
 public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalculator {
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBS = -0.01 * 2.70;
-    private final static double IMPEDANCE_PARAM_HBS = 14.5;
-
-    private final static double TRAVEL_DISTANCE_PARAM_HBO = -0.01 * 0.43;
-    private final static double IMPEDANCE_PARAM_HBO = 53;
-
-    private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.01 * 1.68;
+    private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.01 * 1.87668768839999;
     private final static double IMPEDANCE_PARAM_HBW = 9;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBE = -0.01 * 2.88;
+    private final static double TRAVEL_DISTANCE_PARAM_HBE = -0.01 * 1.09993274026271;
     private final static double IMPEDANCE_PARAM_HBE = 28.3;
 
-    private final static double travelDistanceParamNhbw = -0.01 * 2.82;
+    private final static double TRAVEL_DISTANCE_PARAM_HBS = -0.01 * 3.88461641985529;
+    private final static double IMPEDANCE_PARAM_HBS = 14.5;
+
+    private final static double TRAVEL_DISTANCE_PARAM_HBO = -0.01 * 0.36606039220205;
+    private final static double IMPEDANCE_PARAM_HBO = 53;
+
+    private final static double travelDistanceParamNhbw = -0.01 * 0.874028408112042;
     private final static double impedanceParamNhbw = 15.1;
 
-    private final static double travelDistanceParamNhbo = -0.01 * 0.28;
+    private final static double travelDistanceParamNhbo = -0.01 * 0.874028408112042;
     private final static double impedanceParamNhbo = 110;
 
     private double distanceParam;

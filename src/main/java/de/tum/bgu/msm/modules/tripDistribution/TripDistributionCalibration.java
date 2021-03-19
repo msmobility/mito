@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
+import com.google.common.math.Quantiles;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoOccupationStatus;
 import de.tum.bgu.msm.data.MitoTrip;
@@ -15,7 +16,9 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 public class TripDistributionCalibration extends Module {
 
@@ -32,12 +35,12 @@ public class TripDistributionCalibration extends Module {
 
         super(dataSet, purposes);
         iteration = 0;
-        observedAverageDistances.put(Purpose.HBE , 5.);
-        observedAverageDistances.put(Purpose.HBW , 13.);
-        observedAverageDistances.put(Purpose.HBO , 9.);
-        observedAverageDistances.put(Purpose.HBS , 7.);
-        observedAverageDistances.put(Purpose.NHBO , 6.);
-        observedAverageDistances.put(Purpose.NHBW , 6.);
+        observedAverageDistances.put(Purpose.HBE , 7.29);
+        observedAverageDistances.put(Purpose.HBW , 18.1);
+        observedAverageDistances.put(Purpose.HBO , 10.4);
+        observedAverageDistances.put(Purpose.HBS , 5.07);
+        observedAverageDistances.put(Purpose.NHBO , 11.7);
+        observedAverageDistances.put(Purpose.NHBW , 16.1);
 
         String purposesString = "";
         for (Purpose purpose : purposes) {
@@ -73,6 +76,7 @@ public class TripDistributionCalibration extends Module {
                         trip.getPerson().getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT));
             }
 
+
             for (MitoTrip trip : tripsThisPurpose) {
                 count++;
                 sum += dataSet.getTravelDistancesAuto().
@@ -80,6 +84,13 @@ public class TripDistributionCalibration extends Module {
             }
 
             double avg = sum / count;
+
+            //double[] distances = tripsThisPurpose.stream().mapToDouble(this::getDistanceOfThisTrip).toArray();
+
+
+            //double avg = Quantiles.median().compute(distances);
+
+
             simulatedAverageDistances.put(purpose, avg);
             double ratio = avg / observedAverageDistances.get(purpose); //greater than 1 if the model simulates too long trips
             // - in this case, the parameter of distance needs to be larger (more negative)
@@ -97,6 +108,11 @@ public class TripDistributionCalibration extends Module {
 
         }
 
+    }
+
+    private double getDistanceOfThisTrip(MitoTrip trip) {
+        return dataSet.getTravelDistancesAuto().
+                getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
     }
 
 
