@@ -7,7 +7,6 @@ import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
@@ -15,7 +14,6 @@ import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
-import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryHurdle;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -29,9 +27,9 @@ import java.util.List;
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  */
-public final class TravelDemandGenerator2017 {
+public final class TravelDemandGenerator2 {
 
-    private static final Logger logger = Logger.getLogger(TravelDemandGenerator2017.class);
+    private static final Logger logger = Logger.getLogger(TravelDemandGenerator2.class);
     private final DataSet dataSet;
 
     private final Module tripGenerationMandatory;
@@ -50,7 +48,7 @@ public final class TravelDemandGenerator2017 {
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
 
-    private TravelDemandGenerator2017(
+    private TravelDemandGenerator2(
             DataSet dataSet,
             Module tripGenerationMandatory,
             Module personTripAssignmentMandatory,
@@ -116,14 +114,14 @@ public final class TravelDemandGenerator2017 {
             tripGenerationMandatory = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getMandatoryPurposes());
             //personTripAssignmentMandatory = new PersonTripAssignment(dataSet, Purpose.getMandatoryPurposes());
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
-            distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes());
+            distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(), false);
             modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getDiscretionaryPurposes());
             //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
-            distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes());
+            distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(), false);
             modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
             timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
@@ -135,8 +133,8 @@ public final class TravelDemandGenerator2017 {
             }
         }
 
-        public TravelDemandGenerator2017 build() {
-            return new TravelDemandGenerator2017(dataSet,
+        public TravelDemandGenerator2 build() {
+            return new TravelDemandGenerator2(dataSet,
                     tripGenerationMandatory,
                     personTripAssignmentMandatory,
                     travelTimeBudgetMandatory,

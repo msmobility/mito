@@ -20,7 +20,6 @@ import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -86,7 +85,7 @@ public final class MitoModelForModeChoiceCalibration {
         ttb.run();
 
         logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet, purposes);
+        TripDistribution distribution = new TripDistribution(dataSet, purposes, false);
         distribution.run();
 
         ModeChoice modeChoice = new ModeChoice(dataSet, purposes);

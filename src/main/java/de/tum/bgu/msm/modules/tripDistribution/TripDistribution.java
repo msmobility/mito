@@ -40,16 +40,19 @@ public final class TripDistribution extends Module {
 
     private final Map<Purpose, Double> travelDistanceCalibrationParameters;
     private final Map<Purpose, Double> impedanceCalibrationParameters;
+    private final boolean useBudgetsInDestinationChoice;
 
     public TripDistribution(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
-                            Map<Purpose, Double> impedanceCalibrationParameters) {
+                            Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice) {
         super(dataSet, purposes);
         this.travelDistanceCalibrationParameters = travelDistanceCalibrationParameters;
         this.impedanceCalibrationParameters = impedanceCalibrationParameters;
+        this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
     }
 
-    public TripDistribution(DataSet dataSet, List<Purpose> purposes) {
+    public TripDistribution(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice) {
         super(dataSet, purposes);
+        this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         travelDistanceCalibrationParameters = new HashMap<>();
         impedanceCalibrationParameters = new HashMap<>();
         for (Purpose purpose : Purpose.getAllPurposes()){
@@ -106,10 +109,10 @@ public final class TripDistribution extends Module {
                     homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(purpose), partition, dataSet.getZones()));
                 } else if (purpose.equals(HBS)){
                     homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(purpose), partition, dataSet.getZones(),
-                            dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                            dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 } else if (purpose.equals(HBO)) {
                     homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(purpose), partition, dataSet.getZones(),
-                            dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                            dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
             }
         }
@@ -124,10 +127,10 @@ public final class TripDistribution extends Module {
             for (Purpose purpose : purposes){
                 if (purpose.equals(NHBW)){
                     nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, partition, dataSet.getZones(),
-                            dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                            dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 } else if (purpose.equals(NHBO)){
                     nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, partition, dataSet.getZones(),
-                            dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                            dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
 
 
