@@ -61,8 +61,10 @@ public class RawTripGenerator {
                 tripsByHousehold.getKey().setTripsByPurpose(tripsInThisHousehold, purpose);
                 dataSet.addTrips(tripsInThisHousehold);
                 for (MitoTrip mitoTrip : tripsInThisHousehold) {
-                    MitoPerson person = mitoTrip.getPerson();
-                    person.addTrip(mitoTrip);
+                    if (mitoTrip.getPerson() != null){
+                        MitoPerson person = mitoTrip.getPerson();
+                        person.addTrip(mitoTrip);
+                    }
                 }
             }
         }

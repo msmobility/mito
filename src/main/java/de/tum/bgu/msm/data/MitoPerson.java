@@ -71,6 +71,10 @@ public class MitoPerson implements Id {
         }
     }
 
+    public void removeTripFromPerson(MitoTrip trip){
+        trips.remove(trip);
+    }
+
     @Override
     public int hashCode() {
         return id;

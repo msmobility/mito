@@ -239,6 +239,9 @@ public final class TravelDemandGenerator2 {
         logger.info("Running Module: Microscopic Trip Generation");
 
         tripGenerationMandatory.run();
+
+        //new Telework(dataSet, Purpose.getMandatoryPurposes(), 0.5).run();
+
         //logger.info("Running Module: Person to Trip Assignment");
         //personTripAssignmentMandatory.run();
         logger.info("Running Module: Travel Time Budget Calculation");
@@ -250,8 +253,6 @@ public final class TravelDemandGenerator2 {
         modeChoiceMandatory.run();
         logger.info("Running time of day choice");
         timeOfDayChoiceMandatory.run();
-
-        new Telework(dataSet, Purpose.getMandatoryPurposes(), 0.5).run();
 
         tripGenerationDiscretionary.run();
         //logger.info("Running Module: Person to Trip Assignment");
