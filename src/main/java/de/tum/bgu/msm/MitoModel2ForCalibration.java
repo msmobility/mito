@@ -8,6 +8,7 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistributionCalibration;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
@@ -113,7 +114,7 @@ public final class MitoModel2ForCalibration {
 
         distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters,
-                impedanceCalibrationParameters, false);
+                impedanceCalibrationParameters, false, new DestinationUtilityCalculatorFactoryImpl2());
         distributionMandatory.run();
 
         TripDistributionCalibration tripDistributionCalibrationMandatory =
@@ -125,7 +126,7 @@ public final class MitoModel2ForCalibration {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                     tripDistributionCalibrationMandatory.getTravelDistanceParameters(),
-                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false);
+                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false, new DestinationUtilityCalculatorFactoryImpl2());
             distributionMandatory.run();
         }
 
@@ -164,7 +165,8 @@ public final class MitoModel2ForCalibration {
 
         distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                 travelDistanceCalibrationParametersDisc,
-                impedanceCalibrationParametersDisc, false);
+                impedanceCalibrationParametersDisc, false,
+                new DestinationUtilityCalculatorFactoryImpl2());
         distributionDiscretionary.run();
 
 
@@ -176,7 +178,8 @@ public final class MitoModel2ForCalibration {
             tripDistributionCalibrationDiscretionary.update(iteration);
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                     tripDistributionCalibrationDiscretionary.getTravelDistanceParameters(),
-                    tripDistributionCalibrationDiscretionary.getImpendanceParameters(), false);
+                    tripDistributionCalibrationDiscretionary.getImpendanceParameters(), false,
+                    new DestinationUtilityCalculatorFactoryImpl2());
             distributionDiscretionary.run();
         }
 
