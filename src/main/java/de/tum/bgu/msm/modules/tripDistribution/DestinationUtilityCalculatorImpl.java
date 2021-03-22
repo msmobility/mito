@@ -19,7 +19,7 @@ public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalcu
     private final static double travelDistanceParamNhbw = -0.01 * 0.874028408112042;
     private final static double impedanceParamNhbw = 15.1;
 
-    private final static double travelDistanceParamNhbo = -0.01 * 0.874028408112042;
+    private final static double travelDistanceParamNhbo = -0.01 * 0.1314828354307;
     private final static double impedanceParamNhbo = 110;
 
     private double distanceParam;
