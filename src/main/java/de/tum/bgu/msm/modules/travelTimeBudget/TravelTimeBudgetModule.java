@@ -45,8 +45,8 @@ public class TravelTimeBudgetModule extends Module {
             if (Purpose.getDiscretionaryPurposes().contains(purpose)){
                 results.add(service.submit(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values())));
             } else if (Purpose.getMandatoryPurposes().contains(purpose)){
-                results.add(service.submit(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBW, dataSet.getTravelTimes(), dataSet.getPeakHour())));
-                results.add(service.submit((new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()))));
+                results.add(service.submit(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), purpose, dataSet.getTravelTimes(), dataSet.getPeakHour())));
+                //results.add(service.submit((new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()))));
             }
         }
         service.shutdown();
@@ -68,12 +68,6 @@ public class TravelTimeBudgetModule extends Module {
 
     public void adjustDiscretionaryPurposeBudgets() {
 
-        for (Purpose purpose : purposes){
-            if (Purpose.getMandatoryPurposes().contains(purpose)){
-                throw new RuntimeException("This method is not applicable if mandatory purposes are being processed");
-            }
-        }
-
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             try {
                 double totalTravelTimeBudget = travelTimeCalc.calculateBudget(household, "Total");
@@ -83,15 +77,20 @@ public class TravelTimeBudgetModule extends Module {
 
                 double calcDiscretionaryTTB = 0;
                 for (Purpose purpose : purposes) {
-                    calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
-                }
-                for (Purpose purpose : purposes) {
-                    double budget = household.getTravelTimeBudgetForPurpose(purpose);
-                    if (budget != 0) {
-                        budget = budget * discretionaryTTB / calcDiscretionaryTTB;
-                        household.setTravelTimeBudgetByPurpose(purpose, budget);
+                    if (Purpose.getDiscretionaryPurposes().contains(purpose)) {
+                        calcDiscretionaryTTB += household.getTravelTimeBudgetForPurpose(purpose);
                     }
                 }
+                for (Purpose purpose : purposes) {
+                    if (Purpose.getDiscretionaryPurposes().contains(purpose)) {
+                        double budget = household.getTravelTimeBudgetForPurpose(purpose);
+                        if (budget != 0) {
+                            budget = budget * discretionaryTTB / calcDiscretionaryTTB;
+                            household.setTravelTimeBudgetByPurpose(purpose, budget);
+                        }
+                    }
+                }
+
             } catch (NullPointerException e) {
                 System.out.println("upps");
             }

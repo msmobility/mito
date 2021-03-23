@@ -61,6 +61,7 @@ public class TravelTimeBudgetModuleTest {
 
         TravelTimeBudgetModule travelTimeBudget = new TravelTimeBudgetModule(dataSet, Purpose.getAllPurposes());
         travelTimeBudget.run();
+        travelTimeBudget.adjustDiscretionaryPurposeBudgets();
     }
 
     @Test
