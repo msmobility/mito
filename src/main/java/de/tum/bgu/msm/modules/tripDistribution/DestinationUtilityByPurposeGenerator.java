@@ -6,15 +6,15 @@ import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
-import javafx.util.Pair;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.collections.Tuple;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpose, IndexedDoubleMatrix2D>> {
+public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purpose, IndexedDoubleMatrix2D>> {
 
     private final static Logger logger = Logger.getLogger(DestinationUtilityByPurposeGenerator.class);
 
@@ -32,7 +32,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
     }
 
     @Override
-    public Pair<Purpose, IndexedDoubleMatrix2D> call() throws Exception {
+    public Tuple<Purpose, IndexedDoubleMatrix2D> call() throws Exception {
         final IndexedDoubleMatrix2D utilityMatrix = new IndexedDoubleMatrix2D(zones.values(), zones.values());
         long counter = 0;
         for (MitoZone origin : zones.values()) {
@@ -53,6 +53,6 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Pair<Purpo
             }
         }
         logger.info("Utility matrix for purpose " + purpose + " done.");
-        return new Pair<>(purpose, utilityMatrix);
+        return new Tuple<>(purpose, utilityMatrix);
     }
 }

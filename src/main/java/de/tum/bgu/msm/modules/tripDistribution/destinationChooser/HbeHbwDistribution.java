@@ -52,7 +52,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             }
             if (hasTripsForPurpose(household)) {
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                    if(!trip.getTripMode().equals(Mode.walk)) {
+                    if(!Mode.walk.equals(trip.getTripMode())) {
                         trip.setTripOrigin(household);
                         findDestination(household, trip);
                         TripDistribution.distributedTripsCounter.incrementAndGet();

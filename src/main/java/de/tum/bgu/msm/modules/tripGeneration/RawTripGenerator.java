@@ -6,8 +6,8 @@ import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
-import javafx.util.Pair;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.collections.Tuple;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -42,16 +42,16 @@ public class RawTripGenerator {
     }
 
     private void generateByPurposeMultiThreaded() {
-        final ConcurrentExecutor<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
+        final ConcurrentExecutor<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
                 ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        List<Callable<Pair<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
+        List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
         for(Purpose purpose: PURPOSES) {
             tasks.add(new TripsByPurposeGenerator(dataSet, purpose));
         }
-        final List<Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
-        for(Pair<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
-            final Purpose purpose = result.getKey();
-            final Map<MitoHousehold, List<MitoTrip>> tripsByHouseholds = result.getValue();
+        final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
+        for(Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
+            final Purpose purpose = result.getFirst();
+            final Map<MitoHousehold, List<MitoTrip>> tripsByHouseholds = result.getSecond();
             for(Map.Entry<MitoHousehold, List<MitoTrip>> tripsByHousehold: tripsByHouseholds.entrySet()) {
                 tripsByHousehold.getKey().setTripsByPurpose(tripsByHousehold.getValue(), purpose);
                 dataSet.addTrips(tripsByHousehold.getValue());

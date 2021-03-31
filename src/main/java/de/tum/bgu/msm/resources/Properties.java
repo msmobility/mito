@@ -36,7 +36,6 @@ public class Properties {
     public static final String TRIP_ATTRACTION_OUTPUT = "trip.attraction.output";
 
     public static final String BASE_DIRECTORY = "base.directory";
-    public static final String MOPED_PROPERTIES = "moped.properties";
     public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
 
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
@@ -89,4 +88,9 @@ public class Properties {
     public static final String AIRPORT_X = "airport.x";
     public static final String MATSIM_NETWORK_MODES = "matsim.network.modes";
     public static final String MATSIM_TELEPORTED_MODES = "matsim.teleported.modes";
+
+
+    public static final String MOPED_PROPERTIES = "moped.properties";
+    public static final String RUN_MOPED = "run.moped";
+    public static final String SCALE_FACTOR_FOR_TRIP_GENERATION = "tg.scale.factor";
 }

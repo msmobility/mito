@@ -54,16 +54,24 @@ public class TravelDemandGenerator {
         TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
         ttb.run();
 
-        logger.info("Running Module: Moped Pedestrian Model");
-        PedestrianModel pedestrianModel = new PedestrianModel(dataSet);
-        pedestrianModel.runMoped();
-
-
-
-        logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet);
-        distribution.run();
-
+        boolean runMoped = Resources.INSTANCE.getBoolean(Properties.RUN_MOPED, false);;
+        if (runMoped) {
+            logger.info("Running Module: Moped Pedestrian Model - Home based trips");
+            PedestrianModel pedestrianModel = new PedestrianModel(dataSet);
+            pedestrianModel.runMopedHomeBased();
+            logger.info("Running Module: Microscopic Trip Distribution - Home based trips");
+            TripDistribution distribution = new TripDistribution(dataSet);
+            distribution.runHomeBased();
+            //TODO: how to deal with non home based trips with no prior home based trip
+            logger.info("Running Module: Moped Pedestrian Model - Non Home based trips");
+            pedestrianModel.runMopedNonHomeBased();
+            logger.info("Running Module: Microscopic Trip Distribution - Non Home based trips");
+            distribution.runNonHomeBased();
+        }else{
+            logger.info("Running Module: Microscopic Trip Distribution");
+            TripDistribution distribution = new TripDistribution(dataSet);
+            distribution.run();
+        }
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         ModeChoice modeChoice = new ModeChoice(dataSet);

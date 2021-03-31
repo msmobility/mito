@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -110,7 +111,10 @@ public class ModeChoice extends Module {
             if (includeAV) {
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoiceAV")), purpose);
-            } else {
+            } else if (Resources.INSTANCE.getBoolean(Properties.RUN_MOPED, false)) {
+                this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
+                        .getResourceAsStream("ModeChoiceWithMoped")), purpose);
+            } else{
                 this.calculator = new ModeChoiceJSCalculator(new InputStreamReader(this.getClass()
                         .getResourceAsStream("ModeChoice")), purpose);
             }
@@ -122,7 +126,7 @@ public class ModeChoice extends Module {
             try {
                 for (MitoHousehold household : dataSet.getHouseholds().values()) {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        if(!trip.getTripMode().equals(Mode.walk)) {
+                        if(!Mode.walk.equals(trip.getTripMode())) {
                             chooseMode(trip, calculateTripProbabilities(household, trip));
                         }
                     }

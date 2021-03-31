@@ -11,8 +11,8 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
-import javafx.util.Pair;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.collections.Tuple;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -51,18 +51,33 @@ public final class TripDistribution extends Module {
         distributeTrips();
     }
 
+    //For moped integration
+    public void runHomeBased() {
+        logger.info("Building initial destination choice utility matrices...");
+        buildMatrices();
+
+        logger.info("Distributing home based trips for households...");
+        distributeHomeBasedTrips();
+    }
+
+    //For moped integration
+    public void runNonHomeBased() {
+        logger.info("Distributing non home based trips for households...");
+        distributeNonHomeBasedTrips();
+    }
+
     private void buildMatrices() {
-        List<Callable<Pair<Purpose,IndexedDoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
+        List<Callable<Tuple<Purpose,IndexedDoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
         for (Purpose purpose : Purpose.values()) {
             if (!purpose.equals(Purpose.AIRPORT)){
                 //Distribution of trips to the airport does not need a matrix of weights
                 utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet));
             }
         }
-        ConcurrentExecutor<Pair<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        List<Pair<Purpose,IndexedDoubleMatrix2D>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);
-        for(Pair<Purpose, IndexedDoubleMatrix2D> result: results) {
-            utilityMatrices.put(result.getKey(), result.getValue());
+        ConcurrentExecutor<Tuple<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        List<Tuple<Purpose,IndexedDoubleMatrix2D>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);
+        for(Tuple<Purpose, IndexedDoubleMatrix2D> result: results) {
+            utilityMatrices.put(result.getFirst(), result.getSecond());
         }
     }
 
@@ -76,6 +91,51 @@ public final class TripDistribution extends Module {
         executor.submitTasksAndWaitForCompletion(homeBasedTasks);
 
         executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
+        nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
+        nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
+        if (Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
+            nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));
+        }
+        executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);
+
+        logger.info("Distributed: " + distributedTripsCounter + ", failed: " + failedTripsCounter);
+        if(randomOccupationDestinationTrips.get() > 0) {
+            logger.info("There have been " + randomOccupationDestinationTrips.get() +
+                    " HBW or HBE trips not done by a worker or student or missing occupation zone. " +
+                    "Picked a destination by random utility instead.");
+        }
+        if(completelyRandomNhbTrips.get() > 0) {
+            logger.info("There have been " + completelyRandomNhbTrips + " NHBO or NHBW trips" +
+                    "by persons who don't have a matching home based trip. Assumed a destination for a suitable home based"
+                    + " trip as either origin or destination for the non-home-based trip.");
+        }
+    }
+
+    private void distributeHomeBasedTrips() {
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        List<Callable<Void>> homeBasedTasks = new ArrayList<>();
+        homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(HBS), dataSet));
+        homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(HBO), dataSet));
+        homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(HBW), dataSet));
+        homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(HBE), dataSet));
+        executor.submitTasksAndWaitForCompletion(homeBasedTasks);
+
+        logger.info("Distributed: " + distributedTripsCounter + ", failed: " + failedTripsCounter);
+        if(randomOccupationDestinationTrips.get() > 0) {
+            logger.info("There have been " + randomOccupationDestinationTrips.get() +
+                    " HBW or HBE trips not done by a worker or student or missing occupation zone. " +
+                    "Picked a destination by random utility instead.");
+        }
+        if(completelyRandomNhbTrips.get() > 0) {
+            logger.info("There have been " + completelyRandomNhbTrips + " NHBO or NHBW trips" +
+                    "by persons who don't have a matching home based trip. Assumed a destination for a suitable home based"
+                    + " trip as either origin or destination for the non-home-based trip.");
+        }
+    }
+
+    private void distributeNonHomeBasedTrips() {
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
         nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));

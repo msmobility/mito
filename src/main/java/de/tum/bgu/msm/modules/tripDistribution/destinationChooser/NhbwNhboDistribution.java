@@ -78,22 +78,26 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                 if (hasBudgetForPurpose(household)) {
                     updateBudgets(household);
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        Location origin = findOrigin(household, trip);
-                        if (origin == null) {
-                            logger.debug("No origin found for trip" + trip);
-                            TripDistribution.failedTripsCounter.incrementAndGet();
-                            continue;
+                        if (!Mode.walk.equals(trip.getTripMode())) {
+                            if(trip.getTripOrigin() == null) {
+                                Location origin = findOrigin(household, trip);
+                                if (origin == null) {
+                                    logger.debug("No origin found for trip" + trip);
+                                    TripDistribution.failedTripsCounter.incrementAndGet();
+                                    continue;
+                                }
+                                trip.setTripOrigin(origin);
+                            }
+                            MitoZone destination = findDestination(trip.getTripOrigin().getZoneId());
+                            trip.setTripDestination(destination);
+                            if (destination == null) {
+                                logger.debug("No destination found for trip" + trip);
+                                TripDistribution.failedTripsCounter.incrementAndGet();
+                                continue;
+                            }
+                            postProcessTrip(trip);
+                            TripDistribution.distributedTripsCounter.incrementAndGet();
                         }
-                        trip.setTripOrigin(origin);
-                        MitoZone destination = findDestination(trip.getTripOrigin().getZoneId());
-                        trip.setTripDestination(destination);
-                        if (destination == null) {
-                            logger.debug("No destination found for trip" + trip);
-                            TripDistribution.failedTripsCounter.incrementAndGet();
-                            continue;
-                        }
-                        postProcessTrip(trip);
-                        TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
                 } else {
                     TripDistribution.failedTripsCounter.incrementAndGet();
