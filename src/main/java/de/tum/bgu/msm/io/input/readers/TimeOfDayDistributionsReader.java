@@ -74,7 +74,7 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
         durationCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_duration_index]));
         durationCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_duration_index]));
 
-        if (Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)){
+        if (Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)){
             arrivalTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_arrival_index]));
             departureTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_deparure_index]));
         }
@@ -82,7 +82,7 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.TIME_OF_DAY_DISTRIBUTIONS), ",");
+        super.read(Resources.instance.getTimeOfDayDistributionsFilePath(), ",");
         dataSet.setArrivalMinuteCumProbByPurpose(arrivalTimeCumProbByPurpose);
         dataSet.setDurationMinuteCumProbByPurpose(durationCumProbByPurpose);
         dataSet.setDepartureMinuteCumProbByPurpose(departureTimeCumProbByPurpose);

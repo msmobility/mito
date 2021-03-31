@@ -23,37 +23,59 @@
     </scm>
     <repositories>
         <repository>
+            <id>matsim</id>
+            <url>http://dl.bintray.com/matsim/matsim</url>
+        </repository>
+        <repository>
             <id>bintray-msmobility-maven</id>
             <name>bintray</name>
             <url>http://dl.bintray.com/msmobility/maven</url>
+        </repository>
+        <repository>
+            <id>oss-jfrog-artifactory</id>
+            <name>artifactory-snapshots</name>
+            <url>https://oss.jfrog.org/oss-snapshot-local</url>
         </repository>
         <repository>
             <id>maven2-repository.dev.java.net</id>
             <name>Java.net repository</name>
             <url>http://download.java.net/maven/2</url>
         </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>boundless</id>
-            <name>Boundless Maven Repository</name>
-            <url>http://repo.boundlessgeo.com/main</url>
-        </repository>
-        <repository>
-            <id>matsim</id>
-            <url>http://dl.bintray.com/matsim/matsim</url>
-        </repository>
     </repositories>
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>de.tum.bgu.msm.run.scenarios.drtNoise.RunDrtNoise</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                    <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                    <phase>package</phase> <!-- bind to the packaging phase -->
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                        </execution>
+                    </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                     <showWarnings>false</showWarnings>
                     <showDeprecation>false</showDeprecation>
                     <encoding>UTF-8</encoding>
@@ -65,6 +87,34 @@
                         <Xmaxwarns>4000</Xmaxwarns>
                         <Xmaxerrs>100</Xmaxerrs>
                     </compilerArguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*$*</exclude> <!-- exclude all inner classes -->
+                    </excludes>
+                    <includes>
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                        <include>**/*TestCase.java</include>
+                        <include>**/*IT.java</include>
+
+                    </includes>
+
+                    <!--execute each test in separate JVM (slow, but otherwise it does not-->
+                    <!--work, and no problem as long as there are only integration tests):-->
+                    <forkMode>always</forkMode>
+
+                    <!-- avoid out of memory errors: -->
+                    <argLine>-Xmx2000m -Djava.awt.headless=true
+
+                        -Dmatsim.preferLocalDtds=true -Dncsa.hdf.hdf5lib.H5.hdf5lib=${hdf5lib-absolute-path}
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
@@ -116,18 +166,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.2-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.0.14</version>
+            <version>24.1.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.matsim</groupId>
@@ -162,6 +207,11 @@
         </dependency>
         <dependency>
             <groupId>org.matsim.contrib</groupId>
+            <artifactId>drt</artifactId>
+            <version>${matsimVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
             <artifactId>accessibility</artifactId>
             <version>${matsimVersion}</version>
             <exclusions>
@@ -175,9 +225,25 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.umontreal.iro.simul</groupId>
+            <artifactId>ssj</artifactId>
+            <version>3.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>jfree</groupId>
+                    <artifactId>jfreechart</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <matsimVersion>11.0</matsimVersion>
+        <matsimVersion>12.0</matsimVersion>
     </properties>
 </project>

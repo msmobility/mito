@@ -4,18 +4,22 @@ import de.tum.bgu.msm.data.AreaTypes;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.apache.log4j.Logger;
 
 /**
  * @author Hema
  */
 public class ModeChoiceInputReader extends AbstractCsvReader {
 
+    private final static Logger logger = Logger.getLogger(ModeChoiceInputReader.class);
+
     private int railDistIndex;
     private int zoneIndex;
     private int areaTypeNHBOIndex;
+
+    private int zoneNotFoundCounter = 0;
 
     public ModeChoiceInputReader(DataSet dataSet) {
         super(dataSet);
@@ -34,13 +38,17 @@ public class ModeChoiceInputReader extends AbstractCsvReader {
         float distToRailStop = Float.parseFloat(record[railDistIndex]);
         AreaTypes.RType areaTypeNHBO = AreaTypes.RType.valueOf(Integer.parseInt(record[areaTypeNHBOIndex]));
         MitoZone zone = dataSet.getZones().get(zoneID);
-        zone.setDistanceToNearestRailStop(distToRailStop);
-
-        zone.setAreaTypeR(areaTypeNHBO);
+        if(zone != null) {
+            zone.setDistanceToNearestRailStop(distToRailStop);
+            zone.setAreaTypeR(areaTypeNHBO);
+        } else {
+            zoneNotFoundCounter++;
+        }
     }
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.AREA_TYPES_AND_RAIL_DISTANCE),",");
+        super.read(Resources.instance.getAreaTypesAndRailDistancesFilePath(),",");
+        logger.warn(zoneNotFoundCounter + " zones were not present but described in the mode choice input.");
     }
 }

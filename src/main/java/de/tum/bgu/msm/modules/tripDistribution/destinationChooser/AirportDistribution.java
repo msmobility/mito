@@ -24,11 +24,11 @@ public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
     protected AirportDistribution(long randomSeed, DataSet dataSet) {
         super(randomSeed);
         this.dataSet = dataSet;
-        this.airportZone = dataSet.getZones().get(Resources.INSTANCE.getInt(Properties.AIRPORT_ZONE));
+        this.airportZone = dataSet.getZones().get(Resources.instance.getInt(Properties.AIRPORT_ZONE));
     }
 
     public static AirportDistribution airportDistribution(DataSet dataSet) {
-        return new AirportDistribution(Resources.INSTANCE.getInt(Properties.RANDOM_SEED), dataSet);
+        return new AirportDistribution(Resources.instance.getInt(Properties.RANDOM_SEED), dataSet);
     }
 
 
@@ -45,8 +45,8 @@ public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
                     airport = new MicroLocation() {
                         @Override
                         public Coordinate getCoordinate() {
-                            return new Coordinate(Resources.INSTANCE.getInt(Properties.AIRPORT_X),
-                                    Resources.INSTANCE.getInt(Properties.AIRPORT_Y));
+                            return new Coordinate(Resources.instance.getInt(Properties.AIRPORT_X),
+                                    Resources.instance.getInt(Properties.AIRPORT_Y));
                         }
                         @Override
                         public int getZoneId() {

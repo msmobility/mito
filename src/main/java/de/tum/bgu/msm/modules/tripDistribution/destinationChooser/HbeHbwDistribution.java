@@ -9,6 +9,7 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,30 +24,34 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     private final MitoOccupationStatus mitoOccupationStatus;
     private final IndexedDoubleMatrix2D baseProbabilities;
 
-    private final DataSet dataSet;
+    private final Collection<MitoHousehold> householdPartition;
     private final Map<Integer, MitoZone> zonesCopy;
 
-    private HbeHbwDistribution(Purpose purpose, MitoOccupationStatus mitoOccupationStatus, IndexedDoubleMatrix2D baseProbabilities, DataSet dataSet) {
+    private HbeHbwDistribution(Purpose purpose, MitoOccupationStatus mitoOccupationStatus,
+                               IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition,
+                               Map<Integer, MitoZone> zones) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
         this.mitoOccupationStatus = mitoOccupationStatus;
         this.baseProbabilities = baseProbabilities;
-        this.dataSet = dataSet;
-        this.zonesCopy = new HashMap<>(dataSet.getZones());
+        this.householdPartition = householdPartition;
+        this.zonesCopy = new HashMap<>(zones);
     }
 
-    public static HbeHbwDistribution hbe(IndexedDoubleMatrix2D baseprobabilities, DataSet dataSet) {
-        return new HbeHbwDistribution(Purpose.HBE, MitoOccupationStatus.STUDENT, baseprobabilities, dataSet);
+    public static HbeHbwDistribution hbe(IndexedDoubleMatrix2D baseprobabilities, Collection<MitoHousehold> householdPartition,
+                                         Map<Integer, MitoZone> zones) {
+        return new HbeHbwDistribution(Purpose.HBE, MitoOccupationStatus.STUDENT, baseprobabilities, householdPartition, zones);
     }
 
-    public static HbeHbwDistribution hbw(IndexedDoubleMatrix2D baseprobabilities, DataSet dataSet) {
-        return new HbeHbwDistribution(Purpose.HBW, MitoOccupationStatus.WORKER, baseprobabilities, dataSet);
+    public static HbeHbwDistribution hbw(IndexedDoubleMatrix2D baseprobabilities, Collection<MitoHousehold> householdPartition,
+                                         Map<Integer, MitoZone> zones) {
+        return new HbeHbwDistribution(Purpose.HBW, MitoOccupationStatus.WORKER, baseprobabilities, householdPartition, zones);
     }
 
     @Override
     public Void call() {
         long counter = 0;
-        for (MitoHousehold household : dataSet.getHouseholds().values()) {
+        for (MitoHousehold household : householdPartition) {
             if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for Purpose " + purpose);
             }

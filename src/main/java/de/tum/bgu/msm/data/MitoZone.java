@@ -4,15 +4,15 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
+import de.tum.bgu.msm.util.SeededRandomPointsBuilder;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.shape.random.RandomPointsBuilder;
 import org.matsim.core.utils.geometry.geotools.MGC;
-import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.EnumMap;
+import java.util.Random;
 
 /**
  * Created by Nico on 7/7/2017.
@@ -20,10 +20,15 @@ import java.util.EnumMap;
 public class MitoZone implements Id, Location {
 
     private final int zoneId;
+
+    /**
+     * Gemeindeschluessel?
+     */
+    private int ags = -1;
+
     private float reductionAtBorderDamper = 0;
     private int numberOfHouseholds = 0;
     private int schoolEnrollment = 0;
-    private int numberOfPersons = 0;
 
     private final EnumMap<Purpose, Double> tripAttraction = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
@@ -32,7 +37,7 @@ public class MitoZone implements Id, Location {
     private AreaTypes.RType areaTypeR;
 
     private float distanceToNearestRailStop;
-    private SimpleFeature shapeFeature;
+    private Geometry geometry;
 
 
     public MitoZone(int id, AreaTypes.SGType areaType) {
@@ -40,8 +45,10 @@ public class MitoZone implements Id, Location {
         this.areaTypeSG = areaType;
     }
 
+    //TODO: is this supposed to stay in master?
+    //TODO: this decision should be handled by some other class that takes zone candidates as an argument
     public boolean isMunichZone() {
-        return "9162000".equals(this.shapeFeature.getAttribute("AGS").toString());
+         return 9162000 == ags;
     }
 
     public AreaTypes.SGType getAreaTypeSG() {
@@ -139,14 +146,22 @@ public class MitoZone implements Id, Location {
         return "[MitoZone " + zoneId + "]";
     }
 
-    public void setShapeFeature(SimpleFeature shapeFeature) {
-        this.shapeFeature = shapeFeature;
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
     }
 
-    public Coordinate getRandomCoord() {
-        RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder(new GeometryFactory());
+    public Geometry getGeometry() {
+        return this.geometry;
+    }
+
+    public void setAGS(int ags) {
+        this.ags = ags;
+    }
+
+    public Coordinate getRandomCoord(Random random) {
+        SeededRandomPointsBuilder randomPointsBuilder = new SeededRandomPointsBuilder(new GeometryFactory(), random);
         randomPointsBuilder.setNumPoints(1);
-        randomPointsBuilder.setExtent((Geometry) shapeFeature.getDefaultGeometry());
+        randomPointsBuilder.setExtent(geometry);
         Coordinate coordinate = randomPointsBuilder.getGeometry().getCoordinates()[0];
         Point p = MGC.coordinate2Point(coordinate);
         return new Coordinate(p.getX(), p.getY());
@@ -170,5 +185,4 @@ public class MitoZone implements Id, Location {
     public int getZoneId() {
         return zoneId;
     }
-
 }

@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
+import com.google.common.collect.Iterables;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
@@ -15,9 +17,9 @@ import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,7 +36,7 @@ public final class TripDistribution extends Module {
     public final static AtomicInteger randomOccupationDestinationTrips = new AtomicInteger(0);
     public final static AtomicInteger completelyRandomNhbTrips = new AtomicInteger(0);
 
-    private final EnumMap<Purpose, IndexedDoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
+    private EnumMap<Purpose, IndexedDoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
 
     private final static Logger logger = Logger.getLogger(TripDistribution.class);
 
@@ -82,19 +84,38 @@ public final class TripDistribution extends Module {
     }
 
     private void distributeTrips() {
-        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        final int numberOfThreads = Runtime.getRuntime().availableProcessors();
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(numberOfThreads);
+
+        final Collection<MitoHousehold> households = dataSet.getHouseholds().values();
+        final int partitionSize = (int) ((double) households.size() / (numberOfThreads)) + 1;
+        Iterable<List<MitoHousehold>> partitions = Iterables.partition(households, partitionSize);
+
+        logger.info("Using " + numberOfThreads + " thread(s)" +
+                " with partitions of size " + partitionSize);
+
         List<Callable<Void>> homeBasedTasks = new ArrayList<>();
-        homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(HBS), dataSet));
-        homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(HBO), dataSet));
-        homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(HBW), dataSet));
-        homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(HBE), dataSet));
+        for (final List<MitoHousehold> partition : partitions) {
+            homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(HBS), partition, dataSet.getZones(),
+                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+            homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(HBO), partition, dataSet.getZones(),
+                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+            homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(HBW), partition, dataSet.getZones()));
+            homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(HBE), partition, dataSet.getZones()));
+        }
+
         executor.submitTasksAndWaitForCompletion(homeBasedTasks);
 
-        executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+        executor = ConcurrentExecutor.fixedPoolService(numberOfThreads);
         List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
-        nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, dataSet));
-        nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, dataSet));
-        if (Resources.INSTANCE.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
+
+        for (final List<MitoHousehold> partition : partitions) {
+            nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, partition, dataSet.getZones(),
+                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+            nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, partition, dataSet.getZones(),
+                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+        }
+        if (Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
             nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));
         }
         executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);

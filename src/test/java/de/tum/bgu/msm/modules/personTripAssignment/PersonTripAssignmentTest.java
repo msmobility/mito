@@ -21,7 +21,7 @@ public class PersonTripAssignmentTest {
         MitoUtil.initializeRandomNumber(new Random(42));
         dataSet = new DataSet();
 
-        MitoHousehold household = new MitoHousehold(1, 1, 1, null);
+        MitoHousehold household = new MitoHousehold(1, 1, 1);
         household.addPerson(new MitoPerson(1, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 35, MitoGender.MALE, true));
         household.addPerson(new MitoPerson(2, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 30, MitoGender.FEMALE, true));
         household.addPerson(new MitoPerson(3, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 10, MitoGender.FEMALE, false));
@@ -55,7 +55,7 @@ public class PersonTripAssignmentTest {
 
     @Test
     public void testAssignment() throws IOException {
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
         setupAndRun();
         for (MitoTrip trip : dataSet.getTrips().values()) {

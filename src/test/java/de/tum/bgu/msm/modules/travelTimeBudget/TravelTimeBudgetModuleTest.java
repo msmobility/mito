@@ -22,7 +22,7 @@ public class TravelTimeBudgetModuleTest {
     @Before
     public void setup() {
 
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelTimes(new TravelTimes() {
@@ -130,16 +130,20 @@ public class TravelTimeBudgetModuleTest {
     }
 
     private void addHouseholds() {
-        MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0, dummyZone);
+        MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0);
+        emptyHousehold.setHomeZone(dummyZone);
         dataSet.addHousehold(emptyHousehold);
 
-        MitoHousehold poorRetirees = new MitoHousehold(2,  10000, 0, dummyZone);
+        MitoHousehold poorRetirees = new MitoHousehold(2,  10000, 0);
+        poorRetirees.setHomeZone(dummyZone);
         dataSet.addHousehold(poorRetirees);
 
-        MitoHousehold poorBigFamily = new MitoHousehold(3,  10000, 0, dummyZone);
+        MitoHousehold poorBigFamily = new MitoHousehold(3,  10000, 0);
+        poorBigFamily.setHomeZone(dummyZone);
         dataSet.addHousehold(poorBigFamily);
 
-        MitoHousehold richBigFamily = new MitoHousehold(4,  500000, 0, dummyZone);
+        MitoHousehold richBigFamily = new MitoHousehold(4,  500000, 0);
+        richBigFamily.setHomeZone(dummyZone);
         dataSet.addHousehold(richBigFamily);
     }
 

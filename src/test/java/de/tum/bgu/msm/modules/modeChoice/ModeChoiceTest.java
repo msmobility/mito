@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.DummyZone;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
@@ -24,7 +25,7 @@ public class ModeChoiceTest {
     @Before
     public void setupTest() {
         MitoUtil.initializeRandomNumber(new Random(42));
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
         dataSet = new DataSet();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);
@@ -60,9 +61,9 @@ public class ModeChoiceTest {
     }
 
     @Test
-    public void testModeChoice() throws Exception {
+    public void testModeChoice() {
         ModeChoice modeChoice = new ModeChoice(dataSet);
-        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, false);
+        ModeChoice.ModeChoiceByPurpose modeChoiceByPurpose = new ModeChoice.ModeChoiceByPurpose(Purpose.HBW,dataSet, new ModeChoiceCalculatorImpl());
     }
 
 
@@ -77,7 +78,8 @@ public class ModeChoiceTest {
         MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY);
         trip1.setTripDestination(zone2);
 
-        household1 = new MitoHousehold(1, 24000, 1, zone1);
+        household1 = new MitoHousehold(1, 24000, 1);
+        household1.setHomeZone(zone1);
         household1.addPerson(person1);
         household1.setTripsByPurpose(Collections.singletonList(trip1), Purpose.HBW);
         dataSet.addTrip(trip1);
@@ -95,7 +97,8 @@ public class ModeChoiceTest {
         MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY);
         trip2.setTripDestination(zone4);
 
-        household2 = new MitoHousehold(2, 24000, 1, zone3);
+        household2 = new MitoHousehold(2, 24000, 1);
+        household2.setHomeZone(zone3);
         household2.addPerson(person2);
         household2.setTripsByPurpose(Collections.singletonList(trip2), Purpose.HBO);
         dataSet.addTrip(trip2);

@@ -5,6 +5,8 @@ import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
@@ -22,7 +24,7 @@ import static de.tum.bgu.msm.data.Purpose.*;
  */
 public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<Void> {
 
-    private final static double VARIANCE_DOUBLED = 10 * 2;
+    private final static double VARIANCE_DOUBLED = 500 * 2;
     private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
@@ -33,43 +35,47 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private final List<Purpose> priorPurposes;
     private final MitoOccupationStatus relatedMitoOccupationStatus;
     private final EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities;
-    private final DataSet dataSet;
     private final TravelTimes travelTimes;
 
     private double idealBudgetSum = 0;
     private double actualBudgetSum = 0;
     private double hhBudgetPerTrip;
 
+    private final Collection<MitoHousehold> householdPartition;
     private final Map<Integer, MitoZone> zonesCopy;
+
     private double mean;
 
     private NhbwNhboDistribution(Purpose purpose, List<Purpose> priorPurposes, MitoOccupationStatus relatedMitoOccupationStatus,
-                                 EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities, DataSet dataSet) {
+                                 EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities,  Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                 TravelTimes travelTimes, double peakHour) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
         this.priorPurposes = priorPurposes;
         this.relatedMitoOccupationStatus = relatedMitoOccupationStatus;
         this.baseProbabilities = baseProbabilities;
-        this.dataSet = dataSet;
-        this.zonesCopy = new HashMap<>(dataSet.getZones());
-        this.travelTimes = dataSet.getTravelTimes();
-        this.peakHour = dataSet.getPeakHour();
+        this.zonesCopy = new HashMap<>(zones);
+        this.travelTimes = travelTimes;
+        this.peakHour = peakHour;
+        this.householdPartition = householdPartition;
     }
 
-    public static NhbwNhboDistribution nhbw(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites, DataSet dataSet) {
+    public static NhbwNhboDistribution nhbw(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites,  Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                            TravelTimes travelTimes, double peakHour) {
         return new NhbwNhboDistribution(Purpose.NHBW, Collections.singletonList(Purpose.HBW),
-                MitoOccupationStatus.WORKER, baseProbabilites, dataSet);
+                MitoOccupationStatus.WORKER, baseProbabilites, householdPartition, zones, travelTimes, peakHour);
     }
 
-    public static NhbwNhboDistribution nhbo(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites, DataSet dataSet) {
+    public static NhbwNhboDistribution nhbo(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites,  Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                            TravelTimes travelTimes, double peakHour) {
         return new NhbwNhboDistribution(Purpose.NHBO, ImmutableList.of(HBO, HBE, HBS),
-                null, baseProbabilites, dataSet);
+                null, baseProbabilites, householdPartition, zones, travelTimes, peakHour);
     }
 
     @Override
     public Void call() {
         long counter = 0;
-        for (MitoHousehold household : dataSet.getHouseholds().values()) {
+        for (MitoHousehold household : householdPartition) {
             if (LongMath.isPowerOfTwo(counter)) {
                 logger.info(counter + " households done for Purpose " + purpose
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);

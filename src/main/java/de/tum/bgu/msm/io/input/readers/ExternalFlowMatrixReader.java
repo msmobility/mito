@@ -2,8 +2,8 @@ package de.tum.bgu.msm.io.input.readers;
 
 import com.google.common.collect.HashBasedTable;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.modules.externalFlows.ExternalFlowType;
-import de.tum.bgu.msm.modules.externalFlows.ExternalFlowZone;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.ExternalFlowType;
+import de.tum.bgu.msm.modules.plansConverter.externalFlows.ExternalFlowZone;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -32,10 +32,10 @@ public class ExternalFlowMatrixReader {
 
 
     public ExternalFlowMatrixReader(DataSet dataSet, Map<Integer, ExternalFlowZone> zones) {
-        String fileNamePkw = Resources.INSTANCE.getString(Properties.EXTERNAL_MATRIX_PKW);
-        String fileNameGV = Resources.INSTANCE.getString(Properties.EXTERNAL_MATRIX_GV);
-        String fileNamePkwPWV = Resources.INSTANCE.getString(Properties.EXTERNAL_MATRIX_PKW_PWV);
-        String fileNameSZM = Resources.INSTANCE.getString(Properties.EXTERNAL_MATRIX_SZM);
+        String fileNamePkw = Resources.instance.getString(Properties.EXTERNAL_MATRIX_PKW);
+        String fileNameGV = Resources.instance.getString(Properties.EXTERNAL_MATRIX_GV);
+        String fileNamePkwPWV = Resources.instance.getString(Properties.EXTERNAL_MATRIX_PKW_PWV);
+        String fileNameSZM = Resources.instance.getString(Properties.EXTERNAL_MATRIX_SZM);
 
         matrixFileNames = new HashMap<>();
         matrixFileNames.put(ExternalFlowType.GV_andere, fileNameGV);

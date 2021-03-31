@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.io.output;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
@@ -41,7 +40,7 @@ public class SummarizeDataToVisualize {
         // handle summary file
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" +  year + "/";
+                String directory = Resources.instance.getBaseDirectory().toString() + "/scenOutput/" + scenarioName + "/" +  year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 spatialResultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFileSpatial" +
                         ".csv", false);
@@ -54,7 +53,9 @@ public class SummarizeDataToVisualize {
                 break;
             default:
                 spatialResultWriter.println(action);
-                if (resultWriterReplicate && writeFinal) spatialResultWriterFinal.println(action);
+                if (resultWriterReplicate && writeFinal) {
+                    spatialResultWriterFinal.println(action);
+                }
                 break;
         }
     }
@@ -77,7 +78,7 @@ public class SummarizeDataToVisualize {
     private static void resultFile(String action, boolean writeFinal, String scenarioName) {
         switch (action) {
             case "open":
-                String directory = Resources.INSTANCE.getString(Properties.BASE_DIRECTORY) + "/scenOutput/" + scenarioName + "/" + year + "/";
+                String directory = Resources.instance.getBaseDirectory().toString() + "/scenOutput/" + scenarioName + "/" + year + "/";
                 MitoUtil.createDirectoryIfNotExistingYet(directory);
                 resultWriter = MitoUtil.openFileForSequentialWriting(directory + "/" + "resultFile" +
                         ".csv", false);
@@ -319,7 +320,11 @@ public class SummarizeDataToVisualize {
         Map<Integer, Map<Purpose, Integer>> ttBudgetCounterByZoneAndPurpose = initializedIntMap(dataSet);
         Map<Integer, Map<Purpose, Double>> avTTBudgetByZoneAndPurpose = initializedDoubleMap(dataSet);
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            Integer homeZone = household.getHomeZone().getId();
+            final MitoZone home = household.getHomeZone();
+            if(home == null) {
+                break;
+            }
+            Integer homeZone = home.getId();
             for (Purpose purpose : Purpose.values()) {
                 int tripsByPurpose = household.getTripsForPurpose(purpose).size();
                 updateMap(householdsByTripsAndPurpose, tripsByPurpose, purpose);

@@ -2,14 +2,9 @@ package de.tum.bgu.msm.modules.travelTimeBudget;
 
 import de.tum.bgu.msm.DummyOccupation;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,19 +12,14 @@ public class TravelTimeBudgetCalculatorTest {
 
     private DataSet dataSet;
     private MitoZone dummyZone;
-    private TravelTimeBudgetJSCalculator calculator;
+    private TravelTimeBudgetCalculatorImpl calculator;
 
     @Before
     public void setup() {
 
-        Resources.initializeResources("./testInput/test.properties");
+        Resources.initializeResources("./test/muc/test.properties");
 
-        try {
-            Reader reader = new FileReader(Resources.INSTANCE.getString(Properties.TRAVEL_TIME_BUDGET_JS));
-            calculator = new TravelTimeBudgetJSCalculator(reader);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        calculator = new TravelTimeBudgetCalculatorImpl();
 
         dataSet = new DataSet();
         addZone();
@@ -118,16 +108,20 @@ public class TravelTimeBudgetCalculatorTest {
     }
 
     private void addHouseholds() {
-        MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0, dummyZone);
+        MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0);
+        emptyHousehold.setHomeZone(dummyZone);
         dataSet.addHousehold(emptyHousehold);
 
-        MitoHousehold poorRetirees = new MitoHousehold(2, 10000, 0, dummyZone);
+        MitoHousehold poorRetirees = new MitoHousehold(2, 10000, 0);
+        poorRetirees.setHomeZone(dummyZone);
         dataSet.addHousehold(poorRetirees);
 
-        MitoHousehold poorBigFamily = new MitoHousehold(3, 10000, 0, dummyZone);
+        MitoHousehold poorBigFamily = new MitoHousehold(3, 10000, 0);
+        poorBigFamily.setHomeZone(dummyZone);
         dataSet.addHousehold(poorBigFamily);
 
-        MitoHousehold richBigFamily = new MitoHousehold(4, 500000, 0, dummyZone);
+        MitoHousehold richBigFamily = new MitoHousehold(4, 500000, 0);
+        richBigFamily.setHomeZone(dummyZone);
         dataSet.addHousehold(richBigFamily);
     }
 

@@ -45,7 +45,7 @@ public final class MitoModel {
     public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(new DataSet(), Resources.INSTANCE.getString(Properties.SCENARIO_NAME));
+        MitoModel model = new MitoModel(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
@@ -54,27 +54,26 @@ public final class MitoModel {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         MitoModel model = new MitoModel(dataSet, scenarioName);
-        new SkimsReader(dataSet).readOnlyTransitTravelTimes();
-        new SkimsReader(dataSet).readSkimDistancesNMT();
-        new SkimsReader(dataSet).readSkimDistancesAuto();
+        new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
+        new OmxSkimsReader(dataSet).readSkimDistancesNMT();
+        new OmxSkimsReader(dataSet).readSkimDistancesAuto();
         model.readAdditionalData();
         return model;
     }
 
-    public void runModel() {
+    public void run() {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        TravelDemandGenerator ttd = new TravelDemandGenerator(dataSet);
+        TravelDemandGenerator ttd = new TravelDemandGenerator.Builder(dataSet).build();
         ttd.generateTravelDemand(scenarioName);
-
         printOutline(startTime);
     }
 
     private void readStandAlone(ImplementationConfig config) {
-        dataSet.setYear(Resources.INSTANCE.getInt(Properties.SCENARIO_YEAR));
+        dataSet.setYear(Resources.instance.getInt(Properties.SCENARIO_YEAR));
         new ZonesReader(dataSet).read();
-        if (Resources.INSTANCE.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
+        if (Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
         new JobReader(dataSet, config.getJobTypeFactory()).read();
@@ -83,7 +82,7 @@ public final class MitoModel {
         new HouseholdsCoordReader(dataSet).read();
         new PersonsReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
-        new SkimsReader(dataSet).read();
+        new OmxSkimsReader(dataSet).read();
         readAdditionalData();
     }
 
@@ -92,6 +91,8 @@ public final class MitoModel {
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
         new TimeOfDayDistributionsReader(dataSet).read();
+        new CalibrationDataReader(dataSet).read();
+        new CalibrationRegionMapReader(dataSet).read();
 
     }
 
@@ -109,10 +110,6 @@ public final class MitoModel {
         return dataSet;
     }
 
-    public void setBaseDirectory(String baseDirectory) {
-        MitoUtil.setBaseDirectory(baseDirectory);
-    }
-
     public String getScenarioName() {
         return scenarioName;
     }
@@ -120,4 +117,7 @@ public final class MitoModel {
     public void setRandomNumberGenerator(Random random) {
         MitoUtil.initializeRandomNumber(random);
     }
+
+
+
 }

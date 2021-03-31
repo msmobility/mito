@@ -7,6 +7,7 @@ import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.locationtech.jts.geom.Geometry;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -25,16 +26,20 @@ public class ZonesReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.INSTANCE.getString(Properties.ZONES), ",");
+        super.read(Resources.instance.getZonesInputFile().toAbsolutePath(), ",");
         mapFeaturesToZones(dataSet);
     }
 
-    public static void mapFeaturesToZones(DataSet dataSet) {
-        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE))) {
-            int zoneId = Integer.parseInt(feature.getAttribute(Resources.INSTANCE.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
+    private static void mapFeaturesToZones(DataSet dataSet) {
+        for (SimpleFeature feature: ShapeFileReader.getAllFeatures(Resources.instance.getZoneShapesInputFile().toString())) {
+            int zoneId = Integer.parseInt(feature.getAttribute(Resources.instance.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
             MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone != null){
-                zone.setShapeFeature(feature);
+                zone.setGeometry((Geometry) feature.getDefaultGeometry());
+                final Object ags = feature.getAttribute("AGS");
+                if(ags != null) {
+                    zone.setAGS(Integer.parseInt(ags.toString()));
+                }
             }else{
                 logger.warn("zoneId " + zoneId + " doesn't exist in mito zone system");
             }

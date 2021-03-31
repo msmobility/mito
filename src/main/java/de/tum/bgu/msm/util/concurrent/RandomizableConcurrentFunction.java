@@ -3,7 +3,7 @@ package de.tum.bgu.msm.util.concurrent;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-public abstract class RandomizableConcurrentFunction<T> implements Callable<T>{
+public abstract class RandomizableConcurrentFunction<T> implements Callable {
 
     protected final Random random;
 

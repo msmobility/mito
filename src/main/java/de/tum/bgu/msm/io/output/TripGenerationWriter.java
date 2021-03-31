@@ -24,9 +24,9 @@ public class TripGenerationWriter {
     public static void writeTripsByPurposeAndZone(DataSet dataSet, String scenarioName) {
         // write number of trips by purpose and zone to output file
 
-        String fileNameProd = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear(), scenarioName);
+        String fileNameProd = generateOutputFileName(Resources.instance.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear(), scenarioName);
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
-        String fileNameAttr = generateOutputFileName(Resources.INSTANCE.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet.getYear(), scenarioName);
+        String fileNameAttr = generateOutputFileName(Resources.instance.getString(Properties.TRIP_ATTRACTION_OUTPUT), dataSet.getYear(), scenarioName);
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
@@ -76,16 +76,16 @@ public class TripGenerationWriter {
     }
 
     private static String generateOutputFileName (String fileName, int year, String scenarioName) {
-        if (scenarioName != null) {
-            File dir = new File("./scenOutput/" + scenarioName + "/" +  year +  "/tripGeneration");
-            if(!dir.exists()){
-                boolean directoryCreated = dir.mkdir();
-                if (!directoryCreated) {
-                    logger.warn("Could not create directory for trip gen output: " + dir.toString());
-                }
+
+        final File directory = new File(Resources.instance.getBaseDirectory().toString()
+                + "/scenOutput/" + scenarioName + "/" + year + "/tripGeneration/");
+        if(!directory.exists()) {
+            final boolean mkdirs = (directory).mkdirs();
+            if (!mkdirs) {
+                logger.warn("Could not create directory for trip gen output: " + directory.toString());
             }
-            fileName = "./scenOutput/" + scenarioName + "/" +  year  +  "/tripGeneration/" + fileName;
         }
+        fileName = directory + fileName;
         return fileName;
     }
 }
