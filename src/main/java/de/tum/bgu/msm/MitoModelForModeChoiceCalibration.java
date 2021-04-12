@@ -11,6 +11,7 @@ import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalcul
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
@@ -20,6 +21,7 @@ import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -65,8 +67,10 @@ public final class MitoModelForModeChoiceCalibration {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
+        List<Purpose> purposes = Purpose.getAllPurposes();
+
         logger.info("Running Module: Microscopic Trip Generation");
-        TripGeneration tg = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration());
+        TripGeneration tg = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration(), purposes);
         tg.run();
         if (dataSet.getTrips().isEmpty()) {
             logger.warn("No trips created. End of program.");
@@ -74,18 +78,18 @@ public final class MitoModelForModeChoiceCalibration {
         }
 
         logger.info("Running Module: Person to Trip Assignment");
-        PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet);
+        PersonTripAssignment personTripAssignment = new PersonTripAssignment(dataSet, purposes);
         personTripAssignment.run();
 
         logger.info("Running Module: Travel Time Budget Calculation");
-        TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet);
+        TravelTimeBudgetModule ttb = new TravelTimeBudgetModule(dataSet, purposes);
         ttb.run();
 
         logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet);
+        TripDistribution distribution = new TripDistribution(dataSet, purposes, false, new DestinationUtilityCalculatorFactoryImpl2());
         distribution.run();
 
-        ModeChoice modeChoice = new ModeChoice(dataSet);
+        ModeChoice modeChoice = new ModeChoice(dataSet, purposes);
         for(Purpose purpose: Purpose.values()) {
 
             final CalibratingModeChoiceCalculatorImpl baseCalculator;

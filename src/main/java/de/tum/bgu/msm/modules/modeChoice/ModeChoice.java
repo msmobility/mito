@@ -26,8 +26,8 @@ public class ModeChoice extends Module {
 
     private final Map<Purpose, ModeChoiceCalculator> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
 
-    public ModeChoice(DataSet dataSet) {
-        super(dataSet);
+    public ModeChoice(DataSet dataSet, List<Purpose> purposes) {
+        super(dataSet, purposes);
         boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
 
         if(!includeAV) {

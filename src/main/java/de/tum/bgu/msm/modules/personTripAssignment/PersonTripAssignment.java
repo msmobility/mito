@@ -5,9 +5,9 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static de.tum.bgu.msm.data.MitoOccupationStatus.STUDENT;
@@ -18,14 +18,15 @@ public class PersonTripAssignment extends Module {
 
     private static final Logger logger = Logger.getLogger(PersonTripAssignment.class);
 
-    public PersonTripAssignment(DataSet dataSet) {
-        super(dataSet);
+    public PersonTripAssignment(DataSet dataSet, List<Purpose> purposes) {
+        super(dataSet, purposes);
     }
 
     @Override
     public void run() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            for (Purpose purpose : Purpose.values()) {
+            for (Purpose purpose : purposes) {
+                //todo check that the order of purposes affects the assignment. It crashes if a non-home based is done before a home-based
                 for (Iterator<MitoTrip> iterator = household.getTripsForPurpose(purpose).listIterator(); iterator.hasNext(); ) {
                     MitoTrip trip = iterator.next();
                     Map<MitoPerson, Double> probabilitiesByPerson = getProbabilityByPersonForTrip(household, trip);
