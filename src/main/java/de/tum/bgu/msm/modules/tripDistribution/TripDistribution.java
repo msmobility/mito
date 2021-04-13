@@ -118,6 +118,9 @@ public final class TripDistribution extends Module {
                 } else if (purpose.equals(HBO)) {
                     homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(purpose), partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
+                } else if (purpose.equals(HBR)){
+                    homeBasedTasks.add(HbsHboDistribution.hbr(utilityMatrices.get(purpose), partition, dataSet.getZones(),
+                            dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
             }
         }

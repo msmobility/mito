@@ -35,6 +35,7 @@ public class ModeChoice extends Module {
             modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBR, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
@@ -43,6 +44,7 @@ public class ModeChoice extends Module {
             modeChoiceCalculatorByPurpose.put(Purpose.HBE, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.HBS, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.HBO, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.HBR, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new AirportModeChoiceCalculator());
