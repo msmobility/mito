@@ -284,6 +284,8 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 area = 0;
             }
 
+        } else if (purpose == "HBR") {
+            return 0;
         } else {
             throw new RuntimeException("Undefined purpose given!");
         }

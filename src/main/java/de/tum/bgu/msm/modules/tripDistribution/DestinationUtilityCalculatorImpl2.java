@@ -16,6 +16,9 @@ public class DestinationUtilityCalculatorImpl2 implements DestinationUtilityCalc
     private final static double TRAVEL_DISTANCE_PARAM_HBO = -0.01 * 0.36606039220205;
     private final static double IMPEDANCE_PARAM_HBO = 53;
 
+    private final static double TRAVEL_DISTANCE_PARAM_HBR = -0.01 * 0.36606039220205;
+    private final static double IMPEDANCE_PARAM_HBR = 53;
+
     private final static double travelDistanceParamNhbw = -0.01 * 0.874028408112042;
     private final static double impedanceParamNhbw = 15.1;
 
@@ -42,6 +45,10 @@ public class DestinationUtilityCalculatorImpl2 implements DestinationUtilityCalc
             case HBO:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBO;
                 impedanceParam = IMPEDANCE_PARAM_HBO;
+                break;
+            case HBR:
+                distanceParam = TRAVEL_DISTANCE_PARAM_HBR;
+                impedanceParam = IMPEDANCE_PARAM_HBR;
                 break;
             case NHBW:
                 distanceParam = travelDistanceParamNhbw;

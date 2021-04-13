@@ -14,7 +14,9 @@ public enum Purpose implements Id {
     HBO,
     NHBW,
     NHBO,
-    AIRPORT;
+    AIRPORT,
+    HBR;
+
 
     @Override
     public int getId(){
@@ -42,6 +44,7 @@ public enum Purpose implements Id {
         List<Purpose> list = new ArrayList<>();
         list.add(HBS);
         list.add(HBO);
+        list.add(HBR);
         list.add(NHBO);
         list.add(NHBW);
         return list;
@@ -55,10 +58,11 @@ public enum Purpose implements Id {
 
     public static List<Purpose> getAllPurposes(){
         List<Purpose> list = new ArrayList<>();
-        list.add(HBS);
-        list.add(HBO);
         list.add(HBW);
         list.add(HBE);
+        list.add(HBS);
+        list.add(HBO);
+        list.add(HBR);
         list.add(NHBO);
         list.add(NHBW);
         return list;

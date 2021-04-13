@@ -38,7 +38,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         this.dataSet = dataSet;
         this.purpose = purpose;
         this.scaleFactorForGeneration = scaleFactorForGeneration;
-        this.householdTypeManager = new HouseholdTypeManager(purpose);
+        //this.householdTypeManager = new HouseholdTypeManager(purpose);
         this.binLogCoef =
                 new TripGenerationHurdleCoefficientReader(dataSet, purpose,
                         Resources.instance.getTripGenerationCoefficientsHurdleBinaryLogit()).readCoefficientsForThisPurpose();
@@ -373,21 +373,6 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
     }
 
     private void generateTripsForHousehold(MitoHousehold hh, int numberOfTrips) {
-        HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
-        if (hhType == null) {
-            logger.error("Could not create trips for Household " + hh.getId() + " for Purpose " + purpose + ": No Household Type applicable");
-            return;
-        }
-        Integer[] tripFrequencies = householdTypeManager.getTripFrequenciesForHouseholdType(hhType);
-        if (tripFrequencies == null) {
-            logger.error("Could not find trip frequencies for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
-            return;
-        }
-        if (MitoUtil.getSum(tripFrequencies) == 0) {
-            logger.info("No trips for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
-            return;
-        }
-
         List<MitoTrip> trips = new ArrayList<>();
         for (int i = 0; i < numberOfTrips; i++) {
             MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);

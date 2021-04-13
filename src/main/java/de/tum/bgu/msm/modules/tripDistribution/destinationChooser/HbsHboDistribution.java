@@ -69,6 +69,11 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBO, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
     }
 
+    public static HbsHboDistribution hbr(IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                         TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
+        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBR, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
+    }
+
     @Override
     public Void call() {
         long counter = 0;
