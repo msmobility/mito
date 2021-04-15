@@ -86,7 +86,7 @@ public class SummarizeData {
         LOGGER.info("  Writing trips file");
         String file = Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
+        pwh.println("id,origin,originPAZ,originX,originY,destination,destinationPAZ,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,distanceMoped,mode,departure_time,departure_time_return");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -96,6 +96,9 @@ public class SummarizeData {
                 originId = String.valueOf(origin.getZoneId());
             }
             pwh.print(originId);
+            pwh.print(",");
+
+            pwh.print(trip.getTripOriginMopedZoneId());
             pwh.print(",");
 
             if(origin instanceof MicroLocation){
@@ -125,6 +128,8 @@ public class SummarizeData {
                 destinationId = String.valueOf(destination.getZoneId());
             }
             pwh.print(destinationId);
+            pwh.print(",");
+            pwh.print(trip.getTripDestinationMopedZoneId());
             pwh.print(",");
             if(destination instanceof MicroLocation){
                 pwh.print(((MicroLocation) destination).getCoordinate().x);
@@ -169,6 +174,8 @@ public class SummarizeData {
             } else {
                 pwh.print("NA,NA,NA,NA,NA");
             }
+            pwh.print(",");
+            pwh.print(trip.getMopedTripDistance());
             pwh.print(",");
             pwh.print(trip.getTripMode());
             pwh.print(",");

@@ -89,5 +89,5 @@ public class Properties {
 
     public static final String MOPED_PROPERTIES = "moped.properties";
     public static final String RUN_MOPED = "run.moped";
-    public static final String SCALE_FACTOR_FOR_TRIP_GENERATION = "tg.scale.factor";
+    public static final String SCENARIO_MUC = "scenario.mucCity";
 }

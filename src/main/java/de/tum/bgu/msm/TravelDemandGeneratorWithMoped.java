@@ -1,16 +1,13 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.output.*;
-import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
-import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
-import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.PedestrianModel;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceWithMoped;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
@@ -30,9 +27,9 @@ import org.apache.log4j.Logger;
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  */
-public final class TravelDemandGenerator {
+public final class TravelDemandGeneratorWithMoped {
 
-    private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
+    private static final Logger logger = Logger.getLogger(TravelDemandGeneratorWithMoped.class);
     private final DataSet dataSet;
 
     private final Module tripGeneration;
@@ -45,7 +42,7 @@ public final class TravelDemandGenerator {
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
 
-    private TravelDemandGenerator(
+    private TravelDemandGeneratorWithMoped(
             DataSet dataSet,
             Module tripGeneration,
             Module personTripAssignment,
@@ -91,7 +88,7 @@ public final class TravelDemandGenerator {
             personTripAssignment = new PersonTripAssignment(dataSet);
             travelTimeBudget = new TravelTimeBudgetModule(dataSet);
             distribution = new TripDistribution(dataSet);
-            modeChoice = new ModeChoice(dataSet);
+            modeChoice = new ModeChoiceWithMoped(dataSet);
             timeOfDayChoice = new TimeOfDayChoice(dataSet);
             tripScaling = new TripScaling(dataSet);
             matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet);
@@ -100,8 +97,8 @@ public final class TravelDemandGenerator {
             }
         }
 
-        public TravelDemandGenerator build() {
-            return new TravelDemandGenerator(dataSet,
+        public TravelDemandGeneratorWithMoped build() {
+            return new TravelDemandGeneratorWithMoped(dataSet,
                     tripGeneration,
                     personTripAssignment,
                     travelTimeBudget,
@@ -209,8 +206,24 @@ public final class TravelDemandGenerator {
         logger.info("Running Module: Travel Time Budget Calculation");
         travelTimeBudget.run();
 
-        logger.info("Running Module: Microscopic Trip Distribution");
-        distribution.run();
+        boolean runMoped = Resources.instance.getBoolean(Properties.RUN_MOPED, false);;
+        if (runMoped) {
+            logger.info("Running Module: Moped Pedestrian Model - Home based trips");
+            PedestrianModel pedestrianModel = new PedestrianModel(dataSet);
+            pedestrianModel.runMopedHomeBased();
+            logger.info("Running Module: Microscopic Trip Distribution - Home based trips");
+            TripDistribution distribution = new TripDistribution(dataSet);
+            distribution.runHomeBased();
+            //TODO: how to deal with non home based trips with no prior home based trip
+            logger.info("Running Module: Moped Pedestrian Model - Non Home based trips");
+            pedestrianModel.runMopedNonHomeBased();
+            logger.info("Running Module: Microscopic Trip Distribution - Non Home based trips");
+            distribution.runNonHomeBased();
+        }else{
+            logger.info("Running Module: Microscopic Trip Distribution");
+            TripDistribution distribution = new TripDistribution(dataSet);
+            distribution.run();
+        }
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoice.run();

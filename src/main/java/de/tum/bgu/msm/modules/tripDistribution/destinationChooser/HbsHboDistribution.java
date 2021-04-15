@@ -1,10 +1,7 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
 import com.google.common.math.LongMath;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.resources.Properties;

@@ -8,7 +8,6 @@ import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalcul
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorWithMopedImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.moped.modules.agentBased.walkModeChoice.ModeChoiceJSCalculator;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -16,7 +15,6 @@ import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
-import java.io.InputStreamReader;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -24,33 +22,21 @@ import java.util.stream.Collectors;
 
 import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
 
-public class ModeChoice extends Module {
+public class ModeChoiceWithMoped extends Module {
 
-    private final static Logger logger = Logger.getLogger(ModeChoice.class);
+    private final static Logger logger = Logger.getLogger(ModeChoiceWithMoped.class);
 
     private final Map<Purpose, ModeChoiceCalculator> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
 
-    public ModeChoice(DataSet dataSet) {
+    public ModeChoiceWithMoped(DataSet dataSet) {
         super(dataSet);
-        boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
-
-        if(!includeAV) {
-            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
-        } else {
-            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new AirportModeChoiceCalculator());
-        }
+        modeChoiceCalculatorByPurpose.put(Purpose.HBW, new ModeChoiceCalculatorWithMopedImpl());
+        modeChoiceCalculatorByPurpose.put(Purpose.HBE, new ModeChoiceCalculatorWithMopedImpl());
+        modeChoiceCalculatorByPurpose.put(Purpose.HBS, new ModeChoiceCalculatorWithMopedImpl());
+        modeChoiceCalculatorByPurpose.put(Purpose.HBO, new ModeChoiceCalculatorWithMopedImpl());
+        modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new ModeChoiceCalculatorWithMopedImpl());
+        modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new ModeChoiceCalculatorWithMopedImpl());
+        modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new ModeChoiceCalculatorWithMopedImpl());
     }
 
     public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {
@@ -62,7 +48,7 @@ public class ModeChoice extends Module {
 
     @Override
     public void run() {
-        logger.info(" Calculating mode choice probabilities for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro, 7. Walk ");
+        logger.info(" Calculating mode choice probabilities (without walk) for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro ");
         modeChoiceByPurpose();
         printModeShares();
     }
@@ -112,6 +98,7 @@ public class ModeChoice extends Module {
         private final TravelTimes travelTimes;
         private final ModeChoiceCalculator modeChoiceCalculator;
         private int countTripsSkipped;
+        private int countMopedWalkTripsSkipped;
 
         ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, ModeChoiceCalculator modeChoiceCalculator) {
             super(MitoUtil.getRandomObject().nextLong());
@@ -124,16 +111,22 @@ public class ModeChoice extends Module {
         @Override
         public Void call() {
             countTripsSkipped = 0;
+            countMopedWalkTripsSkipped = 0;
             try {
                 for (MitoHousehold household : dataSet.getHouseholds().values()) {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        chooseMode(trip, calculateTripProbabilities(household, trip));
+                        if(!Mode.walk.equals(trip.getTripMode())) {
+                            chooseMode(trip, calculateTripProbabilities(household, trip));
+                        }else{
+                            countMopedWalkTripsSkipped++;
+                        }
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
             logger.info(countTripsSkipped + " trips skipped for " + purpose);
+            logger.info(countMopedWalkTripsSkipped + " moped walk trips skipped for " + purpose);
             return null;
         }
 

@@ -28,6 +28,7 @@ public class MitoTrip implements Id {
 
     private int tripOriginMopedZoneId;
     private int tripDestinationMopedZoneId;
+    private double mopedTripDistance;
 
     public MitoTrip(int tripId, Purpose tripPurpose) {
         this.tripId = tripId;
@@ -145,5 +146,13 @@ public class MitoTrip implements Id {
 
     public void setTripOriginMopedZoneId(int tripOriginMopedZoneId) {
         this.tripOriginMopedZoneId = tripOriginMopedZoneId;
+    }
+
+    public double getMopedTripDistance() {
+        return mopedTripDistance;
+    }
+
+    public void setMopedTripDistance(double mopedTripDistance) {
+        this.mopedTripDistance = mopedTripDistance;
     }
 }
