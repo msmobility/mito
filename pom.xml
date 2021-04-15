@@ -22,6 +22,17 @@
         <developerConnection>scm:git:git@github.com:msmobility/mito.git</developerConnection>
     </scm>
     <repositories>
+         <repository>
+                  <id>github</id>
+                  <name>GitHub Packages</name>
+                  <url>https://maven.pkg.github.com/nkuehnel/moped_java/</url>-->
+                  <releases>-->
+                           <enabled>true</enabled>-->
+                  </releases>-->
+                  <snapshots>-->
+                           <enabled>true</enabled>-->
+                  </snapshots>-->
+         </repository>
 <!--        <repository>-->
 <!--            <id>github</id>-->
 <!--            <name>GitHub Apache Maven Packages</name>-->
@@ -210,7 +221,7 @@
         <dependency>
             <groupId>de.tum.bgu.msm</groupId>
             <artifactId>moped_java</artifactId>
-            <version>1.0-20210415.153919-2</version>
+            <version>1.0-20210415.172728-1</version>
         </dependency>
         <dependency>
             <groupId>org.matsim.contrib</groupId>
