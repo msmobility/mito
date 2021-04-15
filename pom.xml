@@ -33,7 +33,6 @@
                            <enabled>true</enabled>
                   </snapshots>
          </repository>
-
 		<repository>
 			<id>oss-jfrog-artifactory</id>
 			<name>artifactory-snapshots</name>
@@ -42,6 +41,18 @@
         <repository>
             <id>matsim</id>
             <url>http://dl.bintray.com/matsim/matsim</url>
+        </repository>
+	    <repository>
+            <!-- Geotools is not on Maven central -->
+            <id>osgeo</id>
+            <name>Geotools repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
         <repository>
             <id>bintray-msmobility-maven</id>
