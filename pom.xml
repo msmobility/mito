@@ -66,7 +66,7 @@
         </repository>
         <repository>
             <!-- Geotools is not on Maven central -->
-            <id>osgeo</id>
+            <id>osgeo2</id>
             <name>Geotools repository</name>
             <url>http://download.osgeo.org/webdav/geotools</url>
         </repository>
