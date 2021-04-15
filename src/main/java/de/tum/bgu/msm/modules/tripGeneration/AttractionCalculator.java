@@ -6,7 +6,11 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 public class AttractionCalculator {
+
+    private final List<Purpose> purposes;
 
     public enum ExplanatoryVariable {
         /**
@@ -39,15 +43,15 @@ public class AttractionCalculator {
 
     private final DataSet dataSet;
 
-    AttractionCalculator(DataSet dataSet) {
+    AttractionCalculator(DataSet dataSet, List<Purpose> purposes) {
         this.dataSet = dataSet;
+        this.purposes = purposes;
     }
 
     public void run() {
         logger.info("  Calculating trip attractions");
         for (MitoZone zone : dataSet.getZones().values()) {
-
-            for (Purpose purpose : Purpose.values()) {
+            for (Purpose purpose : purposes) {
                 float tripAttraction = 0;
                 for (ExplanatoryVariable variable : ExplanatoryVariable.values()) {
                     float attribute;

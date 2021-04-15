@@ -29,31 +29,31 @@ import java.util.Random;
  * - totalEmplByZone
  * - sizeOfZonesInAcre
  */
-public final class MitoModel2017 {
+public final class MitoModel2 {
 
-    private static final Logger logger = Logger.getLogger(MitoModel2017.class);
+    private static final Logger logger = Logger.getLogger(MitoModel2.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
-    private MitoModel2017(DataSet dataSet, String scenarioName) {
+    private MitoModel2(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel2017 standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static MitoModel2 standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel2017 model = new MitoModel2017(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModel2 model = new MitoModel2(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static MitoModel2017 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static MitoModel2 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
-        MitoModel2017 model = new MitoModel2017(dataSet, scenarioName);
+        MitoModel2 model = new MitoModel2(dataSet, scenarioName);
         new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
         new OmxSkimsReader(dataSet).readSkimDistancesNMT();
         new OmxSkimsReader(dataSet).readSkimDistancesAuto();
@@ -65,7 +65,7 @@ public final class MitoModel2017 {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        TravelDemandGenerator2017 ttd = new TravelDemandGenerator2017.Builder(dataSet).build();
+        TravelDemandGenerator2 ttd = new TravelDemandGenerator2.Builder(dataSet).build();
         ttd.generateTravelDemand(scenarioName);
         printOutline(startTime);
     }

@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
@@ -15,14 +16,20 @@ import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
+import de.tum.bgu.msm.modules.scenarios.Telework;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
+import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+
+import java.util.List;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -87,16 +94,17 @@ public final class TravelDemandGenerator {
 
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
-            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration());
-            personTripAssignment = new PersonTripAssignment(dataSet);
-            travelTimeBudget = new TravelTimeBudgetModule(dataSet);
-            distribution = new TripDistribution(dataSet);
-            modeChoice = new ModeChoice(dataSet);
-            timeOfDayChoice = new TimeOfDayChoice(dataSet);
-            tripScaling = new TripScaling(dataSet);
-            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet);
+            List<Purpose> purposes = Purpose.getAllPurposes();
+            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration(), purposes);
+            personTripAssignment = new PersonTripAssignment(dataSet, purposes);
+            travelTimeBudget = new TravelTimeBudgetModule(dataSet, purposes);
+            distribution = new TripDistribution(dataSet, purposes, true, new DestinationUtilityCalculatorFactoryImpl());
+            modeChoice = new ModeChoice(dataSet, purposes);
+            timeOfDayChoice = new TimeOfDayChoice(dataSet, purposes);
+            tripScaling = new TripScaling(dataSet, purposes);
+            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, purposes);
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
-                longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+                longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
             }
         }
 
@@ -192,19 +200,18 @@ public final class TravelDemandGenerator {
 
     public void generateTravelDemand(String scenarioName) {
 
-        long startTime = System.currentTimeMillis();
         logger.info("Running Module: Microscopic Trip Generation");
         tripGeneration.run();
         if (dataSet.getTrips().isEmpty()) {
             logger.warn("No trips created. End of program.");
             return;
         }
-        long endTime = System.currentTimeMillis();
-        double duration = (endTime - startTime) / 1000;
-        logger.info("Completed TG in " + duration + " seconds");
+
 
         logger.info("Running Module: Person to Trip Assignment");
         personTripAssignment.run();
+
+        //new Telework(dataSet, Purpose.getAllPurposes(), 0.5).run();
 
         logger.info("Running Module: Travel Time Budget Calculation");
         travelTimeBudget.run();

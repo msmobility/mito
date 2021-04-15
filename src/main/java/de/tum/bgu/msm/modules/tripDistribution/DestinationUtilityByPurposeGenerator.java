@@ -21,11 +21,15 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
     private final Map<Integer, MitoZone> zones;
     private final TravelDistances travelDistances;
 
-    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet) {
+
+    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet,
+                                         DestinationUtilityCalculatorFactory factory,
+                                         double travelDistanceCalibrationK,
+                                         double impendanceCalibrationK) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
-        calculator = new DestinationUtilityCalculatorImpl(purpose);
+        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -70,6 +71,10 @@ public class MitoPerson implements Id {
         if(trip.getPerson() != this) {
             trip.setPerson(this);
         }
+    }
+
+    public void removeTripFromPerson(MitoTrip trip){
+        trips.remove(trip);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 import umontreal.ssj.probdist.NegativeBinomialDist;
 
+import javax.validation.constraints.Null;
 import java.util.*;
 
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
@@ -28,6 +29,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
     private Map<String, Double> negBinCoef;
 
     private int casesWithMoreThanTen = 0;
+    private double speed_bicycle_m_min = 12 * 1000 / 60;
+    private double speed_walk_m_min = 12 * 1000 / 60;
 
 
     protected TripsByPurposeGeneratorHurdleModel(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
@@ -35,7 +38,7 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         this.dataSet = dataSet;
         this.purpose = purpose;
         this.scaleFactorForGeneration = scaleFactorForGeneration;
-        this.householdTypeManager = new HouseholdTypeManager(purpose);
+        //this.householdTypeManager = new HouseholdTypeManager(purpose);
         this.binLogCoef =
                 new TripGenerationHurdleCoefficientReader(dataSet, purpose,
                         Resources.instance.getTripGenerationCoefficientsHurdleBinaryLogit()).readCoefficientsForThisPurpose();
@@ -63,17 +66,92 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
     }
 
     private void generateTripsForHousehold(MitoHousehold hh) {
-        double utilityTravel = getUtilityTravelBinaryLogit(hh);
+
+        List<MitoTrip> tripsForHBW = hh.getTripsForPurpose(Purpose.HBW);
+        double timeHBW = 0;
+        List<MitoTrip> tripsForHBE = hh.getTripsForPurpose(Purpose.HBE);
+        double timeHBE = 0;
+
+            for (MitoTrip t : tripsForHBW) {
+                if (t.getTripOrigin() != null && t.getTripDestination() != null && t.getTripMode() != null) {
+                    if (t.getTripMode().equals(Mode.walk)) {
+                        timeHBW += 2 * dataSet.
+                                getTravelDistancesNMT().getTravelDistance(t.getTripDestination().getZoneId(), t.getTripOrigin().getZoneId()) / speed_walk_m_min;
+                    } else if (t.getTripMode().equals(Mode.bicycle)) {
+                        timeHBW += 2 * dataSet.
+                                getTravelDistancesNMT().getTravelDistance(t.getTripDestination().getZoneId(), t.getTripOrigin().getZoneId()) / speed_bicycle_m_min;
+                    } else {
+                        String modeString;
+                        if (t.getTripMode().equals(Mode.autoPassenger) || t.getTripMode().equals(Mode.autoDriver)) {
+                            modeString = "car";
+                        } else if (t.getTripMode().equals(Mode.tramOrMetro)) {
+                            modeString  = "tramMetro";
+                        } else if (t.getTripMode().equals(Mode.bus) || t.getTripMode().equals(Mode.train)) {
+                            modeString = t.getTripMode().toString();
+                        } else {
+                            logger.warn("No idea how to measure the time for mode " + t.getTripMode() + " (car is assigned)");
+                            modeString = "car";
+                        }
+
+                        timeHBW += dataSet.
+                                getTravelTimes().
+                                getTravelTime(t.getTripDestination(), t.getTripOrigin(), t.getDepartureInMinutes(), modeString);
+                        timeHBW += dataSet.
+                                getTravelTimes().
+                                getTravelTime(t.getTripOrigin(), t.getTripDestination(), t.getDepartureInMinutesReturnTrip(), modeString);
+                    }
+                } else {
+                    logger.warn("There is a trip for HBW without origin or destination or mode");
+                }
+
+            }
+
+            for (MitoTrip t : tripsForHBE) {
+                if (t.getTripOrigin() != null && t.getTripDestination() != null && t.getTripMode() != null) {
+                    if (t.getTripMode().equals(Mode.walk)) {
+                        timeHBE += 2 * dataSet.
+                                getTravelDistancesNMT().getTravelDistance(t.getTripDestination().getZoneId(), t.getTripOrigin().getZoneId()) / speed_walk_m_min;
+                    } else if (t.getTripMode().equals(Mode.bicycle)) {
+                        timeHBE += 2 * dataSet.
+                                getTravelDistancesNMT().getTravelDistance(t.getTripDestination().getZoneId(), t.getTripOrigin().getZoneId()) / speed_bicycle_m_min;
+                    } else {
+                        String modeString;
+                        if (t.getTripMode().equals(Mode.autoPassenger) || t.getTripMode().equals(Mode.autoDriver)) {
+                            modeString = "car";
+                        } else if (t.getTripMode().equals(Mode.tramOrMetro)) {
+                            modeString  = "tramMetro";
+                        } else if (t.getTripMode().equals(Mode.bus) || t.getTripMode().equals(Mode.train)) {
+                            modeString = t.getTripMode().toString();
+                        } else {
+                            logger.warn("No idea how to measure the time for mode " + t.getTripMode() + " (car is assigned)");
+                            modeString = "car";
+                        }
+
+                        timeHBE += dataSet.
+                                getTravelTimes().
+                                getTravelTime(t.getTripDestination(), t.getTripOrigin(), t.getDepartureInMinutes(), modeString);
+                        timeHBE += dataSet.
+                                getTravelTimes().
+                                getTravelTime(t.getTripOrigin(), t.getTripDestination(), t.getDepartureInMinutesReturnTrip(), modeString);
+                    }
+                } else {
+                    logger.warn("There is a trip for HBE without origin or destination or mode");
+                }
+            }
+
+
+
+        double utilityTravel = getUtilityTravelBinaryLogit(hh, tripsForHBW, tripsForHBE, timeHBW, timeHBE);
         double randomNumber = random.nextDouble();
         double probabilityTravel = Math.exp(utilityTravel) / (1. + Math.exp(utilityTravel));
         if (randomNumber < probabilityTravel) {
-            estimateAndCreatePositiveNumberOfTrips(hh);
+            estimateAndCreatePositiveNumberOfTrips(hh, tripsForHBW, tripsForHBE, timeHBW, timeHBE);
         }
     }
 
-    private double getUtilityTravelBinaryLogit(MitoHousehold hh) {
+    private double getUtilityTravelBinaryLogit(MitoHousehold hh, List<MitoTrip> tripsForHBW, List<MitoTrip> tripsForHBE, double timeHBW, double timeHBE) {
         double utilityTravel = 0.;
-        int size = Math.min(hh.getHhSize(),5);
+        int size = Math.min(hh.getHhSize(), 5);
         switch (size) {
             case 1:
                 utilityTravel += binLogCoef.get("size_1");
@@ -161,10 +239,18 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                 break;
         }
 
+
+        utilityTravel += tripsForHBW.size() * binLogCoef.get("tripsHBW");
+        utilityTravel += timeHBW * binLogCoef.get("timeHBW");
+
+
+        utilityTravel += tripsForHBE.size() * binLogCoef.get("tripsHBE");
+        utilityTravel += timeHBE * binLogCoef.get("timeHBE");
+
         return utilityTravel;
     }
 
-    private void estimateAndCreatePositiveNumberOfTrips(MitoHousehold hh) {
+    private void estimateAndCreatePositiveNumberOfTrips(MitoHousehold hh, List<MitoTrip> tripsForHBW, List<MitoTrip> tripsForHBE, double timeHBW, double timeHBE) {
         double randomNumber = random.nextDouble();
         double averageNumberOfTrips = 0.;
         int size = hh.getHhSize();
@@ -259,6 +345,11 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
         //is this the right value?
         double theta = negBinCoef.get("theta");
 
+        averageNumberOfTrips += tripsForHBW.size() * negBinCoef.get("tripsHBW");
+        averageNumberOfTrips += timeHBW * negBinCoef.get("timeHBW");
+        averageNumberOfTrips += tripsForHBE.size() * negBinCoef.get("tripsHBE");
+        averageNumberOfTrips += timeHBE * negBinCoef.get("timeHBE");
+
         averageNumberOfTrips = Math.exp(averageNumberOfTrips);
 
         double variance = averageNumberOfTrips + 1 / theta * Math.pow(averageNumberOfTrips, 2);
@@ -282,21 +373,6 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
     }
 
     private void generateTripsForHousehold(MitoHousehold hh, int numberOfTrips) {
-        HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
-        if (hhType == null) {
-            logger.error("Could not create trips for Household " + hh.getId() + " for Purpose " + purpose + ": No Household Type applicable");
-            return;
-        }
-        Integer[] tripFrequencies = householdTypeManager.getTripFrequenciesForHouseholdType(hhType);
-        if (tripFrequencies == null) {
-            logger.error("Could not find trip frequencies for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
-            return;
-        }
-        if (MitoUtil.getSum(tripFrequencies) == 0) {
-            logger.info("No trips for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
-            return;
-        }
-
         List<MitoTrip> trips = new ArrayList<>();
         for (int i = 0; i < numberOfTrips; i++) {
             MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
