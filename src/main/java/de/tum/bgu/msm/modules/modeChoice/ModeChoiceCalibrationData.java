@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ModeChoiceCalibrationData {
@@ -49,7 +50,7 @@ public class ModeChoiceCalibrationData {
         return zoneToRegionMap;
     }
 
-    public void updateCalibrationCoefficients(DataSet dataSet, int iteration) {
+    public void updateCalibrationCoefficients(DataSet dataSet, int iteration, List<Purpose> purposes) {
 
         if (pw == null){
             try {
@@ -78,7 +79,7 @@ public class ModeChoiceCalibrationData {
 
 
         for (String region : observedModalShare.keySet()) {
-            for (Purpose purpose : Purpose.values()) {
+            for (Purpose purpose : purposes) {
                 for (Mode mode : Mode.values()) {
                     double observedShare = observedModalShare.get(region).get(purpose).getOrDefault(mode, 0.);
                     double tripAtRegionAndPurpose = simulatedTripsByRegionPurposeAndMode.get(region).get(purpose).values().stream().mapToInt(Integer::intValue).sum();
