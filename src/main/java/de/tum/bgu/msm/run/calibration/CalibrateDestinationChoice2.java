@@ -43,36 +43,36 @@ import java.util.Random;
  * - totalEmplByZone
  * - sizeOfZonesInAcre
  */
-public final class MitoModel2ForCalibration {
+public final class CalibrateDestinationChoice2 {
 
-    private static final Logger logger = Logger.getLogger(MitoModel2ForCalibration.class);
+    private static final Logger logger = Logger.getLogger(CalibrateDestinationChoice2.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
     public static void main(String[] args) {
-        MitoModel2ForCalibration model = MitoModel2ForCalibration.standAloneModel(args[0], MunichImplementationConfig.get());
+        CalibrateDestinationChoice2 model = CalibrateDestinationChoice2.standAloneModel(args[0], MunichImplementationConfig.get());
         model.run();
     }
 
-    private MitoModel2ForCalibration(DataSet dataSet, String scenarioName) {
+    private CalibrateDestinationChoice2(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel2ForCalibration standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static CalibrateDestinationChoice2 standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel2ForCalibration model = new MitoModel2ForCalibration(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        CalibrateDestinationChoice2 model = new CalibrateDestinationChoice2(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static MitoModel2ForCalibration initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static CalibrateDestinationChoice2 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
-        MitoModel2ForCalibration model = new MitoModel2ForCalibration(dataSet, scenarioName);
+        CalibrateDestinationChoice2 model = new CalibrateDestinationChoice2(dataSet, scenarioName);
         new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
         new OmxSkimsReader(dataSet).readSkimDistancesNMT();
         new OmxSkimsReader(dataSet).readSkimDistancesAuto();
