@@ -68,9 +68,8 @@ public class JobReader extends AbstractCsvReader {
                 //logger.error("Job Type " + type + " used in job microdata but is not defined");
             }
 
-            Coordinate coordinate = zone.getRandomCoord();
-            //Coordinate coordinate = (new Coordinate(Double.parseDouble(record[posJobCoordX]),
-            		//Double.parseDouble(record[posJobCoordY])));
+            Coordinate coordinate = (new Coordinate(Double.parseDouble(record[posJobCoordX]),
+            		Double.parseDouble(record[posJobCoordY])));
 
             MitoJob job = new MitoJob(zone, coordinate, id);
             dataSet.addJob(job);

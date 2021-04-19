@@ -65,7 +65,7 @@ public final class MitoModel_DE2017 {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        TravelDemandGenerator2017 ttd = new TravelDemandGenerator2017.Builder(dataSet).build();
+        TravelDemandGeneratorGermany ttd = new TravelDemandGeneratorGermany.Builder(dataSet).build();
         ttd.generateTravelDemand(scenarioName);
         printOutline(startTime);
     }

@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
@@ -12,9 +13,10 @@ import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
-import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryHurdle;
+import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -25,9 +27,9 @@ import org.apache.log4j.Logger;
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  */
-public final class TravelDemandGenerator2017 {
+public final class TravelDemandGeneratorGermany {
 
-    private static final Logger logger = Logger.getLogger(TravelDemandGenerator2017.class);
+    private static final Logger logger = Logger.getLogger(TravelDemandGeneratorGermany.class);
     private final DataSet dataSet;
 
     private final Module tripGeneration;
@@ -40,7 +42,7 @@ public final class TravelDemandGenerator2017 {
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
 
-    private TravelDemandGenerator2017(
+    private TravelDemandGeneratorGermany(
             DataSet dataSet,
             Module tripGeneration,
             Module personTripAssignment,
@@ -81,21 +83,21 @@ public final class TravelDemandGenerator2017 {
 
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
-            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryHurdle());
-            personTripAssignment = new PersonTripAssignment(dataSet);
-            travelTimeBudget = new TravelTimeBudgetModule(dataSet);
-            distribution = new TripDistribution(dataSet);
-            modeChoice = new ModeChoice(dataSet);
-            timeOfDayChoice = new TimeOfDayChoice(dataSet);
-            tripScaling = new TripScaling(dataSet);
-            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet);
+            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration(), Purpose.getAllPurposes());
+            personTripAssignment = new PersonTripAssignment(dataSet, Purpose.getAllPurposes());
+            travelTimeBudget = new TravelTimeBudgetModule(dataSet, Purpose.getAllPurposes());
+            distribution = new TripDistribution(dataSet, Purpose.getAllPurposes(), true, new DestinationUtilityCalculatorFactoryImpl());
+            modeChoice = new ModeChoice(dataSet, Purpose.getAllPurposes());
+            timeOfDayChoice = new TimeOfDayChoice(dataSet, Purpose.getAllPurposes());
+            tripScaling = new TripScaling(dataSet, Purpose.getAllPurposes());
+            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, Purpose.getAllPurposes());
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
-                longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+                longDistanceTraffic = new LongDistanceTraffic(dataSet,Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), Purpose.getAllPurposes());
             }
         }
 
-        public TravelDemandGenerator2017 build() {
-            return new TravelDemandGenerator2017(dataSet,
+        public TravelDemandGeneratorGermany build() {
+            return new TravelDemandGeneratorGermany(dataSet,
                     tripGeneration,
                     personTripAssignment,
                     travelTimeBudget,

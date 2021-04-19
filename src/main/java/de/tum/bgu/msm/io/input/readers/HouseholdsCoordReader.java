@@ -46,8 +46,8 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
     protected void processHeader(String[] header) {
         posHHId = MitoUtil.findPositionInArray("hhID", header);
         posTAZId = MitoUtil.findPositionInArray("zone", header);
-        //posCoordX = MitoUtil.findPositionInArray("coordX", header);
-        //posCoordY = MitoUtil.findPositionInArray("coordY", header);
+        posCoordX = MitoUtil.findPositionInArray("coordX", header);
+        posCoordY = MitoUtil.findPositionInArray("coordY", header);
     }
 
     @Override
@@ -68,11 +68,9 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
                 logger.warn(String.format("Household %d is supposed to live in zone %d but this zone does not exist.", hhId, taz));
             }
 
-            //Coordinate homeLocation = new Coordinate().getRandomCoord();
-            Coordinate homeLocation = zone.getRandomCoord();
 
-            //Coordinate homeLocation = new Coordinate(
-            		//Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
+            Coordinate homeLocation = new Coordinate(
+            		Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
             hh.setHomeLocation(homeLocation);
             hh.setHomeZone(zone);
             zone.addHousehold();

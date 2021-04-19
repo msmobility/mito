@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.run;
 
-import de.tum.bgu.msm.MitoModel2;
+import de.tum.bgu.msm.MitoModel_DE2017;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -14,13 +14,13 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
-public class Mito2 {
+public class MitoGermany {
 
-    private static final Logger logger = Logger.getLogger(Mito2.class);
+    private static final Logger logger = Logger.getLogger(MitoGermany.class);
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");
-        MitoModel2 model = MitoModel2.standAloneModel(args[0], MunichImplementationConfig.get());
+        MitoModel_DE2017 model = MitoModel_DE2017.standAloneModel(args[0], MunichImplementationConfig.get());
         model.run();
         final DataSet dataSet = model.getData();
 
