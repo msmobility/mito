@@ -15,7 +15,6 @@ import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryHurdle;
-import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -198,7 +197,6 @@ public final class TravelDemandGenerator2017 {
         double duration = (endTime - startTime) / 1000;
         logger.info("Completed TG in " + duration + " seconds");
 
-        System.exit(0);
 
         logger.info("Running Module: Person to Trip Assignment");
         personTripAssignment.run();

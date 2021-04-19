@@ -73,7 +73,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
 
     private double getUtilityTravelBinaryLogit(MitoHousehold hh) {
         double utilityTravel = 0.;
-        int size = hh.getHhSize();
+        //int size = hh.getHhSize(); // initially was
+        int size = Math.min(hh.getHhSize(),5);
         switch (size) {
             case 1:
                 utilityTravel += binLogCoef.get("size_1");
@@ -140,6 +141,13 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                 break;
         }
 
+
+        long numberOfAdults = hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge() >= 15).count();
+
+        /*double proportionOfAutos = 0;
+        if(numberOfAdults != 0){
+            proportionOfAutos = Math.min(1, hh.getAutos() / numberOfAdults);
+        }*/
         double proportionOfAutos = Math.min(1, hh.getAutos() / hh.getPersons().values().stream().filter(mitoPerson -> mitoPerson.getAge() >= 15).count());
         utilityTravel += binLogCoef.get("propAutos") * proportionOfAutos;
 
