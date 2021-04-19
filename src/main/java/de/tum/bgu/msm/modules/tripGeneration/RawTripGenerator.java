@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import org.apache.log4j.Logger;
@@ -31,12 +28,14 @@ public class RawTripGenerator {
 
     private final DataSet dataSet;
     private TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory;
+    private final List<Purpose> purposes;
 
-    private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
+    //private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
 
-    public RawTripGenerator(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory) {
+    public RawTripGenerator(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory, List<Purpose> purposes) {
         this.dataSet = dataSet;
         this.tripsByPurposeGeneratorFactory = tripsByPurposeGeneratorFactory;
+        this.purposes = purposes;
     }
 
     public void run (double scaleFactorForGeneration) {
@@ -46,21 +45,27 @@ public class RawTripGenerator {
 
     private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {
         final ConcurrentExecutor<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
-                ConcurrentExecutor.fixedPoolService(Purpose.values().length);
+                ConcurrentExecutor.fixedPoolService(purposes.size());
         List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
-        for(Purpose purpose: PURPOSES) {
+        for(Purpose purpose: purposes) {
             tasks.add(tripsByPurposeGeneratorFactory.createTripGeneratorForThisPurpose(dataSet, purpose, scaleFactorForGeneration));
         }
         final List<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> results = executor.submitTasksAndWaitForCompletion(tasks);
         for(Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> result: results) {
             final Purpose purpose = result.getFirst();
-
             final int sum = result.getSecond().values().stream().flatMapToInt(e -> IntStream.of(e.size())).sum();
             logger.info("Created " + sum + " trips for " + purpose);
             final Map<MitoHousehold, List<MitoTrip>> tripsByHouseholds = result.getSecond();
             for(Map.Entry<MitoHousehold, List<MitoTrip>> tripsByHousehold: tripsByHouseholds.entrySet()) {
-                tripsByHousehold.getKey().setTripsByPurpose(tripsByHousehold.getValue(), purpose);
-                dataSet.addTrips(tripsByHousehold.getValue());
+                List<MitoTrip> tripsInThisHousehold = tripsByHousehold.getValue();
+                tripsByHousehold.getKey().setTripsByPurpose(tripsInThisHousehold, purpose);
+                dataSet.addTrips(tripsInThisHousehold);
+                for (MitoTrip mitoTrip : tripsInThisHousehold) {
+                    if (mitoTrip.getPerson() != null){
+                        MitoPerson person = mitoTrip.getPerson();
+                        person.addTrip(mitoTrip);
+                    }
+                }
             }
         }
     }

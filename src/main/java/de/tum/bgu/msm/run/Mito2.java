@@ -14,9 +14,9 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
-public class Mito2017 {
+public class Mito2 {
 
-    private static final Logger logger = Logger.getLogger(Mito2017.class);
+    private static final Logger logger = Logger.getLogger(Mito2.class);
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");

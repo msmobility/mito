@@ -1,14 +1,24 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.run.calibration;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
+import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
+import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -29,35 +39,24 @@ import java.util.Random;
  * - totalEmplByZone
  * - sizeOfZonesInAcre
  */
-public final class MitoModel2017 {
+public final class MitoModel2ForModeChoiceCalibration {
 
-    private static final Logger logger = Logger.getLogger(MitoModel2017.class);
+    private static final Logger logger = Logger.getLogger(MitoModel2ForModeChoiceCalibration.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
-    private MitoModel2017(DataSet dataSet, String scenarioName) {
+    private MitoModel2ForModeChoiceCalibration(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel2017 standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static MitoModel2ForModeChoiceCalibration standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel2017 model = new MitoModel2017(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModel2ForModeChoiceCalibration model = new MitoModel2ForModeChoiceCalibration(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
-        return model;
-    }
-
-    public static MitoModel2017 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
-        logger.info(" Initializing MITO from SILO");
-        Resources.initializeResources(propertiesFile);
-        MitoModel2017 model = new MitoModel2017(dataSet, scenarioName);
-        new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
-        new OmxSkimsReader(dataSet).readSkimDistancesNMT();
-        new OmxSkimsReader(dataSet).readSkimDistancesAuto();
-        model.readAdditionalData();
         return model;
     }
 
@@ -65,9 +64,49 @@ public final class MitoModel2017 {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        TravelDemandGenerator2017 ttd = new TravelDemandGenerator2017.Builder(dataSet).build();
-        ttd.generateTravelDemand(scenarioName);
-        printOutline(startTime);
+        runForThisPurposes(Purpose.getMandatoryPurposes());
+
+        runForThisPurposes(Purpose.getDiscretionaryPurposes());
+
+        dataSet.getModeChoiceCalibrationData().close();
+
+    }
+
+    private void runForThisPurposes(List<Purpose> purposes) {
+        logger.info("Running Module: Microscopic Trip Generation");
+        TripGeneration tg = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), purposes);
+        tg.run();
+        if (dataSet.getTrips().isEmpty()) {
+            logger.warn("No trips created. End of program.");
+            return;
+        }
+
+        logger.info("Running Module: Microscopic Trip Distribution");
+        TripDistribution distribution = new TripDistribution(dataSet, purposes, false, new DestinationUtilityCalculatorFactoryImpl2());
+        distribution.run();
+
+        ModeChoice modeChoice = new ModeChoice(dataSet, purposes);
+        for(Purpose purpose: purposes) {
+
+            final CalibratingModeChoiceCalculatorImpl baseCalculator;
+            if(purpose == Purpose.AIRPORT) {
+                baseCalculator = new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(),
+                        dataSet.getModeChoiceCalibrationData());
+            } else {
+                baseCalculator = new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(),
+                        dataSet.getModeChoiceCalibrationData());
+            }
+            modeChoice.registerModeChoiceCalculator(purpose,
+                    baseCalculator);
+        }
+
+        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+
+        for (int iteration = 0; iteration < Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 1); iteration++){
+            modeChoice.run();
+            dataSet.getModeChoiceCalibrationData().updateCalibrationCoefficients(dataSet, iteration, purposes);
+            logger.info("Finish iteration " + iteration);
+        }
     }
 
     private void readStandAlone(ImplementationConfig config) {
@@ -117,7 +156,4 @@ public final class MitoModel2017 {
     public void setRandomNumberGenerator(Random random) {
         MitoUtil.initializeRandomNumber(random);
     }
-
-
-
 }

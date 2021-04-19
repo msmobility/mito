@@ -3,6 +3,8 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
@@ -24,34 +26,28 @@ public class ModeChoice extends Module {
 
     private final Map<Purpose, ModeChoiceCalculator> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
 
-    public ModeChoice(DataSet dataSet) {
-        super(dataSet);
+    public ModeChoice(DataSet dataSet, List<Purpose> purposes) {
+        super(dataSet, purposes);
         boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
 
         if(!includeAV) {
-            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new ModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new ModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.HBR, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
         } else {
             modeChoiceCalculatorByPurpose.put(Purpose.HBW, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.HBE, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.HBS, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.HBO, new AVModeChoiceCalculatorImpl());
+            modeChoiceCalculatorByPurpose.put(Purpose.HBR, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new AVModeChoiceCalculatorImpl());
             modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new AVModeChoiceCalculatorImpl());
-
-            /*modeChoiceCalculatorByPurpose.put(Purpose.HBW, new SharedAVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new SharedAVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new SharedAVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new SharedAVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new SharedAVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new SharedAVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new SharedAVModeChoiceCalculatorImpl());*/
+            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new AirportModeChoiceCalculator());
         }
     }
 
@@ -156,7 +152,7 @@ public class ModeChoice extends Module {
                     destinationId);
             return modeChoiceCalculator.calculateProbabilities(purpose, household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                     travelDistanceNMT, dataSet.getPeakHour());
-        }
+    }
 
         private void chooseMode(MitoTrip trip, EnumMap<Mode, Double> probabilities) {
             if (probabilities == null) {

@@ -161,7 +161,7 @@ public class SummarizeDataToVisualize {
         for (MitoZone zone : dataSet.getZones().values()) {
             final int zoneId = zone.getId();
             String txt = String.valueOf(zoneId);
-            for (Purpose purpose : Purpose.values()) {
+            for (Purpose purpose : Purpose.getAllPurposes()) {
                 int tripsProduced = tripProdByZoneAndPurp.get(zoneId).get(purpose);
                 int tripsAttracted = (int) zone.getTripAttraction(purpose);
                 double avTripDist = avDistByZoneAndPurp.get(zoneId).get(purpose) / tripsProduced;
