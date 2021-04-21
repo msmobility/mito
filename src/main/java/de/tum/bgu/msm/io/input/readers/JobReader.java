@@ -45,8 +45,8 @@ public class JobReader extends AbstractCsvReader {
         posZone = MitoUtil.findPositionInArray("zone", header);
         posWorker = MitoUtil.findPositionInArray("personId", header);
         posType = MitoUtil.findPositionInArray("type", header);
-        //posJobCoordX = MitoUtil.findPositionInArray("coordX", header);
-        //posJobCoordY = MitoUtil.findPositionInArray("coordY", header);
+        posJobCoordX = MitoUtil.findPositionInArray("coordX", header);
+        posJobCoordY = MitoUtil.findPositionInArray("coordY", header);
     }
 
     @Override
