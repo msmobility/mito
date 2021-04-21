@@ -1,6 +1,10 @@
 package de.tum.bgu.msm.trafficAssignment;
 
+import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
@@ -21,176 +25,278 @@ import java.util.Set;
 
 public class TripCSVToMATSimPlan {
 
-	// This class will read trip lists in CSV from MITO and creates a MATSim XML
-	// plan file
-	private static String delimiter = ",";
+    private static final double SPEED_WALK_KMH = 5.;
+    private static final double SPEED_BICYCLE_KMH = 12.;
+    // This class will read trip lists in CSV from MITO and creates a MATSim XML
+    // plan file
+    private static String delimiter = ",";
 
-	private static String filename;
-	private static PopulationFactory factory;
-	private static Network carNetwork;
+    private static String filename;
+    private static PopulationFactory factory;
+    private static Network carNetwork;
 
-	public static void main(String[] args) {
-		// TODO add logging
-		filename = args[0];
-		String networkFile = args[1];
+    private static int posId;
+    private static int posOriginX;
+    private static int posOriginY;
+    private static int posDestinationX;
+    private static int posDestinationY;
+    private static int posPurpose;
+    private static int posPersonId;
+    private static int posMode;
+    private static int posDistance;
+    private static int posTimeCar;
+    private static int posTimeTrain;
+    private static int posTimeMetroTram;
+    private static int posTimeBus;
+    private static int posDepartureTime;
+    private static int posDepartureTimeReturn;
 
-		Config config = ConfigUtils.createConfig();
-		config.network().setInputFile(networkFile);
+    private static Set<String> modesCar = new HashSet<>();
+    private static Set<String> modesAssignment = new HashSet<>();
 
-		Scenario scenario = ScenarioUtils.loadScenario(config);
-		TransportModeNetworkFilter filter = new TransportModeNetworkFilter(scenario.getNetwork());
-		Set<String> modesCar = new HashSet<>();
-		modesCar.add("car");
-		carNetwork = NetworkUtils.createNetwork();
-		filter.filter(carNetwork, modesCar);
+    public static void main(String[] args) {
+        // TODO add logging
+        filename = args[0];
+        //String networkFile = args[1];
 
-		Population population = PopulationUtils.createPopulation(config);
-		factory = population.getFactory();
+        Config config = ConfigUtils.createConfig();
+        //config.network().setInputFile(networkFile);
 
-		try {
-			FileReader in = null;
-			BufferedReader br = null;
-			try {
-				in = new FileReader(filename);
-				br = new BufferedReader(in);
+        Scenario scenario = ScenarioUtils.loadScenario(config);
+        TransportModeNetworkFilter filter = new TransportModeNetworkFilter(scenario.getNetwork());
 
-				String line;
-				int i = 0;
-				br.readLine(); // skip CSV header
-				while ((line = br.readLine()) != null) {
-					Person p = createPersonFromTrip(i++, line);
-					if (p != null) {
-						population.addPerson(p);
-					}
-				}
-			} finally {
-				if (br != null) {
-					br.close();
-				}
+        modesCar.add("car");
+        modesAssignment.add("car");
+        carNetwork = NetworkUtils.createNetwork();
+        filter.filter(carNetwork, modesCar);
 
-				if (in != null) {
-					in.close();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        Population population = PopulationUtils.createPopulation(config);
+        factory = population.getFactory();
 
-		PopulationWriter popwriter = new PopulationWriter(population);
-		popwriter.write(filename + ".xml.gz");
+        try {
+            FileReader in = null;
+            BufferedReader br = null;
+            try {
+                in = new FileReader(filename);
+                br = new BufferedReader(in);
 
-		System.out.println("done.");
-	}
+                String line;
+                int i = 0;
+                String[] header = br.readLine().split(delimiter); // read CSV header to find names and positions
 
-	private static Person createPersonFromTrip(int i, String line) {
-		Trip t = new Trip(line);
+                posId = MitoUtil.findPositionInArray("id", header);
+                posOriginX = MitoUtil.findPositionInArray("originX", header);
+                posOriginY = MitoUtil.findPositionInArray("originY", header);
+                posDestinationX = MitoUtil.findPositionInArray("destinationX", header);
+                posDestinationY = MitoUtil.findPositionInArray("destinationY", header);
+                posPurpose = MitoUtil.findPositionInArray("purpose", header);
+                posPersonId = MitoUtil.findPositionInArray("person", header);
+                posMode = MitoUtil.findPositionInArray("mode", header);
+                posDistance = MitoUtil.findPositionInArray("distance", header);
+                posTimeCar = MitoUtil.findPositionInArray("time_auto", header);
+                posTimeTrain = MitoUtil.findPositionInArray("time_train", header);
+                posTimeMetroTram = MitoUtil.findPositionInArray("time_tram_metro", header);
+                posTimeBus = MitoUtil.findPositionInArray("time_bus", header);
+                posDepartureTime = MitoUtil.findPositionInArray("departure_time", header);
+                posDepartureTimeReturn = MitoUtil.findPositionInArray("departure_time_return", header);
 
-		String mode = decodeMode(t.mode);
-		Id<Person> matsimId = Id.createPersonId(t.person + "_" + i);
 
-		Person p = factory.createPerson(Id.createPersonId(matsimId));
-		Plan plan = factory.createPlan();
+                while ((line = br.readLine()) != null) {
+                    Person p = createPersonFromTrip(i++, line);
+                    if (p != null) {
+                        population.addPerson(p);
+                    }
+                }
+            } finally {
+                if (br != null) {
+                    br.close();
+                }
 
-		Purpose purpose = Purpose.valueOf(t.purpose);
-		boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
+                if (in != null) {
+                    in.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		String firstActivityType = getOriginActivity(purpose);
-		Coord firstCoord = new Coord(t.originX, t.originY);
+        PopulationWriter popwriter = new PopulationWriter(population);
+        popwriter.write("externalDemand/sd_trips" + ".xml.gz");
 
-		Activity firstAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
-		firstAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
+        System.out.println("done.");
+    }
 
-		firstAct.setEndTime(t.departure_time);
-		plan.addActivity(firstAct);
+    private static Person createPersonFromTrip(int i, String line) {
+        Trip t = new Trip(line);
 
-		Leg firstLeg = factory.createLeg(mode);
-		firstLeg.setDepartureTime(t.departure_time);
-		plan.addLeg(firstLeg);
+        String mode = decodeMode(t.mode);
 
-		String secondActivityType = getDestinationActivity(purpose);
-		Coord secondCoord = new Coord(t.destinationX, t.destinationY);
+        if (mode.equals("null")) {
+            return null;
+            //not a valid trip record
+        }
 
-		Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
-		secondAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, secondCoord).getId());
-		secondAct.setStartTime(t.departure_time + 1); // TODO include MITO's travel time estimations
+        if (!modesAssignment.contains(mode)){
+            return null;
+        }
 
-		if (roundTrip) {
-			secondAct.setEndTime(t.departure_time_return);
-			plan.addActivity(secondAct);
-		}
+        Id<Person> matsimId = Id.createPersonId(t.person + "_" + i);
 
-		if (roundTrip) {
-			Leg secondLeg = factory.createLeg(mode);
-			secondLeg.setDepartureTime(t.departure_time_return);
-			plan.addLeg(secondLeg);
+        Person p = factory.createPerson(Id.createPersonId(matsimId));
+        Plan plan = factory.createPlan();
 
-			Activity thirdAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
-			thirdAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
-			thirdAct.setStartTime(t.departure_time_return + 1); // TODO include MITO's travel time estimations
-			plan.addActivity(thirdAct);
-		}
+        Purpose purpose = Purpose.valueOf(t.purpose);
+        boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
 
-		p.addPlan(plan);
-		p.setSelectedPlan(plan);
-		return p;
-	}
+        String firstActivityType = getOriginActivity(purpose);
+        Coord firstCoord = new Coord(t.originX, t.originY);
 
-	private static String getDestinationActivity(Purpose purpose) {
-		return "";
-	}
+        Activity firstAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
+        //firstAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
 
-	private static String getOriginActivity(Purpose purpose) {
-		return "";
-	}
+        firstAct.setEndTime(t.departure_time);
+        plan.addActivity(firstAct);
 
-	private static String decodeMode(String encodedMode) {
-		switch (encodedMode) {
-		case "autoDriver":
-			return "car";
-		case "autoPassenger":
-			return "car_passenger";
-		case "train":
-		case "bus":
-		case "tramOrMetro":
-			return "pt";
-		case "bicycle":
-			return "bike";
-		default:
-			return encodedMode;
-		}
-	}
+        Leg firstLeg = factory.createLeg(mode);
+        firstLeg.setDepartureTime(t.departure_time);
+        plan.addLeg(firstLeg);
 
-	public final static class Trip {
-		public final double originX;
-		public final double originY;
-		public final double destinationX;
-		public final double destinationY;
-		public final String purpose;
-		public final String person;
-		public final double distance;
-		public final String mode;
-		public final double departure_time;
-		public final double departure_time_return;
+        String secondActivityType = getDestinationActivity(purpose);
+        Coord secondCoord = new Coord(t.destinationX, t.destinationY);
 
-		public Trip(String line) {
-			String[] data = line.split(delimiter);
-			this.originX = Double.parseDouble(data[2]);
-			this.originY = Double.parseDouble(data[3]);
-			this.destinationX = Double.parseDouble(data[5]);
-			this.destinationY = Double.parseDouble(data[6]);
-			this.purpose = data[7];
-			this.person = data[8];
-			this.distance = Double.parseDouble(data[9]);
-			this.mode = data[14];
-			// departure time comes in minutes, needed as seconds
-			this.departure_time = Double.parseDouble(data[15]) * 60; 
+        Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
+        //secondAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, secondCoord).getId());
+        secondAct.setStartTime(t.departure_time + Math.min(getEstimatedTravelTime(t), 3600 * 4));
 
-			if (data.length >= 17) {
-				this.departure_time_return = Double.parseDouble(data[16]) * 60;
-			}
-			else {
-				this.departure_time_return = -1;
-			}
-		}
-	}
+        plan.addActivity(secondAct);
+
+        if (roundTrip) {
+            secondAct.setEndTime(t.departure_time_return);
+
+        }
+
+        if (roundTrip) {
+            Leg secondLeg = factory.createLeg(mode);
+            secondLeg.setDepartureTime(t.departure_time_return);
+            plan.addLeg(secondLeg);
+
+            Activity thirdAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
+            //thirdAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
+            thirdAct.setStartTime(t.departure_time_return + Math.min(getEstimatedTravelTime(t), 3600 * 4));
+            plan.addActivity(thirdAct);
+        }
+
+        p.addPlan(plan);
+        p.setSelectedPlan(plan);
+        return p;
+    }
+
+    private static String getOriginActivity(Purpose purpose){
+
+        if (purpose.equals(Purpose.NHBW)){
+            return "work";
+        } else if (purpose.equals(Purpose.NHBO)){
+            return "other";
+        } else {
+            return "home";
+        }
+    }
+
+    private static String getDestinationActivity(Purpose purpose){
+
+        if (purpose.equals(Purpose.HBW)){
+            return "work";
+        } else if (purpose.equals(Purpose.HBE)){
+            return "education";
+        } else if (purpose.equals(Purpose.HBS)){
+            return "shopping";
+        }  else {
+            return "other";
+        }
+    }
+
+    private static String decodeMode(String encodedMode) {
+        switch (encodedMode) {
+            case "autoDriver":
+                return "car";
+            case "autoPassenger":
+                return "car_passenger";
+            case "train":
+            case "bus":
+            case "tramOrMetro":
+                return "pt";
+            case "bicycle":
+                return "bike";
+            default:
+                return encodedMode;
+        }
+    }
+
+    private static double getEstimatedTravelTime(Trip trip) {
+        switch (trip.mode) {
+            case "autoDriver":
+            case "autoPassenger":
+                return trip.timeCar_s;
+            case "train":
+                return trip.timeTrain_s;
+            case "tramOrMetro":
+                return trip.timeTramMetro_s;
+            case "bus":
+                return trip.timeBus_s;
+            case "walk":
+                return trip.distance / SPEED_WALK_KMH * 3600;
+            case "bicycle":
+                return trip.distance / SPEED_BICYCLE_KMH * 3600;
+            default:
+                throw new RuntimeException("The mode " + trip.mode + " is not recognized");
+        }
+    }
+
+    public final static class Trip {
+        public final long id;
+        public final double originX;
+        public final double originY;
+        public final double destinationX;
+        public final double destinationY;
+        public final String purpose;
+        public final String person;
+        public final double distance;
+        public final String mode;
+        public final double timeCar_s;
+        public final double timeBus_s;
+        public final double timeTramMetro_s;
+        public final double timeTrain_s;
+        public double departure_time;
+        public double departure_time_return;
+
+
+        public Trip(String line) {
+            String[] data = line.split(delimiter);
+            this.originX = Double.parseDouble(data[posOriginX]);
+            this.originY = Double.parseDouble(data[posOriginY]);
+            this.destinationX = Double.parseDouble(data[posDestinationX]);
+            this.destinationY = Double.parseDouble(data[posDestinationY]);
+            this.purpose = data[posPurpose];
+            this.person = data[posPersonId];
+            this.distance = Double.parseDouble(data[posDistance]);
+            this.mode = data[posMode];
+            try {
+                this.departure_time = Double.parseDouble(data[posDepartureTime]) * 60;
+            } catch (NumberFormatException e) {
+                this.departure_time = 0.;
+            }
+            try {
+                this.departure_time_return = Double.parseDouble(data[posDepartureTimeReturn]) * 60;
+            } catch (NumberFormatException e) {
+                this.departure_time_return = -1.;
+            }
+            this.timeCar_s = Double.parseDouble(data[posTimeCar]) * 60;
+            this.timeTrain_s = Double.parseDouble(data[posTimeTrain]) * 60;
+            this.timeTramMetro_s = Double.parseDouble(data[posTimeMetroTram]) * 60;
+            this.timeBus_s = Double.parseDouble(data[posTimeBus]) * 60;
+            this.id = Long.parseLong(data[posId]);
+        }
+
+
+    }
 }
