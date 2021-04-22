@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class AvailableTimeOfDay {
 
@@ -21,7 +20,7 @@ public class AvailableTimeOfDay {
     }
 
     public void blockTime(int from, int until) {
-        for (int i = 0; i < MAP_SIZE; i++) {
+        for (int i = 0; i < MAP_SIZE; i = i + INTERVAL_MIN) {
             if (i > from && i <= until) {
                 internalMap.put(i, false);
             }

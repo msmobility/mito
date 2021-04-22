@@ -2,6 +2,9 @@ package de.tum.bgu.msm.data.timeOfDay;
 
 
 public class TimeOfDayUtils {
+
+    private static final int SEARCH_INTERVAL_MIN = 5;
+
     public static TimeOfDayDistribution updateTODWithAvailability(TimeOfDayDistribution originalTOD,
                                                                   AvailableTimeOfDay availableTOD) {
 
@@ -15,10 +18,12 @@ public class TimeOfDayUtils {
     public static AvailableTimeOfDay updateAvailableTimeForNextTrip(AvailableTimeOfDay baseAvailableTOD, int tripDuration) {
 
         AvailableTimeOfDay newAvailableTOD = new AvailableTimeOfDay();
-        for (int minute = 10; minute < 24*60; minute = minute + 10) {
-            if (baseAvailableTOD.isAvailable(minute) == 0 && baseAvailableTOD.isAvailable(minute - 10) == 1){
-                newAvailableTOD.blockTime(minute, Math.max(0, minute - tripDuration));
 
+        for (int minute = SEARCH_INTERVAL_MIN; minute < 24*60; minute = minute + SEARCH_INTERVAL_MIN) {
+            if (baseAvailableTOD.isAvailable(minute) == 0 && baseAvailableTOD.isAvailable(minute - SEARCH_INTERVAL_MIN) == 1){
+                newAvailableTOD.blockTime(Math.max(0, minute - tripDuration), minute);
+            } else if (baseAvailableTOD.isAvailable(minute) == 0) {
+                newAvailableTOD.blockTime(minute - SEARCH_INTERVAL_MIN, minute);
             }
         }
         return newAvailableTOD;
@@ -28,7 +33,7 @@ public class TimeOfDayUtils {
         AvailableTimeOfDay newAvailableTOD = new AvailableTimeOfDay();
         for (int minute : baseAvailableTOD.getMinutes()) {
             if (baseAvailableTOD.isAvailable(minute) == 1){
-                newAvailableTOD.blockTime(minute, minute);
+                newAvailableTOD.blockTime(minute-1, minute);
             }
         }
         return newAvailableTOD;

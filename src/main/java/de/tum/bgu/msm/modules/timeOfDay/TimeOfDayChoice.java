@@ -30,6 +30,7 @@ public final class TimeOfDayChoice extends Module {
     private AtomicInteger counter = new AtomicInteger(0);
     private AtomicInteger issues = new AtomicInteger(0);
     private AtomicInteger unplausible = new AtomicInteger(0);
+    private AtomicInteger nhbWithoutHb = new AtomicInteger(0);
 
     public TimeOfDayChoice(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
@@ -55,39 +56,30 @@ public final class TimeOfDayChoice extends Module {
                 Map<Purpose, List<MitoTrip>> tripsByPurpose = new HashMap<>();
                 for (Purpose purpose : Purpose.getAllPurposes()) {
                     tripsByPurpose.putIfAbsent(purpose, new ArrayList<>());
-                    List<MitoTrip> tripsPerPerson = hh.getTripsForPurpose(purpose).stream().filter(trip -> trip.getPerson().equals(person)).collect(Collectors.toList());
-                    for (MitoTrip trip : tripsPerPerson) {
+                    List<MitoTrip> tripsPerPersonAndPurpose = hh.getTripsForPurpose(purpose).stream().filter(trip -> trip.getPerson().equals(person)).collect(Collectors.toList());
+                    for (MitoTrip trip : tripsPerPersonAndPurpose) {
                         if (trip.getTripOrigin() != null && trip.getTripDestination() != null
                                 && trip.getTripMode() != null) {
-                            if (purposes.contains(purpose)){
-                                //to be processed this time
-                                if (trip.getTripPurpose().equals(purpose)) {
-
-                                    tripsByPurpose.get(purpose).add(trip);
-                                }
-                            } else {
-                                //was already processed?
-                                if (trip.getDepartureInMinutes()>0 && trip.isHomeBased()){
-                                    totalAvailableTOD.blockTime(trip.getDepartureInMinutes(),
+                            tripsByPurpose.get(purpose).add(trip);
+                            if (trip.getDepartureInMinutes() > 0 && trip.isHomeBased()) {
+                                //the trip was already processed (i.e. mandatory trips) and blocks time of day
+                                totalAvailableTOD.blockTime(trip.getDepartureInMinutes(),
+                                        trip.getDepartureInMinutesReturnTrip() + estimateTravelTimeForTripInMinutes(trip));
+                                if (trip.getTripPurpose().equals(Purpose.HBW)) {
+                                    hbwAvailableTOD.blockTime(trip.getDepartureInMinutes(),
                                             trip.getDepartureInMinutesReturnTrip() + estimateTravelTimeForTripInMinutes(trip));
-                                    if (trip.getTripPurpose().equals(Purpose.HBW)){
-                                        hbwAvailableTOD.blockTime(trip.getDepartureInMinutes(),
-                                                trip.getDepartureInMinutesReturnTrip() + estimateTravelTimeForTripInMinutes(trip));
-                                    } else {
-                                        nonHbwAvailableTOD.blockTime(trip.getDepartureInMinutes(),
-                                                trip.getDepartureInMinutesReturnTrip() + estimateTravelTimeForTripInMinutes(trip));
-                                    }
-
+                                } else {
+                                    nonHbwAvailableTOD.blockTime(trip.getDepartureInMinutes(),
+                                            trip.getDepartureInMinutesReturnTrip() + estimateTravelTimeForTripInMinutes(trip));
                                 }
-                            }
 
+                            }
                         } else {
                             //cannot complete the TOD choice since some info is missing
                             issues.incrementAndGet();
                         }
                     }
                 }
-
                 for (Purpose purpose : purposes.stream().filter(p -> isHomeBasedPurpose(p)).collect(Collectors.toList())) {
                     for (MitoTrip trip : tripsByPurpose.get(purpose)) {
 
@@ -112,10 +104,10 @@ public final class TimeOfDayChoice extends Module {
                         TimeOfDayDistribution TODforThisTrip = TimeOfDayUtils.updateTODWithAvailability(arrivalMinuteCumProbByPurpose.get(purpose),
                                 availableTODNextTrip);
                         int arrivalTime = TODforThisTrip.selectTime();
-                        if (arrivalTime != -1){
+                        if (arrivalTime != -1) {
                             int departureTime = arrivalTime - travelTime;
                             totalAvailableTOD.blockTime(departureTime, departureTime + tripDuration);
-                            if (trip.getTripPurpose().equals(Purpose.HBW)){
+                            if (trip.getTripPurpose().equals(Purpose.HBW)) {
                                 hbwAvailableTOD.blockTime(departureTime, departureTime + tripDuration);
                             } else {
                                 nonHbwAvailableTOD.blockTime(departureTime, departureTime + tripDuration);
@@ -137,28 +129,34 @@ public final class TimeOfDayChoice extends Module {
                 for (Purpose purpose : purposes.stream().filter(p -> !isHomeBasedPurpose(p)).collect(Collectors.toList())) {
                     for (MitoTrip trip : tripsByPurpose.get(purpose)) {
                         AvailableTimeOfDay availableTODNextTrip;
-                        if (purpose.equals(Purpose.AIRPORT)){
+                        if (purpose.equals(Purpose.AIRPORT)) {
                             availableTODNextTrip = new AvailableTimeOfDay();
                             //todo needs further revision!
-                        }else if (purpose.equals(Purpose.NHBW)) {
+                        } else if (purpose.equals(Purpose.NHBW)) {
                             availableTODNextTrip = TimeOfDayUtils.convertToNonHomeBasedTrip(hbwAvailableTOD);
-                        }else if (purpose.equals(Purpose.NHBO)){
+                        } else if (purpose.equals(Purpose.NHBO)) {
                             availableTODNextTrip = TimeOfDayUtils.convertToNonHomeBasedTrip(nonHbwAvailableTOD);
                         } else {
                             throw new RuntimeException("Other purpose");
                         }
 
-                        int departureTime = TimeOfDayUtils.updateTODWithAvailability(arrivalMinuteCumProbByPurpose.get(purpose),
+                        int arrivalTime = TimeOfDayUtils.updateTODWithAvailability(arrivalMinuteCumProbByPurpose.get(purpose),
                                 availableTODNextTrip).selectTime();
 
-                        if (departureTime != -1){
-                            trip.setDepartureInMinutes(departureTime - estimateTravelTimeForTripInMinutes(trip));
+                        if (arrivalTime != -1) {
+                            trip.setDepartureInMinutes(arrivalTime - estimateTravelTimeForTripInMinutes(trip));
                             counter.incrementAndGet();
                             if (LongMath.isPowerOfTwo(counter.get())) {
                                 logger.info(counter.get() + " times of day assigned");
                             }
                         } else {
-                            unplausible.incrementAndGet();
+                            arrivalTime = arrivalMinuteCumProbByPurpose.get(purpose).selectTime();
+                            nhbWithoutHb.incrementAndGet();
+                            trip.setDepartureInMinutes(arrivalTime - estimateTravelTimeForTripInMinutes(trip));
+                            counter.incrementAndGet();
+                            if (LongMath.isPowerOfTwo(counter.get())) {
+                                logger.info(counter.get() + " times of day assigned");
+                            }
                         }
                     }
                 }
@@ -166,20 +164,19 @@ public final class TimeOfDayChoice extends Module {
         });
 
         logger.warn(issues + " trips have no time of day since they have no origin, destination or mode");
-        logger.warn(issues + " trips are not plausible due to absence of available time or absence of HB trips from which NHB trips can start");
+        logger.warn(unplausible + " trips are not plausible due to absence of available time");
+        logger.warn(nhbWithoutHb + " trips are not plausible due to absence of HB trips from which NHB trips can start");
     }
 
 
     private boolean isHomeBasedPurpose(Purpose p) {
-        if (p.equals(Purpose.HBE) || p.equals(Purpose.HBW) || p.equals(Purpose.HBO) || p.equals(Purpose.HBR) || p.equals(Purpose.HBS)){
+        if (p.equals(Purpose.HBE) || p.equals(Purpose.HBW) || p.equals(Purpose.HBO) || p.equals(Purpose.HBR) || p.equals(Purpose.HBS)) {
             return true;
         } else {
             return false;
         }
 
     }
-
-
 
 
     private int estimateTravelTimeForTripInMinutes(MitoTrip trip) {
