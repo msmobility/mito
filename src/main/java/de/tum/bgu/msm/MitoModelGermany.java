@@ -29,31 +29,31 @@ import java.util.Random;
  * - totalEmplByZone
  * - sizeOfZonesInAcre
  */
-public final class MitoModel_DE2017 {
+public final class MitoModelGermany {
 
-    private static final Logger logger = Logger.getLogger(MitoModel_DE2017.class);
+    private static final Logger logger = Logger.getLogger(MitoModelGermany.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
-    private MitoModel_DE2017(DataSet dataSet, String scenarioName) {
+    private MitoModelGermany(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel_DE2017 standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static MitoModelGermany standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel_DE2017 model = new MitoModel_DE2017(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelGermany model = new MitoModelGermany(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static MitoModel_DE2017 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static MitoModelGermany initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
-        MitoModel_DE2017 model = new MitoModel_DE2017(dataSet, scenarioName);
+        MitoModelGermany model = new MitoModelGermany(dataSet, scenarioName);
         new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
         new OmxSkimsReader(dataSet).readSkimDistancesNMT();
         new OmxSkimsReader(dataSet).readSkimDistancesAuto();
@@ -81,6 +81,7 @@ public final class MitoModel_DE2017 {
         new HouseholdsReaderGermany(dataSet).read();
         //new HouseholdsCoordReader(dataSet).read();
         //new PersonsReader(dataSet).read();
+        //the class called Synthetic population reader: could it be renamed to PersonJobReader?
         new SyntheticPopulationReaderGermany(dataSet, config.getJobTypeFactory()).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();

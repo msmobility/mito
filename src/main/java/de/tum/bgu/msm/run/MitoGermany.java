@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.run;
 
-import de.tum.bgu.msm.MitoModel_DE2017;
+import de.tum.bgu.msm.MitoModelGermany;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -20,7 +20,7 @@ public class MitoGermany {
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");
-        MitoModel_DE2017 model = MitoModel_DE2017.standAloneModel(args[0], MunichImplementationConfig.get());
+        MitoModelGermany model = MitoModelGermany.standAloneModel(args[0], MunichImplementationConfig.get());
         model.run();
         final DataSet dataSet = model.getData();
 
