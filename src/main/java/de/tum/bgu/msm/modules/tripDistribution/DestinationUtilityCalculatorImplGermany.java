@@ -4,30 +4,31 @@ import de.tum.bgu.msm.data.Purpose;
 
 public class DestinationUtilityCalculatorImplGermany implements DestinationUtilityCalculator {
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.01;
-    private final static double IMPEDANCE_PARAM_HBW = 9;
+    private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.01 * 0.545653257377378;
+    private final static double IMPEDANCE_PARAM_HBW = 20;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBE = -0.01;
-    private final static double IMPEDANCE_PARAM_HBE = 28.3;
+    private final static double TRAVEL_DISTANCE_PARAM_HBE = -0.01 * 1.09211334287783;
+    private final static double IMPEDANCE_PARAM_HBE = 20;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBS = -0.01 * 0.821986423320566;
-    private final static double IMPEDANCE_PARAM_HBS = 14.5;
+    private final static double TRAVEL_DISTANCE_PARAM_HBS = -0.01 * 1.382831732;
+    private final static double IMPEDANCE_PARAM_HBS = 20;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBO = -0.01 * 0.996421875575011;
-    private final static double IMPEDANCE_PARAM_HBO = 53;
+    private final static double TRAVEL_DISTANCE_PARAM_HBO = -0.01 * 1.02679034779653;
+    private final static double IMPEDANCE_PARAM_HBO = 20;
 
-    private final static double TRAVEL_DISTANCE_PARAM_HBR = -0.01 * 0.981771334336317;
-    private final static double IMPEDANCE_PARAM_HBR = 53;
+    private final static double TRAVEL_DISTANCE_PARAM_HBR = -0.01 * 0.874195571671594;
+    private final static double IMPEDANCE_PARAM_HBR = 20;
 
-    private final static double travelDistanceParamNhbw = -0.01 * 0.890966779493155;
-    private final static double impedanceParamNhbw = 15.1;
+    private final static double travelDistanceParamNhbw = -0.01 * 0.993491317833469;
+    private final static double impedanceParamNhbw = 20;
 
-    private final static double travelDistanceParamNhbo = -0.01 * 0.979440193648168;
-    private final static double impedanceParamNhbo = 110;
+    private final static double travelDistanceParamNhbo = -0.01 * 0.853890986777326;
+    private final static double impedanceParamNhbo = 20;
 
     private double distanceParam;
     private double impedanceParam;
     private double maxDistance_km;
+    private double attractionParam = 1.;
 
     DestinationUtilityCalculatorImplGermany(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
         switch (purpose) {
@@ -85,6 +86,6 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
         //    return 0.;
         //}
         double impedance = impedanceParam * Math.exp(distanceParam * travelDistance);
-        return Math.exp(impedance) * attraction;
+        return Math.exp(impedance) * Math.pow(attraction, attractionParam);
     }
 }
