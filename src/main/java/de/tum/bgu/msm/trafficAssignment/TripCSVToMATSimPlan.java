@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class TripCSVToMATSimPlan {
@@ -34,6 +35,9 @@ public class TripCSVToMATSimPlan {
     private static String filename;
     private static PopulationFactory factory;
     private static Network carNetwork;
+
+    private static double scaleFactor = 0.20;
+    private static Random random = new Random(0);
 
     private static int posId;
     private static int posOriginX;
@@ -61,6 +65,8 @@ public class TripCSVToMATSimPlan {
 
         Config config = ConfigUtils.createConfig();
         //config.network().setInputFile(networkFile);
+
+
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
         TransportModeNetworkFilter filter = new TransportModeNetworkFilter(scenario.getNetwork());
@@ -127,6 +133,7 @@ public class TripCSVToMATSimPlan {
     }
 
     private static Person createPersonFromTrip(int i, String line) {
+
         Trip t = new Trip(line);
 
         String mode = decodeMode(t.mode);
@@ -134,6 +141,10 @@ public class TripCSVToMATSimPlan {
         if (mode.equals("null")) {
             return null;
             //not a valid trip record
+        }
+
+        if (random.nextDouble() > scaleFactor){
+            return null;
         }
 
         if (!modesAssignment.contains(mode)){
@@ -166,23 +177,23 @@ public class TripCSVToMATSimPlan {
 
         Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
         //secondAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, secondCoord).getId());
-        secondAct.setStartTime(t.departure_time + Math.min(getEstimatedTravelTime(t), 3600 * 4));
-
+        double arrivalTime = t.departure_time + Math.min(getEstimatedTravelTime(t), 3600 * 4);
+        secondAct.setStartTime(arrivalTime);
         plan.addActivity(secondAct);
 
         if (roundTrip) {
-            secondAct.setEndTime(t.departure_time_return);
+            double departure_time_return = t.departure_time_return;
+            //make sure the arrival time is earlier than the departure time
+            departure_time_return = Math.min(departure_time_return, arrivalTime + 1);
 
-        }
-
-        if (roundTrip) {
+            secondAct.setEndTime(departure_time_return);
             Leg secondLeg = factory.createLeg(mode);
-            secondLeg.setDepartureTime(t.departure_time_return);
+            secondLeg.setDepartureTime(departure_time_return);
             plan.addLeg(secondLeg);
 
             Activity thirdAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
             //thirdAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
-            thirdAct.setStartTime(t.departure_time_return + Math.min(getEstimatedTravelTime(t), 3600 * 4));
+            thirdAct.setStartTime(departure_time_return + Math.min(getEstimatedTravelTime(t), 3600 * 4));
             plan.addActivity(thirdAct);
         }
 
@@ -218,6 +229,7 @@ public class TripCSVToMATSimPlan {
     private static String decodeMode(String encodedMode) {
         switch (encodedMode) {
             case "autoDriver":
+            case "auto":
                 return "car";
             case "autoPassenger":
                 return "car_passenger";
@@ -235,6 +247,7 @@ public class TripCSVToMATSimPlan {
     private static double getEstimatedTravelTime(Trip trip) {
         switch (trip.mode) {
             case "autoDriver":
+            case "auto":
             case "autoPassenger":
                 return trip.timeCar_s;
             case "train":
