@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TripDistributionCalibration extends Module {
+public class TripDistributionCalibrationGermany extends Module {
 
     private Map<Purpose, Double> observedAverageDistances = new HashMap<>();
     private Map<Purpose, Double> simulatedAverageDistances = new HashMap<>();
@@ -23,18 +23,19 @@ public class TripDistributionCalibration extends Module {
     private PrintWriter pw = null;
     private int iteration;
 
-    public TripDistributionCalibration(DataSet dataSet, List<Purpose> purposes,
-                                       Map<Purpose, Double> travelDistanceParameters,
-                                       Map<Purpose, Double> impendanceParameters) {
+    public TripDistributionCalibrationGermany(DataSet dataSet, List<Purpose> purposes,
+                                              Map<Purpose, Double> travelDistanceParameters,
+                                              Map<Purpose, Double> impendanceParameters) {
 
         super(dataSet, purposes);
         iteration = 0;
-        observedAverageDistances.put(Purpose.HBE , 7.29);
-        observedAverageDistances.put(Purpose.HBW , 18.1);
-        observedAverageDistances.put(Purpose.HBO , 10.4);
-        observedAverageDistances.put(Purpose.HBS , 5.07);
-        observedAverageDistances.put(Purpose.NHBO , 11.7);
-        observedAverageDistances.put(Purpose.NHBW , 16.1);
+        observedAverageDistances.put(Purpose.HBE, 7.29);
+        observedAverageDistances.put(Purpose.HBW, 18.1);
+        observedAverageDistances.put(Purpose.HBO, 7.96);
+        observedAverageDistances.put(Purpose.HBR, 9.76);
+        observedAverageDistances.put(Purpose.HBS, 6.46);
+        observedAverageDistances.put(Purpose.NHBO, 7.47);
+        observedAverageDistances.put(Purpose.NHBW, 9.54);
 
         String purposesString = "";
         for (Purpose purpose : purposes) {
@@ -56,7 +57,7 @@ public class TripDistributionCalibration extends Module {
     }
 
 
-    public void update(int iteration){
+    public void update(int iteration) {
 
         for (Purpose purpose : purposes) {
 
@@ -65,16 +66,19 @@ public class TripDistributionCalibration extends Module {
             List<MitoTrip> tripsThisPurpose =
                     dataSet.getTrips().values().stream().filter(t -> t.getTripPurpose().equals(purpose)).collect(Collectors.toList());
 
-            if(Purpose.getMandatoryPurposes().contains(purpose)){
+            if (Purpose.getMandatoryPurposes().contains(purpose)) {
                 tripsThisPurpose.removeIf(trip -> trip.getPerson().getMitoOccupationStatus().equals(MitoOccupationStatus.WORKER) ||
                         trip.getPerson().getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT));
             }
 
 
             for (MitoTrip trip : tripsThisPurpose) {
-                count++;
-                sum += dataSet.getTravelDistancesAuto().
-                        getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+                if (dataSet.getTravelDistancesAuto().
+                        getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) < 2000) {
+                    count++;
+                    sum += dataSet.getTravelDistancesAuto().
+                            getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId());
+                }
             }
 
             double avg = sum / count;
@@ -122,7 +126,7 @@ public class TripDistributionCalibration extends Module {
         return impendanceParameters;
     }
 
-    public void close(){
+    public void close() {
         pw.close();
     }
 }
