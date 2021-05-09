@@ -24,7 +24,7 @@
     <repositories>
         <repository>
             <id>matsim</id>
-            <url>http://dl.bintray.com/matsim/matsim</url>
+            <url>https://repo.matsim.org/repository/matsim</url>
         </repository>
         <repository>
             <id>bintray-msmobility-maven</id>
