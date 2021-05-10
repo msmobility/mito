@@ -2,6 +2,9 @@ package de.tum.bgu.msm.data;
 
 import org.matsim.api.core.v01.TransportMode;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 public enum Mode implements Id {
     autoDriver,
     autoPassenger,

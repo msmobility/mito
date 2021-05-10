@@ -63,6 +63,7 @@ public class ExternalZonesReader extends AbstractCsvReader {
             feature = null;
         }
         zones.put(id, new ExternalFlowZone(id, coordinates, type, feature));
+        //return null;
     }
 
     @Override

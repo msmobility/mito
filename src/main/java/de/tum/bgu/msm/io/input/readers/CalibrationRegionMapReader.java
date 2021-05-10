@@ -5,8 +5,6 @@ import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
-import java.nio.file.Paths;
-
 public class CalibrationRegionMapReader extends AbstractCsvReader {
 
     private int zoneIndex;
@@ -28,6 +26,7 @@ public class CalibrationRegionMapReader extends AbstractCsvReader {
         String region = record[regionIndex];
 
         dataSet.getModeChoiceCalibrationData().getZoneToRegionMap().put(zone, region);
+        //return null;
     }
 
     @Override

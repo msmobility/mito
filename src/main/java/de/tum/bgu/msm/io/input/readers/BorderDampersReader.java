@@ -37,5 +37,6 @@ public final class BorderDampersReader extends AbstractCsvReader {
         } else {
             logger.warn("Damper of " + damper + " refers to non-existing zone " + zone + ". Ignoring it.");
         }
+        //return null;
     }
 }

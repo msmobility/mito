@@ -63,7 +63,7 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
             return;
         }
         if (MitoUtil.getSum(tripFrequencies) == 0) {
-            logger.info("No trips for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
+            //logger.info("No trips for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
             return;
         }
 

@@ -8,8 +8,13 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
+import org.matsim.api.core.v01.network.Node;
+import org.opengis.feature.simple.SimpleFeature;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Qin on 02.07.2018.
@@ -20,6 +25,9 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
     private int posCoordX = -1;
     private int posCoordY = -1;
     private int posTAZId = -1;
+    private final Map<Integer, List<Node>> nodesByZone = new ConcurrentHashMap<>();
+
+    private SimpleFeature shapeFeature; // Alona added
 
     private static final Logger logger = Logger.getLogger(HouseholdsCoordReader.class);
 
@@ -46,6 +54,7 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
     protected void processRecord(String[] record) {
         int hhId = Integer.parseInt(record[posHHId]);
 
+
         //vacant dwellings
         if (hhId > 0) {
             MitoHousehold hh = dataSet.getHouseholds().get(hhId);
@@ -58,6 +67,8 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
             if(zone == null) {
                 logger.warn(String.format("Household %d is supposed to live in zone %d but this zone does not exist.", hhId, taz));
             }
+
+
             Coordinate homeLocation = new Coordinate(
             		Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
             hh.setHomeLocation(homeLocation);
@@ -65,4 +76,5 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
             zone.addHousehold();
         }
     }
+
 }
