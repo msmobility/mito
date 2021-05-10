@@ -10,22 +10,43 @@
     <description>Microscopic Transportation Orchestrator</description>
     <url>mito.zone</url>
     <inceptionYear>2015</inceptionYear>
+
     <licenses>
         <license>
             <name>GNU General Public License</name>
             <url>${basedir}/LICENSE</url>
         </license>
     </licenses>
+
     <scm>
         <url>https://github.com/msmobility/mito</url>
         <connection>scm:git:git://github.com/msmobility/mito.git</connection>
         <developerConnection>scm:git:git@github.com:msmobility/mito.git</developerConnection>
     </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>msm</id>
+            <url>https://maven.cloudsmith.io/msmobility/msm/</url>
+        </snapshotRepository>
+        <repository>
+            <id>msm-snapshots</id>
+            <url>https://maven.cloudsmith.io/msmobility/msm/</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
-            <id>bintray-msmobility-maven</id>
-            <name>bintray</name>
-            <url>http://dl.bintray.com/msmobility/maven</url>
+            <id>msm</id>
+            <url>https://dl.cloudsmith.io/public/msmobility/msm/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </repository>
         <repository>
             <id>maven2-repository.dev.java.net</id>
@@ -45,6 +66,7 @@
             <url>http://dl.bintray.com/matsim/matsim</url>
         </repository>
     </repositories>
+
     <build>
         <plugins>
             <plugin>
