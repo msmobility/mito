@@ -7,6 +7,7 @@ import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
+import org.locationtech.jts.geom.Geometry;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -34,7 +35,11 @@ public class ZonesReader extends AbstractCsvReader {
             int zoneId = Integer.parseInt(feature.getAttribute(Resources.instance.getString(Properties.ZONE_SHAPEFILE_ID_FIELD)).toString());
             MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone != null){
-                zone.setShapeFeature(feature);
+                zone.setGeometry((Geometry) feature.getDefaultGeometry());
+                final Object ags = feature.getAttribute("AGS");
+                if(ags != null) {
+                    zone.setAGS(Integer.parseInt(ags.toString()));
+                }
             }else{
                 logger.warn("zoneId " + zoneId + " doesn't exist in mito zone system");
             }

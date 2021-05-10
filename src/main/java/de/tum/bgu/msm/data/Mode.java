@@ -2,9 +2,6 @@ package de.tum.bgu.msm.data;
 
 import org.matsim.api.core.v01.TransportMode;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 public enum Mode implements Id {
     autoDriver,
     autoPassenger,
@@ -14,7 +11,8 @@ public enum Mode implements Id {
     tramOrMetro,
     walk,
     privateAV,
-    sharedAV;
+    sharedAV,
+    pooledTaxi;
 
     @Override
     public int getId(){
@@ -41,6 +39,8 @@ public enum Mode implements Id {
                 return privateAV;
             case 8:
                 return sharedAV;
+            case 9:
+                return pooledTaxi;
             default:
                 throw new RuntimeException("Mode for code " + code + "not specified.");
         }
@@ -62,10 +62,10 @@ public enum Mode implements Id {
                 return TransportMode.walk;
             case bicycle:
                 return TransportMode.bike;
+            case pooledTaxi:
+                return TransportMode.drt;
             default:
                 return null;
-
         }
-
     }
 }

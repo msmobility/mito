@@ -30,7 +30,7 @@ public class TripGenerationWriter {
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
-        for (Purpose purpose: Purpose.values()) {
+        for (Purpose purpose: Purpose.getAllPurposes()) {
             pwProd.print("," + purpose + "P");
             pwAttr.print("," + purpose + "A");
         }
@@ -38,8 +38,8 @@ public class TripGenerationWriter {
         Map<Integer, Map<Purpose, Integer>> tripProdByZoneAndPurp = new HashMap<>(dataSet.getZones().size());
 
         for(Integer zoneId: dataSet.getZones().keySet()) {
-            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.values().length);
-            for(Purpose purpose: Purpose.values()) {
+            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.getAllPurposes().size());
+            for(Purpose purpose: Purpose.getAllPurposes()) {
                 initialValues.put(purpose, 0);
             }
             tripProdByZoneAndPurp.put(zoneId, initialValues);
@@ -60,7 +60,7 @@ public class TripGenerationWriter {
             final int zoneId = zone.getId();
             pwProd.print(zoneId);
             pwAttr.print(zoneId);
-            for (Purpose purpose: Purpose.values()) {
+            for (Purpose purpose: Purpose.getAllPurposes()) {
                 int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(purpose);
                 totalTrips += tripProdTmp;
                 pwProd.print("," + tripProdTmp);
@@ -76,16 +76,16 @@ public class TripGenerationWriter {
     }
 
     private static String generateOutputFileName (String fileName, int year, String scenarioName) {
-        if (scenarioName != null) {
-            File dir = new File("./scenOutput/" + scenarioName + "/" +  year +  "/tripGeneration");
-            if(!dir.exists()){
-                boolean directoryCreated = dir.mkdir();
-                if (!directoryCreated) {
-                    logger.warn("Could not create directory for trip gen output: " + dir.toString());
-                }
+
+        final File directory = new File(Resources.instance.getBaseDirectory().toString()
+                + "/scenOutput/" + scenarioName + "/" + year + "/tripGeneration/");
+        if(!directory.exists()) {
+            final boolean mkdirs = (directory).mkdirs();
+            if (!mkdirs) {
+                logger.warn("Could not create directory for trip gen output: " + directory.toString());
             }
-            fileName = "./scenOutput/" + scenarioName + "/" +  year  +  "/tripGeneration/" + fileName;
         }
+        fileName = directory + fileName;
         return fileName;
     }
 }

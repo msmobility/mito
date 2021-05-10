@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.run;
 
 import de.tum.bgu.msm.MitoModel;
+import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -54,7 +55,7 @@ class MitoMuc {
             controler.run();
 
             if (Resources.instance.getBoolean(Properties.PRINT_OUT_SKIM, false)) {
-                CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, model);
+                CarSkimUpdater skimUpdater = new CarSkimUpdater(controler, model.getData(), model.getScenarioName());
                 skimUpdater.run();
             }
         }

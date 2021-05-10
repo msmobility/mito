@@ -2,17 +2,15 @@ package de.tum.bgu.msm.io.output;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.SortedMultiset;
-import com.google.common.collect.TreeMultiset;
 import com.google.common.math.Stats;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.charts.Histogram;
-import de.tum.bgu.msm.util.charts.PieChart;
 import de.tum.bgu.msm.util.charts.ScatterPlot;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.population.PopulationWriter;
 import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.io.PrintWriter;
@@ -34,9 +32,14 @@ public class SummarizeData {
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filehh.toAbsolutePath().toString(), false);
         pwh.println("id,zone,homeX,homeY,hhSize,autos,trips,workTrips");
         for (MitoHousehold hh : dataSet.getHouseholds().values()) {
+            final MitoZone homeZone = hh.getHomeZone();
+            if(homeZone == null) {
+                LOGGER.warn("Skipping household " + hh.getId() + " as no home zone is defined");
+                break;
+            }
             pwh.print(hh.getId());
             pwh.print(",");
-            pwh.print(hh.getHomeZone());
+            pwh.print(homeZone);
             pwh.print(",");
             pwh.print(hh.getHomeLocation().x);
             pwh.print(",");
@@ -103,7 +106,7 @@ public class SummarizeData {
             } else{
                 if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         origin != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord());
+                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     pwh.print(coordinate.getX());
                     pwh.print(",");
                     pwh.print(coordinate.getY());
@@ -131,7 +134,7 @@ public class SummarizeData {
             }else{
                 if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         destination != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord());
+                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     pwh.print(coordinate.getX());
                     pwh.print(",");
                     pwh.print(coordinate.getY());
@@ -188,22 +191,16 @@ public class SummarizeData {
         String outputSubDirectory = "scenOutput/" + scenarioName + "/";
 
         List<Double> travelTimes = new ArrayList<>();
-        List<Double> travelDistances = new ArrayList<>();
+//        List<Double> travelDistances = new ArrayList<>();
         Map<Integer, List<Double>> distancesByZone = new HashMap<>();
         Multiset<MitoZone> tripsByZone = HashMultiset.create();
-        SortedMultiset<Mode> modes = TreeMultiset.create();
-        for (Mode mode: Mode.values()){
-            Double share = dataSet.getModeShareForPurpose(purpose, mode);
-            if (share != null) {
-                modes.add(mode, (int) (dataSet.getModeShareForPurpose(purpose, mode) * 100));
-            }
-        }
+
         for (MitoTrip trip : dataSet.getTrips().values()) {
             final Location tripOrigin = trip.getTripOrigin();
             if (trip.getTripPurpose() == purpose && tripOrigin != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination(), dataSet.getPeakHour(), "car"));
                 double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
-                travelDistances.add(travelDistance);
+//                travelDistances.add(travelDistance);
                 tripsByZone.add(dataSet.getZones().get(tripOrigin.getZoneId()));
                 if(distancesByZone.containsKey(tripOrigin.getZoneId())){
                     distancesByZone.get(tripOrigin.getZoneId()).add(travelDistance);
@@ -222,16 +219,14 @@ public class SummarizeData {
             i++;
         }
 
-        double[] travelDistancesArray = new double[travelTimes.size()];
-        i= 0;
-        for(Double value: travelDistances) {
-            travelDistancesArray[i] = value;
-            i++;
-        }
+//        double[] travelDistancesArray = new double[travelTimes.size()];
+//        i= 0;
+//        for(Double value: travelDistances) {
+//            travelDistancesArray[i] = value;
+//            i++;
+//        }
         Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 0, 80);
-        Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripDistanceDistribution"+ purpose, travelDistancesArray, "Travel Distances Distribution " + purpose, "Distance", "Frequency", 400, 0, 100);
 
-        PieChart.createPieChart(Resources.instance.getBaseDirectory() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose, modes, "Mode Choice " + purpose);
 
         Map<Double, Double> averageDistancesByZone = new HashMap<>();
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
@@ -257,5 +252,12 @@ public class SummarizeData {
         for(Purpose purpose: Purpose.values()) {
             writeCharts(dataSet, purpose, scenarioName);
         }
+    }
+
+    public static void writeMatsimPlans(DataSet dataSet, String scenarioName) {
+        LOGGER.info("  Writing matsim plans file");
+
+        String outputSubDirectory = Resources.instance.getBaseDirectory() + "/scenOutput/" + scenarioName + "/"+ dataSet.getYear()+"/";
+        new PopulationWriter(dataSet.getPopulation()).write(outputSubDirectory + "matsimPlans.xml.gz");
     }
 }

@@ -161,4 +161,20 @@ public class Resources {
     public Path getTripFrequenciesFilePath(Purpose purpose) {
         return baseDirectory.resolve(Resources.instance.getString(purpose + ".trip.frequencies"));
     }
+
+    public Path getCalibrationFactorsPath() {
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.MC_CALIBRATON_CONSTANTS_FILE));
+    }
+
+    public Path getCalibrationRegionsPath() {
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.MC_CALIBRATON_REGIONS_FILE));
+    }
+
+    public Path getTripGenerationCoefficientsHurdleBinaryLogit() {
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_BINARY_LOGIT_COEFFICIENTS));
+    }
+
+    public Path getTripGenerationCoefficientsHurdleNegativeBinomial() {
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_NEGATIVE_BINOMIAL_COEFFICIENTS));
+    }
 }

@@ -30,22 +30,30 @@ public class ConfigureMatsim {
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
 
-        config.qsim().setEndTime(24 * 3600);
+        config.qsim().setEndTime(26 * 3600);
         config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.withHoles);
         config.vspExperimental().setWritingOutputEvents(true); // writes final events into toplevel directory
 
         {
             StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
             strategySettings.setStrategyName("ChangeExpBeta");
-            strategySettings.setWeight(0.5);
+            strategySettings.setWeight(0.8);
             config.strategy().addStrategySettings(strategySettings);
         }
         {
             StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
             strategySettings.setStrategyName("ReRoute");
-            strategySettings.setWeight(0.1);
+            strategySettings.setWeight(0.2);
             config.strategy().addStrategySettings(strategySettings);
         }
+//        {
+//            config.timeAllocationMutator().setMutationRange(1800);
+//            config.timeAllocationMutator().setAffectingDuration(true);
+//            StrategyConfigGroup.StrategySettings strategySettings = new StrategyConfigGroup.StrategySettings();
+//            strategySettings.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.TimeAllocationMutator_ReRoute);
+//            strategySettings.setWeight(0.1);
+//            config.strategy().addStrategySettings(strategySettings);
+//        }
 
         config.strategy().setFractionOfIterationsToDisableInnovation(0.8);
         config.strategy().setMaxAgentPlanMemorySize(4);

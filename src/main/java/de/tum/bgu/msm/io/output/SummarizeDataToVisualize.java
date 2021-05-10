@@ -161,7 +161,7 @@ public class SummarizeDataToVisualize {
         for (MitoZone zone : dataSet.getZones().values()) {
             final int zoneId = zone.getId();
             String txt = String.valueOf(zoneId);
-            for (Purpose purpose : Purpose.values()) {
+            for (Purpose purpose : Purpose.getAllPurposes()) {
                 int tripsProduced = tripProdByZoneAndPurp.get(zoneId).get(purpose);
                 int tripsAttracted = (int) zone.getTripAttraction(purpose);
                 double avTripDist = avDistByZoneAndPurp.get(zoneId).get(purpose) / tripsProduced;
@@ -320,7 +320,11 @@ public class SummarizeDataToVisualize {
         Map<Integer, Map<Purpose, Integer>> ttBudgetCounterByZoneAndPurpose = initializedIntMap(dataSet);
         Map<Integer, Map<Purpose, Double>> avTTBudgetByZoneAndPurpose = initializedDoubleMap(dataSet);
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            Integer homeZone = household.getHomeZone().getId();
+            final MitoZone home = household.getHomeZone();
+            if(home == null) {
+                break;
+            }
+            Integer homeZone = home.getId();
             for (Purpose purpose : Purpose.values()) {
                 int tripsByPurpose = household.getTripsForPurpose(purpose).size();
                 updateMap(householdsByTripsAndPurpose, tripsByPurpose, purpose);

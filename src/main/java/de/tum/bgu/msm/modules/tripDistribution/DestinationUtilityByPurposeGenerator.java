@@ -9,8 +9,6 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -18,21 +16,24 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
 
     private final static Logger logger = Logger.getLogger(DestinationUtilityByPurposeGenerator.class);
 
-    private final DestinationUtilityJSCalculator calculator;
+    private final DestinationUtilityCalculator calculator;
     private final Purpose purpose;
     private final Map<Integer, MitoZone> zones;
     private final TravelDistances travelDistances;
 
-    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet) {
+
+    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet,
+                                         DestinationUtilityCalculatorFactory factory,
+                                         double travelDistanceCalibrationK,
+                                         double impendanceCalibrationK) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
-        Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("TripDistribution"));
-        calculator = new DestinationUtilityJSCalculator(reader, purpose);
+        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
     }
 
     @Override
-    public Tuple<Purpose, IndexedDoubleMatrix2D> call() throws Exception {
+    public Tuple<Purpose, IndexedDoubleMatrix2D> call() {
         final IndexedDoubleMatrix2D utilityMatrix = new IndexedDoubleMatrix2D(zones.values(), zones.values());
         long counter = 0;
         for (MitoZone origin : zones.values()) {

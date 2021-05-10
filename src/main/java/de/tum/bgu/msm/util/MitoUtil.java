@@ -4,7 +4,6 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
-
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -17,6 +16,9 @@ import java.util.*;
  */
 
 public final class MitoUtil {
+
+    private static final String LOG_FILE_NAME = "siloLog.log";
+    private static final String LOG_WARN_FILE_NAME = "siloWarnLog.log";
 
     private MitoUtil() {
     }
@@ -89,7 +91,7 @@ public final class MitoUtil {
     }
 
 
-    private static double getSum(Collection<Double> values) {
+    public static double getSum(Collection<Double> values) {
         double sm = 0;
         for (Double value : values) {
             sm += value;

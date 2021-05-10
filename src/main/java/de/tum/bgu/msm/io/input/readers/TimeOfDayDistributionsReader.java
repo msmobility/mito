@@ -64,6 +64,7 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
         int minute = Integer.parseInt(record[minuteIndex]);
         arrivalTimeCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_arrival_index]));
         arrivalTimeCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBR).setQuick(minute, Double.parseDouble(record[hbo_arrival_index]));
         arrivalTimeCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_arrival_index]));
         arrivalTimeCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_arrival_index]));
         arrivalTimeCumProbByPurpose.get(Purpose.NHBO).setQuick(minute, Double.parseDouble(record[nhbo_arrival_index]));
@@ -71,6 +72,7 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
 
         durationCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_duration_index]));
         durationCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBR).setQuick(minute, Double.parseDouble(record[hbo_duration_index]));
         durationCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_duration_index]));
         durationCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_duration_index]));
 
