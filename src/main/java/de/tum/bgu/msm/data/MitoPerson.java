@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.data.plans.Plan;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -25,6 +26,7 @@ public class MitoPerson implements Id {
     private final boolean driversLicense;
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
+    private Plan plan;
 
     public MitoPerson(int id, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
@@ -78,5 +80,13 @@ public class MitoPerson implements Id {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    public Plan getPlan() {
+        return plan;
+    }
+
+    public void setPlan(Plan plan) {
+        this.plan = plan;
     }
 }
