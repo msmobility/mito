@@ -23,6 +23,8 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
     private int posCoordX = -1;
     private int posCoordY = -1;
 
+    private int counter = 0;
+
     private static final Logger logger = Logger.getLogger(HouseholdsReaderGermany.class);
 
     public HouseholdsReaderGermany(DataSet dataSet) {
@@ -55,7 +57,16 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
         int id = Integer.parseInt(record[posId]);
         int autos = Integer.parseInt(record[posAutos]);
         MitoHousehold hh = new MitoHousehold(id, 0, autos);
-        dataSet.addHousehold(hh);
+        /*if (counter == 19){
+            counter =0;
+        } else {
+            counter++;
+        }
+        if (counter == 3){*/
+            dataSet.addHousehold(hh);
+        /*}*/
+
+
 
         //int hhId = Integer.parseInt(record[posHHId]);
 

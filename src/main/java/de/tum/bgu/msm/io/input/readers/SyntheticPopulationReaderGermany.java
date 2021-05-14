@@ -94,43 +94,42 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
         final int hhid = Integer.parseInt(record[posHhId]);
 
         if(!dataSet.getHouseholds().containsKey(hhid)) {
-            logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
-            //return null;
-        }
-        MitoHousehold hh = dataSet.getHouseholds().get(hhid);
+            //logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
+        } else {
+            MitoHousehold hh = dataSet.getHouseholds().get(hhid);
 
-        final int age = Integer.parseInt(record[posAge]);
+            final int age = Integer.parseInt(record[posAge]);
 
-        final int genderCode = Integer.parseInt(record[posSex]);
-        MitoGender mitoGender = MitoGender.valueOf(genderCode);
+            final int genderCode = Integer.parseInt(record[posSex]);
+            MitoGender mitoGender = MitoGender.valueOf(genderCode);
 
-        final int occupationCode = Integer.parseInt(record[posOccupation]);
-        MitoOccupationStatus mitoOccupationStatus = MitoOccupationStatus.valueOf(occupationCode);
-
-
-        //int workplace = -1;
-        //try{
-        //    workplace = Integer.parseInt(record[posWorkplaceId]);
-       // } catch (Exception e ){
-        //logger.warn("No Work ID");
-        //}
-
-        //final int workplace = Integer.parseInt(record[posWorkplaceId]);
-        final int school = Integer.parseInt(record[posSchoolId]);
-
-        final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
-        //final boolean driversLicense = MitoGender.obtainLicense(mitoGender, age); // new, added by Alona, Quick fix for drivers license
+            final int occupationCode = Integer.parseInt(record[posOccupation]);
+            MitoOccupationStatus mitoOccupationStatus = MitoOccupationStatus.valueOf(occupationCode);
 
 
-        //mito uses monthly income, while SILO uses annual income
-        int monthlyIncome_EUR = Integer.parseInt(record[posIncome])/12;
-        hh.addIncome(monthlyIncome_EUR);
+            //int workplace = -1;
+            //try{
+            //    workplace = Integer.parseInt(record[posWorkplaceId]);
+            // } catch (Exception e ){
+            //logger.warn("No Work ID");
+            //}
 
-        MitoOccupation occupation = null;
+            //final int workplace = Integer.parseInt(record[posWorkplaceId]);
+            final int school = Integer.parseInt(record[posSchoolId]);
 
-        switch (mitoOccupationStatus) {
-            case WORKER:
-                //if(dataSet.getJobs().containsKey(workplace)) {
+            final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
+            //final boolean driversLicense = MitoGender.obtainLicense(mitoGender, age); // new, added by Alona, Quick fix for drivers license
+
+
+            //mito uses monthly income, while SILO uses annual income
+            int monthlyIncome_EUR = Integer.parseInt(record[posIncome])/12;
+            hh.addIncome(monthlyIncome_EUR);
+
+            MitoOccupation occupation = null;
+
+            switch (mitoOccupationStatus) {
+                case WORKER:
+                    //if(dataSet.getJobs().containsKey(workplace)) {
                     int jobId = Integer.parseInt(record[posJobId]);
                     int zoneId = Integer.parseInt(record[posZone]);
                     String type = record[posType];
@@ -160,30 +159,32 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
                 /*} else {
                     logger.warn("Person " + id + " declared as worker does not have a valid job!");
                 }*/
-                break;
-            case STUDENT:
-                if(dataSet.getSchools().containsKey(school)) {
-                    occupation = (dataSet.getSchools().get(school));
-                } else {
-                    //logger.warn("Person " + id + " declared as student does not have a valid school!");
-                }
-                break;
-            case UNEMPLOYED:
-            default:
-                logger.debug("Person " + id + " does not have an occupation.");
-                occupationCounter++;
-                break;
+                    break;
+                case STUDENT:
+                    if(dataSet.getSchools().containsKey(school)) {
+                        occupation = (dataSet.getSchools().get(school));
+                    } else {
+                        //logger.warn("Person " + id + " declared as student does not have a valid school!");
+                    }
+                    break;
+                case UNEMPLOYED:
+                default:
+                    logger.debug("Person " + id + " does not have an occupation.");
+                    occupationCounter++;
+                    break;
+            }
+            MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
+
+            //int worker = Integer.parseInt(record[posOccupation]); //int worker = Integer.parseInt(record[posWorker]);
+
+            //if (worker == 1) {
+
+
+            //MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
+
+            hh.addPerson(pp);
+            dataSet.addPerson(pp);
         }
-        MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
 
-        //int worker = Integer.parseInt(record[posOccupation]); //int worker = Integer.parseInt(record[posWorker]);
-
-        //if (worker == 1) {
-
-
-        //MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
-
-        hh.addPerson(pp);
-        dataSet.addPerson(pp);
     }
 }
