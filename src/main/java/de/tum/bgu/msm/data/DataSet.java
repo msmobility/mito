@@ -41,8 +41,8 @@ public class DataSet {
     private EnumMap<Purpose, TimeOfDayDistribution> durationMinuteCumProbByPurpose;
     private EnumMap<Purpose, TimeOfDayDistribution> departureMinuteCumProbByPurpose;
 
-    private EnumMap<ActivityPurpose, DoubleMatrix1D> startingTimeDistribution; //ab
-    private EnumMap<ActivityPurpose, DoubleMatrix1D> activityDurationDistribution; //ab
+    private EnumMap<ActivityPurpose, TimeOfDayDistribution> startingTimeDistribution; //ab
+    private EnumMap<ActivityPurpose, TimeOfDayDistribution> activityDurationDistribution; //ab
 
     private Population population;
     private final ModeChoiceCalibrationData modeChoiceCalibrationData = new ModeChoiceCalibrationData();
@@ -249,11 +249,11 @@ public class DataSet {
     }
 
 
-    public void setActivityStartDistributions(EnumMap<ActivityPurpose, DoubleMatrix1D> startingTimeDistribution) {
+    public void setActivityStartDistributions(EnumMap<ActivityPurpose, TimeOfDayDistribution> startingTimeDistribution) {
         this.startingTimeDistribution = startingTimeDistribution;
     }
 
-    public void setActivityDurationDistributions(EnumMap<ActivityPurpose, DoubleMatrix1D> activityDurationDistribution) {
+    public void setActivityDurationDistributions(EnumMap<ActivityPurpose, TimeOfDayDistribution> activityDurationDistribution) {
         this.activityDurationDistribution = activityDurationDistribution;
 
     }
