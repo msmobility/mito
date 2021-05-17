@@ -4,6 +4,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -13,9 +14,9 @@ import java.util.EnumMap;
 
 public class TimeOfDayDistributionsReader extends AbstractCsvReader {
 
-    private final EnumMap<Purpose, DoubleMatrix1D> arrivalTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
-    private final EnumMap<Purpose, DoubleMatrix1D> durationCumProbByPurpose = new EnumMap<>(Purpose.class);
-    private final EnumMap<Purpose, DoubleMatrix1D> departureTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, TimeOfDayDistribution> arrivalTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, TimeOfDayDistribution> durationCumProbByPurpose = new EnumMap<>(Purpose.class);
+    private final EnumMap<Purpose, TimeOfDayDistribution> departureTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
 
     private int minuteIndex;
     private int hbe_arrival_index;
@@ -35,10 +36,10 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
     public TimeOfDayDistributionsReader(DataSet dataSet) {
 
         super(dataSet);
-        for (Purpose activityPurpose : Purpose.values()) {
-            arrivalTimeCumProbByPurpose.put(activityPurpose, new DenseDoubleMatrix1D(24 * 60 + 1));
-            durationCumProbByPurpose.put(activityPurpose, new DenseDoubleMatrix1D(24 * 60 + 1));
-            departureTimeCumProbByPurpose.put(activityPurpose, new DenseDoubleMatrix1D(24 * 60 + 1));
+        for (Purpose purpose : Purpose.values()) {
+            arrivalTimeCumProbByPurpose.put(purpose, new TimeOfDayDistribution());
+            durationCumProbByPurpose.put(purpose, new TimeOfDayDistribution());
+            departureTimeCumProbByPurpose.put(purpose, new TimeOfDayDistribution());
         }
     }
 
@@ -62,23 +63,23 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
     @Override
     protected void processRecord(String[] record) {
         int minute = Integer.parseInt(record[minuteIndex]);
-        arrivalTimeCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBR).setQuick(minute, Double.parseDouble(record[hbo_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.NHBO).setQuick(minute, Double.parseDouble(record[nhbo_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.NHBW).setQuick(minute, Double.parseDouble(record[nhbw_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBE).setProbability(minute, Double.parseDouble(record[hbe_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBO).setProbability(minute, Double.parseDouble(record[hbo_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBR).setProbability(minute, Double.parseDouble(record[hbo_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBS).setProbability(minute, Double.parseDouble(record[hbs_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.HBW).setProbability(minute, Double.parseDouble(record[hbw_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.NHBO).setProbability(minute, Double.parseDouble(record[nhbo_arrival_index]));
+        arrivalTimeCumProbByPurpose.get(Purpose.NHBW).setProbability(minute, Double.parseDouble(record[nhbw_arrival_index]));
 
-        durationCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBR).setQuick(minute, Double.parseDouble(record[hbo_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBE).setProbability(minute, Double.parseDouble(record[hbe_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBO).setProbability(minute, Double.parseDouble(record[hbo_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBR).setProbability(minute, Double.parseDouble(record[hbo_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBS).setProbability(minute, Double.parseDouble(record[hbs_duration_index]));
+        durationCumProbByPurpose.get(Purpose.HBW).setProbability(minute, Double.parseDouble(record[hbw_duration_index]));
 
         if (Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)){
-            arrivalTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_arrival_index]));
-            departureTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_deparure_index]));
+            arrivalTimeCumProbByPurpose.get(Purpose.AIRPORT).setProbability(minute, Double.parseDouble(record[airport_arrival_index]));
+            departureTimeCumProbByPurpose.get(Purpose.AIRPORT).setProbability(minute, Double.parseDouble(record[airport_deparure_index]));
         }
     }
 

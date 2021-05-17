@@ -4,6 +4,7 @@ import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.plans.ActivityPurpose;
+import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
@@ -36,9 +37,9 @@ public class DataSet {
 
     private int year;
 
-    private EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose;
-    private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
-    private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
+    private EnumMap<Purpose, TimeOfDayDistribution> arrivalMinuteCumProbByPurpose;
+    private EnumMap<Purpose, TimeOfDayDistribution> durationMinuteCumProbByPurpose;
+    private EnumMap<Purpose, TimeOfDayDistribution> departureMinuteCumProbByPurpose;
 
     private EnumMap<ActivityPurpose, DoubleMatrix1D> startingTimeDistribution; //ab
     private EnumMap<ActivityPurpose, DoubleMatrix1D> activityDurationDistribution; //ab
@@ -195,12 +196,12 @@ public class DataSet {
         return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
     }
 
-    public void addModeShareForPurpose(Purpose activityPurpose, Mode mode, Double share){
-        modeSharesByPurpose.put(activityPurpose, mode, share);
+    public void addModeShareForPurpose(Purpose purpose, Mode mode, Double share){
+        modeSharesByPurpose.put(purpose, mode, share);
     }
 
-    public Double getModeShareForPurpose(Purpose activityPurpose, Mode mode){
-        return modeSharesByPurpose.get(activityPurpose, mode);
+    public Double getModeShareForPurpose(Purpose purpose, Mode mode){
+        return modeSharesByPurpose.get(purpose, mode);
     }
 
     public int getYear() {
@@ -211,27 +212,27 @@ public class DataSet {
         this.year = year;
     }
 
-    public EnumMap<Purpose, DoubleMatrix1D> getArrivalMinuteCumProbByPurpose() {
+    public EnumMap<Purpose, TimeOfDayDistribution> getArrivalMinuteCumProbByPurpose() {
         return arrivalMinuteCumProbByPurpose;
     }
 
-    public void setArrivalMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose) {
+    public void setArrivalMinuteCumProbByPurpose(EnumMap<Purpose, TimeOfDayDistribution> arrivalMinuteCumProbByPurpose) {
         this.arrivalMinuteCumProbByPurpose = arrivalMinuteCumProbByPurpose;
     }
 
-    public EnumMap<Purpose, DoubleMatrix1D> getDurationMinuteCumProbByPurpose() {
+    public EnumMap<Purpose, TimeOfDayDistribution> getDurationMinuteCumProbByPurpose() {
         return durationMinuteCumProbByPurpose;
     }
 
-    public void setDurationMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose) {
+    public void setDurationMinuteCumProbByPurpose(EnumMap<Purpose, TimeOfDayDistribution> durationMinuteCumProbByPurpose) {
         this.durationMinuteCumProbByPurpose = durationMinuteCumProbByPurpose;
     }
 
-    public EnumMap<Purpose, DoubleMatrix1D> getDepartureMinuteCumProbByPurpose() {
+    public EnumMap<Purpose, TimeOfDayDistribution> getDepartureMinuteCumProbByPurpose() {
         return departureMinuteCumProbByPurpose;
     }
 
-    public void setDepartureMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose) {
+    public void setDepartureMinuteCumProbByPurpose(EnumMap<Purpose, TimeOfDayDistribution> departureMinuteCumProbByPurpose) {
         this.departureMinuteCumProbByPurpose = departureMinuteCumProbByPurpose;
     }
 

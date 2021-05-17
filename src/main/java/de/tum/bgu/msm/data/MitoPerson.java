@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data;
 
 import de.tum.bgu.msm.data.plans.Plan;
+import de.tum.bgu.msm.data.timeOfDay.AvailableTimeOfDay;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -89,4 +90,6 @@ public class MitoPerson implements Id {
     public void setPlan(Plan plan) {
         this.plan = plan;
     }
+
+
 }
