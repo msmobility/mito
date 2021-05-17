@@ -28,8 +28,8 @@ public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalcu
     private double distanceParam;
     private double impedanceParam;
 
-    DestinationUtilityCalculatorImpl(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
-        switch (purpose) {
+    DestinationUtilityCalculatorImpl(Purpose activityPurpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+        switch (activityPurpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;
                 impedanceParam = IMPEDANCE_PARAM_HBW;

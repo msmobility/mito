@@ -4,12 +4,12 @@ public class Leg {
 
     Activity previousActivity;
     Activity nextActivity;
-    Mode mode;
+    LegMode legMode;
 
     public Leg(Activity previousActivity, Activity nextActivity) {
         this.previousActivity = previousActivity;
         this.nextActivity = nextActivity;
-        this.mode = Mode.UNKNOWN;
+        this.legMode = LegMode.UNKNOWN;
     }
 
     public Activity getPreviousActivity() {
@@ -28,11 +28,11 @@ public class Leg {
         this.nextActivity = nextActivity;
     }
 
-    public Mode getMode() {
-        return mode;
+    public LegMode getMode() {
+        return legMode;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public void setMode(LegMode legMode) {
+        this.legMode = legMode;
     }
 }

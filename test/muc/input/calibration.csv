@@ -1,4 +1,4 @@
-calibrationRegion,purpose,mode,share,factor
+calibrationRegion,activityPurpose,legMode,share,factor
 muc,AIRPORT,autoDriver,0.15,-0.22503288
 muc,AIRPORT,autoPassenger,0.43,0.155677335
 muc,AIRPORT,bicycle,0,0

@@ -117,12 +117,12 @@ public class MitoZone implements Id, Location {
         return this.employeesByType.size();
     }
 
-    public void setTripAttraction(Purpose purpose, double tripAttractionRate) {
-        this.tripAttraction.put(purpose, tripAttractionRate);
+    public void setTripAttraction(Purpose activityPurpose, double tripAttractionRate) {
+        this.tripAttraction.put(activityPurpose, tripAttractionRate);
     }
 
-    public double getTripAttraction(Purpose purpose) {
-        Double rate = this.tripAttraction.get(purpose);
+    public double getTripAttraction(Purpose activityPurpose) {
+        Double rate = this.tripAttraction.get(activityPurpose);
         if (rate == null) {
             throw new RuntimeException("No trip attraction rate set for zone " + zoneId + ". Please make sure to only call " +
                     "this method after trip generation module!");

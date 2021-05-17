@@ -75,8 +75,8 @@ public class TravelTimeBudgetModuleTest {
         assertEquals(12.572, emptyHousehold.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
-        for(Purpose purpose: Purpose.values()) {
-            totalTravelTimeBudget += emptyHousehold.getTravelTimeBudgetForPurpose(purpose);
+        for(Purpose activityPurpose: Purpose.values()) {
+            totalTravelTimeBudget += emptyHousehold.getTravelTimeBudgetForPurpose(activityPurpose);
         }
         assertEquals(47.8349, totalTravelTimeBudget, 0.001);
     }
@@ -92,8 +92,8 @@ public class TravelTimeBudgetModuleTest {
         assertEquals(18.827, poorRetirees.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
-        for(Purpose purpose: Purpose.values()) {
-            totalTravelTimeBudget += poorRetirees.getTravelTimeBudgetForPurpose(purpose);
+        for(Purpose activityPurpose: Purpose.values()) {
+            totalTravelTimeBudget += poorRetirees.getTravelTimeBudgetForPurpose(activityPurpose);
         }
         assertEquals(72.006, totalTravelTimeBudget, 0.001);
     }
@@ -109,8 +109,8 @@ public class TravelTimeBudgetModuleTest {
         assertEquals(7.259, poorBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
-        for(Purpose purpose: Purpose.values()) {
-            totalTravelTimeBudget += poorBigFamily.getTravelTimeBudgetForPurpose(purpose);
+        for(Purpose activityPurpose: Purpose.values()) {
+            totalTravelTimeBudget += poorBigFamily.getTravelTimeBudgetForPurpose(activityPurpose);
         }
         assertEquals(125.619, totalTravelTimeBudget, 0.001);
     }
@@ -126,8 +126,8 @@ public class TravelTimeBudgetModuleTest {
         assertEquals(7.259, richBigFamily.getTravelTimeBudgetForPurpose(Purpose.NHBO), 0.001);
 
         double totalTravelTimeBudget = 0;
-        for(Purpose purpose: Purpose.values()) {
-            totalTravelTimeBudget += richBigFamily.getTravelTimeBudgetForPurpose(purpose);
+        for(Purpose activityPurpose: Purpose.values()) {
+            totalTravelTimeBudget += richBigFamily.getTravelTimeBudgetForPurpose(activityPurpose);
         }
         assertEquals(125.619, totalTravelTimeBudget, 0.001);
     }

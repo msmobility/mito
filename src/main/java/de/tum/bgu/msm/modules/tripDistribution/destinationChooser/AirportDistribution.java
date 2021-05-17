@@ -14,7 +14,7 @@ public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
 
     private static final Logger logger = Logger.getLogger(AirportDistribution.class);
     private final MitoZone airportZone;
-    Purpose purpose = Purpose.AIRPORT;
+    Purpose activityPurpose = Purpose.AIRPORT;
     private final DataSet dataSet;
 
     private MicroLocation airport;
@@ -37,10 +37,10 @@ public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
         long counter = 0;
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             if (LongMath.isPowerOfTwo(counter)) {
-                logger.info(counter + " households done for Purpose " + purpose);
+                logger.info(counter + " households done for Purpose " + activityPurpose);
             }
             if (hasTripsForPurpose(household)) {
-                for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                for (MitoTrip trip : household.getTripsForPurpose(activityPurpose)) {
 
                     airport = new MicroLocation() {
                         @Override
@@ -71,7 +71,7 @@ public class AirportDistribution extends RandomizableConcurrentFunction<Void> {
     }
 
     private boolean hasTripsForPurpose(MitoHousehold household) {
-        return !household.getTripsForPurpose(purpose).isEmpty();
+        return !household.getTripsForPurpose(activityPurpose).isEmpty();
     }
 
 

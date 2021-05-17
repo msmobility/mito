@@ -59,9 +59,9 @@ public final class TripDistribution extends Module {
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
         travelDistanceCalibrationParameters = new HashMap<>();
         impedanceCalibrationParameters = new HashMap<>();
-        for (Purpose purpose : Purpose.getAllPurposes()){
-            travelDistanceCalibrationParameters.put(purpose, 1.0);
-            impedanceCalibrationParameters.put(purpose, 1.0);
+        for (Purpose activityPurpose : Purpose.getAllPurposes()){
+            travelDistanceCalibrationParameters.put(activityPurpose, 1.0);
+            impedanceCalibrationParameters.put(activityPurpose, 1.0);
         }
 
 
@@ -78,13 +78,13 @@ public final class TripDistribution extends Module {
 
     private void buildMatrices() {
         List<Callable<Tuple<Purpose,IndexedDoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
-        for (Purpose purpose : purposes) {
-            if (!purpose.equals(Purpose.AIRPORT)){
+        for (Purpose activityPurpose : purposes) {
+            if (!activityPurpose.equals(Purpose.AIRPORT)){
                 //Distribution of trips to the airport does not need a matrix of weights
-                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
+                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(activityPurpose, dataSet,
                         destinationUtilityCalculatorFactory,
-                        travelDistanceCalibrationParameters.get(purpose),
-                        impedanceCalibrationParameters.get(purpose)));
+                        travelDistanceCalibrationParameters.get(activityPurpose),
+                        impedanceCalibrationParameters.get(activityPurpose)));
             }
         }
         ConcurrentExecutor<Tuple<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
@@ -107,19 +107,19 @@ public final class TripDistribution extends Module {
 
         List<Callable<Void>> homeBasedTasks = new ArrayList<>();
         for (final List<MitoHousehold> partition : partitions) {
-            for (Purpose purpose : purposes){
-                if (purpose.equals(HBW)){
-                    homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(purpose), partition, dataSet.getZones()));
-                } else if (purpose.equals(HBE)) {
-                    homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(purpose), partition, dataSet.getZones()));
-                } else if (purpose.equals(HBS)){
-                    homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(purpose), partition, dataSet.getZones(),
+            for (Purpose activityPurpose : purposes){
+                if (activityPurpose.equals(HBW)){
+                    homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(activityPurpose), partition, dataSet.getZones()));
+                } else if (activityPurpose.equals(HBE)) {
+                    homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(activityPurpose), partition, dataSet.getZones()));
+                } else if (activityPurpose.equals(HBS)){
+                    homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(activityPurpose), partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
-                } else if (purpose.equals(HBO)) {
-                    homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(purpose), partition, dataSet.getZones(),
+                } else if (activityPurpose.equals(HBO)) {
+                    homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(activityPurpose), partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
-                } else if (purpose.equals(HBR)){
-                    homeBasedTasks.add(HbsHboDistribution.hbr(utilityMatrices.get(purpose), partition, dataSet.getZones(),
+                } else if (activityPurpose.equals(HBR)){
+                    homeBasedTasks.add(HbsHboDistribution.hbr(utilityMatrices.get(activityPurpose), partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
             }
@@ -132,11 +132,11 @@ public final class TripDistribution extends Module {
 
         for (final List<MitoHousehold> partition : partitions) {
 
-            for (Purpose purpose : purposes){
-                if (purpose.equals(NHBW)){
+            for (Purpose activityPurpose : purposes){
+                if (activityPurpose.equals(NHBW)){
                     nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
-                } else if (purpose.equals(NHBO)){
+                } else if (activityPurpose.equals(NHBO)){
                     nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }

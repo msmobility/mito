@@ -21,25 +21,25 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
     private Map<MitoHousehold, List<MitoTrip>> tripsByHH = new HashMap<>();
 
     private final DataSet dataSet;
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
 
     private final HouseholdTypeManager householdTypeManager;
     private double scaleFactorForGeneration;
 
 
-    TripsByPurposeGeneratorSampleEnumeration(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
+    TripsByPurposeGeneratorSampleEnumeration(DataSet dataSet, Purpose activityPurpose, double scaleFactorForGeneration) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
-        this.purpose = purpose;
-        householdTypeManager = new HouseholdTypeManager(purpose);
+        this.activityPurpose = activityPurpose;
+        householdTypeManager = new HouseholdTypeManager(activityPurpose);
         this.scaleFactorForGeneration = scaleFactorForGeneration;
     }
 
     @Override
     public Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> call() {
-        logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
-        logger.info("Created trip frequency distributions for " + purpose);
-        logger.info("Started assignment of trips for hh, purpose: " + purpose);
+        logger.info("  Generating trips with activityPurpose " + activityPurpose + " (multi-threaded)");
+        logger.info("Created trip frequency distributions for " + activityPurpose);
+        logger.info("Started assignment of trips for hh, activityPurpose: " + activityPurpose);
         final Iterator<MitoHousehold> iterator = dataSet.getHouseholds().values().iterator();
         for (; iterator.hasNext(); ) {
             MitoHousehold next = iterator.next();
@@ -47,23 +47,23 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
                 generateTripsForHousehold(next, scaleFactorForGeneration);
             }
         }
-        return new Tuple<>(purpose, tripsByHH);
+        return new Tuple<>(activityPurpose, tripsByHH);
     }
 
 
     private void generateTripsForHousehold(MitoHousehold hh, double scaleFactorForGeneration) {
         HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
         if (hhType == null) {
-            logger.error("Could not create trips for Household " + hh.getId() + " for Purpose " + purpose + ": No Household Type applicable");
+            logger.error("Could not create trips for Household " + hh.getId() + " for Purpose " + activityPurpose + ": No Household Type applicable");
             return;
         }
         Integer[] tripFrequencies = householdTypeManager.getTripFrequenciesForHouseholdType(hhType);
         if (tripFrequencies == null) {
-            logger.error("Could not find trip frequencies for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
+            logger.error("Could not find trip frequencies for this hhType/Purpose: " + hhType.getId() + "/" + activityPurpose);
             return;
         }
         if (MitoUtil.getSum(tripFrequencies) == 0) {
-            //logger.info("No trips for this hhType/Purpose: " + hhType.getId() + "/" + purpose);
+            //logger.info("No trips for this hhType/Purpose: " + hhType.getId() + "/" + activityPurpose);
             return;
         }
 
@@ -92,7 +92,7 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
             DROPPED_TRIPS_AT_BORDER_COUNTER.incrementAndGet();
             return null;
         }
-        return new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
+        return new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), activityPurpose);
     }
 
     private boolean reduceTripGenAtStudyAreaBorder(MitoZone tripOrigin) {

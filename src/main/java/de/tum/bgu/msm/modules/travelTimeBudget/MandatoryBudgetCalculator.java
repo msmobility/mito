@@ -18,24 +18,24 @@ public class MandatoryBudgetCalculator implements Runnable {
 
     private final double defaultBudget;
     private final Collection<MitoHousehold> households;
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
     private final MitoOccupationStatus mitoOccupationStatus;
     private final TravelTimes travelTimes;
     private final double timeOfDay;
     private int defaultBudgeted = 0;
 
-    MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose purpose, TravelTimes travelTimes, double timeOfDay) {
+    MandatoryBudgetCalculator(Collection<MitoHousehold> households, Purpose activityPurpose, TravelTimes travelTimes, double timeOfDay) {
         this.households = households;
-        this.purpose = purpose;
-        this.defaultBudget = Resources.instance.getDouble(Properties.DEFAULT_BUDGET + purpose, 30.);
+        this.activityPurpose = activityPurpose;
+        this.defaultBudget = Resources.instance.getDouble(Properties.DEFAULT_BUDGET + activityPurpose, 30.);
         this.travelTimes = travelTimes;
         this.timeOfDay = timeOfDay;
-        if(purpose == Purpose.HBW) {
+        if(activityPurpose == Purpose.HBW) {
             mitoOccupationStatus = MitoOccupationStatus.WORKER;
-        } else if(purpose == Purpose.HBE) {
+        } else if(activityPurpose == Purpose.HBE) {
             mitoOccupationStatus = MitoOccupationStatus.STUDENT;
         } else {
-            throw new RuntimeException("MandatoryBudgetCalculator can only be initialized with HBW or HBE purpose!");
+            throw new RuntimeException("MandatoryBudgetCalculator can only be initialized with HBW or HBE activityPurpose!");
         }
     }
 
@@ -43,7 +43,7 @@ public class MandatoryBudgetCalculator implements Runnable {
     public void run() {
         for (MitoHousehold household : households) {
             double budget = 0;
-            for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+            for (MitoTrip trip : household.getTripsForPurpose(activityPurpose)) {
                 if (specifiedByOccupation(trip)) {
                     //Multiply by 2, as the budget should contain the return trip of home based trips as well
                     budget += 2 * travelTimes.getTravelTime(household.getHomeZone(),
@@ -53,12 +53,12 @@ public class MandatoryBudgetCalculator implements Runnable {
                     defaultBudgeted ++;
                 }
             }
-            household.setTravelTimeBudgetByPurpose(purpose, budget);
+            household.setTravelTimeBudgetByPurpose(activityPurpose, budget);
         }
         if (defaultBudgeted > 0) {
-            logger.warn("There have been " + defaultBudgeted + " " + purpose
+            logger.warn("There have been " + defaultBudgeted + " " + activityPurpose
                     + " trips that were accounted for with the default budget of "
-                    + defaultBudget + " minutes in the " + purpose + " travel time budgets"
+                    + defaultBudget + " minutes in the " + activityPurpose + " travel time budgets"
                     + " because no " + mitoOccupationStatus + " was assigned (or occupation zone missing).");
         }
     }

@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.data.plans;
 
-public enum Purpose {
+public enum ActivityPurpose {
 
     H,
     W,

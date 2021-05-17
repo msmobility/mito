@@ -22,7 +22,7 @@ public class TripGenerationWriter {
     private static final Logger logger = Logger.getLogger(TripGenerationWriter.class);
 
     public static void writeTripsByPurposeAndZone(DataSet dataSet, String scenarioName) {
-        // write number of trips by purpose and zone to output file
+        // write number of trips by activityPurpose and zone to output file
 
         String fileNameProd = generateOutputFileName(Resources.instance.getString(Properties.TRIP_PRODUCTION_OUTPUT), dataSet.getYear(), scenarioName);
         PrintWriter pwProd = MitoUtil.openFileForSequentialWriting(fileNameProd, false);
@@ -30,26 +30,26 @@ public class TripGenerationWriter {
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
-        for (Purpose purpose: Purpose.getAllPurposes()) {
-            pwProd.print("," + purpose + "P");
-            pwAttr.print("," + purpose + "A");
+        for (Purpose activityPurpose: Purpose.getAllPurposes()) {
+            pwProd.print("," + activityPurpose + "P");
+            pwAttr.print("," + activityPurpose + "A");
         }
 
         Map<Integer, Map<Purpose, Integer>> tripProdByZoneAndPurp = new HashMap<>(dataSet.getZones().size());
 
         for(Integer zoneId: dataSet.getZones().keySet()) {
             Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.getAllPurposes().size());
-            for(Purpose purpose: Purpose.getAllPurposes()) {
-                initialValues.put(purpose, 0);
+            for(Purpose activityPurpose: Purpose.getAllPurposes()) {
+                initialValues.put(activityPurpose, 0);
             }
             tripProdByZoneAndPurp.put(zoneId, initialValues);
         }
 
         for (MitoTrip trip: dataSet.getTrips().values()) {
             if(trip.getTripOrigin() != null && trip.getTripDestination() != null) {
-                Purpose purpose = trip.getTripPurpose();
-                int number = tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).get(purpose);
-                tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).replace(purpose, (number + 1));
+                Purpose activityPurpose = trip.getTripPurpose();
+                int number = tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).get(activityPurpose);
+                tripProdByZoneAndPurp.get(trip.getTripOrigin().getZoneId()).replace(activityPurpose, (number + 1));
             }
         }
 
@@ -60,11 +60,11 @@ public class TripGenerationWriter {
             final int zoneId = zone.getId();
             pwProd.print(zoneId);
             pwAttr.print(zoneId);
-            for (Purpose purpose: Purpose.getAllPurposes()) {
-                int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(purpose);
+            for (Purpose activityPurpose: Purpose.getAllPurposes()) {
+                int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(activityPurpose);
                 totalTrips += tripProdTmp;
                 pwProd.print("," + tripProdTmp);
-                pwAttr.print("," + zone.getTripAttraction(purpose));
+                pwAttr.print("," + zone.getTripAttraction(activityPurpose));
             }
             pwProd.println();
             pwAttr.println();

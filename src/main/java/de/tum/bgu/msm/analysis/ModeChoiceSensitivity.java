@@ -39,7 +39,7 @@ public class ModeChoiceSensitivity {
         Resources.initializeResources("./test/muc/test.properties");
 
         pw = new PrintWriter("modeChoiceSensitivity.csv");
-        pw.print("purpose,income,distance,factorCar,factorPt,factorCarPrice,factorPtPrice");
+        pw.print("activityPurpose,income,distance,factorCar,factorPt,factorCarPrice,factorPtPrice");
         for (Mode mode : Mode.values()){
             pw.print(",");
             pw.print(mode.toString());
@@ -67,7 +67,7 @@ public class ModeChoiceSensitivity {
             for (double carPriceFactor = 0.; carPriceFactor <= 5.; carPriceFactor += 1.) {
                 for (double ptPriceFactor = 0.; ptPriceFactor <= 5.; ptPriceFactor += 1.) {
                     calculator = new ModeChoiceCalculatorWithPriceFactors(new ModeChoiceCalculatorImpl(), carPriceFactor, ptPriceFactor);
-                    for (Purpose purpose : Purpose.getAllPurposes()) {
+                    for (Purpose activityPurpose : Purpose.getAllPurposes()) {
                         for (double distance_km = 0.; distance_km < 150.; distance_km += 5.) {
                             double thisDistance_km = distance_km;
                             for (double factorPt = 0.2; factorPt <= 3.; factorPt += 0.2) {
@@ -119,9 +119,9 @@ public class ModeChoiceSensitivity {
                                             return null;
                                         }
                                     };
-                                    EnumMap<Mode, Double> result = calculator.calculateProbabilities(purpose, hh, pp, zone, zone, travelTimes, thisDistance_km, thisDistance_km * detourNMT, 0);
+                                    EnumMap<Mode, Double> result = calculator.calculateProbabilities(activityPurpose, hh, pp, zone, zone, travelTimes, thisDistance_km, thisDistance_km * detourNMT, 0);
                                     counter++;
-                                    pw.print(purpose.toString() + "," + income + "," +  distance_km + "," + factorCar + "," + factorPt +
+                                    pw.print(activityPurpose.toString() + "," + income + "," +  distance_km + "," + factorCar + "," + factorPt +
                                             "," + carPriceFactor + "," + ptPriceFactor);
                                     for (Mode mode : Mode.values()){
                                         pw.print(",");

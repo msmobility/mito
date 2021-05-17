@@ -95,7 +95,7 @@ public class TripCSVToMATSimPlan {
                 posOriginY = MitoUtil.findPositionInArray("originY", header);
                 posDestinationX = MitoUtil.findPositionInArray("destinationX", header);
                 posDestinationY = MitoUtil.findPositionInArray("destinationY", header);
-                posPurpose = MitoUtil.findPositionInArray("purpose", header);
+                posPurpose = MitoUtil.findPositionInArray("activityPurpose", header);
                 posPersonId = MitoUtil.findPositionInArray("person", header);
                 posMode = MitoUtil.findPositionInArray("mode", header);
                 posDistance = MitoUtil.findPositionInArray("distance", header);
@@ -156,10 +156,10 @@ public class TripCSVToMATSimPlan {
         Person p = factory.createPerson(Id.createPersonId(matsimId));
         Plan plan = factory.createPlan();
 
-        Purpose purpose = Purpose.valueOf(t.purpose);
-        boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
+        Purpose activityPurpose = Purpose.valueOf(t.activityPurpose);
+        boolean roundTrip = !(activityPurpose.equals(Purpose.NHBW) || activityPurpose.equals(Purpose.NHBO));
 
-        String firstActivityType = getOriginActivity(purpose);
+        String firstActivityType = getOriginActivity(activityPurpose);
         Coord firstCoord = new Coord(t.originX, t.originY);
 
         Activity firstAct = factory.createActivityFromCoord(firstActivityType, firstCoord);
@@ -172,7 +172,7 @@ public class TripCSVToMATSimPlan {
         firstLeg.setDepartureTime(t.departure_time);
         plan.addLeg(firstLeg);
 
-        String secondActivityType = getDestinationActivity(purpose);
+        String secondActivityType = getDestinationActivity(activityPurpose);
         Coord secondCoord = new Coord(t.destinationX, t.destinationY);
 
         Activity secondAct = factory.createActivityFromCoord(secondActivityType, secondCoord);
@@ -202,24 +202,24 @@ public class TripCSVToMATSimPlan {
         return p;
     }
 
-    private static String getOriginActivity(Purpose purpose){
+    private static String getOriginActivity(Purpose activityPurpose){
 
-        if (purpose.equals(Purpose.NHBW)){
+        if (activityPurpose.equals(Purpose.NHBW)){
             return "work";
-        } else if (purpose.equals(Purpose.NHBO)){
+        } else if (activityPurpose.equals(Purpose.NHBO)){
             return "other";
         } else {
             return "home";
         }
     }
 
-    private static String getDestinationActivity(Purpose purpose){
+    private static String getDestinationActivity(Purpose activityPurpose){
 
-        if (purpose.equals(Purpose.HBW)){
+        if (activityPurpose.equals(Purpose.HBW)){
             return "work";
-        } else if (purpose.equals(Purpose.HBE)){
+        } else if (activityPurpose.equals(Purpose.HBE)){
             return "education";
-        } else if (purpose.equals(Purpose.HBS)){
+        } else if (activityPurpose.equals(Purpose.HBS)){
             return "shopping";
         }  else {
             return "other";
@@ -271,7 +271,7 @@ public class TripCSVToMATSimPlan {
         public final double originY;
         public final double destinationX;
         public final double destinationY;
-        public final String purpose;
+        public final String activityPurpose;
         public final String person;
         public final double distance;
         public final String mode;
@@ -289,7 +289,7 @@ public class TripCSVToMATSimPlan {
             this.originY = Double.parseDouble(data[posOriginY]);
             this.destinationX = Double.parseDouble(data[posDestinationX]);
             this.destinationY = Double.parseDouble(data[posDestinationY]);
-            this.purpose = data[posPurpose];
+            this.activityPurpose = data[posPurpose];
             this.person = data[posPersonId];
             this.distance = Double.parseDouble(data[posDistance]);
             this.mode = data[posMode];

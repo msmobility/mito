@@ -158,8 +158,8 @@ public class Resources {
         return baseDirectory.resolve(getString(property));
     }
 
-    public Path getTripFrequenciesFilePath(Purpose purpose) {
-        return baseDirectory.resolve(Resources.instance.getString(purpose + ".trip.frequencies"));
+    public Path getTripFrequenciesFilePath(Purpose activityPurpose) {
+        return baseDirectory.resolve(Resources.instance.getString(activityPurpose + ".trip.frequencies"));
     }
 
     public Path getCalibrationFactorsPath() {

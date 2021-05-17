@@ -299,7 +299,7 @@ public class IndexedDoubleMatrix2D {
 
     /**
      * Assigns the result of a function to each non-zero cell; x[row,col] = function(x[row,col]).
-     * Use this method for fast special-purpose iteration.
+     * Use this method for fast special-activityPurpose iteration.
      * Parameters to function are as follows: first==row <b>internal index</b>,
      * second==column <b>internal index</b>, third==nonZeroValue
      * @param function

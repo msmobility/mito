@@ -79,24 +79,24 @@ public class MitoHousehold implements Id, MicroLocation {
         this.persons.put(person.getId(), person);
     }
 
-    public synchronized void setTripsByPurpose(List<MitoTrip> trips, Purpose purpose) {
-            tripsByPurpose.put(purpose, trips);
+    public synchronized void setTripsByPurpose(List<MitoTrip> trips, Purpose activityPurpose) {
+            tripsByPurpose.put(activityPurpose, trips);
     }
 
-    public List<MitoTrip> getTripsForPurpose(Purpose purpose) {
-        if(tripsByPurpose.get(purpose) != null) {
-            return tripsByPurpose.get(purpose);
+    public List<MitoTrip> getTripsForPurpose(Purpose activityPurpose) {
+        if(tripsByPurpose.get(activityPurpose) != null) {
+            return tripsByPurpose.get(activityPurpose);
         } else {
             return Collections.emptyList();
         }
     }
 
-    public synchronized void setTravelTimeBudgetByPurpose(Purpose purpose, double budget) {
-        this.travelTimeBudgetByPurpose.put(purpose, budget);
+    public synchronized void setTravelTimeBudgetByPurpose(Purpose activityPurpose, double budget) {
+        this.travelTimeBudgetByPurpose.put(activityPurpose, budget);
     }
 
-    public double getTravelTimeBudgetForPurpose(Purpose purpose) {
-        return travelTimeBudgetByPurpose.get(purpose) == null ? 0. : travelTimeBudgetByPurpose.get(purpose) ;
+    public double getTravelTimeBudgetForPurpose(Purpose activityPurpose) {
+        return travelTimeBudgetByPurpose.get(activityPurpose) == null ? 0. : travelTimeBudgetByPurpose.get(activityPurpose) ;
     }
 
     public int getEconomicStatus() {

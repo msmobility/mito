@@ -17,19 +17,19 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
     private final static Logger logger = Logger.getLogger(DestinationUtilityByPurposeGenerator.class);
 
     private final DestinationUtilityCalculator calculator;
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
     private final Map<Integer, MitoZone> zones;
     private final TravelDistances travelDistances;
 
 
-    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet,
+    DestinationUtilityByPurposeGenerator(Purpose activityPurpose, DataSet dataSet,
                                          DestinationUtilityCalculatorFactory factory,
                                          double travelDistanceCalibrationK,
                                          double impendanceCalibrationK) {
-        this.purpose = purpose;
+        this.activityPurpose = activityPurpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
-        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
+        calculator = factory.createDestinationUtilityCalculator(activityPurpose,travelDistanceCalibrationK, impendanceCalibrationK);
     }
 
     @Override
@@ -38,22 +38,22 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
         long counter = 0;
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
-                final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
+                final double utility =  calculator.calculateUtility(destination.getTripAttraction(activityPurpose),
                         travelDistances.getTravelDistance(origin.getId(), destination.getId()));
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination + " | Distance: "
                             + travelDistances.getTravelDistance(origin.getId(), destination.getId()) +
-                            " | Purpose: " + purpose + " | attraction rate: " + destination.getTripAttraction(purpose));
+                            " | Purpose: " + activityPurpose + " | attraction rate: " + destination.getTripAttraction(activityPurpose));
                 }
                 utilityMatrix.setIndexed(origin.getId(), destination.getId(), utility);
                 if (LongMath.isPowerOfTwo(counter)) {
-                    logger.info(counter + " OD pairs done for purpose " + purpose);
+                    logger.info(counter + " OD pairs done for activityPurpose " + activityPurpose);
                 }
                 counter++;
             }
         }
-        logger.info("Utility matrix for purpose " + purpose + " done.");
-        return new Tuple<>(purpose, utilityMatrix);
+        logger.info("Utility matrix for activityPurpose " + activityPurpose + " done.");
+        return new Tuple<>(activityPurpose, utilityMatrix);
     }
 }

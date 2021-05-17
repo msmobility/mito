@@ -24,11 +24,11 @@ public class PlanUtils {
         Tour tour = new Tour(mainTourActivity);
         plan.getTours().put(mainTourActivity.getStartTime_s(), tour);
         if (homeActivity != null) {
-            double timeToMainActivity = 60 *  travelTimes.getTravelTime(homeActivity, mainTourActivity, mainTourActivity.getStartTime_s(), Mode.UNKNOWN.toString());
+            double timeToMainActivity = 60 *  travelTimes.getTravelTime(homeActivity, mainTourActivity, mainTourActivity.getStartTime_s(), LegMode.UNKNOWN.toString());
             double previousEndOfHomeActivity = homeActivity.getEndTime_s();
             homeActivity.setEndTime_s(mainTourActivity.getStartTime_s() - timeToMainActivity);
             tour.getTrips().put(homeActivity, new Leg(homeActivity, mainTourActivity));
-            Activity secondHomeActivity = new Activity(Purpose.H, mainTourActivity.getEndTime_s() + timeToMainActivity, previousEndOfHomeActivity, homeActivity.getCoordinate());
+            Activity secondHomeActivity = new Activity(ActivityPurpose.H, mainTourActivity.getEndTime_s() + timeToMainActivity, previousEndOfHomeActivity, homeActivity.getCoordinate());
             plan.getHomeActivities().put(secondHomeActivity.getStartTime_s(), secondHomeActivity);
             tour.getTrips().put(mainTourActivity, new Leg(mainTourActivity, secondHomeActivity));
         }
@@ -59,7 +59,7 @@ public class PlanUtils {
 
         //todo here
         if (mainActivity != null) {
-            double timeToSubTourActivity = 60 * travelTimes.getTravelTime(mainActivity, subTourActivity,subTourActivity.getStartTime_s(), Mode.UNKNOWN.toString() );
+            double timeToSubTourActivity = 60 * travelTimes.getTravelTime(mainActivity, subTourActivity,subTourActivity.getStartTime_s(), LegMode.UNKNOWN.toString() );
             double previousEndOfMainActivity = mainActivity.getEndTime_s();
             mainActivity.setEndTime_s(subTourActivity.getStartTime_s() - timeToSubTourActivity);
             Leg previousLegFromMainActivity = tour.getTrips().get(mainActivity);
@@ -108,14 +108,14 @@ public class PlanUtils {
         tour.getTrips().remove(legToRemove.getPreviousActivity());
 
         Leg firstLeg = new Leg(candidatePreviousActivity, stopBefore);
-        double timeForFirstTrip = 60 * travelTimes.getTravelTime(candidatePreviousActivity, stopBefore, candidatePreviousActivity.getEndTime_s(), Mode.UNKNOWN.toString());
+        double timeForFirstTrip = 60 * travelTimes.getTravelTime(candidatePreviousActivity, stopBefore, candidatePreviousActivity.getEndTime_s(), LegMode.UNKNOWN.toString());
         Leg secondLeg = new Leg(stopBefore, mainActivity);
-        double timeForSecondTrip = 60 * travelTimes.getTravelTime(stopBefore, mainActivity, stopBefore.getEndTime_s(), Mode.UNKNOWN.toString());
+        double timeForSecondTrip = 60 * travelTimes.getTravelTime(stopBefore, mainActivity, stopBefore.getEndTime_s(), LegMode.UNKNOWN.toString());
         tour.getTrips().put(firstLeg.getPreviousActivity(), firstLeg);
         tour.getTrips().put(secondLeg.getPreviousActivity(), secondLeg);
 
         candidatePreviousActivity.setEndTime_s(stopBefore.getStartTime_s() - 60 *
-                travelTimes.getTravelTime(candidatePreviousActivity, stopBefore, stopBefore.getStartTime_s(), Mode.UNKNOWN.toString()));
+                travelTimes.getTravelTime(candidatePreviousActivity, stopBefore, stopBefore.getStartTime_s(), LegMode.UNKNOWN.toString()));
 
     }
 
@@ -160,6 +160,6 @@ public class PlanUtils {
         tour.getTrips().put(secondLeg.getPreviousActivity(), secondLeg);
 
         candidateAfterActivity.setStartTime_s(stopAfter.getEndTime_s() + 60 * travelTimes.getTravelTime(stopAfter, candidateAfterActivity,
-                stopAfter.getEndTime_s(), Mode.UNKNOWN.toString()));
+                stopAfter.getEndTime_s(), LegMode.UNKNOWN.toString()));
     }
 }

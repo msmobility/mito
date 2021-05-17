@@ -5,21 +5,21 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class Activity implements Comparable<Activity>, MicroLocation {
 
-    private Purpose purpose;
+    private ActivityPurpose activityPurpose;
     private double startTime_s;
     private double endTime_s;
     private Coordinate coordinate;
 
 
-    public Activity(Purpose purpose, double startTime_s, double endTime_s, Coordinate coordinate) {
-        this.purpose = purpose;
+    public Activity(ActivityPurpose activityPurpose, double startTime_s, double endTime_s, Coordinate coordinate) {
+        this.activityPurpose = activityPurpose;
         this.startTime_s = startTime_s;
         this.endTime_s = endTime_s;
         this.coordinate = coordinate;
     }
 
-    public Purpose getPurpose() {
-        return purpose;
+    public ActivityPurpose getPurpose() {
+        return activityPurpose;
     }
 
     public double getStartTime_s() {
@@ -53,7 +53,7 @@ public class Activity implements Comparable<Activity>, MicroLocation {
     @Override
     public String toString() {
         return "Activity{" +
-                "purpose=" + purpose +
+                "activityPurpose=" + activityPurpose +
                 ", startTime_s=" + startTime_s +
                 ", endTime_s=" + endTime_s +
                 ", coordinate=" + coordinate +

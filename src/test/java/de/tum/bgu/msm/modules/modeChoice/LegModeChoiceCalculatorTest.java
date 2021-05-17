@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.util.EnumMap;
 
-public class ModeChoiceCalculatorTest {
+public class LegModeChoiceCalculatorTest {
 
     private ModeChoiceCalculator calculator;
     private ModeChoiceCalculator drtCalculator;

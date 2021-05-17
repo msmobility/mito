@@ -11,7 +11,7 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
     private final static Logger logger = Logger.getLogger(TravelTimeBudgetCalculatorImpl.class);
 
     @Override
-    public double calculateBudget(MitoHousehold household, String purpose) {
+    public double calculateBudget(MitoHousehold household, String activityPurpose) {
 
         int retirees = DataSet.getRetireesForHousehold(household);
         int females = DataSet.getFemalesForHousehold(household);
@@ -52,7 +52,7 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
         }
 
 
-        if ("Total".equals(purpose)) {
+        if ("Total".equals(activityPurpose)) {
             intercept = 4.3818;
             youngAdultsParam = 0.051;
             carsParam = -0.0125;
@@ -104,7 +104,7 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 area = 0;
             }
 
-        } else if (purpose == "HBO") {
+        } else if (activityPurpose == "HBO") {
 
             intercept = 4.0951;
             youngAdultsParam = 0.0885;
@@ -154,7 +154,7 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 area = 0;
             }
 
-        } else if (purpose == "HBS") {
+        } else if (activityPurpose == "HBS") {
             intercept = 2.751;
             youngAdultsParam = 0;
             workersParam = 0;
@@ -199,7 +199,7 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 area = 0;
             }
 
-        } else if (purpose == "NHBW") {
+        } else if (activityPurpose == "NHBW") {
             intercept = 2.921;
             youngAdultsParam = 0.075;
             workersParam = 0;
@@ -235,7 +235,7 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 economicStatusParam = 0;
             }
 
-        } else if (purpose == "NHBO") {
+        } else if (activityPurpose == "NHBO") {
             intercept = 3.45457;
             youngAdultsParam = 0;
             workersParam = 0.04670;
@@ -284,10 +284,10 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
                 area = 0;
             }
 
-        } else if (purpose == "HBR") {
+        } else if (activityPurpose == "HBR") {
             return 0;
         } else {
-            throw new RuntimeException("Undefined purpose given!");
+            throw new RuntimeException("Undefined activityPurpose given!");
         }
 
         double femalesImpact = females * femalesParam;

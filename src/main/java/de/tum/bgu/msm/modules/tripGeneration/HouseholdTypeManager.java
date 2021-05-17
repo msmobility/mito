@@ -22,13 +22,13 @@ public class HouseholdTypeManager {
 
     private static final Logger logger = Logger.getLogger(HouseholdTypeManager.class);
 
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
     private final Map<HouseholdType, Integer[]> tripFrequency;
 
     final List<HouseholdType> householdTypes = new ArrayList<>();
 
-    public HouseholdTypeManager(Purpose purpose) {
-        this.purpose = purpose;
+    public HouseholdTypeManager(Purpose activityPurpose) {
+        this.activityPurpose = activityPurpose;
         createHouseHoldTypeDefinitions();
         tripFrequency = readTripFrequencies();
     }
@@ -38,7 +38,7 @@ public class HouseholdTypeManager {
     }
 
     private Map<HouseholdType, Integer[]> readTripFrequencies() {
-        Path filePath = Resources.instance.getTripFrequenciesFilePath(purpose);
+        Path filePath = Resources.instance.getTripFrequenciesFilePath(activityPurpose);
         GenericCsvReader csvReader = new GenericCsvReader(filePath);
         csvReader.read();
         GenericCsvTable dataTable = csvReader.getTable();
@@ -48,12 +48,12 @@ public class HouseholdTypeManager {
             List<Integer> tripFrequencyThisHousehold = new ArrayList<>();
             boolean foundThisHhType = false;
             for (int row = 0; row < dataTable.getRowCount(); row++) {
-                String purpose = dataTable.getString(row, dataTable.getColumnIndexOf("typePurpose"));
-                if (!purpose.equals(this.purpose.toString())) {
-                    logger.error("File " + filePath + " contains trip purpose " + purpose +
-                            ", which is different from expected purpose " + this.purpose);
-                    throw new RuntimeException("File " + filePath + " contains trip purpose " + purpose +
-                            ", which is different from expected purpose " + this.purpose);
+                String activityPurpose = dataTable.getString(row, dataTable.getColumnIndexOf("typePurpose"));
+                if (!activityPurpose.equals(this.activityPurpose.toString())) {
+                    logger.error("File " + filePath + " contains trip activityPurpose " + activityPurpose +
+                            ", which is different from expected activityPurpose " + this.activityPurpose);
+                    throw new RuntimeException("File " + filePath + " contains trip activityPurpose " + activityPurpose +
+                            ", which is different from expected activityPurpose " + this.activityPurpose);
                 }
 
                 if (ht.hasTheseAttributes(dataTable.getInt(row, "hhSize_L"),
@@ -85,7 +85,7 @@ public class HouseholdTypeManager {
 
     private void createHouseHoldTypeDefinitions() {
         // todo: should this not read the token from the class Properties.java?
-        String[] householdDefinitionToken = Resources.instance.getArray("hh.type." + purpose);
+        String[] householdDefinitionToken = Resources.instance.getArray("hh.type." + activityPurpose);
         String sizeToken = householdDefinitionToken[1];
         String[] sizePortions = sizeToken.split("\\.");
         String workerToken = householdDefinitionToken[2];

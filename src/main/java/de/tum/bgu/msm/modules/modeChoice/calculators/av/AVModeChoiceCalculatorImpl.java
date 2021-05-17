@@ -51,7 +51,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
 
     @Override
     public EnumMap<Mode, Double> calculateProbabilities(
-            Purpose purpose,
+            Purpose activityPurpose,
             MitoHousehold household,
             MitoPerson person,
             MitoZone originZone,
@@ -63,7 +63,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
 
 
         EnumMap<Mode, Double> utilities = baseCalculator.calculateUtilities(
-                purpose,
+                activityPurpose,
                 household,
                 person,
                 originZone,
@@ -74,7 +74,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
                 peakHour_s);
 
         EnumMap<Mode, Double> baseProbs = baseCalculator.calculateProbabilities(
-                purpose,
+                activityPurpose,
                 household,
                 person,
                 originZone,
@@ -86,7 +86,7 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
         );
 
         EnumMap<Mode, Double> generalizedCosts = calculateGeneralizedCosts(
-                purpose,
+                activityPurpose,
                 household,
                 person,
                 originZone,
@@ -121,11 +121,11 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
         double baseProbabilityTransitNest = Math.exp(nestingCoefficient * logsumTransit) / (Math.exp(nestingCoefficient * logsumAuto) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(nestingCoefficient * logsumTransit));
 
         int purpIdx;
-        if (purpose.equals(Purpose.HBR)){
+        if (activityPurpose.equals(Purpose.HBR)){
             purpIdx = Purpose.HBO.ordinal();
             //there is no mode choice for HBR trips yet
         } else {
-            purpIdx = purpose.ordinal();
+            purpIdx = activityPurpose.ordinal();
         }
 
 
@@ -162,25 +162,25 @@ public class AVModeChoiceCalculatorImpl implements ModeChoiceCalculator {
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateUtilities(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         throw new RuntimeException("Not implemented!");
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
 
         int monthlyIncome_EUR = household.getMonthlyIncome_EUR();
         int purpIdx;
-        if (purpose.equals(Purpose.HBR)){
+        if (activityPurpose.equals(Purpose.HBR)){
             purpIdx = Purpose.HBO.ordinal();
             //there is no mode choice for HBR trips yet
         } else {
-            purpIdx = purpose.ordinal();
+            purpIdx = activityPurpose.ordinal();
         }
         double timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "car");
 
         EnumMap<Mode, Double> baseGeneralizedCosts = baseCalculator.calculateGeneralizedCosts(
-                purpose,
+                activityPurpose,
                 household,
                 person,
                 originZone,

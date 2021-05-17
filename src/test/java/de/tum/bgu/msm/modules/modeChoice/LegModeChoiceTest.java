@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-public class ModeChoiceTest {
+public class LegModeChoiceTest {
 
     private DataSet dataSet;
     private MitoHousehold household1;

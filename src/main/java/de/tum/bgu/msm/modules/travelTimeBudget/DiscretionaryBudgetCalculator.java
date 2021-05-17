@@ -7,17 +7,17 @@ import java.util.Collection;
 
 public class DiscretionaryBudgetCalculator implements Runnable {
 
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
     private final Collection<MitoHousehold> households;
     private TravelTimeBudgetCalculator travelTimeCalc;
 
-    public DiscretionaryBudgetCalculator(Purpose purpose, Collection<MitoHousehold> households) {
-        this(purpose, households, new TravelTimeBudgetCalculatorImpl());
+    public DiscretionaryBudgetCalculator(Purpose activityPurpose, Collection<MitoHousehold> households) {
+        this(activityPurpose, households, new TravelTimeBudgetCalculatorImpl());
     }
 
-    public DiscretionaryBudgetCalculator(Purpose purpose, Collection<MitoHousehold> households,
+    public DiscretionaryBudgetCalculator(Purpose activityPurpose, Collection<MitoHousehold> households,
                                          TravelTimeBudgetCalculator travelTimeBudgetCalculator) {
-        this.purpose = purpose;
+        this.activityPurpose = activityPurpose;
         this.households = households;
         travelTimeCalc = travelTimeBudgetCalculator;
     }
@@ -25,8 +25,8 @@ public class DiscretionaryBudgetCalculator implements Runnable {
     @Override
     public void run() {
         households.forEach(hh -> {
-            double budget = travelTimeCalc.calculateBudget(hh, purpose.name());
-            hh.setTravelTimeBudgetByPurpose(purpose, budget);
+            double budget = travelTimeCalc.calculateBudget(hh, activityPurpose.name());
+            hh.setTravelTimeBudgetByPurpose(activityPurpose, budget);
         });
     }
 }

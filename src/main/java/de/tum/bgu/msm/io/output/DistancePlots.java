@@ -50,8 +50,8 @@ public class DistancePlots {
                 .filter(trip -> trip.getTripOrigin() != null && trip.getTripDestination() != null)
                 .collect(Collectors.groupingBy(MitoTrip::getTripPurpose));
 
-        for(Purpose purpose: Purpose.values()) {
-            if(tripsByPurpose.containsKey(purpose)) {
+        for(Purpose activityPurpose: Purpose.values()) {
+            if(tripsByPurpose.containsKey(activityPurpose)) {
 
                 // Create Chart
                 CategoryChart individualChart = new CategoryChartBuilder().width(800).height(600).xAxisTitle("Trip Length").yAxisTitle("Frequency").theme(Styler.ChartTheme.GGPlot2).build();
@@ -62,16 +62,16 @@ public class DistancePlots {
                 individualChart.getStyler().setXAxisLabelRotation(90);
 
                 List<Double> distances = new ArrayList<>();
-                for (MitoTrip t : tripsByPurpose.get(purpose)) {
+                for (MitoTrip t : tripsByPurpose.get(activityPurpose)) {
                     double travelDistance = dataSet.getTravelDistancesAuto()
                             .getTravelDistance(t.getTripOrigin().getZoneId(), t.getTripDestination().getZoneId());
                     distances.add(travelDistance);
                 }
                 Histogram histogram = new Histogram(distances, 50, 0, 100);
-                stackedChartByPurpose.addSeries(purpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
-                individualChart.addSeries(purpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
+                stackedChartByPurpose.addSeries(activityPurpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
+                individualChart.addSeries(activityPurpose.name(), histogram.getxAxisData(), histogram.getyAxisData());
                 double avg = Stats.meanOf(distances);
-                individualChart.setTitle("Trip Length Frequency Distribution - " + purpose.name() + " - Avg: " + avg);
+                individualChart.setTitle("Trip Length Frequency Distribution - " + activityPurpose.name() + " - Avg: " + avg);
                 individualChartsByPurpose.add(individualChart);
             }
         }

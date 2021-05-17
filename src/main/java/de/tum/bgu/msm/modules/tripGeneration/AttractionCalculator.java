@@ -51,7 +51,7 @@ public class AttractionCalculator {
     public void run() {
         logger.info("  Calculating trip attractions");
         for (MitoZone zone : dataSet.getZones().values()) {
-            for (Purpose purpose : purposes) {
+            for (Purpose activityPurpose : purposes) {
                 float tripAttraction = 0;
                 for (ExplanatoryVariable variable : ExplanatoryVariable.values()) {
                     float attribute;
@@ -77,14 +77,14 @@ public class AttractionCalculator {
                         default:
                             throw new RuntimeException("Unknown trip attraction Variable.");
                     }
-                    Double rate = purpose.getTripAttractionForVariable(variable);
+                    Double rate = activityPurpose.getTripAttractionForVariable(variable);
                     if(rate == null) {
-                        throw new RuntimeException("Purpose " + purpose + " does not have an attraction" +
+                        throw new RuntimeException("Purpose " + activityPurpose + " does not have an attraction" +
                                 " rate for variable " + variable + " registered.");
                     }
                     tripAttraction += attribute * rate;
                 }
-                zone.setTripAttraction(purpose, tripAttraction);
+                zone.setTripAttraction(activityPurpose, tripAttraction);
             }
         }
     }

@@ -86,17 +86,17 @@ public final class MitoModel2ForModeChoiceCalibration {
         distribution.run();
 
         ModeChoice modeChoice = new ModeChoice(dataSet, purposes);
-        for(Purpose purpose: purposes) {
+        for(Purpose activityPurpose: purposes) {
 
             final CalibratingModeChoiceCalculatorImpl baseCalculator;
-            if(purpose == Purpose.AIRPORT) {
+            if(activityPurpose == Purpose.AIRPORT) {
                 baseCalculator = new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(),
                         dataSet.getModeChoiceCalibrationData());
             } else {
                 baseCalculator = new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(),
                         dataSet.getModeChoiceCalibrationData());
             }
-            modeChoice.registerModeChoiceCalculator(purpose,
+            modeChoice.registerModeChoiceCalculator(activityPurpose,
                     baseCalculator);
         }
 

@@ -29,25 +29,25 @@ public class TripBalancer {
 
         logger.info("  Balancing trip production and attractions");
 
-        for (Purpose purpose : purposes) {
-            long tripsByPurp = dataSet.getHouseholds().values().stream().mapToInt(household -> household.getTripsForPurpose(purpose).size()).sum();
-            double attrSum = dataSet.getZones().values().stream().mapToDouble(zone -> zone.getTripAttraction(purpose)).sum();
+        for (Purpose activityPurpose : purposes) {
+            long tripsByPurp = dataSet.getHouseholds().values().stream().mapToInt(household -> household.getTripsForPurpose(activityPurpose).size()).sum();
+            double attrSum = dataSet.getZones().values().stream().mapToDouble(zone -> zone.getTripAttraction(activityPurpose)).sum();
             if (tripsByPurp == 0) {
-                logger.warn("No trips for purpose " + purpose + " were generated.");
+                logger.warn("No trips for activityPurpose " + activityPurpose + " were generated.");
                 continue;
             }
 
             double factor = Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
 
             double ratio = tripsByPurp / factor / attrSum;
-            adjustAttractions(ratio, purpose);
+            adjustAttractions(ratio, activityPurpose);
         }
     }
 
-    private void adjustAttractions(double ratio, Purpose purpose) {
+    private void adjustAttractions(double ratio, Purpose activityPurpose) {
         for (MitoZone zone : dataSet.getZones().values()) {
-            double oldValue = zone.getTripAttraction(purpose);
-            zone.setTripAttraction(purpose, oldValue * ratio);
+            double oldValue = zone.getTripAttraction(activityPurpose);
+            zone.setTripAttraction(activityPurpose, oldValue * ratio);
         }
     }
 }

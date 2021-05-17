@@ -58,7 +58,7 @@ public class ModeChoiceCalibrationData {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            pw.println("iteration,region,purpose,mode,observed_share,sim_share,k,trips");
+            pw.println("iteration,region,activityPurpose,mode,observed_share,sim_share,k,trips");
         }
 
         simulatedTripsByRegionPurposeAndMode.clear();
@@ -66,37 +66,37 @@ public class ModeChoiceCalibrationData {
         for (MitoTrip trip : dataSet.getTrips().values()) {
             if (trip.getTripMode() != null) {
                 String region = zoneToRegionMap.get(trip.getTripOrigin().getZoneId());
-                Purpose purpose = trip.getTripPurpose();
+                Purpose activityPurpose = trip.getTripPurpose();
                 Mode mode = trip.getTripMode();
 
                 simulatedTripsByRegionPurposeAndMode.putIfAbsent(region, new HashMap<>());
-                simulatedTripsByRegionPurposeAndMode.get(region).putIfAbsent(purpose, new HashMap<>());
-                simulatedTripsByRegionPurposeAndMode.get(region).get(purpose).putIfAbsent(mode, 0);
-                int newValue = simulatedTripsByRegionPurposeAndMode.get(region).get(purpose).get(mode) + 1;
-                simulatedTripsByRegionPurposeAndMode.get(region).get(purpose).put(mode, newValue);
+                simulatedTripsByRegionPurposeAndMode.get(region).putIfAbsent(activityPurpose, new HashMap<>());
+                simulatedTripsByRegionPurposeAndMode.get(region).get(activityPurpose).putIfAbsent(mode, 0);
+                int newValue = simulatedTripsByRegionPurposeAndMode.get(region).get(activityPurpose).get(mode) + 1;
+                simulatedTripsByRegionPurposeAndMode.get(region).get(activityPurpose).put(mode, newValue);
             }
         }
 
 
         for (String region : observedModalShare.keySet()) {
-            for (Purpose purpose : purposes) {
+            for (Purpose activityPurpose : purposes) {
                 for (Mode mode : Mode.values()) {
-                    double observedShare = observedModalShare.get(region).get(purpose).getOrDefault(mode, 0.);
-                    double tripAtRegionAndPurpose = simulatedTripsByRegionPurposeAndMode.get(region).get(purpose).values().stream().mapToInt(Integer::intValue).sum();
+                    double observedShare = observedModalShare.get(region).get(activityPurpose).getOrDefault(mode, 0.);
+                    double tripAtRegionAndPurpose = simulatedTripsByRegionPurposeAndMode.get(region).get(activityPurpose).values().stream().mapToInt(Integer::intValue).sum();
                     double simulatedShare;
                     if (tripAtRegionAndPurpose != 0) {
-                        simulatedShare = simulatedTripsByRegionPurposeAndMode.get(region).get(purpose).getOrDefault(mode, 0) / tripAtRegionAndPurpose;
+                        simulatedShare = simulatedTripsByRegionPurposeAndMode.get(region).get(activityPurpose).getOrDefault(mode, 0) / tripAtRegionAndPurpose;
                     } else {
                         simulatedShare = 0.;
                     }
 
                     double difference = observedShare - simulatedShare;
-                    double existingFactor = calibrationFactors.get(region).get(purpose).getOrDefault(mode, 0.);
+                    double existingFactor = calibrationFactors.get(region).get(activityPurpose).getOrDefault(mode, 0.);
                     double newFactor = existingFactor + difference;
-                    calibrationFactors.get(region).get(purpose).put(mode, newFactor);
+                    calibrationFactors.get(region).get(activityPurpose).put(mode, newFactor);
 
                     double tripCount = tripAtRegionAndPurpose * simulatedShare;
-                    pw.println(iteration + "," + region + "," + purpose + "," + mode + "," +
+                    pw.println(iteration + "," + region + "," + activityPurpose + "," + mode + "," +
                             observedShare + "," + simulatedShare + "," + newFactor + "," + tripCount);
                 }
             }

@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.data.plans;
 
-public enum Mode {
+public enum LegMode {
 
     CAR,
     PT,

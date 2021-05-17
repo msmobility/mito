@@ -1,7 +1,5 @@
 package de.tum.bgu.msm.data.travelTimes;
 
-import de.tum.bgu.msm.data.plans.Activity;
-import de.tum.bgu.msm.data.plans.Mode;
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.MicroLocation;
 import de.tum.bgu.msm.data.Region;
@@ -10,15 +8,6 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 
 
 public class DummyTravelTimesForABM implements TravelTimes {
-
-    private double getTravelTimeInSeconds(Activity origin, Activity destination, Mode mode, double time){
-        double distance_m = Math.abs(origin.getCoordinate().getX() - destination.getCoordinate().getX()) +
-                Math.abs(origin.getCoordinate().getY() - destination.getCoordinate().getY());
-
-        double speed_ms = 15. / 3.6;
-
-        return distance_m / speed_ms;
-    }
 
     @Override
     public double getTravelTime(Location origin, Location destination, double timeOfDay_s, String mode) {

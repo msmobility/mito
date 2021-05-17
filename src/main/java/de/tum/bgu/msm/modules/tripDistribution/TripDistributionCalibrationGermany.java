@@ -38,8 +38,8 @@ public class TripDistributionCalibrationGermany extends Module {
         observedAverageDistances.put(Purpose.NHBW, 9.54);
 
         String purposesString = "";
-        for (Purpose purpose : purposes) {
-            purposesString += "_" + purpose.toString();
+        for (Purpose activityPurpose : purposes) {
+            purposesString += "_" + activityPurpose.toString();
         }
 
         this.impendanceParameters = impendanceParameters;
@@ -52,21 +52,21 @@ public class TripDistributionCalibrationGermany extends Module {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        pw.println("iteration,purpose,observed,simulated,factorDistance,factorImpedance");
+        pw.println("iteration,activityPurpose,observed,simulated,factorDistance,factorImpedance");
 
     }
 
 
     public void update(int iteration) {
 
-        for (Purpose purpose : purposes) {
+        for (Purpose activityPurpose : purposes) {
 
             int count = 0;
             double sum = 0;
             List<MitoTrip> tripsThisPurpose =
-                    dataSet.getTrips().values().stream().filter(t -> t.getTripPurpose().equals(purpose)).collect(Collectors.toList());
+                    dataSet.getTrips().values().stream().filter(t -> t.getTripPurpose().equals(activityPurpose)).collect(Collectors.toList());
 
-            if (Purpose.getMandatoryPurposes().contains(purpose)) {
+            if (Purpose.getMandatoryPurposes().contains(activityPurpose)) {
                 tripsThisPurpose.removeIf(trip -> trip.getPerson().getMitoOccupationStatus().equals(MitoOccupationStatus.WORKER) ||
                         trip.getPerson().getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT));
             }
@@ -89,20 +89,20 @@ public class TripDistributionCalibrationGermany extends Module {
             //double avg = Quantiles.median().compute(distances);
 
 
-            simulatedAverageDistances.put(purpose, avg);
-            double ratio = avg / observedAverageDistances.get(purpose); //greater than 1 if the model simulates too long trips
+            simulatedAverageDistances.put(activityPurpose, avg);
+            double ratio = avg / observedAverageDistances.get(activityPurpose); //greater than 1 if the model simulates too long trips
             // - in this case, the parameter of distance needs to be larger (more negative)
             ratio = Math.max(ratio, 0.5);
             ratio = Math.min(ratio, 2);
 
 
-            travelDistanceParameters.put(purpose, travelDistanceParameters.get(purpose) * ratio);
+            travelDistanceParameters.put(activityPurpose, travelDistanceParameters.get(activityPurpose) * ratio);
             pw.println(iteration + "," +
-                    purpose + "," +
-                    observedAverageDistances.get(purpose) + "," +
-                    simulatedAverageDistances.get(purpose) + "," +
-                    travelDistanceParameters.get(purpose) + "," +
-                    impendanceParameters.get(purpose));
+                    activityPurpose + "," +
+                    observedAverageDistances.get(activityPurpose) + "," +
+                    simulatedAverageDistances.get(activityPurpose) + "," +
+                    travelDistanceParameters.get(activityPurpose) + "," +
+                    impendanceParameters.get(activityPurpose));
 
         }
 

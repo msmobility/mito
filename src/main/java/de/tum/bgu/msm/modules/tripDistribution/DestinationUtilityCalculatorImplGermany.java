@@ -30,8 +30,8 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
     private double maxDistance_km;
     private double attractionParam = 1.;
 
-    DestinationUtilityCalculatorImplGermany(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
-        switch (purpose) {
+    DestinationUtilityCalculatorImplGermany(Purpose activityPurpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+        switch (activityPurpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;
                 impedanceParam = IMPEDANCE_PARAM_HBW;

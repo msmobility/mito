@@ -7,8 +7,8 @@ public class TripsByPurposeGeneratorFactorySampleEnumeration implements TripsByP
 
 
     @Override
-    public TripsByPurposeGenerator createTripGeneratorForThisPurpose( DataSet dataSet, Purpose purpose, double scaleFactorForGeneration){
-        return new TripsByPurposeGeneratorSampleEnumeration(dataSet, purpose, scaleFactorForGeneration);
+    public TripsByPurposeGenerator createTripGeneratorForThisPurpose( DataSet dataSet, Purpose activityPurpose, double scaleFactorForGeneration){
+        return new TripsByPurposeGeneratorSampleEnumeration(dataSet, activityPurpose, scaleFactorForGeneration);
 
     }
 

@@ -110,7 +110,7 @@ public class MitoTrip implements Id {
 
     @Override
     public String toString() {
-        return "Trip [id: " + this.tripId + " purpose: " + this.tripPurpose + "]";
+        return "Trip [id: " + this.tripId + " activityPurpose: " + this.tripPurpose + "]";
     }
 
     @Override

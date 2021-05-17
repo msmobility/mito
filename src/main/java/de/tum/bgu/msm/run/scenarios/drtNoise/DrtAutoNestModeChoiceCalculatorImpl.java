@@ -67,10 +67,10 @@ public class DrtAutoNestModeChoiceCalculatorImpl implements ModeChoiceCalculator
 
 
     @Override
-    public EnumMap<Mode, Double> calculateProbabilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateProbabilities(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
 
         EnumMap<Mode, Double> utilities = calculateUtilities(
-                purpose, household, person, originZone, destinationZone, travelTimes
+                activityPurpose, household, person, originZone, destinationZone, travelTimes
                 , travelDistanceAuto, travelDistanceNMT, peakHour_s);
 
         final double utilityAutoD = utilities.get(Mode.autoDriver);
@@ -129,8 +129,8 @@ public class DrtAutoNestModeChoiceCalculatorImpl implements ModeChoiceCalculator
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
-        final EnumMap<Mode, Double> baseUtilities = baseCalculator.calculateUtilities(purpose, household, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
+    public EnumMap<Mode, Double> calculateUtilities(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+        final EnumMap<Mode, Double> baseUtilities = baseCalculator.calculateUtilities(activityPurpose, household, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
 
         double utilityPooledTaxi;
 
@@ -138,7 +138,7 @@ public class DrtAutoNestModeChoiceCalculatorImpl implements ModeChoiceCalculator
                 && serviceArea.contains(destinationZone.getGeometry())) {
 
 
-            EnumMap<Mode, Double> gc = calculateGeneralizedCosts(purpose, household, person, originZone,
+            EnumMap<Mode, Double> gc = calculateGeneralizedCosts(activityPurpose, household, person, originZone,
                     destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
 
             //base utility for auto driver
@@ -148,8 +148,8 @@ public class DrtAutoNestModeChoiceCalculatorImpl implements ModeChoiceCalculator
             double gcAutoD = gc.get(Mode.autoPassenger);
 
             //additional (or less) utility for the additive generalized cost term
-            double additionalUtility = betaGeneralizedCost[purpose.ordinal()][1] * (gcPooledTaxi - gcAutoD)
-                    + betaGeneralizedCost_Squared[purpose.ordinal()][1] * (gcPooledTaxi - gcAutoD);
+            double additionalUtility = betaGeneralizedCost[activityPurpose.ordinal()][1] * (gcPooledTaxi - gcAutoD)
+                    + betaGeneralizedCost_Squared[activityPurpose.ordinal()][1] * (gcPooledTaxi - gcAutoD);
 
             //add difference in utilities caused by difference in generalized costs to the base utility
             utilityPooledTaxi = utilityAutoD + additionalUtility;
@@ -162,19 +162,19 @@ public class DrtAutoNestModeChoiceCalculatorImpl implements ModeChoiceCalculator
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         int monthlyIncome_EUR = household.getMonthlyIncome_EUR();
         int purpIdx;
-        if (purpose.equals(Purpose.HBR)){
+        if (activityPurpose.equals(Purpose.HBR)){
             purpIdx = Purpose.HBO.ordinal();
             //there is no mode choice for HBR trips yet
         } else {
-            purpIdx = purpose.ordinal();
+            purpIdx = activityPurpose.ordinal();
         }
         double timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "car");
 
         EnumMap<Mode, Double> baseGeneralizedCosts = baseCalculator.calculateGeneralizedCosts(
-                purpose,
+                activityPurpose,
                 household,
                 person,
                 originZone,

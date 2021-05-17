@@ -44,9 +44,9 @@ public final class TimeOfDayChoice extends Module {
 
     private void chooseDepartureTimes() {
 
-        for (Purpose purpose : purposes){
+        for (Purpose activityPurpose : purposes){
             dataSet.getHouseholds().values().forEach(hh-> {
-                List<MitoTrip> trips = hh.getTripsForPurpose(purpose);
+                List<MitoTrip> trips = hh.getTripsForPurpose(activityPurpose);
                 for (MitoTrip trip : trips){
 
                     if (trip.getTripOrigin() != null && trip.getTripDestination() != null

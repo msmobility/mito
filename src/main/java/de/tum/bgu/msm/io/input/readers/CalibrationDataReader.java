@@ -24,7 +24,7 @@ public class CalibrationDataReader extends AbstractCsvReader {
     @Override
     protected void processHeader(String[] header) {
         regionIndex = MitoUtil.findPositionInArray("calibrationRegion", header);
-        purposeIndex = MitoUtil.findPositionInArray("purpose", header);
+        purposeIndex = MitoUtil.findPositionInArray("activityPurpose", header);
         modeIndex = MitoUtil.findPositionInArray("mode", header);
         shareIndex = MitoUtil.findPositionInArray("share", header);
         kIndex = MitoUtil.findPositionInArray("factor", header);
@@ -33,19 +33,19 @@ public class CalibrationDataReader extends AbstractCsvReader {
     @Override
     protected void processRecord(String[] record) {
         String region = record[regionIndex];
-        Purpose purpose = Purpose.valueOf(record[purposeIndex]);
+        Purpose activityPurpose = Purpose.valueOf(record[purposeIndex]);
         Mode mode = Mode.valueOf(record[modeIndex]);
 
         double share = Double.parseDouble(record[shareIndex]);
         double factor = Double.parseDouble(record[kIndex]);
 
         dataSet.getModeChoiceCalibrationData().getObservedModalShare().putIfAbsent(region, new HashMap<>());
-        dataSet.getModeChoiceCalibrationData().getObservedModalShare().get(region).putIfAbsent(purpose, new HashMap<>());
-        dataSet.getModeChoiceCalibrationData().getObservedModalShare().get(region).get(purpose).put(mode, share);
+        dataSet.getModeChoiceCalibrationData().getObservedModalShare().get(region).putIfAbsent(activityPurpose, new HashMap<>());
+        dataSet.getModeChoiceCalibrationData().getObservedModalShare().get(region).get(activityPurpose).put(mode, share);
 
         dataSet.getModeChoiceCalibrationData().getCalibrationFactors().putIfAbsent(region, new HashMap<>());
-        dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).putIfAbsent(purpose, new HashMap<>());
-        dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).get(purpose).put(mode, factor);
+        dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).putIfAbsent(activityPurpose, new HashMap<>());
+        dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).get(activityPurpose).put(mode, factor);
 
         //return null;
     }

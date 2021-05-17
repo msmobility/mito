@@ -27,9 +27,9 @@ public final class ModeChoicePlots {
         new File(directory).mkdirs();
         logger.info("Writing mode choice plots to " + directory);
         List<Chart> charts = new ArrayList<>();
-        for(Purpose purpose: Purpose.values()) {
+        for(Purpose activityPurpose: Purpose.values()) {
             // Create Chart
-            org.knowm.xchart.PieChart chart = new PieChartBuilder().width(800).height(600).title(purpose.name()).theme(Styler.ChartTheme.GGPlot2).build();
+            org.knowm.xchart.PieChart chart = new PieChartBuilder().width(800).height(600).title(activityPurpose.name()).theme(Styler.ChartTheme.GGPlot2).build();
 
             chart.getStyler().setAnnotationType(PieStyler.AnnotationType.Percentage);
             chart.getStyler().setDrawAllAnnotations(true);
@@ -38,10 +38,10 @@ public final class ModeChoicePlots {
             // Customize Chart
 
             for (Mode mode : Mode.values()) {
-                Double share = dataSet.getModeShareForPurpose(purpose, mode);
+                Double share = dataSet.getModeShareForPurpose(activityPurpose, mode);
                 if (share != null) {
                     // Series
-                    chart.addSeries(mode.name(), (int) (dataSet.getModeShareForPurpose(purpose, mode) * 100));
+                    chart.addSeries(mode.name(), (int) (dataSet.getModeShareForPurpose(activityPurpose, mode) * 100));
                 }
             }
             charts.add(chart);

@@ -30,7 +30,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private final double peakHour;
 
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
     private final List<Purpose> priorPurposes;
     private final MitoOccupationStatus relatedMitoOccupationStatus;
     private final EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities;
@@ -45,12 +45,12 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private double mean;
 
-    private NhbwNhboDistribution(boolean useBudgetsInDestinationChoice, Purpose purpose, List<Purpose> priorPurposes, MitoOccupationStatus relatedMitoOccupationStatus,
+    private NhbwNhboDistribution(boolean useBudgetsInDestinationChoice, Purpose activityPurpose, List<Purpose> priorPurposes, MitoOccupationStatus relatedMitoOccupationStatus,
                                  EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                  TravelTimes travelTimes, double peakHour) {
         super(MitoUtil.getRandomObject().nextLong());
         USE_BUDGETS_IN_DESTINATION_CHOICE = useBudgetsInDestinationChoice;
-        this.purpose = purpose;
+        this.activityPurpose = activityPurpose;
         this.priorPurposes = priorPurposes;
         this.relatedMitoOccupationStatus = relatedMitoOccupationStatus;
         this.baseProbabilities = baseProbabilities;
@@ -77,14 +77,14 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         long counter = 0;
         for (MitoHousehold household : householdPartition) {
             if (LongMath.isPowerOfTwo(counter)) {
-                logger.info(counter + " households done for Purpose " + purpose
+                logger.info(counter + " households done for Purpose " + activityPurpose
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
                 if (USE_BUDGETS_IN_DESTINATION_CHOICE){
                     if (hasBudgetForPurpose(household)) {
                         updateBudgets(household);
-                        for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        for (MitoTrip trip : household.getTripsForPurpose(activityPurpose)) {
                             Location origin = findOrigin(household, trip);
                             if (origin == null) {
                                 logger.debug("No origin found for trip" + trip);
@@ -106,7 +106,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                         TripDistribution.failedTripsCounter.incrementAndGet();
                     }
                 } else {
-                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                    for (MitoTrip trip : household.getTripsForPurpose(activityPurpose)) {
                         Location origin = findOrigin(household, trip);
                         if (origin == null) {
                             logger.debug("No origin found for trip" + trip);
@@ -133,21 +133,21 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
     /**
-     * Checks if members of this household perform trips of the set purpose
+     * Checks if members of this household perform trips of the set activityPurpose
      *
      * @return true if trips are available, false otherwise
      */
     private boolean hasTripsForPurpose(MitoHousehold household) {
-        return !household.getTripsForPurpose(purpose).isEmpty();
+        return !household.getTripsForPurpose(activityPurpose).isEmpty();
     }
 
     /**
-     * Checks if this household has been allocated travel time budget for the set purpose
+     * Checks if this household has been allocated travel time budget for the set activityPurpose
      *
      * @return true if budget was allocated, false otherwise
      */
     private boolean hasBudgetForPurpose(MitoHousehold household) {
-        return household.getTravelTimeBudgetForPurpose(purpose) > 0.;
+        return household.getTravelTimeBudgetForPurpose(activityPurpose) > 0.;
     }
 
     private void updateBudgets(MitoHousehold household) {
@@ -157,14 +157,14 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         } else {
             ratio = idealBudgetSum / actualBudgetSum;
         }
-        hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(purpose) / household.getTripsForPurpose(purpose).size();
+        hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(activityPurpose) / household.getTripsForPurpose(activityPurpose).size();
         mean = hhBudgetPerTrip * ratio;
     }
 
     private Location findOrigin(MitoHousehold household, MitoTrip trip) {
         final List<Location> possibleBaseZones = new ArrayList<>();
-        for (Purpose purpose : priorPurposes) {
-            for (MitoTrip priorTrip : household.getTripsForPurpose(purpose)) {
+        for (Purpose activityPurpose : priorPurposes) {
+            for (MitoTrip priorTrip : household.getTripsForPurpose(activityPurpose)) {
                 if (priorTrip.getPerson().equals(trip.getPerson())) {
                     possibleBaseZones.add(priorTrip.getTripDestination());
                 }
@@ -183,7 +183,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
     private MitoZone findDestination(int origin) {
-        final IndexedDoubleMatrix1D row = baseProbabilities.get(purpose).viewRow(origin);
+        final IndexedDoubleMatrix1D row = baseProbabilities.get(activityPurpose).viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         IntStream.range(0, baseProbs.length).parallel().forEach(i -> {
             //divide travel time by 2 as home based trips' budget account for the return trip as well
@@ -198,7 +198,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
 
     private MitoZone findDestinationWithoutBudget(int origin) {
-        final IndexedDoubleMatrix1D row = baseProbabilities.get(purpose).viewRow(origin);
+        final IndexedDoubleMatrix1D row = baseProbabilities.get(activityPurpose).viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         int destinationInternalId = MitoUtil.select(baseProbs, random);
         return zonesCopy.get(row.getIdForInternalIndex(destinationInternalId));

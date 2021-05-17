@@ -20,18 +20,18 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
 
     private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
 
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
     private final MitoOccupationStatus mitoOccupationStatus;
     private final IndexedDoubleMatrix2D baseProbabilities;
 
     private final Collection<MitoHousehold> householdPartition;
     private final Map<Integer, MitoZone> zonesCopy;
 
-    private HbeHbwDistribution(Purpose purpose, MitoOccupationStatus mitoOccupationStatus,
+    private HbeHbwDistribution(Purpose activityPurpose, MitoOccupationStatus mitoOccupationStatus,
                                IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition,
                                Map<Integer, MitoZone> zones) {
         super(MitoUtil.getRandomObject().nextLong());
-        this.purpose = purpose;
+        this.activityPurpose = activityPurpose;
         this.mitoOccupationStatus = mitoOccupationStatus;
         this.baseProbabilities = baseProbabilities;
         this.householdPartition = householdPartition;
@@ -53,10 +53,10 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
         long counter = 0;
         for (MitoHousehold household : householdPartition) {
             if (LongMath.isPowerOfTwo(counter)) {
-                logger.info(counter + " households done for Purpose " + purpose);
+                logger.info(counter + " households done for Purpose " + activityPurpose);
             }
             if (hasTripsForPurpose(household)) {
-                for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                for (MitoTrip trip : household.getTripsForPurpose(activityPurpose)) {
                     trip.setTripOrigin(household);
                     findDestination(household, trip);
                     TripDistribution.distributedTripsCounter.incrementAndGet();
@@ -81,7 +81,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     }
 
     private boolean hasTripsForPurpose(MitoHousehold household) {
-        return !household.getTripsForPurpose(purpose).isEmpty();
+        return !household.getTripsForPurpose(activityPurpose).isEmpty();
     }
 
     private boolean isFixedByOccupation(MitoTrip trip) {

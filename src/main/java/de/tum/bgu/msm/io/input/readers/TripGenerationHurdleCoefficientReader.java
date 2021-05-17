@@ -14,7 +14,7 @@ public class TripGenerationHurdleCoefficientReader extends AbstractCsvReader {
 
 
     private final Map<String, Double> coefficients = new HashMap<>();
-    private final String purpose;
+    private final String activityPurpose;
 
     private int variableIndex;
     private int coefficientIndex;
@@ -22,16 +22,16 @@ public class TripGenerationHurdleCoefficientReader extends AbstractCsvReader {
     private final Path path;
 
 
-    public TripGenerationHurdleCoefficientReader(DataSet dataSet, Purpose purpose, Path path) {
+    public TripGenerationHurdleCoefficientReader(DataSet dataSet, Purpose activityPurpose, Path path) {
         super(dataSet);
-        this.purpose = purpose.toString();
+        this.activityPurpose = activityPurpose.toString();
         this.path = path;
     }
 
     @Override
     protected void processHeader(String[] header) {
         variableIndex = MitoUtil.findPositionInArray("variable", header);
-        coefficientIndex = MitoUtil.findPositionInArray(purpose, header);
+        coefficientIndex = MitoUtil.findPositionInArray(activityPurpose, header);
     }
 
     @Override

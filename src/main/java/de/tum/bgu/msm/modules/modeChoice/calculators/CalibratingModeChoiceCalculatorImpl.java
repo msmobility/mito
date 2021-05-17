@@ -19,9 +19,9 @@ public class CalibratingModeChoiceCalculatorImpl extends ModeChoiceCalculatorImp
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
-        final double[] calibrationFactors = calibrationData.getCalibrationFactorsAsArray(purpose, originZone);
-        final EnumMap<Mode, Double> baseUtilities = base.calculateUtilities(purpose, household, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
+    public EnumMap<Mode, Double> calculateUtilities(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+        final double[] calibrationFactors = calibrationData.getCalibrationFactorsAsArray(activityPurpose, originZone);
+        final EnumMap<Mode, Double> baseUtilities = base.calculateUtilities(activityPurpose, household, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
         baseUtilities.replaceAll((mode, aDouble) -> aDouble + calibrationFactors[mode.ordinal()]);
         return baseUtilities;
     }

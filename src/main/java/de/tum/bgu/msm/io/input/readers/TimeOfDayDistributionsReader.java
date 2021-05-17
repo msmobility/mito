@@ -35,10 +35,10 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
     public TimeOfDayDistributionsReader(DataSet dataSet) {
 
         super(dataSet);
-        for (Purpose purpose : Purpose.values()) {
-            arrivalTimeCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
-            durationCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
-            departureTimeCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
+        for (Purpose activityPurpose : Purpose.values()) {
+            arrivalTimeCumProbByPurpose.put(activityPurpose, new DenseDoubleMatrix1D(24 * 60 + 1));
+            durationCumProbByPurpose.put(activityPurpose, new DenseDoubleMatrix1D(24 * 60 + 1));
+            departureTimeCumProbByPurpose.put(activityPurpose, new DenseDoubleMatrix1D(24 * 60 + 1));
         }
     }
 

@@ -25,9 +25,9 @@ public class PersonTripAssignment extends Module {
     @Override
     public void run() {
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
-            for (Purpose purpose : purposes) {
+            for (Purpose activityPurpose : purposes) {
                 //todo check that the order of purposes affects the assignment. It crashes if a non-home based is done before a home-based
-                for (Iterator<MitoTrip> iterator = household.getTripsForPurpose(purpose).listIterator(); iterator.hasNext(); ) {
+                for (Iterator<MitoTrip> iterator = household.getTripsForPurpose(activityPurpose).listIterator(); iterator.hasNext(); ) {
                     MitoTrip trip = iterator.next();
                     Map<MitoPerson, Double> probabilitiesByPerson = getProbabilityByPersonForTrip(household, trip);
                     if (probabilitiesByPerson != null && !probabilitiesByPerson.isEmpty()) {
@@ -43,19 +43,19 @@ public class PersonTripAssignment extends Module {
     }
 
     private Map<MitoPerson, Double> getProbabilityByPersonForTrip(MitoHousehold household, MitoTrip trip) {
-        Purpose purpose = trip.getTripPurpose();
+        Purpose activityPurpose = trip.getTripPurpose();
         Map<MitoPerson, Double> probabilitiesByPerson = new HashMap<>(household.getHhSize());
-        if (purpose == HBW) {
+        if (activityPurpose == HBW) {
             assignHBW(household, probabilitiesByPerson);
-        } else if (purpose == HBE) {
+        } else if (activityPurpose == HBE) {
             assignHBE(household, probabilitiesByPerson);
-        } else if (purpose == HBS || purpose == HBO) {
+        } else if (activityPurpose == HBS || activityPurpose == HBO) {
             assignHBSHBO(household, probabilitiesByPerson);
-        } else if (purpose == NHBW) {
+        } else if (activityPurpose == NHBW) {
             assignNHBW(household, probabilitiesByPerson);
-        } else if (purpose == NHBO) {
+        } else if (activityPurpose == NHBO) {
             assignNHBO(household, probabilitiesByPerson);
-        } else if (purpose == AIRPORT) {
+        } else if (activityPurpose == AIRPORT) {
             assignAIRPORT(household, probabilitiesByPerson);
         }
         return probabilitiesByPerson;

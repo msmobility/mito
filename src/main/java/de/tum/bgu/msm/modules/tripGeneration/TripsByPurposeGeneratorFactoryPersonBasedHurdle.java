@@ -5,7 +5,7 @@ import de.tum.bgu.msm.data.Purpose;
 
 public class TripsByPurposeGeneratorFactoryPersonBasedHurdle implements TripsByPurposeGeneratorFactory {
     @Override
-    public TripsByPurposeGenerator createTripGeneratorForThisPurpose(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
-        return new TripsByPurposeGeneratorPersonBasedHurdleModel(dataSet, purpose, scaleFactorForGeneration);
+    public TripsByPurposeGenerator createTripGeneratorForThisPurpose(DataSet dataSet, Purpose activityPurpose, double scaleFactorForGeneration) {
+        return new TripsByPurposeGeneratorPersonBasedHurdleModel(dataSet, activityPurpose, scaleFactorForGeneration);
     }
 }

@@ -17,7 +17,7 @@ public interface ModeChoiceCalculator {
      * [5] probability tram or metro
      * [6] probability walk
      */
-    EnumMap<Mode, Double> calculateProbabilities(Purpose purpose,
+    EnumMap<Mode, Double> calculateProbabilities(Purpose activityPurpose,
                                                  MitoHousehold household,
                                                  MitoPerson person,
                                                  MitoZone originZone,
@@ -37,7 +37,7 @@ public interface ModeChoiceCalculator {
      * [5] probability tram or metro
      * [6] probability walk
      */
-    EnumMap<Mode, Double> calculateUtilities(Purpose purpose,
+    EnumMap<Mode, Double> calculateUtilities(Purpose activityPurpose,
                                     MitoHousehold household,
                                     MitoPerson person,
                                     MitoZone originZone,
@@ -58,7 +58,7 @@ public interface ModeChoiceCalculator {
      * [5] probability tram or metro
      * [6] probability walk
      */
-    EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose,
+    EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose activityPurpose,
                                 MitoHousehold household,
                                 MitoPerson person,
                                 MitoZone originZone,

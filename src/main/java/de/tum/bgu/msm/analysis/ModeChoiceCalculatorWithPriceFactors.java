@@ -38,8 +38,8 @@ public class ModeChoiceCalculatorWithPriceFactors extends ModeChoiceCalculatorIm
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
-        EnumMap<Mode, Double> generalizedCosts = base.calculateGeneralizedCosts(purpose, household, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+        EnumMap<Mode, Double> generalizedCosts = base.calculateGeneralizedCosts(activityPurpose, household, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
 
 
         double gcAutoD = generalizedCosts.get(Mode.autoDriver);
@@ -49,7 +49,7 @@ public class ModeChoiceCalculatorWithPriceFactors extends ModeChoiceCalculatorIm
         double gcTramMetro = generalizedCosts.get(Mode.tramOrMetro);
 
         int monthlyIncome_EUR = household.getMonthlyIncome_EUR();
-        int purpIdx = purpose.ordinal();
+        int purpIdx = activityPurpose.ordinal();
 
         if (monthlyIncome_EUR <= 1500) {
             gcAutoD += travelDistanceAuto * fuelCostEurosPerKm * (carPriceFactor - 1) / VOT1500_autoD[purpIdx];

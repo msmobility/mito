@@ -41,7 +41,7 @@ public final class ServiceAreaModeChoiceResults {
                 })
                 .collect(Collectors.groupingBy(MitoTrip::getTripPurpose));
 
-        tripsByPurpose.forEach((purpose, trips) -> {
+        tripsByPurpose.forEach((activityPurpose, trips) -> {
                     SortedMultiset<Mode> modes = TreeMultiset.create();
                     final long totalTrips = trips.size();
                     trips.parallelStream()
@@ -52,7 +52,7 @@ public final class ServiceAreaModeChoiceResults {
                                         modes.add(mode, (int) (((double) count / totalTrips) * 100.));
                                     }
                             );
-                    PieChart.createPieChart(Resources.instance.getBaseDirectory() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose + "_serviceArea", modes, "Mode Choice " + purpose);
+                    PieChart.createPieChart(Resources.instance.getBaseDirectory() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + activityPurpose + "_serviceArea", modes, "Mode Choice " + activityPurpose);
                 }
         );
 

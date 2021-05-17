@@ -11,11 +11,11 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
 ///////////////////////////////////////////////// AIRPORT Mode Choice /////////////////////////////////////////////////////
 
     @Override
-    public EnumMap<Mode, Double> calculateProbabilities(Purpose purpose, MitoHousehold hh, MitoPerson person,
+    public EnumMap<Mode, Double> calculateProbabilities(Purpose activityPurpose, MitoHousehold hh, MitoPerson person,
                                                         MitoZone originZone, MitoZone destinationZone,
                                                         TravelTimes travelTimes, double travelDistanceAuto,
                                                         double travelDistanceNMT, double peakHour) {
-        if(purpose != Purpose.AIRPORT) {
+        if(activityPurpose != Purpose.AIRPORT) {
             throw  new IllegalArgumentException("Airport mode choice calculator can only be used for airport purposes.");
         }
 
@@ -23,7 +23,7 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
         //Auto driver, Auto passenger, bicyle, bus, train, tram or metro, walk
 
 
-        EnumMap<Mode, Double> utilities = calculateUtilities(purpose, hh,
+        EnumMap<Mode, Double> utilities = calculateUtilities(activityPurpose, hh,
                 person, originZone, destinationZone,
                 travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour);
 
@@ -48,9 +48,9 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateUtilities(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
 
-        if(purpose != Purpose.AIRPORT) {
+        if(activityPurpose != Purpose.AIRPORT) {
             throw  new IllegalArgumentException("Airport mode choice calculator can only be used for airport purposes.");
         }
 
@@ -105,7 +105,7 @@ public class AirportModeChoiceCalculator implements ModeChoiceCalculator {
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose activityPurpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         throw new RuntimeException("Not implemented!");
     }
 }

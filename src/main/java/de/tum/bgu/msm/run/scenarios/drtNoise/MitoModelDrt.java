@@ -46,12 +46,12 @@ public class MitoModelDrt {
 
         final TravelDemandGenerator.Builder builder = new TravelDemandGenerator.Builder(dataSet);
         final ModeChoice modeChoice = (ModeChoice) builder.getModeChoice();
-        for(Purpose purpose: Purpose.values()) {
-            if(purpose != Purpose.AIRPORT) {
-                modeChoice.registerModeChoiceCalculator(purpose,
+        for(Purpose activityPurpose: Purpose.values()) {
+            if(activityPurpose != Purpose.AIRPORT) {
+                modeChoice.registerModeChoiceCalculator(activityPurpose,
                         new DrtTopNestModeChoiceCalculatorImpl(new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(),
                                 dataSet.getModeChoiceCalibrationData()), serviceArea));
-//                modeChoice.registerModeChoiceCalculator(purpose, new ModeChoiceCalculatorImpl());
+//                modeChoice.registerModeChoiceCalculator(activityPurpose, new ModeChoiceCalculatorImpl());
             }
         }
         TravelDemandGenerator ttd = builder.build();

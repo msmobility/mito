@@ -50,8 +50,8 @@ public class SummarizeData {
             pwh.print(hh.getAutos());
             pwh.print(",");
             int totalNumber = 0;
-            for(Purpose purpose: Purpose.values()) {
-                totalNumber += hh.getTripsForPurpose(purpose).size();
+            for(Purpose activityPurpose: Purpose.values()) {
+                totalNumber += hh.getTripsForPurpose(activityPurpose).size();
             }
             pwh.print(totalNumber);
             pwh.print(",");
@@ -71,7 +71,7 @@ public class SummarizeData {
                     pwp.print(",");
                     pwp.print(hh.getHhSize());
                     pwp.print(",");
-                    long hhTrips = Arrays.stream(Purpose.values()).mapToLong(purpose -> hh.getTripsForPurpose(purpose).size()).sum();
+                    long hhTrips = Arrays.stream(Purpose.values()).mapToLong(activityPurpose -> hh.getTripsForPurpose(activityPurpose).size()).sum();
                     pwp.print(hhTrips);
                     pwp.print(",");
                     pwp.println(hhTrips / hh.getHhSize());
@@ -86,7 +86,7 @@ public class SummarizeData {
         LOGGER.info("  Writing trips file");
         String file = Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
+        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,activityPurpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -187,7 +187,7 @@ public class SummarizeData {
     }
 
 
-    private static void writeCharts(DataSet dataSet, Purpose purpose, String scenarioName) {
+    private static void writeCharts(DataSet dataSet, Purpose activityPurpose, String scenarioName) {
         String outputSubDirectory = "scenOutput/" + scenarioName + "/";
 
         List<Double> travelTimes = new ArrayList<>();
@@ -197,7 +197,7 @@ public class SummarizeData {
 
         for (MitoTrip trip : dataSet.getTrips().values()) {
             final Location tripOrigin = trip.getTripOrigin();
-            if (trip.getTripPurpose() == purpose && tripOrigin != null && trip.getTripDestination() != null) {
+            if (trip.getTripPurpose() == activityPurpose && tripOrigin != null && trip.getTripDestination() != null) {
                 travelTimes.add(dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination(), dataSet.getPeakHour(), "car"));
                 double travelDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
 //                travelDistances.add(travelDistance);
@@ -225,32 +225,32 @@ public class SummarizeData {
 //            travelDistancesArray[i] = value;
 //            i++;
 //        }
-        Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/timeDistribution/tripTimeDistribution"+ purpose, travelTimesArray, "Travel Time Distribution " + purpose, "Time", "Frequency", 80, 0, 80);
+        Histogram.createFrequencyHistogram(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/timeDistribution/tripTimeDistribution"+ activityPurpose, travelTimesArray, "Travel Time Distribution " + activityPurpose, "Time", "Frequency", 80, 0, 80);
 
 
         Map<Double, Double> averageDistancesByZone = new HashMap<>();
         for(Map.Entry<Integer, List<Double>> entry: distancesByZone.entrySet()) {
             averageDistancesByZone.put(Double.valueOf(entry.getKey()), Stats.meanOf(entry.getValue()));
         }
-        PrintWriter pw1 = MitoUtil.openFileForSequentialWriting(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripsByZone"+purpose+".csv", false);
+        PrintWriter pw1 = MitoUtil.openFileForSequentialWriting(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/distanceDistribution/tripsByZone"+activityPurpose+".csv", false);
         pw1.println("id,number_trips");
         for(MitoZone zone: dataSet.getZones().values()) {
             pw1.println(zone.getId()+","+tripsByZone.count(zone));
         }
         pw1.close();
-        PrintWriter pw = MitoUtil.openFileForSequentialWriting(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistanceTable"+purpose+".csv", false);
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistanceTable"+activityPurpose+".csv", false);
         pw.println("id,avTripDistance");
         for(Map.Entry<Double, Double> entry: averageDistancesByZone.entrySet()) {
             pw.println(entry.getKey().intValue()+","+entry.getValue());
         }
         pw.close();
-        ScatterPlot.createScatterPlot(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistancePlot"+purpose, averageDistancesByZone, "Average Trip Distances by MitoZone", "MitoZone Id", "Average Trip Distance");
+        ScatterPlot.createScatterPlot(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() +  "/distanceDistribution/averageZoneDistancePlot"+activityPurpose, averageDistancesByZone, "Average Trip Distances by MitoZone", "MitoZone Id", "Average Trip Distance");
 
     }
 
     public static void writeCharts(DataSet dataSet, String scenarioName) {
-        for(Purpose purpose: Purpose.values()) {
-            writeCharts(dataSet, purpose, scenarioName);
+        for(Purpose activityPurpose: Purpose.values()) {
+            writeCharts(dataSet, activityPurpose, scenarioName);
         }
     }
 

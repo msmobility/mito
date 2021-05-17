@@ -847,7 +847,7 @@ var calculateAIRPORTProbabilities = function (hh, person, originZone, destinatio
 
 
     //Order of variables in the return variable  [AutoD, AutoP, Bicycle, Bus,  Train, TramMetro, Walk, sharedAV]
-    //calculate utilities for each mode
+    //calculate utilities for each legMode
     utilities = calculateAIRPORTUtilities(hh, person, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour);
 
     sum_u = utilities[0] + utilities[1] + utilities[2] + utilities[3] + utilities[4];

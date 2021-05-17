@@ -3,6 +3,7 @@ package de.tum.bgu.msm.data;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
+import de.tum.bgu.msm.data.plans.ActivityPurpose;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
@@ -39,8 +40,12 @@ public class DataSet {
     private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
     private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
 
+    private EnumMap<ActivityPurpose, DoubleMatrix1D> startingTimeDistribution; //ab
+    private EnumMap<ActivityPurpose, DoubleMatrix1D> activityDurationDistribution; //ab
+
     private Population population;
     private final ModeChoiceCalibrationData modeChoiceCalibrationData = new ModeChoiceCalibrationData();
+
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
@@ -190,12 +195,12 @@ public class DataSet {
         return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
     }
 
-    public void addModeShareForPurpose(Purpose purpose, Mode mode, Double share){
-        modeSharesByPurpose.put(purpose, mode, share);
+    public void addModeShareForPurpose(Purpose activityPurpose, Mode mode, Double share){
+        modeSharesByPurpose.put(activityPurpose, mode, share);
     }
 
-    public Double getModeShareForPurpose(Purpose purpose, Mode mode){
-        return modeSharesByPurpose.get(purpose, mode);
+    public Double getModeShareForPurpose(Purpose activityPurpose, Mode mode){
+        return modeSharesByPurpose.get(activityPurpose, mode);
     }
 
     public int getYear() {
@@ -243,6 +248,12 @@ public class DataSet {
     }
 
 
+    public void setActivityStartDistributions(EnumMap<ActivityPurpose, DoubleMatrix1D> startingTimeDistribution) {
+        this.startingTimeDistribution = startingTimeDistribution;
+    }
 
+    public void setActivityDurationDistributions(EnumMap<ActivityPurpose, DoubleMatrix1D> activityDurationDistribution) {
+        this.activityDurationDistribution = activityDurationDistribution;
 
+    }
 }

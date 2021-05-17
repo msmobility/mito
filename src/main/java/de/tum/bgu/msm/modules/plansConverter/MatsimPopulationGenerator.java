@@ -109,12 +109,12 @@ public final class MatsimPopulationGenerator extends Module {
 
 
     private static String getOriginActivity(MitoTrip trip){
-        Purpose purpose = trip.getTripPurpose();
-        if (purpose.equals(Purpose.NHBW)){
+        Purpose activityPurpose = trip.getTripPurpose();
+        if (activityPurpose.equals(Purpose.NHBW)){
             return "work";
-        } else if (purpose.equals(Purpose.NHBO)){
+        } else if (activityPurpose.equals(Purpose.NHBO)){
             return "other";
-        } else if (purpose.equals(Purpose.AIRPORT)) {
+        } else if (activityPurpose.equals(Purpose.AIRPORT)) {
             if (trip.getTripOrigin().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)){
                 return "airport";
             } else {
@@ -126,14 +126,14 @@ public final class MatsimPopulationGenerator extends Module {
     }
 
     private static String getDestinationActivity(MitoTrip trip){
-        Purpose purpose = trip.getTripPurpose();
-        if (purpose.equals(Purpose.HBW)){
+        Purpose activityPurpose = trip.getTripPurpose();
+        if (activityPurpose.equals(Purpose.HBW)){
             return "work";
-        } else if (purpose.equals(Purpose.HBE)){
+        } else if (activityPurpose.equals(Purpose.HBE)){
             return "education";
-        } else if (purpose.equals(Purpose.HBS)){
+        } else if (activityPurpose.equals(Purpose.HBS)){
             return "shopping";
-        } else if (purpose.equals(Purpose.AIRPORT)) {
+        } else if (activityPurpose.equals(Purpose.AIRPORT)) {
             if (trip.getTripDestination().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)) {
                 return "airport";
             } else {

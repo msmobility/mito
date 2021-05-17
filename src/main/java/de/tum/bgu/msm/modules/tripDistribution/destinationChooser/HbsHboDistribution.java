@@ -31,7 +31,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     private final boolean USE_BUDGETS_IN_DESTINATION_CHOICE;
 
     private final double peakHour;
-    private final Purpose purpose;
+    private final Purpose activityPurpose;
     private final IndexedDoubleMatrix2D baseProbabilities;
     private final TravelTimes travelTimes;
 
@@ -45,12 +45,12 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     private double hhBudgetPerTrip;
     private double adjustedBudget;
 
-    private HbsHboDistribution(boolean useBudgetsInDestinationChoice, Purpose purpose, IndexedDoubleMatrix2D baseProbabilities,
+    private HbsHboDistribution(boolean useBudgetsInDestinationChoice, Purpose activityPurpose, IndexedDoubleMatrix2D baseProbabilities,
                                Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                TravelTimes travelTimes, double peakHour) {
         super(MitoUtil.getRandomObject().nextLong());
         USE_BUDGETS_IN_DESTINATION_CHOICE = useBudgetsInDestinationChoice;
-        this.purpose = purpose;
+        this.activityPurpose = activityPurpose;
         this.householdPartition = householdPartition;
         this.baseProbabilities = baseProbabilities;
         this.zonesCopy = new HashMap<>(zones);
@@ -79,7 +79,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         long counter = 0;
         for (MitoHousehold household : householdPartition) {
             if (LongMath.isPowerOfTwo(counter)) {
-                logger.info(counter + " households done for Purpose " + purpose
+                logger.info(counter + " households done for Purpose " + activityPurpose
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
@@ -87,7 +87,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                     if (hasBudgetForPurpose(household)) {
                         updateBudgets(household);
                         updateDestinationProbabilities(household.getHomeZone().getId());
-                        for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        for (MitoTrip trip : household.getTripsForPurpose(activityPurpose)) {
                             trip.setTripOrigin(household);
                             MitoZone zone = findDestination();
                             trip.setTripDestination(zone);
@@ -103,7 +103,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                         TripDistribution.failedTripsCounter.incrementAndGet();
                     }
                 } else {
-                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                    for (MitoTrip trip : household.getTripsForPurpose(activityPurpose)) {
                         trip.setTripOrigin(household);
                         updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId());
                         MitoZone zone = findDestination();
@@ -123,21 +123,21 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     }
 
     /**
-     * Checks if members of this household perform trips of the set purpose
+     * Checks if members of this household perform trips of the set activityPurpose
      *
      * @return true if trips are available, false otherwise
      */
     private boolean hasTripsForPurpose(MitoHousehold household) {
-        return !household.getTripsForPurpose(purpose).isEmpty();
+        return !household.getTripsForPurpose(activityPurpose).isEmpty();
     }
 
     /**
-     * Checks if this household has been allocated travel time budget for the set purpose
+     * Checks if this household has been allocated travel time budget for the set activityPurpose
      *
      * @return true if budget was allocated, false otherwise
      */
     private boolean hasBudgetForPurpose(MitoHousehold household) {
-        return household.getTravelTimeBudgetForPurpose(purpose) > 0.;
+        return household.getTravelTimeBudgetForPurpose(activityPurpose) > 0.;
     }
 
     private void postProcessTrip(MitoTrip trip) {
@@ -177,7 +177,7 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         } else {
             ratio = idealBudgetSum / actualBudgetSum;
         }
-        hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(purpose) / household.getTripsForPurpose(purpose).size();
+        hhBudgetPerTrip = household.getTravelTimeBudgetForPurpose(activityPurpose) / household.getTripsForPurpose(activityPurpose).size();
         adjustedBudget = hhBudgetPerTrip * ratio;
     }
 
