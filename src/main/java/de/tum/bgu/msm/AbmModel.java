@@ -4,6 +4,7 @@ import de.tum.bgu.msm.abm.PlanGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelTimes.DummyTravelTimesForABM;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.io.output.MatsimPlanWriter;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
@@ -53,6 +54,8 @@ public final class AbmModel {
 
         PlanGenerator pg = new PlanGenerator();
         pg.runPlanGenerator(dataSet);
+
+        new MatsimPlanWriter(dataSet, 0.005).run("matsimPlans1percent.xml");
         printOutline(startTime);
     }
 

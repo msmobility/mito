@@ -255,6 +255,13 @@ public class DataSet {
 
     public void setActivityDurationDistributions(EnumMap<ActivityPurpose, TimeOfDayDistribution> activityDurationDistribution) {
         this.activityDurationDistribution = activityDurationDistribution;
+    }
 
+    public EnumMap<ActivityPurpose, TimeOfDayDistribution> getStartingTimeDistribution() {
+        return startingTimeDistribution;
+    }
+
+    public EnumMap<ActivityPurpose, TimeOfDayDistribution> getActivityDurationDistribution() {
+        return activityDurationDistribution;
     }
 }

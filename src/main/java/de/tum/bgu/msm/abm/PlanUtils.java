@@ -11,6 +11,11 @@ public class PlanUtils {
      * @param mainTourActivity
      */
     public static void addMainTour(Plan plan, Activity mainTourActivity, TravelTimes travelTimes) {
+        LegMode legMode = LegMode.UNKNOWN;
+        addMainTourWithMode(plan, mainTourActivity, travelTimes, legMode);
+    }
+
+    public static void addMainTourWithMode(Plan plan, Activity mainTourActivity, TravelTimes travelTimes, LegMode legMode) {
         //find the home activity
         Activity homeActivity = null;
 
@@ -24,7 +29,7 @@ public class PlanUtils {
         Tour tour = new Tour(mainTourActivity);
         plan.getTours().put(mainTourActivity.getStartTime_s(), tour);
         if (homeActivity != null) {
-            double timeToMainActivity = 60 *  travelTimes.getTravelTime(homeActivity, mainTourActivity, mainTourActivity.getStartTime_s(), LegMode.UNKNOWN.toString());
+            double timeToMainActivity = 60 *  travelTimes.getTravelTime(homeActivity, mainTourActivity, mainTourActivity.getStartTime_s(), legMode.toString());
             double previousEndOfHomeActivity = homeActivity.getEndTime_s();
             homeActivity.setEndTime_s(mainTourActivity.getStartTime_s() - timeToMainActivity);
             tour.getTrips().put(homeActivity, new Leg(homeActivity, mainTourActivity));
@@ -40,7 +45,13 @@ public class PlanUtils {
      *
      * @param subTourActivity
      */
-    public static void addSubtour(Plan plan, Activity subTourActivity, TravelTimes travelTimes) {
+    public static void addSubtour(Plan plan, Activity subTourActivity, TravelTimes travelTimes){
+        LegMode legMode = LegMode.UNKNOWN;
+        addSubtourWithMode(plan, subTourActivity, travelTimes, legMode);
+
+    }
+
+    public static void addSubtourWithMode(Plan plan, Activity subTourActivity, TravelTimes travelTimes, LegMode legMode) {
         Activity mainActivity = null;
         Tour tour = null;
         //the search in the following may be not necessary or need to be adapted later
@@ -59,7 +70,7 @@ public class PlanUtils {
 
         //todo here
         if (mainActivity != null) {
-            double timeToSubTourActivity = 60 * travelTimes.getTravelTime(mainActivity, subTourActivity,subTourActivity.getStartTime_s(), LegMode.UNKNOWN.toString() );
+            double timeToSubTourActivity = 60 * travelTimes.getTravelTime(mainActivity, subTourActivity,subTourActivity.getStartTime_s(), legMode.toString() );
             double previousEndOfMainActivity = mainActivity.getEndTime_s();
             mainActivity.setEndTime_s(subTourActivity.getStartTime_s() - timeToSubTourActivity);
             Leg previousLegFromMainActivity = tour.getTrips().get(mainActivity);

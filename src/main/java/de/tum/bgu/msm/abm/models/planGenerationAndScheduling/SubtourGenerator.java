@@ -13,7 +13,7 @@ public class SubtourGenerator extends ModuleAbm {
     }
 
     @Override
-    public void run(Plan Plan, MitoPerson person, MitoHousehold household) {
+    public void run(Plan plan, MitoPerson person, MitoHousehold household) {
 
         //trip generation: how many activities (similar to a trip generation model)
 

@@ -5,11 +5,11 @@ import de.tum.bgu.msm.data.plans.Plan;
 
 public abstract class ModuleAbm {
 
-    public final DataSet dataSetAbm;
+    public final DataSet dataSet;
 
-    protected ModuleAbm(DataSet dataSetAbm) {
-        this.dataSetAbm = dataSetAbm;
+    protected ModuleAbm(DataSet dataSet) {
+        this.dataSet = dataSet;
     }
 
-    public abstract void run(Plan Plan, MitoPerson person, MitoHousehold household);
+    public abstract void run(Plan plan, MitoPerson person, MitoHousehold household);
 }
