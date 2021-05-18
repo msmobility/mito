@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.abm;
+package de.tum.bgu.msm.modules.abm;
 
 import de.tum.bgu.msm.data.plans.Activity;
 import de.tum.bgu.msm.data.plans.Plan;

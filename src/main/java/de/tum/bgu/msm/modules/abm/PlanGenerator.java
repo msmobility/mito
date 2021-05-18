@@ -1,10 +1,10 @@
-package de.tum.bgu.msm.abm;
+package de.tum.bgu.msm.modules.abm;
 
 
 import com.google.common.math.LongMath;
-import de.tum.bgu.msm.abm.models.planGenerationAndScheduling.DiscretionaryActivityGenerator;
-import de.tum.bgu.msm.abm.models.planGenerationAndScheduling.MandatoryActivityGenerator;
-import de.tum.bgu.msm.abm.models.planGenerationAndScheduling.SubtourGenerator;
+import de.tum.bgu.msm.modules.abm.models.planGenerationAndScheduling.DiscretionaryActivityGenerator;
+import de.tum.bgu.msm.modules.abm.models.planGenerationAndScheduling.MandatoryActivityGenerator;
+import de.tum.bgu.msm.modules.abm.models.planGenerationAndScheduling.SubtourGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;

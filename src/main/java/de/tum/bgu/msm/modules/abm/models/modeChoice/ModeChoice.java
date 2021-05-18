@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.abm.models.modeChoice;
+package de.tum.bgu.msm.modules.abm.models.modeChoice;
 
 import de.tum.bgu.msm.data.plans.Leg;
 import de.tum.bgu.msm.data.plans.LegMode;

@@ -1,6 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.abm.PlanGenerator;
+import de.tum.bgu.msm.modules.abm.PlanGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.travelTimes.DummyTravelTimesForABM;
 import de.tum.bgu.msm.io.input.readers.*;

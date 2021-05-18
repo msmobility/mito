@@ -1,6 +1,6 @@
-package de.tum.bgu.msm.abm.models.planGenerationAndScheduling;
+package de.tum.bgu.msm.modules.abm.models.planGenerationAndScheduling;
 
-import de.tum.bgu.msm.abm.models.ModuleAbm;
+import de.tum.bgu.msm.modules.abm.models.ModuleAbm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;

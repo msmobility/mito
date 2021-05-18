@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.abm.models.destinationChoice;
+package de.tum.bgu.msm.modules.abm.models.destinationChoice;
 
 import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.plans.Activity;

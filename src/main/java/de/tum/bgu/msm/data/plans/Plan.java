@@ -1,5 +1,5 @@
 package de.tum.bgu.msm.data.plans;
-import de.tum.bgu.msm.abm.ScheduleUtils;
+import de.tum.bgu.msm.modules.abm.ScheduleUtils;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoPerson;
 
