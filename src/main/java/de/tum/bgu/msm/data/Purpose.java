@@ -68,4 +68,19 @@ public enum Purpose implements Id {
         return list;
     }
 
+    public static List<Purpose> getNonHomeBasedPurposes(){
+        List<Purpose> list = new ArrayList<>();
+        list.add(NHBO);
+        list.add(NHBW);
+        return list;
+    }
+
+    public static List<Purpose> getHomeBasedDiscretionaryPurposes(){
+        List<Purpose> list = new ArrayList<>();
+        list.add(HBS);
+        list.add(HBO);
+        list.add(HBR);
+        return list;
+    }
+
 }

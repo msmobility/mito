@@ -5,10 +5,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -75,6 +72,38 @@ public final class TripDistribution extends Module {
         logger.info("Distributing trips for households...");
         distributeTrips();
     }
+
+    //For moped integration
+    public void setUp() {
+        logger.info("Building initial destination choice utility matrices...");
+        //TODO: is hb utility empty?
+        buildMatrices();
+
+        logger.info("finding origins for non home based trips...");
+        final int numberOfThreads = Runtime.getRuntime().availableProcessors();
+
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(numberOfThreads);
+        List<Callable<Void>> nonHomeBasedTasks = new ArrayList<>();
+
+        final Collection<MitoHousehold> households = dataSet.getHouseholds().values();
+        final int partitionSize = (int) ((double) households.size() / (numberOfThreads)) + 1;
+        Iterable<List<MitoHousehold>> partitions = Iterables.partition(households, partitionSize);
+
+        for (final List<MitoHousehold> partition : partitions) {
+
+            for (Purpose purpose : purposes){
+                if (purpose.equals(NHBW)){
+                    nonHomeBasedTasks.add(NhbwNhboOrigin.nhbw(utilityMatrices, partition, dataSet.getZones()));
+                } else if (purpose.equals(NHBO)){
+                    nonHomeBasedTasks.add(NhbwNhboOrigin.nhbo(utilityMatrices, partition, dataSet.getZones()));
+                }
+            }
+
+        }
+
+        executor.submitTasksAndWaitForCompletion(nonHomeBasedTasks);
+    }
+
 
     //For moped integration
     public void runHomeBased() {
@@ -192,9 +221,11 @@ public final class TripDistribution extends Module {
         List<Callable<Void>> homeBasedTasks = new ArrayList<>();
         for (final List<MitoHousehold> partition : partitions) {
             homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(HBS), partition, dataSet.getZones(),
-                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                    dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
             homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(HBO), partition, dataSet.getZones(),
-                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                    dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
+            homeBasedTasks.add(HbsHboDistribution.hbr(utilityMatrices.get(HBR), partition, dataSet.getZones(),
+                    dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
             homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(HBW), partition, dataSet.getZones()));
             homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(HBE), partition, dataSet.getZones()));
         }
@@ -225,9 +256,9 @@ public final class TripDistribution extends Module {
 
         for (final List<MitoHousehold> partition : partitions) {
             nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, partition, dataSet.getZones(),
-                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                    dataSet.getTravelTimes(), dataSet.getPeakHour(), useBudgetsInDestinationChoice));
             nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, partition, dataSet.getZones(),
-                    dataSet.getTravelTimes(), dataSet.getPeakHour()));
+                    dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
         }
         if (Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)) {
             nonHomeBasedTasks.add(AirportDistribution.airportDistribution(dataSet));

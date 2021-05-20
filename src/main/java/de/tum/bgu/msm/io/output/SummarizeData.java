@@ -98,7 +98,11 @@ public class SummarizeData {
             pwh.print(originId);
             pwh.print(",");
 
-            pwh.print(trip.getTripOriginMopedZoneId());
+            if(trip.getTripOriginMopedZone() != null) {
+                pwh.print(trip.getTripOriginMopedZone().getZoneId());
+            }else{
+                pwh.print("null");
+            }
             pwh.print(",");
 
             if(origin instanceof MicroLocation){
@@ -129,7 +133,11 @@ public class SummarizeData {
             }
             pwh.print(destinationId);
             pwh.print(",");
-            pwh.print(trip.getTripDestinationMopedZoneId());
+            if(trip.getTripDestinationMopedZone() != null) {
+                pwh.print(trip.getTripDestinationMopedZone().getZoneId());
+            }else{
+                pwh.print("null");
+            }
             pwh.print(",");
             if(destination instanceof MicroLocation){
                 pwh.print(((MicroLocation) destination).getCoordinate().x);

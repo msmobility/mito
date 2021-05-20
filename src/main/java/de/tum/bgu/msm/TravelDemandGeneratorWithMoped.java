@@ -1,9 +1,8 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.io.output.SummarizeData;
-import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
-import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.PedestrianModel;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
@@ -14,12 +13,15 @@ import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+
+import java.util.List;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -84,16 +86,17 @@ public final class TravelDemandGeneratorWithMoped {
 
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
-            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration());
-            personTripAssignment = new PersonTripAssignment(dataSet);
-            travelTimeBudget = new TravelTimeBudgetModule(dataSet);
-            distribution = new TripDistribution(dataSet);
-            modeChoice = new ModeChoiceWithMoped(dataSet);
-            timeOfDayChoice = new TimeOfDayChoice(dataSet);
-            tripScaling = new TripScaling(dataSet);
-            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet);
+            List<Purpose> purposes = Purpose.getAllPurposes();
+            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration(),purposes);
+            personTripAssignment = new PersonTripAssignment(dataSet,purposes);
+            travelTimeBudget = new TravelTimeBudgetModule(dataSet,purposes);
+            distribution = new TripDistribution(dataSet,purposes,true, new DestinationUtilityCalculatorFactoryImpl());
+            modeChoice = new ModeChoiceWithMoped(dataSet,purposes);
+            timeOfDayChoice = new TimeOfDayChoice(dataSet,purposes);
+            tripScaling = new TripScaling(dataSet,purposes);
+            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet,purposes);
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
-                longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+                longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)),purposes);
             }
         }
 
@@ -210,18 +213,16 @@ public final class TravelDemandGeneratorWithMoped {
         if (runMoped) {
             logger.info("Running Module: Moped Pedestrian Model - Home based trips");
             PedestrianModel pedestrianModel = new PedestrianModel(dataSet);
-            pedestrianModel.runMopedHomeBased();
+            pedestrianModel.runMopedHomeBasedDiscretionary();
             logger.info("Running Module: Microscopic Trip Distribution - Home based trips");
-            TripDistribution distribution = new TripDistribution(dataSet);
-            distribution.runHomeBased();
+            ((TripDistribution)distribution).runHomeBased();
             //TODO: how to deal with non home based trips with no prior home based trip
             logger.info("Running Module: Moped Pedestrian Model - Non Home based trips");
             pedestrianModel.runMopedNonHomeBased();
             logger.info("Running Module: Microscopic Trip Distribution - Non Home based trips");
-            distribution.runNonHomeBased();
+            ((TripDistribution)distribution).runNonHomeBased();
         }else{
             logger.info("Running Module: Microscopic Trip Distribution");
-            TripDistribution distribution = new TripDistribution(dataSet);
             distribution.run();
         }
 

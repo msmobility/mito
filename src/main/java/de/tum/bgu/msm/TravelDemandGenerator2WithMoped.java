@@ -1,27 +1,37 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.PedestrianModel;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceWithMoped;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
-import de.tum.bgu.msm.modules.scenarios.Telework;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import static de.tum.bgu.msm.data.Purpose.NHBO;
+import static de.tum.bgu.msm.data.Purpose.NHBW;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -29,9 +39,9 @@ import java.util.List;
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  */
-public final class TravelDemandGenerator2 {
+public final class TravelDemandGenerator2WithMoped {
 
-    private static final Logger logger = Logger.getLogger(TravelDemandGenerator2.class);
+    private static final Logger logger = Logger.getLogger(TravelDemandGenerator2WithMoped.class);
     private final DataSet dataSet;
 
     private final Module tripGenerationMandatory;
@@ -42,15 +52,17 @@ public final class TravelDemandGenerator2 {
     private final Module tripGenerationDiscretionary;
     private final Module personTripAssignmentDiscretionary;
     private final Module travelTimeBudgetDiscretionary;
-    private final Module distributionDiscretionary;
-    private final Module modeChoiceDiscretionary;
+    private final Module distributionHomeBasedDiscretionary;
+    private final Module modeChoiceHomeBasedDiscretionary;
+    private final Module distributionNonHomeBased;
+    private final Module modeChoiceNonHomeBased;
     private final Module timeOfDayChoiceMandatory;
     private final Module timeOfDayChoiceDiscretionary;
     private final Module tripScaling;
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
 
-    private TravelDemandGenerator2(
+    private TravelDemandGenerator2WithMoped(
             DataSet dataSet,
             Module tripGenerationMandatory,
             Module personTripAssignmentMandatory,
@@ -61,8 +73,10 @@ public final class TravelDemandGenerator2 {
             Module tripGenerationDiscretionary,
             Module personTripAssignmentDiscretionary,
             Module travelTimeBudgetDiscretionary,
-            Module distributionDiscretionary,
-            Module modeChoiceDiscretionary,
+            Module distributionHomeBasedDiscretionary,
+            Module modeChoiceHomeBasedDiscretionary,
+            Module distributionNonHomeBased,
+            Module modeChoiceNonHomeBased,
             Module timeOfDayChoiceDiscretionary,
             Module tripScaling,
             Module matsimPopulationGenerator,
@@ -78,8 +92,10 @@ public final class TravelDemandGenerator2 {
         this.tripGenerationDiscretionary = tripGenerationDiscretionary;
         this.personTripAssignmentDiscretionary = personTripAssignmentDiscretionary;
         this.travelTimeBudgetDiscretionary = travelTimeBudgetDiscretionary;
-        this.distributionDiscretionary = distributionDiscretionary;
-        this.modeChoiceDiscretionary = modeChoiceDiscretionary;
+        this.distributionHomeBasedDiscretionary = distributionHomeBasedDiscretionary;
+        this.modeChoiceHomeBasedDiscretionary = modeChoiceHomeBasedDiscretionary;
+        this.distributionNonHomeBased = distributionNonHomeBased;
+        this.modeChoiceNonHomeBased = modeChoiceNonHomeBased;
         this.timeOfDayChoiceDiscretionary = timeOfDayChoiceDiscretionary;
         this.tripScaling = tripScaling;
         this.matsimPopulationGenerator = matsimPopulationGenerator;
@@ -101,8 +117,11 @@ public final class TravelDemandGenerator2 {
         private Module tripGenerationDiscretionary;
         private Module personTripAssignmentDiscretionary;
         private Module travelTimeBudgetDiscretionary;
-        private Module distributionDiscretionary;
-        private Module modeChoiceDiscretionary;
+        private Module distributionHomeBasedDiscretionary;
+        private Module modeChoiceHomeBasedDiscretionary;
+        private Module distributionNonHomeBased;
+        private Module modeChoiceNonHomeBased;
+
         private Module timeOfDayChoiceDiscretionary;
 
         private Module tripScaling;
@@ -118,15 +137,21 @@ public final class TravelDemandGenerator2 {
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImpl2());
-            modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
+            modeChoiceMandatory = new ModeChoiceWithMoped(dataSet, Purpose.getMandatoryPurposes());
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getDiscretionaryPurposes());
             //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
-            distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(), false,
+
+            distributionHomeBasedDiscretionary = new TripDistribution(dataSet, Purpose.getHomeBasedDiscretionaryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImpl2());
-            modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
+            modeChoiceHomeBasedDiscretionary = new ModeChoiceWithMoped(dataSet, Purpose.getHomeBasedDiscretionaryPurposes());
+
+            distributionNonHomeBased = new TripDistribution(dataSet, Purpose.getNonHomeBasedPurposes(), false,
+                    new DestinationUtilityCalculatorFactoryImpl2());
+            modeChoiceNonHomeBased = new ModeChoiceWithMoped(dataSet, Purpose.getNonHomeBasedPurposes());
+
             timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
 
@@ -137,8 +162,8 @@ public final class TravelDemandGenerator2 {
             }
         }
 
-        public TravelDemandGenerator2 build() {
-            return new TravelDemandGenerator2(dataSet,
+        public TravelDemandGenerator2WithMoped build() {
+            return new TravelDemandGenerator2WithMoped(dataSet,
                     tripGenerationMandatory,
                     personTripAssignmentMandatory,
                     travelTimeBudgetMandatory,
@@ -148,8 +173,10 @@ public final class TravelDemandGenerator2 {
                     tripGenerationDiscretionary,
                     personTripAssignmentDiscretionary,
                     travelTimeBudgetDiscretionary,
-                    distributionDiscretionary,
-                    modeChoiceDiscretionary,
+                    distributionHomeBasedDiscretionary,
+                    modeChoiceHomeBasedDiscretionary,
+                    distributionNonHomeBased,
+                    modeChoiceNonHomeBased,
                     timeOfDayChoiceDiscretionary,
                     tripScaling,
                     matsimPopulationGenerator,
@@ -249,10 +276,20 @@ public final class TravelDemandGenerator2 {
         //((TravelTimeBudgetModule) travelTimeBudget).adjustDiscretionaryPurposeBudgets(Purpose.getMandatoryPurposes());
         logger.info("Running Module: Microscopic Trip Distribution");
         distributionMandatory.run();
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+
+        boolean runMoped = Resources.instance.getBoolean(Properties.RUN_MOPED, false);;
+        PedestrianModel pedestrianModel = new PedestrianModel(dataSet);
+        if (runMoped) {
+            logger.info("Running Module: Moped Pedestrian Model - Home based Mandatory trips");
+            pedestrianModel.initializeMoped();
+            pedestrianModel.runMopedMandatory();
+        }
+
         modeChoiceMandatory.run();
         logger.info("Running time of day choice");
         timeOfDayChoiceMandatory.run();
+
+
 
         tripGenerationDiscretionary.run();
         //logger.info("Running Module: Person to Trip Assignment");
@@ -260,26 +297,31 @@ public final class TravelDemandGenerator2 {
         logger.info("Running Module: Travel Time Budget Calculation");
         travelTimeBudgetDiscretionary.run();
         ((TravelTimeBudgetModule) travelTimeBudgetDiscretionary).adjustDiscretionaryPurposeBudgets();
-        logger.info("Running Module: Microscopic Trip Distribution");
-        distributionDiscretionary.run();
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        modeChoiceDiscretionary.run();
-        logger.info("Running time of day choice");
-        timeOfDayChoiceDiscretionary.run();
-/*
 
-        ModeChoice modeChoice = new ModeChoice(dataSet, Purpose.getAllPurposes());
-        logger.info("Calibrating...");
 
-        for (int iteration = 0; iteration < Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 1); iteration++){
-            modeChoice.run();
-            dataSet.getModeChoiceCalibrationData().updateCalibrationCoefficients(dataSet, iteration);
-            logger.info("Finish iteration " + iteration);
+        if (runMoped) {
+            logger.info("Running Module: Moped Pedestrian Model - Home based discretionary trips");
+            pedestrianModel.runMopedHomeBasedDiscretionary();
         }
 
-        dataSet.getModeChoiceCalibrationData().close();
-*/
+        logger.info("Running Module: Microscopic Trip Distribution");
+        distributionHomeBasedDiscretionary.run();
+        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        modeChoiceHomeBasedDiscretionary.run();
 
+        ((TripDistribution)distributionNonHomeBased).setUp();
+        if (runMoped) {
+            logger.info("Running Module: Moped Pedestrian Model - non Home based trips");
+            pedestrianModel.runMopedNonHomeBased();
+        }
+
+        logger.info("Running Module: Microscopic Trip Distribution");
+        distributionNonHomeBased.run();
+        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        modeChoiceNonHomeBased.run();
+
+        logger.info("Running time of day choice");
+        timeOfDayChoiceDiscretionary.run();
 
         logger.info("Running trip scaling");
         tripScaling.run();

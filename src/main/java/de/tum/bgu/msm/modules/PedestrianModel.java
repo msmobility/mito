@@ -1,13 +1,14 @@
 package de.tum.bgu.msm.modules;
 
-import cern.colt.matrix.tfloat.impl.SparseFloatMatrix2D;
+import com.google.common.collect.Iterables;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.moped.MoPeDModel;
-import de.tum.bgu.msm.moped.data.*;
 import de.tum.bgu.msm.moped.data.Purpose;
+import de.tum.bgu.msm.moped.data.*;
 import de.tum.bgu.msm.moped.io.input.InputManager;
+import de.tum.bgu.msm.moped.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -22,137 +23,376 @@ import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 
 public class PedestrianModel {
 
     private static final Logger logger = Logger.getLogger( PedestrianModel.class );
-    private static int failedMatchingMopedZoneCounter = 0;
+    private static AtomicInteger failedMatchingMopedZoneCounter = new AtomicInteger(0);
     private MoPeDModel mopedModel;
     private final DataSet dataSet;
     private final String propertiesPath;
-    private Map<Integer, MopedHousehold>  households = new HashMap<>();
+    private ConcurrentMap<Integer, MopedHousehold>  households = new ConcurrentHashMap<>();
     private Quadtree mopedZoneQuadTree = new Quadtree();
-    private SparseFloatMatrix2D mopedTravelDistance;
-    private int counter = 0;
 
     public PedestrianModel(DataSet dataSet) {
         this.dataSet = dataSet;
         this.propertiesPath = Resources.instance.getString(Properties.MOPED_PROPERTIES); //TODO: propoertiesPath MITO?
     }
 
-    public void runMopedHomeBased() {
+    public void initializeMoped(){
         this.mopedModel = MoPeDModel.initializeModelFromMito(propertiesPath);
         mopedModel.getManager().readZoneData();
-        //TODO: getProperties and check if calc dist by mastsim or not
-        //mopedModel.getManager().readDistanceData();
         updateData(dataSet.getYear());
+    }
+
+    public void runMopedMandatory() {
+        logger.info("  Running Moped Walk Mode Choice for Mandatory trips for the year: " + dataSet.getYear());
+        mopedModel.runAgentBasedModelForMandatoryTrips();
+        feedDataBackToMito(Purpose.getMandatoryPurposes());
+        writeOutMoPeDTrips(dataSet, Resources.instance.getString(Properties.SCENARIO_NAME),"mandatory");
+    }
+
+    public void runMopedHomeBasedDiscretionary() {
         logger.info("  Running pedestrian model MITO for the year: " + dataSet.getYear());
-        mopedModel.runAgentBasedModel();
-        feedDataBackToMito();
-        writeOutMoPeDTrips(dataSet, Resources.instance.getString(Properties.SCENARIO_NAME), "homeBased");
+        updateDiscretionaryTripList();
+        mopedModel.runAgentBasedModelForHomeBasedDiscretionaryTrips();
+        feedDataBackToMito(Purpose.getHomeBasedDiscretionaryPurposes());
+        writeOutMoPeDTrips(dataSet, Resources.instance.getString(Properties.SCENARIO_NAME),"hbdiscretionary");
+
     }
 
     public void runMopedNonHomeBased() {
-        updateMopedTripList();
-        mopedModel.runAgentBasedModelForNonHomeBased();
-        feedNonHomeBasedTripsToMito();
-        writeOutMoPeDTrips(dataSet, Resources.instance.getString(Properties.SCENARIO_NAME), "nonHomeBased");
-    }
-
-    private void feedNonHomeBasedTripsToMito() {
-        for(MopedTrip mopedTrip : mopedModel.getDataSet().getTrips().values().stream().filter(tt->tt.getTripPurpose().equals(Purpose.NHBW)||tt.getTripPurpose().equals(Purpose.NHBO)).collect(Collectors.toList())){
-            MitoTrip mitoTrip = dataSet.getTrips().get(mopedTrip.getId());
-            if(mopedTrip.getTripOrigin()!=null){
-                mitoTrip.setTripOrigin(dataSet.getZones().get(mopedTrip.getTripOrigin().getMitoZoneId()));
-                mitoTrip.setTripOriginMopedZoneId(mopedTrip.getTripOrigin().getZoneId());
-            }
-
-            if(mopedTrip.isWalkMode()){
-                mitoTrip.setTripMode(Mode.walk);
-                if(mopedTrip.getTripOrigin()!=null&&mopedTrip.getTripDestination()!=null) {
-                    mitoTrip.setTripDestination(dataSet.getZones().get(mopedTrip.getTripDestination().getMitoZoneId()));
-                    mitoTrip.setTripDestinationMopedZoneId(mopedTrip.getTripDestination().getZoneId());
-                    //TODO: travel time budget?
-                    mitoTrip.setMopedTripDistance(mopedTrip.getTripDistance());
-                    double newTravelBudget = dataSet.getHouseholds().get(mopedTrip.getPerson().getMopedHousehold().getId()).getTravelTimeBudgetForPurpose(mitoTrip.getTripPurpose()) - mopedTrip.getTripDistance()/83.3;//average walk speed 5km/hr
-                    dataSet.getHouseholds().get(mopedTrip.getPerson().getMopedHousehold().getId()).setTravelTimeBudgetByPurpose(mitoTrip.getTripPurpose(),newTravelBudget);
-                }else{
-                    logger.warn("trip id: " + mitoTrip.getTripId()+ " purpose: " + mitoTrip.getTripPurpose() + " has no origin or destination: " + mopedTrip.getTripOrigin() + "," + mopedTrip.getTripDestination());
-                }
-            }
-        }
-    }
-
-    private void updateMopedTripList() {
-        List<MitoTrip> homeBasedMitoTrips = dataSet.getTrips().values().stream().filter(tt -> !tt.getTripPurpose().equals(de.tum.bgu.msm.data.Purpose.NHBW)&&!tt.getTripPurpose().equals(de.tum.bgu.msm.data.Purpose.NHBO)).collect(Collectors.toList());
-        int missingTrips = 0;
-        for (MitoTrip mitoTrip :homeBasedMitoTrips){
-            MopedTrip mopedTrip = mopedModel.getDataSet().getTrips().get(mitoTrip.getId());
-            if(mopedTrip==null){
-                //logger.warn("trip " + mitoTrip.getId() + " cannot be found in moped trip list.");
-                missingTrips++;
-                continue;
-            }
-            if(mopedTrip.getTripDestination()==null&&mitoTrip.getTripDestination()!=null){
-                Coord destinationCoord;
-                if(mitoTrip.getTripDestination() instanceof MicroLocation) {
-                    destinationCoord = CoordUtils.createCoord(((MicroLocation) mitoTrip.getTripDestination()).getCoordinate());
-                } else {
-                    //TODO: random point? moped destination choice will also be random. Centriod of zone?
-                    destinationCoord = CoordUtils.createCoord(dataSet.getZones().get(mitoTrip.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
-                }
-                MopedZone destination = locateMicrolationToMopedZone(new Coordinate(destinationCoord.getX(),destinationCoord.getY()));
-                mopedTrip.setTripDestination(destination);
-            }
-        }
-    }
-
-    private void feedDataBackToMito() {
-        int countMopedWalkTrips = 0;
-        for(MopedTrip mopedTrip : mopedModel.getDataSet().getTrips().values()){
-            MitoTrip mitoTrip = dataSet.getTrips().get(mopedTrip.getId());
-            if(mopedTrip.getTripOrigin()!=null){
-                mitoTrip.setTripOrigin(dataSet.getZones().get(mopedTrip.getTripOrigin().getMitoZoneId()));
-                mitoTrip.setTripOriginMopedZoneId(mopedTrip.getTripOrigin().getZoneId());
-            }
-            if(mopedTrip.isWalkMode()){
-                countMopedWalkTrips++;
-                mitoTrip.setTripMode(Mode.walk);
-                if(mopedTrip.getTripOrigin()!=null&&mopedTrip.getTripDestination()!=null) {
-                    mitoTrip.setTripDestination(dataSet.getZones().get(mopedTrip.getTripDestination().getMitoZoneId()));
-                    mitoTrip.setTripDestinationMopedZoneId(mopedTrip.getTripDestination().getZoneId());
-                    mitoTrip.setMopedTripDistance(mopedTrip.getTripDistance());
-                    //TODO: travel time budget?
-                    double newTravelBudget = dataSet.getHouseholds().get(mopedTrip.getPerson().getMopedHousehold().getId()).getTravelTimeBudgetForPurpose(mitoTrip.getTripPurpose()) - mopedTrip.getTripDistance()/83.3;//average walk speed 5km/hr
-                    dataSet.getHouseholds().get(mopedTrip.getPerson().getMopedHousehold().getId()).setTravelTimeBudgetByPurpose(mitoTrip.getTripPurpose(),newTravelBudget);
-                }else{
-                    logger.warn("trip id: " + mitoTrip.getTripId()+ " purpose: " + mitoTrip.getTripPurpose() + " has no origin or destination: " + mopedTrip.getTripOrigin() + "," + mopedTrip.getTripDestination());
-                }
-            }
-        }
-        logger.info(countMopedWalkTrips + " moped walk trips have been fed back to MITO");
+        updateNonHomeBasedTripList();
+        mopedModel.runAgentBasedModelForNonHomeBasedTrips();
+        feedDataBackToMito(Purpose.getNonHomeBasedPurposes());
+        writeOutMoPeDTrips(dataSet, Resources.instance.getString(Properties.SCENARIO_NAME),"nhb");
     }
 
     private void updateData(int year) {
-
         prepareMopedZoneSearchTree();
         logger.info("  Converting mito household to moped");
-        boolean mucScenario = Resources.instance.getBoolean(Properties.SCENARIO_MUC, false);;
-        if(mucScenario){
-            convertMUCHhs();
-        }else{
-            convertHhs();
-        }
-
-        logger.info(counter + " trips has been converted to moped");
+        convertHhs();
         logger.info("  MITO data being sent to MoPeD");
         InputManager.InputFeed feed = new InputManager.InputFeed(households, year);
         mopedModel.feedDataFromMITO(feed);
+    }
+
+    private void convertHhs() {
+
+        final int partitionSize = (int) ((double) dataSet.getHouseholds().values().size() / Runtime.getRuntime().availableProcessors()) + 1;
+        Iterable<List<MitoHousehold>> partitions = Iterables.partition(dataSet.getHouseholds().values(), partitionSize);
+        logger.info(dataSet.getHouseholds().values().size() + " households are going to be converted...");
+        logger.info("partition size: " + partitionSize);
+
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Runtime.getRuntime().availableProcessors());
+
+        AtomicInteger partitionCounter = new AtomicInteger(0);
+        AtomicInteger ppCounter = new AtomicInteger(0);
+        AtomicInteger ttCounter = new AtomicInteger(0);
+        AtomicInteger randomOccupationDestinationTrips = new AtomicInteger(0);
+
+        for (final List<MitoHousehold> partition : partitions) {
+            executor.addTaskToQueue(() -> {
+                try {
+                    int id = partitionCounter.incrementAndGet();
+                    int hhCounter = 0;
+                    for (MitoHousehold hh : partition) {
+                        //TODO:need to decide how to narrow down the application area, now only run for munich city area
+                        if(!hh.getHomeZone().isMunichZone()){
+                            continue;
+                        }
+
+                        if (hasTrip(hh)) {
+                            if (LongMath.isPowerOfTwo(hhCounter)) {
+                                logger.info(hhCounter + " households done in " + id);
+                            }
+                            MopedHousehold mopedHousehold = convertToMopedHh(hh);
+                            for (MitoPerson pp : hh.getPersons().values()) {
+                                MopedPerson mopedPerson = convertToMopedPp(pp);
+                                ppCounter.incrementAndGet();
+                                mopedPerson.setMopedHousehold(mopedHousehold);
+                                for (MitoTrip tt : pp.getTrips()) {
+                                    MopedTrip mopedTrip = convertToMopedTt(tt);
+                                    ttCounter.incrementAndGet();
+                                    mopedTrip.setTripOrigin(mopedHousehold.getHomeZone());
+                                    tt.setTripOriginMopedZone(mopedHousehold.getHomeZone());
+                                    if(Purpose.getMandatoryPurposes().contains(mopedTrip.getTripPurpose())){
+                                        if(mopedPerson.getOccupationZone()!=null){
+                                            mopedTrip.setTripDestination(mopedPerson.getOccupationZone());
+                                            tt.setTripDestinationMopedZone(mopedPerson.getOccupationZone());
+                                        }else{
+                                            randomOccupationDestinationTrips.incrementAndGet();
+                                            Coord destinationCoord;
+                                            if(tt.getTripDestination() instanceof MicroLocation) {
+                                                destinationCoord = CoordUtils.createCoord(((MicroLocation) tt.getTripDestination()).getCoordinate());
+                                            } else {
+                                                destinationCoord = CoordUtils.createCoord(((MitoZone)tt.getTripDestination()).getRandomCoord(MitoUtil.getRandomObject()));
+                                            }
+                                            MopedZone destination = locateMicrolationToMopedZone(new Coordinate(destinationCoord.getX(),destinationCoord.getY()));
+                                            mopedTrip.setTripDestination(destination);
+                                            tt.setTripDestinationMopedZone(destination);
+                                        }
+                                    }
+
+                                    mopedPerson.addTrip(mopedTrip);
+                                    if (mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).isEmpty()) {
+                                        mopedHousehold.setTripsByPurpose(new ArrayList<>(), mopedTrip.getTripPurpose());
+                                    }
+                                    mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).add(mopedTrip);
+                                }
+                                mopedHousehold.addPerson(mopedPerson);
+                            }
+                            households.put(mopedHousehold.getId(), mopedHousehold);
+                            hhCounter++;
+                        }else{
+                            if (LongMath.isPowerOfTwo(hhCounter)) {
+                                logger.info(hhCounter + " households done in " + id);
+                            }
+                            MopedHousehold mopedHousehold = convertToMopedHh(hh);
+                            for (MitoPerson pp : hh.getPersons().values()) {
+                                MopedPerson mopedPerson = convertToMopedPp(pp);
+                                mopedPerson.setMopedHousehold(mopedHousehold);
+                                mopedHousehold.addPerson(mopedPerson);
+                            }
+                            households.put(mopedHousehold.getId(), mopedHousehold);
+                            hhCounter++;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.warn(e.getLocalizedMessage());
+                    throw new RuntimeException(e);
+                }
+                return null;
+            });
+        }
+        executor.execute();
+
+        logger.info(ppCounter.get() + " persons have been transfered to Moped...");
+        logger.info(ttCounter.get() + " trips have been transfered to Moped...");
+        logger.warn(failedMatchingMopedZoneCounter.get() + " home/job locations failed to be located to a moped zone!");
+        logger.info("There have been " + randomOccupationDestinationTrips.get() +
+                " HBW or HBE trips not done by a worker or student or missing occupation Coord. " +
+                "Picked a PAZ by random point in TAZ.");
+
+    }
+
+    private void updateDiscretionaryTripList() {
+        logger.info(mopedModel.getDataSet().getTrips().size() + " trips in Moped!");
+
+        final int partitionSize = (int) ((double) dataSet.getHouseholds().values().size() / Runtime.getRuntime().availableProcessors()) + 1;
+        Iterable<List<MitoHousehold>> partitions = Iterables.partition(dataSet.getHouseholds().values(), partitionSize);
+        logger.info(dataSet.getHouseholds().values().size() + " households are going to be converted...");
+        logger.info("partition size: " + partitionSize);
+
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Runtime.getRuntime().availableProcessors());
+
+        AtomicInteger partitionCounter = new AtomicInteger(0);
+        AtomicInteger ttCounter = new AtomicInteger(0);
+
+        for (final List<MitoHousehold> partition : partitions) {
+            executor.addTaskToQueue(() -> {
+                try {
+                    int id = partitionCounter.incrementAndGet();
+                    int hhCounter = 0;
+                    for (MitoHousehold hh : partition) {
+                        //TODO:need to decide how to narrow down the application area, now only run for munich city area
+                        if(!hh.getHomeZone().isMunichZone()){
+                            continue;
+                        }
+
+                        if (hasDiscretionaryTrip(hh)) {
+                            if (LongMath.isPowerOfTwo(hhCounter)) {
+                                logger.info(hhCounter + " households done in " + id);
+                            }
+                            for (MitoPerson pp : hh.getPersons().values()) {
+                                for (MitoTrip tt : pp.getTrips()) {
+                                    if (de.tum.bgu.msm.data.Purpose.getDiscretionaryPurposes().contains(tt.getTripPurpose())) {
+                                        MopedHousehold mopedHousehold = mopedModel.getDataSet().getHouseholds().get(hh.getId());
+                                        if(mopedHousehold==null){
+                                            throw new RuntimeException("Household:" + hh.getId() + " does not exist in moped household list!");
+                                        }
+                                        MopedPerson mopedPerson = mopedModel.getDataSet().getPersons().get(pp.getId());
+                                        if(mopedPerson==null){
+                                            throw new RuntimeException("Person:" + pp.getId() + " does not exist in moped person list!");
+                                        }
+                                        MopedTrip mopedTrip = convertToMopedTt(tt);
+
+                                        if (Purpose.getHomeBasedDiscretionaryPurposes().contains(mopedTrip.getTripPurpose())) {
+                                            mopedTrip.setTripOrigin(mopedHousehold.getHomeZone());
+                                            tt.setTripOriginMopedZone(mopedHousehold.getHomeZone());
+                                        }
+
+                                        mopedPerson.addTrip(mopedTrip);
+                                        if (mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).isEmpty()) {
+                                            mopedHousehold.setTripsByPurpose(new ArrayList<>(), mopedTrip.getTripPurpose());
+                                        }
+                                        mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).add(mopedTrip);
+                                        mopedModel.getDataSet().addTrip(mopedTrip);
+                                        ttCounter.incrementAndGet();
+                                    }
+                                }
+                            }
+                            hhCounter++;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.warn(e.getLocalizedMessage());
+                    throw new RuntimeException(e);
+                }
+                return null;
+            });
+        }
+        executor.execute();
+
+        logger.info(ttCounter.get() + " trips have been converted");
+
+        logger.info(mopedModel.getDataSet().getTrips().size() + " trips in Moped!");
+        Map<Purpose,List<MopedTrip>> tripsByPurpose = mopedModel.getDataSet().getTrips().values().stream().collect(Collectors.groupingBy(tt -> tt.getTripPurpose()));
+        for(Purpose purpose:tripsByPurpose.keySet()){
+            logger.warn(tripsByPurpose.get(purpose).size() + "  trips for purpose " + purpose);
+
+        }
+    }
+
+    private void updateNonHomeBasedTripList() {
+        List<MitoTrip> nonHomeBasedMitoTrips = dataSet.getTrips().values().stream().filter(tt -> tt.getTripPurpose().equals(de.tum.bgu.msm.data.Purpose.NHBW)||tt.getTripPurpose().equals(de.tum.bgu.msm.data.Purpose.NHBO)).collect(Collectors.toList());
+        final int partitionSize = (int) ((double) nonHomeBasedMitoTrips.size() / Runtime.getRuntime().availableProcessors()) + 1;
+        Iterable<List<MitoTrip>> partitions = Iterables.partition(nonHomeBasedMitoTrips, partitionSize);
+        logger.info(nonHomeBasedMitoTrips.size() + " non home based trips are going to be converted...");
+        logger.info("partition size: " + partitionSize);
+
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Runtime.getRuntime().availableProcessors());
+
+        AtomicInteger partitionCounter = new AtomicInteger(0);
+        AtomicInteger missingTrips = new AtomicInteger(0);
+        AtomicInteger completeTrips = new AtomicInteger(0);
+
+        for (final List<MitoTrip> partition : partitions) {
+            executor.addTaskToQueue(() -> {
+                try {
+                    int id = partitionCounter.incrementAndGet();
+                    int ttCounter = 0;
+
+                    for (MitoTrip mitoTrip :partition){
+
+                        if (LongMath.isPowerOfTwo(ttCounter)) {
+                            logger.info(ttCounter + " trips done in " + id);
+                        }
+
+                        MopedTrip mopedTrip = mopedModel.getDataSet().getTrips().get(mitoTrip.getId());
+
+                        if(mopedTrip==null){
+                            missingTrips.incrementAndGet();
+                            ttCounter++;
+                            continue;
+                        }
+
+                        if(mopedTrip.getTripOrigin()==null&&mitoTrip.getTripOrigin()!=null){
+                            if(mitoTrip.getTripOriginMopedZone()!=null){
+                                mopedTrip.setTripOrigin(mitoTrip.getTripOriginMopedZone());
+                            }else{
+                                Coord originCoord;
+                                if(mitoTrip.getTripOrigin() instanceof MicroLocation) {
+                                    originCoord = CoordUtils.createCoord(((MicroLocation) mitoTrip.getTripOrigin()).getCoordinate());
+                                } else {
+                                    //TODO: random point? moped destination choice will also be random. Centriod of zone?
+                                    originCoord = CoordUtils.createCoord(dataSet.getZones().get(mitoTrip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
+                                }
+                                MopedZone origin = locateMicrolationToMopedZone(new Coordinate(originCoord.getX(),originCoord.getY()));
+                                mopedTrip.setTripOrigin(origin);
+                                mitoTrip.setTripOriginMopedZone(origin);
+                            }
+                        }
+                        ttCounter++;
+                        completeTrips.incrementAndGet();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.warn(e.getLocalizedMessage());
+                    throw new RuntimeException(e);
+                }
+                return null;
+            });
+        }
+        executor.execute();
+
+        logger.warn(missingTrips.get() + "non home based mito trips cannot be found in moped trip list. Maybe not in the study area");
+        logger.info(completeTrips.get() + "non home based trips have been converted");
+
+    }
+
+    private void feedDataBackToMito(List<Purpose> purposes) {
+        List<MopedTrip> mopedTripsByPurpose = mopedModel.getDataSet().getTrips().values().stream().filter(tt -> purposes.contains(tt.getTripPurpose())).collect(Collectors.toList());
+
+        final int partitionSize = (int) ((double) mopedTripsByPurpose.size() / Runtime.getRuntime().availableProcessors()) + 1;
+        Iterable<List<MopedTrip>> partitions = Iterables.partition(mopedTripsByPurpose, partitionSize);
+        logger.info(mopedTripsByPurpose.size() + " Moped trips are going to be transferred to Mito...");
+        logger.info("partition size: " + partitionSize);
+
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Runtime.getRuntime().availableProcessors());
+
+        AtomicInteger partitionCounter = new AtomicInteger(0);
+        AtomicInteger countMopedWalkTrips = new AtomicInteger(0);
+
+        for (final List<MopedTrip> partition : partitions) {
+            executor.addTaskToQueue(() -> {
+                try {
+                    int id = partitionCounter.incrementAndGet();
+                    int ttCounter = 0;
+
+                    for(MopedTrip mopedTrip : partition){
+
+                        if (LongMath.isPowerOfTwo(ttCounter)) {
+                            logger.info(ttCounter + " trips done in " + id);
+                        }
+
+                        MitoTrip mitoTrip = dataSet.getTrips().get(mopedTrip.getId());
+
+
+                        if(mopedTrip.isWalkMode()){
+                            if(mopedTrip.getTripOrigin()!=null){
+                                mitoTrip.setTripOriginMopedZone(mopedTrip.getTripOrigin());
+                            }else{
+                                logger.warn("trip id: " + mopedTrip.getTripId()+ " purpose: " + mopedTrip.getTripPurpose() + " has no origin, but is walk mode.");
+                                continue;
+                            }
+
+                            if(mopedTrip.getTripDestination()!=null) {
+                                mitoTrip.setTripDestination(dataSet.getZones().get(mopedTrip.getTripDestination().getMitoZoneId()));
+                                mitoTrip.setTripDestinationMopedZone(mopedTrip.getTripDestination());
+                                mitoTrip.setMopedTripDistance(mopedTrip.getTripDistance());
+                                //TODO: travel time budget?
+                                //double newTravelBudget = dataSet.getHouseholds().get(mopedTrip.getPerson().getMopedHousehold().getId()).getTravelTimeBudgetForPurpose(mitoTrip.getTripPurpose()) - mopedTrip.getTripDistance()/83.3;//average walk speed 5km/hr
+                                //dataSet.getHouseholds().get(mopedTrip.getPerson().getMopedHousehold().getId()).setTravelTimeBudgetByPurpose(mitoTrip.getTripPurpose(),newTravelBudget);
+                                mitoTrip.setTripMode(Mode.walk);
+                                countMopedWalkTrips.incrementAndGet();
+                            }else{
+                                logger.warn("trip id: " + mopedTrip.getTripId()+ " purpose: " + mopedTrip.getTripPurpose() + " has no destination, but is walk mode. Origin zone: " + mopedTrip.getTripOrigin().getZoneId());
+                                continue;
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.warn(e.getLocalizedMessage());
+                    throw new RuntimeException(e);
+                }
+                return null;
+            });
+        }
+        executor.execute();
+
+        logger.info(countMopedWalkTrips.get() + " moped walk trips have been fed back to MITO");
     }
 
     private void prepareMopedZoneSearchTree() {
@@ -161,104 +401,21 @@ public class PedestrianModel {
         }
     }
 
-    private void convertHhs() {
-        int counter = 0;
-        for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-
-            if (hasTrip(hh)) {
-                if (LongMath.isPowerOfTwo(counter)) {
-                    logger.info(counter + " households done ");
-                }
-                MopedHousehold mopedHousehold = convertToMopedHh(hh);
-                for (MitoPerson pp : hh.getPersons().values()) {
-                    MopedPerson mopedPerson = convertToMopedPp(pp);
-                    mopedPerson.setMopedHousehold(mopedHousehold);
-                    for (MitoTrip tt : pp.getTrips()) {
-                        MopedTrip mopedTrip = convertToMopedTt(tt);
-                        if (mopedTrip.getTripPurpose().equals(Purpose.HBW) || mopedTrip.getTripPurpose().equals(Purpose.HBE)) {
-                            //if(mopedPerson.getOccupation().equals(Occupation.STUDENT)||mopedPerson.getOccupation().equals(Occupation.WORKER)){
-                            mopedTrip.setTripOrigin(mopedHousehold.getHomeZone());
-                            mopedTrip.setTripDestination(mopedPerson.getOccupationZone());
-                        }
-
-                        if (mopedTrip.getTripPurpose().equals(Purpose.HBS) || mopedTrip.getTripPurpose().equals(Purpose.HBO)) {
-                            mopedTrip.setTripOrigin(mopedHousehold.getHomeZone());
-                        }
-
-                        if (mopedTrip.getTripPurpose().equals(Purpose.NHBW)) {
-                            mopedTrip.setTripDestination(mopedPerson.getOccupationZone());
-                        }
-
-                        mopedPerson.addTrip(mopedTrip);
-                        if (mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).isEmpty()) {
-                            mopedHousehold.setTripsByPurpose(new ArrayList<MopedTrip>(), mopedTrip.getTripPurpose());
-                        }
-                        mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).add(mopedTrip);
-                    }
-                    mopedHousehold.addPerson(mopedPerson);
-                }
-                households.put(mopedHousehold.getId(), mopedHousehold);
-                counter++;
-            }
-        }
-
-        logger.warn(failedMatchingMopedZoneCounter + " home/job locations failed to be located to a moped zone!");
-    }
-
-    private void convertMUCHhs() {
-        int counter = 0;
-        for (MitoHousehold hh : dataSet.getHouseholds().values()) {
-
-            //TODO:need to decide how to narrow down the application area, now only run for munich city area
-            if(!hh.getHomeZone().isMunichZone()){
-                continue;
-            }
-
-            if (hasTrip(hh)) {
-                if (LongMath.isPowerOfTwo(counter)) {
-                    logger.info(counter + " households done ");
-                }
-                MopedHousehold mopedHousehold = convertToMopedHh(hh);
-                for (MitoPerson pp : hh.getPersons().values()) {
-                    MopedPerson mopedPerson = convertToMopedPp(pp);
-                    mopedPerson.setMopedHousehold(mopedHousehold);
-                    for (MitoTrip tt : pp.getTrips()) {
-                        MopedTrip mopedTrip = convertToMopedTt(tt);
-                        if (mopedTrip.getTripPurpose().equals(Purpose.HBW) || mopedTrip.getTripPurpose().equals(Purpose.HBE)) {
-                            //if(mopedPerson.getOccupation().equals(Occupation.STUDENT)||mopedPerson.getOccupation().equals(Occupation.WORKER)){
-                            mopedTrip.setTripOrigin(mopedHousehold.getHomeZone());
-                            mopedTrip.setTripDestination(mopedPerson.getOccupationZone());
-                        }
-
-                        if (mopedTrip.getTripPurpose().equals(Purpose.HBS) || mopedTrip.getTripPurpose().equals(Purpose.HBO)) {
-                            mopedTrip.setTripOrigin(mopedHousehold.getHomeZone());
-                        }
-
-                        if (mopedTrip.getTripPurpose().equals(Purpose.NHBW)) {
-                            mopedTrip.setTripDestination(mopedPerson.getOccupationZone());
-                        }
-
-                        mopedPerson.addTrip(mopedTrip);
-                        if (mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).isEmpty()) {
-                            mopedHousehold.setTripsByPurpose(new ArrayList<MopedTrip>(), mopedTrip.getTripPurpose());
-                        }
-                        mopedHousehold.getTripsForPurpose(mopedTrip.getTripPurpose()).add(mopedTrip);
-                    }
-                    mopedHousehold.addPerson(mopedPerson);
-                }
-                households.put(mopedHousehold.getId(), mopedHousehold);
-                counter++;
-            }
-        }
-
-        logger.warn(failedMatchingMopedZoneCounter + " home/job locations failed to be located to a moped zone!");
-    }
-
     private boolean hasTrip(MitoHousehold hh) {
         for(de.tum.bgu.msm.data.Purpose purpose : de.tum.bgu.msm.data.Purpose.values()){
             if(!hh.getTripsForPurpose(purpose).isEmpty()){
                 return true;
-            };
+            }
+        }
+
+        return false;
+    }
+
+    private boolean hasDiscretionaryTrip(MitoHousehold hh) {
+        for(de.tum.bgu.msm.data.Purpose purpose : de.tum.bgu.msm.data.Purpose.getDiscretionaryPurposes()){
+            if(!hh.getTripsForPurpose(purpose).isEmpty()){
+                return true;
+            }
         }
 
         return false;
@@ -266,7 +423,6 @@ public class PedestrianModel {
 
     private MopedTrip convertToMopedTt(MitoTrip tt) {
         Purpose mopedPurpose = Purpose.valueOf(tt.getTripPurpose().name());
-        counter++;
         return new MopedTrip(tt.getTripId(),mopedPurpose);
     }
 
@@ -275,7 +431,6 @@ public class PedestrianModel {
         Occupation mopedOccupation = Occupation.valueOf(pp.getMitoOccupationStatus().name());
         MopedPerson mopedPerson = new MopedPerson(pp.getId(),pp.getAge(),mopedGender,mopedOccupation,pp.hasDriversLicense(),pp.hasTransitPass(),pp.isDisable());
         if(pp.getMitoOccupationStatus().equals(MitoOccupationStatus.WORKER)||pp.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)){
-            //TODO: check for those who are employed but no occupation location
             MopedZone occupationZone = locateMicrolationToMopedZone(new Coordinate(pp.getOccupation().getCoordinate().x,pp.getOccupation().getCoordinate().y));
             mopedPerson.setOccupationZone(occupationZone);
         }
@@ -287,7 +442,6 @@ public class PedestrianModel {
         MopedZone homeZone = locateMicrolationToMopedZone(new Coordinate(mitoHh.getCoordinate().x,mitoHh.getCoordinate().y));
         return new MopedHousehold(mitoHh.getId(),mitoHh.getMonthlyIncome_EUR(),mitoHh.getAutos(),children,homeZone);
     }
-
 
     private MopedZone locateMicrolationToMopedZone(Coordinate coordinate){
         GeometryFactory gf = new GeometryFactory();
@@ -301,17 +455,15 @@ public class PedestrianModel {
         }
 
         //TODO: how to deal with null?
-        //logger.warn("Coordinate x: " + coordinate.x + ", y: " + coordinate.y + " can not be located to a moped zone.");
-        failedMatchingMopedZoneCounter++;
+        failedMatchingMopedZoneCounter.incrementAndGet();
         return null;
     }
-
 
     private void writeOutMoPeDTrips(DataSet dataSet, String scenarioName, String purpose) {
         String outputSubDirectory = "scenOutput/" + scenarioName + "/";
 
         logger.info("  Writing moped trips file");
-        String file = Resources.instance.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/mopedTrips_" + purpose + ".csv";
+        String file = Resources.instance.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/mopedTrips_" +purpose+ ".csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
         pwh.println("id,origin,originMoped,destination,destinationMoped,purpose,person,distance,mode");
         logger.info("total trip: " + dataSet.getTrips().values().size());
@@ -320,13 +472,17 @@ public class PedestrianModel {
             pwh.print(",");
             Location origin = trip.getTripOrigin();
             String originId = "null";
-            String originMopedId = "null";
             if(origin != null) {
                 originId = String.valueOf(origin.getZoneId());
             }
             pwh.print(originId);
             pwh.print(",");
-            pwh.print(trip.getTripOriginMopedZoneId());
+            if(trip.getTripOriginMopedZone() != null) {
+                pwh.print(trip.getTripOriginMopedZone().getZoneId());
+            }else{
+                pwh.print("null");
+            }
+
             pwh.print(",");
             Location destination = trip.getTripDestination();
             String destinationId = "null";
@@ -335,7 +491,11 @@ public class PedestrianModel {
             }
             pwh.print(destinationId);
             pwh.print(",");
-            pwh.print(trip.getTripDestinationMopedZoneId());
+            if(trip.getTripDestinationMopedZone() != null) {
+                pwh.print(trip.getTripDestinationMopedZone().getZoneId());
+            }else{
+                pwh.print("null");
+            }
             pwh.print(",");
             pwh.print(trip.getTripPurpose());
             pwh.print(",");

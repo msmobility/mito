@@ -368,7 +368,13 @@ public class ModeChoiceCalculatorWithMopedImpl implements ModeChoiceCalculator {
 
     @Override
     public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
-        int purpIdx = purpose.ordinal();
+        int purpIdx;
+        if (purpose.equals(Purpose.HBR)){
+            purpIdx = Purpose.HBO.ordinal();
+            //there is no mode choice for HBR trips yet
+        } else {
+            purpIdx = purpose.ordinal();
+        }
 
         int age = person.getAge();
         int isMale = person.getMitoGender() == MitoGender.MALE ? 1 : 0;
@@ -547,7 +553,13 @@ public class ModeChoiceCalculatorWithMopedImpl implements ModeChoiceCalculator {
         double timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "tramMetro");
 
         int monthlyIncome_EUR = household.getMonthlyIncome_EUR();
-        int purpIdx = purpose.ordinal();
+        int purpIdx;
+        if (purpose.equals(Purpose.HBR)){
+            purpIdx = Purpose.HBO.ordinal();
+            //there is no mode choice for HBR trips yet
+        } else {
+            purpIdx = purpose.ordinal();
+        }
 
         double gcAutoD;
         double gcAutoP;

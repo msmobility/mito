@@ -6,17 +6,13 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorWithMopedImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.moped.modules.agentBased.walkModeChoice.ModeChoiceJSCalculator;
-import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
-import java.io.InputStreamReader;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +66,8 @@ public class ModeChoice extends Module {
     }
 
     private void modeChoiceByPurpose() {
-        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        for (Purpose purpose : Purpose.values()) {
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(purposes.size());
+        for (Purpose purpose : purposes) {
             executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, modeChoiceCalculatorByPurpose.get(purpose)));
         }
         executor.execute();

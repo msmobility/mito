@@ -5,11 +5,7 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorWithMopedImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
@@ -20,23 +16,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
-
 public class ModeChoiceWithMoped extends Module {
 
     private final static Logger logger = Logger.getLogger(ModeChoiceWithMoped.class);
 
     private final Map<Purpose, ModeChoiceCalculator> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
 
-    public ModeChoiceWithMoped(DataSet dataSet) {
-        super(dataSet);
-        modeChoiceCalculatorByPurpose.put(Purpose.HBW, new ModeChoiceCalculatorWithMopedImpl());
-        modeChoiceCalculatorByPurpose.put(Purpose.HBE, new ModeChoiceCalculatorWithMopedImpl());
-        modeChoiceCalculatorByPurpose.put(Purpose.HBS, new ModeChoiceCalculatorWithMopedImpl());
-        modeChoiceCalculatorByPurpose.put(Purpose.HBO, new ModeChoiceCalculatorWithMopedImpl());
-        modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new ModeChoiceCalculatorWithMopedImpl());
-        modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new ModeChoiceCalculatorWithMopedImpl());
-        modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new ModeChoiceCalculatorWithMopedImpl());
+    public ModeChoiceWithMoped(DataSet dataSet,List<Purpose> purposes) {
+        super(dataSet,purposes);
+        modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBR, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
     }
 
     public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {
@@ -54,8 +49,8 @@ public class ModeChoiceWithMoped extends Module {
     }
 
     private void modeChoiceByPurpose() {
-        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        for (Purpose purpose : Purpose.values()) {
+        ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(purposes.size());
+        for (Purpose purpose : purposes) {
             executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, modeChoiceCalculatorByPurpose.get(purpose)));
         }
         executor.execute();

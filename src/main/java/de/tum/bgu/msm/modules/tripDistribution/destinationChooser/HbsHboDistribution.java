@@ -1,10 +1,7 @@
 package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 
 import com.google.common.math.LongMath;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
-import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -88,7 +85,27 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                         updateBudgets(household);
                         updateDestinationProbabilities(household.getHomeZone().getId());
                         for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                            if(!Mode.walk.equals(trip.getTripMode())) {
+                                trip.setTripOrigin(household);
+                                MitoZone zone = findDestination();
+                                trip.setTripDestination(zone);
+                                if (zone == null) {
+                                    logger.debug("No destination found for trip" + trip);
+                                    TripDistribution.failedTripsCounter.incrementAndGet();
+                                    continue;
+                                }
+                                postProcessTrip(trip);
+                                TripDistribution.distributedTripsCounter.incrementAndGet();
+                            }
+                        }
+                    } else {
+                        TripDistribution.failedTripsCounter.incrementAndGet();
+                    }
+                } else {
+                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
+                        if(!Mode.walk.equals(trip.getTripMode())) {
                             trip.setTripOrigin(household);
+                            updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId());
                             MitoZone zone = findDestination();
                             trip.setTripDestination(zone);
                             if (zone == null) {
@@ -96,24 +113,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                                 TripDistribution.failedTripsCounter.incrementAndGet();
                                 continue;
                             }
-                            postProcessTrip(trip);
                             TripDistribution.distributedTripsCounter.incrementAndGet();
                         }
-                    } else {
-                        TripDistribution.failedTripsCounter.incrementAndGet();
-                    }
-                } else {
-                    for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
-                        trip.setTripOrigin(household);
-                        updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId());
-                        MitoZone zone = findDestination();
-                        trip.setTripDestination(zone);
-                        if (zone == null) {
-                            logger.debug("No destination found for trip" + trip);
-                            TripDistribution.failedTripsCounter.incrementAndGet();
-                            continue;
-                        }
-                        TripDistribution.distributedTripsCounter.incrementAndGet();
                     }
                 }
             }

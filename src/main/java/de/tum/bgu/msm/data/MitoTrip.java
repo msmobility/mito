@@ -26,8 +26,8 @@ public class MitoTrip implements Id {
 
     private Person matsimPerson;
 
-    private int tripOriginMopedZoneId;
-    private int tripDestinationMopedZoneId;
+    private MopedZone tripOriginMopedZone;
+    private MopedZone tripDestinationMopedZone;
     private double mopedTripDistance;
 
     public MitoTrip(int tripId, Purpose tripPurpose) {
@@ -132,21 +132,9 @@ public class MitoTrip implements Id {
         }
     }
 
-    public int getTripDestinationMopedZoneId() {
-        return tripDestinationMopedZoneId;
-    }
 
-    public void setTripDestinationMopedZoneId(int tripDestinationMopedZoneId) {
-        this.tripDestinationMopedZoneId = tripDestinationMopedZoneId;
-    }
 
-    public int getTripOriginMopedZoneId() {
-        return tripOriginMopedZoneId;
-    }
 
-    public void setTripOriginMopedZoneId(int tripOriginMopedZoneId) {
-        this.tripOriginMopedZoneId = tripOriginMopedZoneId;
-    }
 
     public double getMopedTripDistance() {
         return mopedTripDistance;
@@ -154,5 +142,21 @@ public class MitoTrip implements Id {
 
     public void setMopedTripDistance(double mopedTripDistance) {
         this.mopedTripDistance = mopedTripDistance;
+    }
+
+    public MopedZone getTripOriginMopedZone() {
+        return tripOriginMopedZone;
+    }
+
+    public void setTripOriginMopedZone(MopedZone tripOriginMopedZone) {
+        this.tripOriginMopedZone = tripOriginMopedZone;
+    }
+
+    public MopedZone getTripDestinationMopedZone() {
+        return tripDestinationMopedZone;
+    }
+
+    public void setTripDestinationMopedZone(MopedZone tripDestinationMopedZone) {
+        this.tripDestinationMopedZone = tripDestinationMopedZone;
     }
 }
