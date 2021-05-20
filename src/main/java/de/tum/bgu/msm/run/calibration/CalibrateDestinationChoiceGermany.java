@@ -1,4 +1,4 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.run.calibration;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
@@ -8,9 +8,9 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
-import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImplGermany;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.TripDistributionCalibration;
+import de.tum.bgu.msm.modules.tripDistribution.TripDistributionCalibrationGermany;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
@@ -43,36 +43,36 @@ import java.util.Random;
  * - totalEmplByZone
  * - sizeOfZonesInAcre
  */
-public final class MitoModel2ForCalibration {
+public final class CalibrateDestinationChoiceGermany {
 
-    private static final Logger logger = Logger.getLogger(MitoModel2ForCalibration.class);
+    private static final Logger logger = Logger.getLogger(CalibrateDestinationChoiceGermany.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
     public static void main(String[] args) {
-        MitoModel2ForCalibration model = MitoModel2ForCalibration.standAloneModel(args[0], MunichImplementationConfig.get());
+        CalibrateDestinationChoiceGermany model = CalibrateDestinationChoiceGermany.standAloneModel(args[0], MunichImplementationConfig.get());
         model.run();
     }
 
-    private MitoModel2ForCalibration(DataSet dataSet, String scenarioName) {
+    private CalibrateDestinationChoiceGermany(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel2ForCalibration standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static CalibrateDestinationChoiceGermany standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel2ForCalibration model = new MitoModel2ForCalibration(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        CalibrateDestinationChoiceGermany model = new CalibrateDestinationChoiceGermany(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static MitoModel2ForCalibration initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static CalibrateDestinationChoiceGermany initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
-        MitoModel2ForCalibration model = new MitoModel2ForCalibration(dataSet, scenarioName);
+        CalibrateDestinationChoiceGermany model = new CalibrateDestinationChoiceGermany(dataSet, scenarioName);
         new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
         new OmxSkimsReader(dataSet).readSkimDistancesNMT();
         new OmxSkimsReader(dataSet).readSkimDistancesAuto();
@@ -114,11 +114,11 @@ public final class MitoModel2ForCalibration {
 
         distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters,
-                impedanceCalibrationParameters, false, new DestinationUtilityCalculatorFactoryImpl2());
+                impedanceCalibrationParameters, false, new DestinationUtilityCalculatorFactoryImplGermany());
         distributionMandatory.run();
 
-        TripDistributionCalibration tripDistributionCalibrationMandatory =
-                new TripDistributionCalibration(dataSet, Purpose.getMandatoryPurposes(),
+        TripDistributionCalibrationGermany tripDistributionCalibrationMandatory =
+                new TripDistributionCalibrationGermany(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters, impedanceCalibrationParameters);
 
         int iterations = 20;
@@ -126,7 +126,7 @@ public final class MitoModel2ForCalibration {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                     tripDistributionCalibrationMandatory.getTravelDistanceParameters(),
-                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false, new DestinationUtilityCalculatorFactoryImpl2());
+                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false, new DestinationUtilityCalculatorFactoryImplGermany());
             distributionMandatory.run();
         }
 
@@ -166,12 +166,12 @@ public final class MitoModel2ForCalibration {
         distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                 travelDistanceCalibrationParametersDisc,
                 impedanceCalibrationParametersDisc, false,
-                new DestinationUtilityCalculatorFactoryImpl2());
+                new DestinationUtilityCalculatorFactoryImplGermany());
         distributionDiscretionary.run();
 
 
-        TripDistributionCalibration tripDistributionCalibrationDiscretionary =
-                new TripDistributionCalibration(dataSet, Purpose.getDiscretionaryPurposes(),
+        TripDistributionCalibrationGermany tripDistributionCalibrationDiscretionary =
+                new TripDistributionCalibrationGermany(dataSet, Purpose.getDiscretionaryPurposes(),
                         travelDistanceCalibrationParametersDisc, impedanceCalibrationParametersDisc);
 
         for (int iteration = 0; iteration < iterations; iteration++) {
@@ -179,7 +179,7 @@ public final class MitoModel2ForCalibration {
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                     tripDistributionCalibrationDiscretionary.getTravelDistanceParameters(),
                     tripDistributionCalibrationDiscretionary.getImpendanceParameters(), false,
-                    new DestinationUtilityCalculatorFactoryImpl2());
+                    new DestinationUtilityCalculatorFactoryImplGermany());
             distributionDiscretionary.run();
         }
 
@@ -201,11 +201,13 @@ public final class MitoModel2ForCalibration {
         if (Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
-        new JobReader(dataSet, config.getJobTypeFactory()).read();
+        //new JobReader(dataSet, config.getJobTypeFactory()).read();
         new SchoolsReader(dataSet).read();
-        new HouseholdsReader(dataSet).read();
-        new HouseholdsCoordReader(dataSet).read();
-        new PersonsReader(dataSet).read();
+        new HouseholdsReaderGermany(dataSet).read();
+        //new HouseholdsCoordReader(dataSet).read();
+        //new PersonsReader(dataSet).read();
+        //the class called Synthetic population reader: could it be renamed to PersonJobReader?
+        new SyntheticPopulationReaderGermany(dataSet, config.getJobTypeFactory()).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();
         readAdditionalData();

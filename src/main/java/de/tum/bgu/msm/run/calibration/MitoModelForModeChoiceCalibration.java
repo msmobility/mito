@@ -1,4 +1,4 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.run.calibration;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
@@ -108,7 +108,7 @@ public final class MitoModelForModeChoiceCalibration {
 
         for (int iteration = 0; iteration < Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 1); iteration++){
             modeChoice.run();
-            dataSet.getModeChoiceCalibrationData().updateCalibrationCoefficients(dataSet, iteration);
+            dataSet.getModeChoiceCalibrationData().updateCalibrationCoefficients(dataSet, iteration, purposes);
             logger.info("Finish iteration " + iteration);
         }
 

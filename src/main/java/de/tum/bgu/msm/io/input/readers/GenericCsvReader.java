@@ -37,6 +37,7 @@ public final class GenericCsvReader extends AbstractCsvReader {
             table.put(currentRow, i, record[i]);
         }
         currentRow++;
+        //return null;
     }
 
     @Override
