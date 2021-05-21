@@ -2,6 +2,7 @@ package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
+import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
@@ -23,6 +24,7 @@ import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import org.apache.log4j.Logger;
 
@@ -324,7 +326,12 @@ public final class TravelDemandGenerator2WithMoped {
         timeOfDayChoiceDiscretionary.run();
 
         logger.info("Running trip scaling");
-        tripScaling.run();
+        if (Resources.instance.getBoolean(Properties.RUN_TRIP_SCALING, false)) {
+            tripScaling.run();
+        }else{
+            dataSet.getTrips().values().forEach(trip -> dataSet.addTripToSubsample(trip));
+        }
+
 
         matsimPopulationGenerator.run();
 

@@ -105,9 +105,9 @@ public class PedestrianModel {
                     int hhCounter = 0;
                     for (MitoHousehold hh : partition) {
                         //TODO:need to decide how to narrow down the application area, now only run for munich city area
-                        if(!hh.getHomeZone().isMunichZone()){
+                        /*if(!hh.getHomeZone().isMunichZone()){
                             continue;
-                        }
+                        }*/
 
                         if (hasTrip(hh)) {
                             if (LongMath.isPowerOfTwo(hhCounter)) {
@@ -204,9 +204,9 @@ public class PedestrianModel {
                     int hhCounter = 0;
                     for (MitoHousehold hh : partition) {
                         //TODO:need to decide how to narrow down the application area, now only run for munich city area
-                        if(!hh.getHomeZone().isMunichZone()){
+                        /*if(!hh.getHomeZone().isMunichZone()){
                             continue;
-                        }
+                        }*/
 
                         if (hasDiscretionaryTrip(hh)) {
                             if (LongMath.isPowerOfTwo(hhCounter)) {
@@ -228,6 +228,7 @@ public class PedestrianModel {
                                         if (Purpose.getHomeBasedDiscretionaryPurposes().contains(mopedTrip.getTripPurpose())) {
                                             mopedTrip.setTripOrigin(mopedHousehold.getHomeZone());
                                             tt.setTripOriginMopedZone(mopedHousehold.getHomeZone());
+                                            tt.setTripOrigin(hh);
                                         }
 
                                         mopedPerson.addTrip(mopedTrip);

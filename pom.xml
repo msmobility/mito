@@ -178,7 +178,7 @@
         <dependency>
             <groupId>de.tum.bgu.msm</groupId>
             <artifactId>moped_java</artifactId>
-            <version>local</version>
+            <version>0.2-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.mail</groupId>
