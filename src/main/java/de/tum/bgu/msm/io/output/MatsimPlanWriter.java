@@ -31,9 +31,8 @@ public class MatsimPlanWriter {
         this.scaleFactor = scaleFactor;
     }
 
-
     public void run(String outputFile){
-        Population population = PopulationUtils.createPopulation(ConfigUtils.createConfig());
+        Population population = PopulationUtils.createPopulation(ConfigUtils.loadConfig("config.xml"));
         for (MitoHousehold household : dataSet.getHouseholds().values()) {
             for (MitoPerson person : household.getPersons().values()) {
                 if (MitoUtil.getRandomObject().nextDouble() < scaleFactor){
