@@ -177,4 +177,11 @@ public class Resources {
     public Path getTripGenerationCoefficientsHurdleNegativeBinomial() {
         return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_NEGATIVE_BINOMIAL_COEFFICIENTS));
     }
+
+    public Path getModeChoiceCoefficients(Purpose purpose) {
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.MC_COEFFICIENTS) +
+                "_" +
+                purpose.toString().toLowerCase() +
+                ".csv");
+    }
 }
