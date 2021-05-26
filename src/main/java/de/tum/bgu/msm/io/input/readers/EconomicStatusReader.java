@@ -99,6 +99,7 @@ public class EconomicStatusReader extends AbstractCsvReader {
         //return null;
     }
 
+    //TODO Convert to an enum!
     private int getEconomicStatus(MitoHousehold hh) {
         /*
         Defined as:

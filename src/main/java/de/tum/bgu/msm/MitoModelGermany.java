@@ -95,6 +95,7 @@ public final class MitoModelGermany {
         new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
+        new BicycleOwnershipReaderAndModel(dataSet).read();
 
     }
 

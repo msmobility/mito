@@ -83,4 +83,6 @@ public class Properties {
     public static final String MC_CALIBRATON_REGIONS_FILE = "mc.calibration.regions.file";
     public static final String MC_CALIBRATION_ITERATIONS = "mc.calibration.iterations";
     public static final String MC_COEFFICIENTS = "mc.coefficient.file.suffix";
+
+    public static final String BIKE_OWNERSHIP_COEFFICIENTS = "bicycle.ownership.coefficients";
 }

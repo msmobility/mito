@@ -184,4 +184,8 @@ public class Resources {
                 purpose.toString().toLowerCase() +
                 ".csv");
     }
+
+    public Path getBicycleOwnershipInputFile() {
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.BIKE_OWNERSHIP_COEFFICIENTS));
+    }
 }
