@@ -85,4 +85,11 @@ public class Properties {
     public static final String MC_COEFFICIENTS = "mc.coefficient.file.suffix";
 
     public static final String BIKE_OWNERSHIP_COEFFICIENTS = "bicycle.ownership.coefficients";
+
+    public static final String BUS_TRAVEL_TIME_SKIM_MATRIX = "bus.travelTime.matrix";
+    public static final String TRAM_METRO_TRAVEL_TIME_SKIM_MATRIX = "tramMetro.travelTime.matrix";
+    public static final String TRAIN_TRAVEL_TIME_SKIM_MATRIX = "train.travelTime.matrix";
+    public static final String AUTO_TRAVEL_DISTANCE_SKIM_MATRIX = "auto.travelDistance.matrix";
+    public static final String NMT_TRAVEL_DISTANCE_SKIM_MATRIX = "nmt.travelDistance.matrix";
+    public static final String AUTO_PEAK_SKIM_MATRIX = "auto.peak.travelTime.matrix";
 }
