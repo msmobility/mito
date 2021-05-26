@@ -195,7 +195,7 @@ public class BicycleOwnershipReaderAndModel extends AbstractCsvReader {
 
     }
 
-    enum AgeBin {
+    public enum AgeBin {
         from0to17, from18to29, from30to39, from40to49, from50to59, from60to69, from70to79, from80to100;
 
         static AgeBin getAgeBinFromAge(int age){
