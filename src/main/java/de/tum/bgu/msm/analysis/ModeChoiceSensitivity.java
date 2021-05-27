@@ -2,7 +2,10 @@ package de.tum.bgu.msm.analysis;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.io.input.readers.CalibrationDataReader;
+import de.tum.bgu.msm.io.input.readers.CalibrationRegionMapReader;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2008Impl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
@@ -55,6 +58,9 @@ public class ModeChoiceSensitivity {
         zone.setDistanceToNearestRailStop(0.5f);
         //origin.setAreaTypeHBWModeChoice(AreaType.HBW_mediumSizedCity);
 
+        DataSet dataSet = new DataSet();
+        new CalibrationDataReader(dataSet).read();
+        new CalibrationRegionMapReader(dataSet).read();
 
         int counter = 0;
         for (int income : incomes) {
@@ -71,6 +77,7 @@ public class ModeChoiceSensitivity {
                 for (double ptPriceFactor = 0.; ptPriceFactor <= 5.; ptPriceFactor += 1.) {
                     for (Purpose purpose : Purpose.getAllPurposes()) {
                         calculator = new ModeChoiceCalculatorWithPriceFactors(new ModeChoiceCalculator2017Impl(purpose, null), carPriceFactor, ptPriceFactor, purpose, null);
+                        calculator = new CalibratingModeChoiceCalculatorImpl(calculator, dataSet.getModeChoiceCalibrationData());
                         for (double distance_km = 0.; distance_km < 150.; distance_km += 5.) {
                             double thisDistance_km = distance_km;
                             for (double factorPt = 0.2; factorPt <= 3.; factorPt += 0.2) {

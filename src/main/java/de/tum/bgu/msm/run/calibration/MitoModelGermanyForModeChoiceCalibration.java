@@ -7,6 +7,7 @@ import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImplGermany;
@@ -94,7 +95,7 @@ public final class MitoModelGermanyForModeChoiceCalibration {
                 baseCalculator = new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(),
                         dataSet.getModeChoiceCalibrationData());
             } else {
-                baseCalculator = new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(),
+                baseCalculator = new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet),
                         dataSet.getModeChoiceCalibrationData());
             }
             modeChoice.registerModeChoiceCalculator(purpose,
