@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
 
-    private static final double SPEED_WALK_KMH = 5;
-    private static final double SPEED_BICYCLE_KMH = 12;
+    private static final double SPEED_WALK_KMH = 4;
+    private static final double SPEED_BICYCLE_KMH = 10;
     private final Purpose purpose;
     private final static Logger logger = Logger.getLogger(ModeChoiceCalculator2017Impl.class);
     private final Map<Mode, Map<String, Double>> coef;
@@ -262,8 +262,8 @@ public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
         double gcTrain;
         double gcTramMetro;
         double gcTaxi;
-        double gcWalk = travelDistanceNMT * SPEED_WALK_KMH * 60;
-        double gcBicycle = travelDistanceNMT * SPEED_BICYCLE_KMH *60;
+        double gcWalk = travelDistanceNMT / SPEED_WALK_KMH * 60;
+        double gcBicycle = travelDistanceNMT / SPEED_BICYCLE_KMH * 60;
 
         if (monthlyIncome_EUR <= 1500) {
             gcAutoD = timeAutoD + (travelDistanceAuto * coef.get(Mode.autoDriver).get("costPerKm")) / coef.get(Mode.autoDriver).get("vot_under_1500_eur_min");
@@ -283,7 +283,7 @@ public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
             gcAutoD = timeAutoD + (travelDistanceAuto * coef.get(Mode.autoDriver).get("costPerKm")) / coef.get(Mode.autoDriver).get("vot_above_5600_eur_min");
             gcAutoP = timeAutoP + (travelDistanceAuto * coef.get(Mode.autoPassenger).get("costPerKm")) / coef.get(Mode.autoPassenger).get("vot_above_5600_eur_min");
             gcBus = timeBus + (travelDistanceAuto * coef.get(Mode.bus).get("costPerKm")) / coef.get(Mode.bus).get("vot_above_5600_eur_min");
-            gcTrain = timeTrain + (travelDistanceAuto * coef.get(Mode.train).get("costPerKm")) / coef.get(Mode.train).get("vot_above_5600");
+            gcTrain = timeTrain + (travelDistanceAuto * coef.get(Mode.train).get("costPerKm")) / coef.get(Mode.train).get("vot_above_5600_eur_min");
             gcTramMetro = timeTramMetro + (travelDistanceAuto * coef.get(Mode.tramOrMetro).get("costPerKm")) / coef.get(Mode.tramOrMetro).get("vot_above_5600_eur_min");
             gcTaxi = timeTaxi + (travelDistanceAuto * coef.get(Mode.taxi).get("costPerKm")) / coef.get(Mode.taxi).get("vot_above_5600_eur_min");
         }

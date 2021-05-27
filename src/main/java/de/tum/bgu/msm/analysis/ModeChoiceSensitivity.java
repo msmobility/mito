@@ -40,7 +40,7 @@ public class ModeChoiceSensitivity {
     public void setup() throws FileNotFoundException {
         Resources.initializeResources("./test/muc/test.properties");
 
-        pw = new PrintWriter("modeChoiceSensitivity_v2.csv");
+        pw = new PrintWriter("modeChoiceSensitivity_v3.csv");
         pw.print("purpose,income,distance,factorCar,factorPt,factorCarPrice,factorPtPrice");
         for (Mode mode : Mode.values()) {
             pw.print(",");
@@ -62,6 +62,7 @@ public class ModeChoiceSensitivity {
             MitoHousehold hh = new MitoHousehold(1, income, 1);
             MitoPerson pp = new MitoPerson(1, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
             hh.addPerson(pp);
+            pp.setHasBicycle(true);
             MitoTrip trip = new MitoTrip(1, Purpose.HBS);
             trip.setTripOrigin(zone);
             trip.setTripDestination(zone);
