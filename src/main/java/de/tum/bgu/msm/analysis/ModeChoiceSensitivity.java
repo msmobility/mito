@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2008Impl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
@@ -68,7 +69,7 @@ public class ModeChoiceSensitivity {
             for (double carPriceFactor = 0.; carPriceFactor <= 5.; carPriceFactor += 1.) {
                 for (double ptPriceFactor = 0.; ptPriceFactor <= 5.; ptPriceFactor += 1.) {
                     for (Purpose purpose : Purpose.getAllPurposes()) {
-                        calculator = new ModeChoiceCalculatorWithPriceFactors(new ModeChoiceCalculator2008Impl(purpose, null), carPriceFactor, ptPriceFactor, purpose, null);
+                        calculator = new ModeChoiceCalculatorWithPriceFactors(new ModeChoiceCalculator2017Impl(purpose, null), carPriceFactor, ptPriceFactor, purpose, null);
                         for (double distance_km = 0.; distance_km < 150.; distance_km += 5.) {
                             double thisDistance_km = distance_km;
                             for (double factorPt = 0.2; factorPt <= 3.; factorPt += 0.2) {
