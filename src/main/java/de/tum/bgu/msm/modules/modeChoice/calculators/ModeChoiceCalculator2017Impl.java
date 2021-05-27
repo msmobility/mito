@@ -218,7 +218,7 @@ public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
         generalizedCosts.put(Mode.bus, gcBus);
         generalizedCosts.put(Mode.train, gcTrain);
         generalizedCosts.put(Mode.tramOrMetro, gcTramMetro);
-        generalizedCosts.put(Mode.taxi, gcTramMetro);
+        generalizedCosts.put(Mode.taxi, gcTaxi);
         generalizedCosts.put(Mode.walk, 0.);
         return generalizedCosts;
 
