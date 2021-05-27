@@ -10,13 +10,13 @@ import org.apache.log4j.Logger;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
+public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
 
     private final Purpose purpose;
-    private final static Logger logger = Logger.getLogger(ModeChoiceCalculator2008Impl.class);
+    private final static Logger logger = Logger.getLogger(ModeChoiceCalculator2017Impl.class);
     private final Map<Mode, Map<String, Double>> coef;
 
-    public ModeChoiceCalculator2008Impl(Purpose purpose, DataSet dataSet) {
+    public ModeChoiceCalculator2017Impl(Purpose purpose, DataSet dataSet) {
         this.purpose = purpose;
         coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
     }
@@ -44,17 +44,33 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
         final double utilityBus = utilities.get(Mode.bus);
         final double utilityTrain = utilities.get(Mode.train);
         final double utilityTramMetro = utilities.get(Mode.tramOrMetro);
+        final double utilityTaxi = utilities.get(Mode.taxi);
         final double utilityWalk = utilities.get(Mode.walk);
 
-        double expsumNestAuto = Math.exp(utilityAutoD / coef.get(Mode.autoDriver).get("nestingCoefficient")) + Math.exp(utilityAutoP / coef.get(Mode.autoDriver).get("nestingCoefficient"));
-        double expsumNestTransit = Math.exp(utilityBus / coef.get(Mode.train).get("nestingCoefficient")) + Math.exp(utilityTrain / coef.get(Mode.train).get("nestingCoefficient")) + Math.exp(utilityTramMetro / coef.get(Mode.train).get("nestingCoefficient"));
-        double expsumTopLevel = Math.exp(coef.get(Mode.autoDriver).get("nestingCoefficient") * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit));
+        final Double nestingCoefficientAutoModes = coef.get(Mode.autoDriver).get("nestingCoefficient");
+        final Double nestingCoefficientPtModes = coef.get(Mode.train).get("nestingCoefficient");
+
+        double expsumNestAuto =
+                Math.exp(utilityAutoD / nestingCoefficientAutoModes) +
+                Math.exp(utilityAutoP / nestingCoefficientAutoModes);
+        double expsumNestTransit =
+                Math.exp(utilityBus / nestingCoefficientPtModes) +
+                Math.exp(utilityTrain / nestingCoefficientPtModes) +
+                Math.exp(utilityTramMetro / nestingCoefficientPtModes) +
+                Math.exp(utilityTaxi / nestingCoefficientPtModes);
+        double expsumTopLevel =
+                Math.exp(nestingCoefficientAutoModes * Math.log(expsumNestAuto)) +
+                Math.exp(utilityBicycle) +
+                Math.exp(utilityWalk) +
+                Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
 
         double probabilityAutoD;
         double probabilityAutoP;
         if (expsumNestAuto > 0) {
-            probabilityAutoD = (Math.exp(utilityAutoD / coef.get(Mode.autoPassenger).get("nestingCoefficient")) / expsumNestAuto) * (Math.exp(coef.get(Mode.autoPassenger).get("nestingCoefficient") * Math.log(expsumNestAuto)) / expsumTopLevel);
-            probabilityAutoP = (Math.exp(utilityAutoP / coef.get(Mode.autoPassenger).get("nestingCoefficient")) / expsumNestAuto) * (Math.exp(coef.get(Mode.autoPassenger).get("nestingCoefficient") * Math.log(expsumNestAuto)) / expsumTopLevel);
+            probabilityAutoD =
+                    (Math.exp(utilityAutoD / nestingCoefficientAutoModes) / expsumNestAuto) * (Math.exp(nestingCoefficientAutoModes * Math.log(expsumNestAuto)) / expsumTopLevel);
+            probabilityAutoP =
+                    (Math.exp(utilityAutoP / nestingCoefficientAutoModes) / expsumNestAuto) * (Math.exp(nestingCoefficientAutoModes * Math.log(expsumNestAuto)) / expsumTopLevel);
         } else {
             probabilityAutoD = 0.0;
             probabilityAutoP = 0.0;
@@ -63,14 +79,21 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
         double probabilityBus;
         double probabilityTrain;
         double probabilityTramMetro;
+        double probabilityTaxi;
         if (expsumNestTransit > 0) {
-            probabilityBus = (Math.exp(utilityBus / coef.get(Mode.train).get("nestingCoefficient")) / expsumNestTransit) * (Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit)) / expsumTopLevel);
-            probabilityTrain = (Math.exp(utilityTrain / coef.get(Mode.train).get("nestingCoefficient")) / expsumNestTransit) * (Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit)) / expsumTopLevel);
-            probabilityTramMetro = (Math.exp(utilityTramMetro / coef.get(Mode.train).get("nestingCoefficient")) / expsumNestTransit) * (Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityBus =
+                    (Math.exp(utilityBus / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTrain =
+                    (Math.exp(utilityTrain / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTramMetro =
+                    (Math.exp(utilityTramMetro / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
+            probabilityTaxi =
+                    (Math.exp(utilityTaxi / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
         } else {
             probabilityBus = 0.0;
             probabilityTrain = 0.0;
             probabilityTramMetro = 0.0;
+            probabilityTaxi = 0.0;
         }
         double probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
         double probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
@@ -83,6 +106,7 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
         probabilities.put(Mode.bus, probabilityBus);
         probabilities.put(Mode.train, probabilityTrain);
         probabilities.put(Mode.tramOrMetro, probabilityTramMetro);
+        probabilities.put(Mode.taxi, probabilityTaxi);
         probabilities.put(Mode.walk, probabilityWalk);
         return probabilities;
     }
@@ -153,6 +177,7 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
         double timeBus = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "bus");
         double timeTrain = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "train");
         double timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "tramMetro");
+        double timeTaxi = timeAutoD;
 
         int monthlyIncome_EUR = household.getMonthlyIncome_EUR();
 
@@ -161,6 +186,7 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
         double gcBus;
         double gcTrain;
         double gcTramMetro;
+        double gcTaxi;
 
         if (monthlyIncome_EUR <= 1500) {
             gcAutoD = timeAutoD + (travelDistanceAuto * coef.get(Mode.autoDriver).get("costPerKm")) / coef.get(Mode.autoDriver).get("vot_under_1500");
@@ -168,18 +194,21 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
             gcBus = timeBus + (travelDistanceAuto * coef.get(Mode.bus).get("costPerKm")) / coef.get(Mode.bus).get("vot_under_1500");
             gcTrain = timeTrain + (travelDistanceAuto * coef.get(Mode.train).get("costPerKm")) / coef.get(Mode.train).get("vot_under_1500");
             gcTramMetro = timeTramMetro + (travelDistanceAuto * coef.get(Mode.tramOrMetro).get("costPerKm")) / coef.get(Mode.tramOrMetro).get("vot_under_1500");
+            gcTaxi = timeTaxi + (travelDistanceAuto * coef.get(Mode.taxi).get("costPerKm")) / coef.get(Mode.taxi).get("vot_under_1500");
         } else if (monthlyIncome_EUR <= 5600) {
             gcAutoD = timeAutoD + (travelDistanceAuto * coef.get(Mode.autoDriver).get("costPerKm")) / coef.get(Mode.autoDriver).get("vot_1500_to_5600");
             gcAutoP = timeAutoP + (travelDistanceAuto * coef.get(Mode.autoPassenger).get("costPerKm")) / coef.get(Mode.autoPassenger).get("vot_1500_to_5600");
             gcBus = timeBus + (travelDistanceAuto * coef.get(Mode.bus).get("costPerKm")) / coef.get(Mode.bus).get("vot_1500_to_5600");
             gcTrain = timeTrain + (travelDistanceAuto * coef.get(Mode.train).get("costPerKm")) / coef.get(Mode.train).get("vot_1500_to_5600");
             gcTramMetro = timeTramMetro + (travelDistanceAuto * coef.get(Mode.tramOrMetro).get("costPerKm")) / coef.get(Mode.tramOrMetro).get("vot_1500_to_5600");
+            gcTaxi = timeTaxi + (travelDistanceAuto * coef.get(Mode.taxi).get("costPerKm")) / coef.get(Mode.taxi).get("vot_1500_to_5600");
         } else {
             gcAutoD = timeAutoD + (travelDistanceAuto * coef.get(Mode.autoDriver).get("costPerKm")) / coef.get(Mode.autoDriver).get("vot_above_5600");
             gcAutoP = timeAutoP + (travelDistanceAuto * coef.get(Mode.autoPassenger).get("costPerKm")) / coef.get(Mode.autoPassenger).get("vot_above_5600");
             gcBus = timeBus + (travelDistanceAuto * coef.get(Mode.bus).get("costPerKm")) / coef.get(Mode.bus).get("vot_above_5600");
             gcTrain = timeTrain + (travelDistanceAuto * coef.get(Mode.train).get("costPerKm")) / coef.get(Mode.train).get("vot_above_5600");
             gcTramMetro = timeTramMetro + (travelDistanceAuto * coef.get(Mode.tramOrMetro).get("costPerKm")) / coef.get(Mode.tramOrMetro).get("vot_above_5600");
+            gcTaxi = timeTaxi + (travelDistanceAuto * coef.get(Mode.taxi).get("costPerKm")) / coef.get(Mode.taxi).get("vot_above_5600");
         }
 
         EnumMap<Mode, Double> generalizedCosts = new EnumMap<>(Mode.class);
@@ -189,6 +218,7 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
         generalizedCosts.put(Mode.bus, gcBus);
         generalizedCosts.put(Mode.train, gcTrain);
         generalizedCosts.put(Mode.tramOrMetro, gcTramMetro);
+        generalizedCosts.put(Mode.taxi, gcTramMetro);
         generalizedCosts.put(Mode.walk, 0.);
         return generalizedCosts;
 
