@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
@@ -212,7 +213,7 @@ public final class TravelDemandGenerator {
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         for (Purpose purpose : Purpose.getAllPurposes()){
-            ((ModeChoice) modeChoice).registerModeChoiceCalculator(purpose, new ModeChoiceCalculatorImpl());
+            ((ModeChoice) modeChoice).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
             logger.info("Registering mode choice calculators based on 2008 MiD survey");
         }
         modeChoice.run();
