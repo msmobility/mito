@@ -27,31 +27,23 @@ public class ModeChoice extends Module {
     public ModeChoice(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
         boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
+        //AV option is deactivated for now, since it uses outdate mode choice calculators.
 
-        if(!includeAV) {
-            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBW, dataSet), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBE, dataSet), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBS, dataSet), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBO, dataSet), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.HBR, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBR, dataSet), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.NHBW, dataSet), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.NHBO, dataSet), dataSet.getModeChoiceCalibrationData()));
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
-        } else {
-            modeChoiceCalculatorByPurpose.put(Purpose.HBW, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBE, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBS, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBO, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.HBR, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new AVModeChoiceCalculatorImpl());
-            modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new AirportModeChoiceCalculator());
-        }
+        modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBW, dataSet), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBE, dataSet), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBS, dataSet), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBO, dataSet), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.HBR, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBR, dataSet), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.NHBW, dataSet), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.NHBO, dataSet), dataSet.getModeChoiceCalibrationData()));
+        modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
+        logger.info("Using the mode choice calculators obtained from MID 2017. Register alternative mode choice calculators is desired.");
+
     }
 
     public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {
         final ModeChoiceCalculator prev = modeChoiceCalculatorByPurpose.put(purpose, modeChoiceCalculator);
-        if(prev != null) {
+        if (prev != null) {
             logger.info("Overwrote mode choice calculator for purpose " + purpose + " with " + modeChoiceCalculator.getClass());
         }
     }
@@ -150,7 +142,7 @@ public class ModeChoice extends Module {
                     destinationId);
             return modeChoiceCalculator.calculateProbabilities(purpose, household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                     travelDistanceNMT, dataSet.getPeakHour());
-    }
+        }
 
         private void chooseMode(MitoTrip trip, EnumMap<Mode, Double> probabilities) {
             if (probabilities == null) {
@@ -160,7 +152,7 @@ public class ModeChoice extends Module {
 
             //found Nan when there is no transit!!
             probabilities.replaceAll((mode, probability) ->
-                    probability.isNaN() ? 0: probability);
+                    probability.isNaN() ? 0 : probability);
 
             double sum = MitoUtil.getSum(probabilities.values());
             if (sum > 0) {
