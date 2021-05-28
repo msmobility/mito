@@ -179,7 +179,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                     utilityTravel += binLogCoef.get("pers_18to29_w");
                 } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)) {
                     utilityTravel += binLogCoef.get("pers_18to29_s");
-                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)) {
+                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED) ||
+                        p.getMitoOccupationStatus().equals(MitoOccupationStatus.RETIRED)) {
                     utilityTravel += binLogCoef.get("pers_18to29_u");
                 }
             } else if (p.getAge() < 65) {
@@ -187,7 +188,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                     utilityTravel += binLogCoef.get("pers_30to64_w");
                 } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)) {
                     utilityTravel += binLogCoef.get("pers_30to64_s");
-                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)) {
+                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED) ||
+                        p.getMitoOccupationStatus().equals(MitoOccupationStatus.RETIRED)) {
                     utilityTravel += binLogCoef.get("pers_30to64_u");
                 }
             } else {

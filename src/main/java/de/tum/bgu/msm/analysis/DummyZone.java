@@ -18,6 +18,6 @@ public class DummyZone extends MitoZone {
 
     @Override
     public int getZoneId() {
-        return 0;
+        return 1;
     }
 }
