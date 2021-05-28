@@ -38,22 +38,31 @@ public class OmxSkimsReader extends AbstractOmxReader implements SkimsReader {
         //todo has to be probably in silo
         SkimTravelTimes skimTravelTimes;
         skimTravelTimes = (SkimTravelTimes) dataSet.getTravelTimes();
-        skimTravelTimes.readSkim("bus", Resources.instance.getRelativePath(Properties.BUS_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
-        skimTravelTimes.readSkim("tramMetro", Resources.instance.getRelativePath(Properties.TRAM_METRO_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
-        skimTravelTimes.readSkim("train", Resources.instance.getRelativePath(Properties.TRAIN_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
+        skimTravelTimes.readSkim("bus", Resources.instance.getRelativePath(Properties.BUS_TRAVEL_TIME_SKIM).toString(),
+                Resources.instance.getString(Properties.BUS_TRAVEL_TIME_SKIM_MATRIX), 1/60.);
+        skimTravelTimes.readSkim("tramMetro", Resources.instance.getRelativePath(Properties.TRAM_METRO_TRAVEL_TIME_SKIM).toString(),
+                Resources.instance.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM_MATRIX), 1/60.);
+        skimTravelTimes.readSkim("train", Resources.instance.getRelativePath(Properties.TRAIN_TRAVEL_TIME_SKIM).toString(),
+                Resources.instance.getString(Properties.TRAIN_TRAVEL_TIME_SKIM_MATRIX), 1/60.);
     }
 
     private void readTravelTimeSkims() {
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("car", Resources.instance.getRelativePath(Properties.AUTO_PEAK_SKIM).toString(), "mat1", 1/60.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bus", Resources.instance.getRelativePath(Properties.BUS_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetro", Resources.instance.getRelativePath(Properties.TRAM_METRO_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.instance.getRelativePath(Properties.TRAIN_TRAVEL_TIME_SKIM).toString(), "mat1", 1/60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("car", Resources.instance.getRelativePath(Properties.AUTO_PEAK_SKIM).toString(),
+                Resources.instance.getString(Properties.AUTO_PEAK_SKIM_MATRIX), 1/60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bus", Resources.instance.getRelativePath(Properties.BUS_TRAVEL_TIME_SKIM).toString(),
+                Resources.instance.getString(Properties.BUS_TRAVEL_TIME_SKIM_MATRIX), 1/60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("tramMetro", Resources.instance.getRelativePath(Properties.TRAM_METRO_TRAVEL_TIME_SKIM).toString(),
+                Resources.instance.getString(Properties.TRAM_METRO_TRAVEL_TIME_SKIM_MATRIX), 1/60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("train", Resources.instance.getRelativePath(Properties.TRAIN_TRAVEL_TIME_SKIM).toString(),
+                Resources.instance.getString(Properties.TRAIN_TRAVEL_TIME_SKIM_MATRIX), 1/60.);
     }
 
     private void readTravelDistances(){
-        IndexedDoubleMatrix2D distanceSkimAuto = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.instance.getRelativePath(Properties.AUTO_TRAVEL_DISTANCE_SKIM).toString(),"mat1", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimAuto = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.instance.getRelativePath(Properties.AUTO_TRAVEL_DISTANCE_SKIM).toString(),
+                Resources.instance.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM_MATRIX), 1. / 1000.);
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
-        IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.instance.getRelativePath(Properties.NMT_TRAVEL_DISTANCE_SKIM).toString(),"mat1", 1. / 1000.);
+        IndexedDoubleMatrix2D distanceSkimNMT = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.instance.getRelativePath(Properties.NMT_TRAVEL_DISTANCE_SKIM).toString(),
+                Resources.instance.getString(Properties.NMT_TRAVEL_DISTANCE_SKIM_MATRIX), 1. / 1000.);
         dataSet.setTravelDistancesNMT(new MatrixTravelDistances(distanceSkimNMT));
     }
 }

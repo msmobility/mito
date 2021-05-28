@@ -302,6 +302,7 @@ public class TripsByPurposeGeneratorPersonBasedHurdleModel extends RandomizableC
                 utilityTravel += coefficients.get("p.occupation_student");
                 break;
             case UNEMPLOYED:
+            case RETIRED:
                 utilityTravel += coefficients.get("p.occupation_unemployed");
                 break;
         }
