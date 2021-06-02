@@ -326,12 +326,7 @@ public final class TravelDemandGenerator2WithMoped {
         timeOfDayChoiceDiscretionary.run();
 
         logger.info("Running trip scaling");
-        if (Resources.instance.getBoolean(Properties.RUN_TRIP_SCALING, false)) {
-            tripScaling.run();
-        }else{
-            dataSet.getTrips().values().forEach(trip -> dataSet.addTripToSubsample(trip));
-        }
-
+        tripScaling.run();
 
         matsimPopulationGenerator.run();
 
@@ -352,7 +347,7 @@ public final class TravelDemandGenerator2WithMoped {
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
-            //SummarizeData.writeMatsimPlans(dataSet, scenarioName);
+            SummarizeData.writeMatsimPlans(dataSet, scenarioName);
         }
     }
 }

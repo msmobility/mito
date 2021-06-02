@@ -303,7 +303,7 @@ public final class TravelDemandGenerator2 {
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
-            //SummarizeData.writeMatsimPlans(dataSet, scenarioName);
+            SummarizeData.writeMatsimPlans(dataSet, scenarioName);
         }
     }
 }
