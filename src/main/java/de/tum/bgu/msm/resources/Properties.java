@@ -31,9 +31,6 @@ public class Properties {
     public static final String TG_BINARY_LOGIT_COEFFICIENTS = "tg.binary.logit.coeffs";
     public static final String TG_NEGATIVE_BINOMIAL_COEFFICIENTS = "tg.negative.binomial.coeffs";
 
-    public static final String BASE_DIRECTORY = "base.directory";
-    public static final String TRAVEL_TIME_BUDGET_JS = "ttb.js";
-
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";
     public static final String TRAIN_TRAVEL_TIME_SKIM = "train.travelTime";
@@ -90,4 +87,14 @@ public class Properties {
     public static final String MOPED_PROPERTIES = "moped.properties";
     public static final String RUN_MOPED = "run.moped";
     public static final String SCENARIO_MUC = "scenario.mucCity";
+    public static final String MC_COEFFICIENTS = "mc.coefficient.file.suffix";
+
+    public static final String BIKE_OWNERSHIP_COEFFICIENTS = "bicycle.ownership.coefficients";
+
+    public static final String BUS_TRAVEL_TIME_SKIM_MATRIX = "bus.travelTime.matrix";
+    public static final String TRAM_METRO_TRAVEL_TIME_SKIM_MATRIX = "tramMetro.travelTime.matrix";
+    public static final String TRAIN_TRAVEL_TIME_SKIM_MATRIX = "train.travelTime.matrix";
+    public static final String AUTO_TRAVEL_DISTANCE_SKIM_MATRIX = "auto.travelDistance.matrix";
+    public static final String NMT_TRAVEL_DISTANCE_SKIM_MATRIX = "nmt.travelDistance.matrix";
+    public static final String AUTO_PEAK_SKIM_MATRIX = "auto.peak.travelTime.matrix";
 }
