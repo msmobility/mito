@@ -35,6 +35,7 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
     //private int posWorker = -1; // question
 
     private int occupationCounter = 0;
+    private int tooLongCommuteCounter;
 
 
     // constructor
@@ -59,6 +60,7 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
             logger.warn("There are " + noIncomeHouseholds + " households with no income after reading all persons.");
         }
         logger.info("There are " + occupationCounter + " persons without occupation (student or worker).");
+        logger.warn("Remove occupatioon of too long trips of " + tooLongCommuteCounter + " persons");
     }
 
     @Override
@@ -121,8 +123,8 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
             //final boolean driversLicense = MitoGender.obtainLicense(mitoGender, age); // new, added by Alona, Quick fix for drivers license
 
 
-            //mito uses monthly income, while SILO uses annual income
-            int monthlyIncome_EUR = Integer.parseInt(record[posIncome])/12;
+            //the SP of Germany has monthly_income
+            int monthlyIncome_EUR = Integer.parseInt(record[posIncome]);
             hh.addIncome(monthlyIncome_EUR);
 
             MitoOccupation occupation = null;
@@ -173,6 +175,14 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
                     occupationCounter++;
                     break;
             }
+
+            if (occupation != null){
+                if (dataSet.getTravelDistancesAuto().getTravelDistance(hh.getHomeZone().getZoneId(), occupation.getZoneId()) > 200) {
+                    occupation = null;
+                    tooLongCommuteCounter++;
+                }
+            }
+
             MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
 
             //int worker = Integer.parseInt(record[posOccupation]); //int worker = Integer.parseInt(record[posWorker]);
@@ -185,6 +195,8 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
             hh.addPerson(pp);
             dataSet.addPerson(pp);
         }
+
+
 
     }
 }
