@@ -217,6 +217,9 @@ public class TripsByPurposeGeneratorPersonBasedHurdleModel extends RandomizableC
         int cars = hh.getAutos();
 
         switch (cars) {
+            case 0:
+                utilityTravel += 0;
+                break;
             case 1:
                 utilityTravel += coefficients.get("hh.cars_1");
                 break;
@@ -251,6 +254,8 @@ public class TripsByPurposeGeneratorPersonBasedHurdleModel extends RandomizableC
             case 5:
                 utilityTravel += coefficients.get("hh.econStatus_5");
                 break;
+            default:
+                throw new RuntimeException("Economic status cannot be zero?");
         }
 
         AreaTypes.SGType type = hh.getHomeZone().getAreaTypeSG();
