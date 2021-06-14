@@ -19,7 +19,7 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
     private final static double TRAVEL_DISTANCE_PARAM_HBR = -0.01 * 0.874195571671594;
     private final static double IMPEDANCE_PARAM_HBR = 20;
 
-    private final static double travelDistanceParamNhbw = -0.01 * 0.853890986777326;
+    private final static double travelDistanceParamNhbw = -0.01 * 0.733731103853844;
     private final static double impedanceParamNhbw = 20;
 
     private final static double travelDistanceParamNhbo = -0.01 * 0.993491317833469;
