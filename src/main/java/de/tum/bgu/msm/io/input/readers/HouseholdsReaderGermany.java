@@ -30,7 +30,7 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
 
     public HouseholdsReaderGermany(DataSet dataSet) {
         super(dataSet);
-        this.thisPortion = Resources.instance.getInt("sp.portion");
+        this.thisPortion = Resources.instance.getInt("sp.portion", -1);
     }
 
     public int getPosTaz () {
