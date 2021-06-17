@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.input.readers.TripGenerationHurdleCoefficientReader;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
@@ -29,8 +30,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
     private Map<String, Double> negBinCoef;
 
     private int casesWithMoreThanTen = 0;
-    private double speed_bicycle_m_min = 12 * 1000 / 60;
-    private double speed_walk_m_min = 12 * 1000 / 60;
+    private double speed_bicycle_m_min = Properties.SPEED_BICYCLE_M_MIN;
+    private double speed_walk_m_min = Properties.SPEED_WALK_M_MIN;
 
 
     protected TripsByPurposeGeneratorHurdleModel(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
