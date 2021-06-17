@@ -21,8 +21,8 @@ public final class TimeOfDayChoice extends Module {
     private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
     private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
 
-    private final static double SPEED_WALK = 5 / 3.6;
-    private final static double SPEED_BICYCLE = 13 / 3.6;
+    private final static double SPEED_WALK_KMH = 5 / 3.6;
+    private final static double SPEED_BICYCLE_KMH = 12 / 3.6;
 
     private long counter = 0;
     private int issues = 0;
@@ -121,9 +121,9 @@ public final class TimeOfDayChoice extends Module {
 
     private double estimateTravelTimeForDeparture(MitoTrip trip, double arrivalInMinutes) {
         if (trip.getTripMode().equals(Mode.walk)) {
-            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_WALK;
+            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_WALK_KMH * 60;
         } else if (trip.getTripMode().equals(Mode.bicycle)) {
-            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_BICYCLE;
+            return dataSet.getTravelDistancesNMT().getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_BICYCLE_KMH * 60;
         } else {
             //both transit and car use here travel times by car
             return dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin(), trip.getTripDestination(), arrivalInMinutes * 60, "car");
