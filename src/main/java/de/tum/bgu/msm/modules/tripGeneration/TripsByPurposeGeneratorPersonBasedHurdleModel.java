@@ -31,7 +31,7 @@ public class TripsByPurposeGeneratorPersonBasedHurdleModel extends RandomizableC
 
     private int casesWithMoreThanTen = 0;
     private double speed_bicycle_m_min = 12 * 1000 / 60;
-    private double speed_walk_m_min = 12 * 1000 / 60;
+    private double speed_walk_m_min = 5 * 1000 / 60;
 
 
     protected TripsByPurposeGeneratorPersonBasedHurdleModel(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
