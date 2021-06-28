@@ -3,12 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.msmobility</groupId>
+    <groupId>de.tum.bgu.msm</groupId>
     <artifactId>mito</artifactId>
     <name>MITO</name>
-    <version>master</version>
+    <version>master-SNAPSHOT</version>
     <description>Microscopic Transportation Orchestrator</description>
-    <url>mito.zone</url>
     <inceptionYear>2015</inceptionYear>
 
     <licenses>
