@@ -2,9 +2,7 @@ package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.io.output.SummarizeData;
-import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
-import de.tum.bgu.msm.io.output.TripGenerationWriter;
+import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
@@ -292,8 +290,8 @@ public final class TravelDemandGenerator2 {
             SummarizeData.writeOutTrips(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
-            //DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
-            //ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
+            DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
+            ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {

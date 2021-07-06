@@ -84,10 +84,7 @@ public class PersonsReader extends AbstractCsvReader {
         final int workplace = Integer.parseInt(record[posWorkplaceId]);
         final int school = Integer.parseInt(record[posSchoolId]);
 
-        //final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
-        final boolean driversLicense = MitoGender.obtainLicense(mitoGender, age); // new, added by Alona, Quick fix for drivers license
-
-
+        final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
 
 
         //mito uses monthly income, while SILO uses annual income
