@@ -40,6 +40,7 @@ public final class ModeChoicePlots {
             for (Mode mode : Mode.values()) {
                 Double share = dataSet.getModeShareForPurpose(purpose, mode);
                 if (share != null) {
+                    logger.info("Mode " + mode + ": " + share + " share");
                     // Series
                     chart.addSeries(mode.name(), (int) (dataSet.getModeShareForPurpose(purpose, mode) * 100));
                 }
