@@ -93,6 +93,7 @@ public final class MitoModel2 {
         new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
+        new BicycleOwnershipReaderAndModel(dataSet).read();
 
     }
 
