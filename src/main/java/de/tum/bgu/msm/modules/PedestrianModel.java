@@ -104,11 +104,6 @@ public class PedestrianModel {
                     int id = partitionCounter.incrementAndGet();
                     int hhCounter = 0;
                     for (MitoHousehold hh : partition) {
-                        //TODO:need to decide how to narrow down the application area, now only run for munich city area
-                        /*if(!hh.getHomeZone().isMunichZone()){
-                            continue;
-                        }*/
-
                         if (hasTrip(hh)) {
                             if (LongMath.isPowerOfTwo(hhCounter)) {
                                 logger.info(hhCounter + " households done in " + id);
@@ -203,11 +198,6 @@ public class PedestrianModel {
                     int id = partitionCounter.incrementAndGet();
                     int hhCounter = 0;
                     for (MitoHousehold hh : partition) {
-                        //TODO:need to decide how to narrow down the application area, now only run for munich city area
-                        /*if(!hh.getHomeZone().isMunichZone()){
-                            continue;
-                        }*/
-
                         if (hasDiscretionaryTrip(hh)) {
                             if (LongMath.isPowerOfTwo(hhCounter)) {
                                 logger.info(hhCounter + " households done in " + id);
@@ -217,11 +207,13 @@ public class PedestrianModel {
                                     if (de.tum.bgu.msm.data.Purpose.getDiscretionaryPurposes().contains(tt.getTripPurpose())) {
                                         MopedHousehold mopedHousehold = mopedModel.getDataSet().getHouseholds().get(hh.getId());
                                         if(mopedHousehold==null){
-                                            throw new RuntimeException("Household:" + hh.getId() + " does not exist in moped household list!");
+                                            logger.warn("Household:" + hh.getId() + " does not exist in moped household list!");
+                                            continue;
                                         }
                                         MopedPerson mopedPerson = mopedModel.getDataSet().getPersons().get(pp.getId());
                                         if(mopedPerson==null){
-                                            throw new RuntimeException("Person:" + pp.getId() + " does not exist in moped person list!");
+                                            logger.warn("Person:" + pp.getId() + " does not exist in moped person list!");
+                                            continue;
                                         }
                                         MopedTrip mopedTrip = convertToMopedTt(tt);
 
@@ -464,7 +456,7 @@ public class PedestrianModel {
         String outputSubDirectory = "scenOutput/" + scenarioName + "/";
 
         logger.info("  Writing moped trips file");
-        String file = Resources.instance.getString(Properties.BASE_DIRECTORY) + "/" + outputSubDirectory + dataSet.getYear() + "/microData/mopedTrips_" +purpose+ ".csv";
+        String file = Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/microData/mopedTrips_" +purpose+ ".csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
         pwh.println("id,origin,originMoped,destination,destinationMoped,purpose,person,distance,mode");
         logger.info("total trip: " + dataSet.getTrips().values().size());
