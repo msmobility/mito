@@ -6,6 +6,8 @@ import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImplGermany;
@@ -87,14 +89,14 @@ public final class CalibrateDestinationChoiceGermany {
         Module personTripAssignmentMandatory;
         Module travelTimeBudgetMandatory;
         Module distributionMandatory;
-        Module modeChoiceMandatory;
+        ModeChoice modeChoiceMandatory;
         Module timeOfDayChoiceMandatory;
 
         Module tripGenerationDiscretionary;
         Module personTripAssignmentDiscretionary;
         Module travelTimeBudgetDiscretionary;
         Module distributionDiscretionary;
-        Module modeChoiceDiscretionary;
+        ModeChoice modeChoiceDiscretionary;
         Module timeOfDayChoiceDiscretionary;
 
         List<Purpose> purposes = Purpose.getAllPurposes();
@@ -133,6 +135,11 @@ public final class CalibrateDestinationChoiceGermany {
         tripDistributionCalibrationMandatory.close();
 
         modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
+        for (Purpose purpose : Purpose.getMandatoryPurposes()){
+            modeChoiceMandatory.registerModeChoiceCalculator(purpose,
+                    new CalibratingModeChoiceCalculatorImpl(
+                            new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+        }
         modeChoiceMandatory.run();
 
         timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
@@ -143,6 +150,12 @@ public final class CalibrateDestinationChoiceGermany {
         travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
 
         modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
+        for (Purpose purpose : Purpose.getDiscretionaryPurposes()){
+            modeChoiceDiscretionary.registerModeChoiceCalculator(purpose,
+                    new CalibratingModeChoiceCalculatorImpl(
+                            new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+        }
+
         timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
 
 
@@ -201,6 +214,8 @@ public final class CalibrateDestinationChoiceGermany {
         if (Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
+        dataSet.setTravelTimes(new SkimTravelTimes());
+        new OmxSkimsReader(dataSet).read();
         //new JobReader(dataSet, config.getJobTypeFactory()).read();
         new SchoolsReader(dataSet).read();
         new HouseholdsReaderGermany(dataSet).read();
@@ -208,8 +223,6 @@ public final class CalibrateDestinationChoiceGermany {
         //new PersonsReader(dataSet).read();
         //the class called Synthetic population reader: could it be renamed to PersonJobReader?
         new SyntheticPopulationReaderGermany(dataSet, config.getJobTypeFactory()).read();
-        dataSet.setTravelTimes(new SkimTravelTimes());
-        new OmxSkimsReader(dataSet).read();
         readAdditionalData();
     }
 
@@ -220,6 +233,7 @@ public final class CalibrateDestinationChoiceGermany {
         new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
+        new BicycleOwnershipReaderAndModel(dataSet).read();
 
     }
 

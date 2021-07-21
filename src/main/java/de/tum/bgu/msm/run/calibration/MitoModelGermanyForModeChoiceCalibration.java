@@ -118,14 +118,14 @@ public final class MitoModelGermanyForModeChoiceCalibration {
             new BorderDampersReader(dataSet).read();
         }
         //new JobReader(dataSet, config.getJobTypeFactory()).read();
+        dataSet.setTravelTimes(new SkimTravelTimes());
+        new OmxSkimsReader(dataSet).read();
         new SchoolsReader(dataSet).read();
         new HouseholdsReaderGermany(dataSet).read();
         //new HouseholdsCoordReader(dataSet).read();
         //new PersonsReader(dataSet).read();
         //the class called Synthetic population reader: could it be renamed to PersonJobReader?
         new SyntheticPopulationReaderGermany(dataSet, config.getJobTypeFactory()).read();
-        dataSet.setTravelTimes(new SkimTravelTimes());
-        new OmxSkimsReader(dataSet).read();
         readAdditionalData();
     }
 

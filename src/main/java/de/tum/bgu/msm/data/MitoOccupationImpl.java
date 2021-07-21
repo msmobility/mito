@@ -44,7 +44,7 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     @Override
     public OptionalInt getStartTime_min() {
         if(startTime >= 0) {
-            return OptionalInt.of(endTime);
+            return OptionalInt.of(startTime);
         } else {
             return OptionalInt.empty();
         }

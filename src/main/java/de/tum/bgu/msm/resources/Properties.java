@@ -97,4 +97,7 @@ public class Properties {
     public static final String AUTO_TRAVEL_DISTANCE_SKIM_MATRIX = "auto.travelDistance.matrix";
     public static final String NMT_TRAVEL_DISTANCE_SKIM_MATRIX = "nmt.travelDistance.matrix";
     public static final String AUTO_PEAK_SKIM_MATRIX = "auto.peak.travelTime.matrix";
+
+    public final static double SPEED_WALK_M_MIN = 5 * 1000 / 60;
+    public final static double SPEED_BICYCLE_M_MIN = 12 * 1000 / 60;
 }
