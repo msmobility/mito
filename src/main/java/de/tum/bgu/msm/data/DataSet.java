@@ -3,6 +3,7 @@ package de.tum.bgu.msm.data;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
+import de.tum.bgu.msm.data.impedances.Impedance;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
@@ -13,6 +14,8 @@ import java.util.*;
 public class DataSet {
 
     private TravelTimes travelTimes;
+
+    private Map<String, Impedance> impedances = new HashMap<>();
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
@@ -56,6 +59,14 @@ public class DataSet {
 
     public TravelTimes setTravelTimes(TravelTimes travelTimes) {
         return this.travelTimes = travelTimes;
+    }
+
+    public Map<String, Impedance> getImpedances() {
+        return this.impedances;
+    }
+
+    public void addImpedance(String name, Impedance impedance) {
+        this.impedances.put(name, impedance);
     }
 
     public Map<Integer, MitoPerson> getPersons() {

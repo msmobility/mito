@@ -4,11 +4,15 @@ import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.impedances.Impedance;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
+import de.tum.bgu.msm.io.input.readers.DestinationChoiceCoefficientReader;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -20,8 +24,17 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
     private final Purpose purpose;
     private final Map<Integer, MitoZone> zones;
     private final TravelDistances travelDistances;
+    private final Map<String, Impedance> impedances;
 
 
+    /**
+     * The constructor for calibration
+     * @param purpose
+     * @param dataSet
+     * @param factory
+     * @param travelDistanceCalibrationK
+     * @param impendanceCalibrationK
+     */
     DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet,
                                          DestinationUtilityCalculatorFactory factory,
                                          double travelDistanceCalibrationK,
@@ -29,8 +42,29 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
-        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
+        this.impedances = dataSet.getImpedances();
+        Map<String, Double> coefficients = new DestinationChoiceCoefficientReader(dataSet, purpose, Resources.instance.getDestinationChoiceCoefficients()).readCoefficientsForThisPurpose();
+        coefficients.put(ExplanatoryVariable.calibrationFactorAlphaDistance, travelDistanceCalibrationK);
+        coefficients.put(ExplanatoryVariable.calibrationFactorBetaExpDistance, impendanceCalibrationK);
+        calculator = factory.createDestinationUtilityCalculator(purpose,coefficients);
     }
+
+    /**
+     * The constructor for models already calibrated
+     * @param purpose
+     * @param dataSet
+     * @param factory
+     */
+    DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet,
+                                         DestinationUtilityCalculatorFactory factory) {
+        this.purpose = purpose;
+        this.zones = dataSet.getZones();
+        this.travelDistances = dataSet.getTravelDistancesNMT();
+        this.impedances = dataSet.getImpedances();
+        Map<String, Double> coefficients = new DestinationChoiceCoefficientReader(dataSet, purpose, Resources.instance.getDestinationChoiceCoefficients()).readCoefficientsForThisPurpose();
+        calculator = factory.createDestinationUtilityCalculator(purpose,coefficients);
+    }
+
 
     @Override
     public Tuple<Purpose, IndexedDoubleMatrix2D> call() {
@@ -38,8 +72,11 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
         long counter = 0;
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
-                final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
-                        travelDistances.getTravelDistance(origin.getId(), destination.getId()));
+                Map<String, Double> variables  = new HashMap<>();
+                variables.put(ExplanatoryVariable.logAttraction, destination.getTripAttraction(purpose));
+                variables.put(ExplanatoryVariable.distance_km, travelDistances.getTravelDistance(origin.getId(), destination.getId()));
+                variables.put(ExplanatoryVariable.tomTomOdIntensity, impedances.get(ExplanatoryVariable.tomTomOdIntensity).getTravelTime(origin, destination, 0, null));
+                final double utility =  calculator.calculateExpUtility(variables);
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination + " | Distance: "

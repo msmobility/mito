@@ -188,4 +188,12 @@ public class Resources {
     public Path getBicycleOwnershipInputFile() {
         return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.BIKE_OWNERSHIP_COEFFICIENTS));
     }
+
+    public Path getDestinationChoiceCoefficients() {
+        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.DC_COEFFICIENTS));
+    }
+
+    public Path getTomTomMatrixPath() {
+        return baseDirectory.resolve("input/destinationChoice/tomtom_od.omx");
+    }
 }

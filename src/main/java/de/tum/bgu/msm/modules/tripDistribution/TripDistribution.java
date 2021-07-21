@@ -41,9 +41,18 @@ public final class TripDistribution extends Module {
     private final Map<Purpose, Double> travelDistanceCalibrationParameters;
     private final Map<Purpose, Double> impedanceCalibrationParameters;
     private final boolean useBudgetsInDestinationChoice;
-
+    private final boolean calibrateDcModels;
     private final DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory;
 
+    /**
+     * To calibrate the DC models
+     * @param dataSet
+     * @param purposes
+     * @param travelDistanceCalibrationParameters
+     * @param impedanceCalibrationParameters
+     * @param useBudgetsInDestinationChoice
+     * @param destinationUtilityCalculatorFactory
+     */
     public TripDistribution(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
                             Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
         super(dataSet, purposes);
@@ -51,20 +60,23 @@ public final class TripDistribution extends Module {
         this.impedanceCalibrationParameters = impedanceCalibrationParameters;
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
+        this.calibrateDcModels = true;
     }
 
+    /**
+     * For DC-calibrated model
+     * @param dataSet
+     * @param purposes
+     * @param useBudgetsInDestinationChoice
+     * @param destinationUtilityCalculatorFactory
+     */
     public TripDistribution(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
         super(dataSet, purposes);
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
         travelDistanceCalibrationParameters = new HashMap<>();
         impedanceCalibrationParameters = new HashMap<>();
-        for (Purpose purpose : Purpose.getAllPurposes()){
-            travelDistanceCalibrationParameters.put(purpose, 1.0);
-            impedanceCalibrationParameters.put(purpose, 1.0);
-        }
-
-
+        this.calibrateDcModels = false;
     }
 
     @Override
@@ -81,10 +93,15 @@ public final class TripDistribution extends Module {
         for (Purpose purpose : purposes) {
             if (!purpose.equals(Purpose.AIRPORT)){
                 //Distribution of trips to the airport does not need a matrix of weights
-                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
-                        destinationUtilityCalculatorFactory,
-                        travelDistanceCalibrationParameters.get(purpose),
-                        impedanceCalibrationParameters.get(purpose)));
+                if (calibrateDcModels){
+                    utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
+                            destinationUtilityCalculatorFactory,
+                            travelDistanceCalibrationParameters.get(purpose),
+                            impedanceCalibrationParameters.get(purpose)));
+                } else {
+                    utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
+                            destinationUtilityCalculatorFactory));
+                }
             }
         }
         ConcurrentExecutor<Tuple<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);

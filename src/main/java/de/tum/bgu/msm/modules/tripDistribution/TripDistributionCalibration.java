@@ -29,12 +29,13 @@ public class TripDistributionCalibration extends Module {
 
         super(dataSet, purposes);
         iteration = 0;
-        observedAverageDistances.put(Purpose.HBE , 7.29);
-        observedAverageDistances.put(Purpose.HBW , 18.1);
+        observedAverageDistances.put(Purpose.HBE , 7.2);
+        observedAverageDistances.put(Purpose.HBW , 18.2);
         observedAverageDistances.put(Purpose.HBO , 10.4);
-        observedAverageDistances.put(Purpose.HBS , 5.07);
-        observedAverageDistances.put(Purpose.NHBO , 11.7);
-        observedAverageDistances.put(Purpose.NHBW , 16.1);
+        observedAverageDistances.put(Purpose.HBR , 15.1);
+        observedAverageDistances.put(Purpose.HBS , 4.8);
+        observedAverageDistances.put(Purpose.NHBO , 10.9);
+        observedAverageDistances.put(Purpose.NHBW , 14.6);
 
         String purposesString = "";
         for (Purpose purpose : purposes) {

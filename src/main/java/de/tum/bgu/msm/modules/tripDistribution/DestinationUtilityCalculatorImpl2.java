@@ -2,6 +2,8 @@ package de.tum.bgu.msm.modules.tripDistribution;
 
 import de.tum.bgu.msm.data.Purpose;
 
+import java.util.Map;
+
 public class DestinationUtilityCalculatorImpl2 implements DestinationUtilityCalculator {
 
     private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.01 * 1.87668768839999;
@@ -28,7 +30,7 @@ public class DestinationUtilityCalculatorImpl2 implements DestinationUtilityCalc
     private double distanceParam;
     private double impedanceParam;
 
-    DestinationUtilityCalculatorImpl2(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+    DestinationUtilityCalculatorImpl2(Purpose purpose, Map<String, Double> coefficients) {
         switch (purpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;
@@ -62,15 +64,20 @@ public class DestinationUtilityCalculatorImpl2 implements DestinationUtilityCalc
             default:
                 throw new RuntimeException("not implemented!");
         }
+        double travelDistanceCalibrationK = coefficients.get(ExplanatoryVariable.calibrationFactorAlphaDistance);
+        double impendanceCalibrationK = coefficients.get(ExplanatoryVariable.calibrationFactorBetaExpDistance);
 
         distanceParam = distanceParam * travelDistanceCalibrationK;
         impedanceParam = impedanceParam * impendanceCalibrationK;
-
     }
 
+
     @Override
-    public double calculateUtility(double attraction, double travelDistance) {
-        if(attraction == 0) {
+    public double calculateExpUtility(Map<String, Double> variables) {
+
+        double attraction = variables.get(ExplanatoryVariable.logAttraction);
+        double travelDistance = variables.get(ExplanatoryVariable.distance_km);
+        if (attraction == 0) {
             return 0.;
         }
         double impedance = impedanceParam * Math.exp(distanceParam * travelDistance);

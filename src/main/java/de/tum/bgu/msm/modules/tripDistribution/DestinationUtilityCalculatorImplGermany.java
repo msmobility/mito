@@ -2,6 +2,8 @@ package de.tum.bgu.msm.modules.tripDistribution;
 
 import de.tum.bgu.msm.data.Purpose;
 
+import java.util.Map;
+
 public class DestinationUtilityCalculatorImplGermany implements DestinationUtilityCalculator {
 
     private final static double TRAVEL_DISTANCE_PARAM_HBW = -0.01 * 0.545653257377378;
@@ -30,7 +32,7 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
     private double maxDistance_km;
     private double attractionParam = 1.;
 
-    DestinationUtilityCalculatorImplGermany(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+    DestinationUtilityCalculatorImplGermany(Purpose purpose, Map<String, Double> coefficients) {
         switch (purpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;
@@ -72,20 +74,27 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
                 throw new RuntimeException("not implemented!");
         }
 
+        double travelDistanceCalibrationK = coefficients.get(ExplanatoryVariable.calibrationFactorAlphaDistance);
+        double impendanceCalibrationK = coefficients.get(ExplanatoryVariable.calibrationFactorBetaExpDistance);
+
         distanceParam = distanceParam * travelDistanceCalibrationK;
         impedanceParam = impedanceParam * impendanceCalibrationK;
 
+
     }
 
+
     @Override
-    public double calculateUtility(double attraction, double travelDistance) {
+    public double calculateExpUtility(Map<String, Double> variables) {
+
+
+
+        double attraction = variables.get(ExplanatoryVariable.logAttraction);
+        double travelDistance = variables.get(ExplanatoryVariable.distance_km);
         if(attraction == 0) {
             return 0.;
         }
-        //if(travelDistance > maxDistance_km){
-        //    return 0.;
-        //}
         double impedance = impedanceParam * Math.exp(distanceParam * travelDistance);
-        return Math.exp(impedance) * Math.pow(attraction, attractionParam);
+        return Math.exp(impedance) * attraction;
     }
 }

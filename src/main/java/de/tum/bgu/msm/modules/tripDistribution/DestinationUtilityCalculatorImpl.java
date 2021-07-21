@@ -2,6 +2,8 @@ package de.tum.bgu.msm.modules.tripDistribution;
 
 import de.tum.bgu.msm.data.Purpose;
 
+import java.util.Map;
+
 public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalculator {
 
     private final static double TRAVEL_DISTANCE_PARAM_HBW =  -0.07;
@@ -28,7 +30,7 @@ public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalcu
     private double distanceParam;
     private double impedanceParam;
 
-    DestinationUtilityCalculatorImpl(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+    DestinationUtilityCalculatorImpl(Purpose purpose, Map<String, Double> coefficients) {
         switch (purpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;
@@ -62,14 +64,23 @@ public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalcu
             default:
                 throw new RuntimeException("not implemented!");
         }
+        double travelDistanceCalibrationK = coefficients.get(ExplanatoryVariable.calibrationFactorAlphaDistance);
+        double impendanceCalibrationK = coefficients.get(ExplanatoryVariable.calibrationFactorBetaExpDistance);
 
         distanceParam = distanceParam * travelDistanceCalibrationK;
         impedanceParam = impedanceParam * impendanceCalibrationK;
 
+
     }
 
+
     @Override
-    public double calculateUtility(double attraction, double travelDistance) {
+    public double calculateExpUtility(Map<String, Double> variables) {
+
+
+
+        double attraction = variables.get(ExplanatoryVariable.logAttraction);
+        double travelDistance = variables.get(ExplanatoryVariable.distance_km);
         if(attraction == 0) {
             return 0.;
         }

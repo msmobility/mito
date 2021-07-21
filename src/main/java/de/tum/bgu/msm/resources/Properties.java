@@ -95,4 +95,6 @@ public class Properties {
 
     public final static double SPEED_WALK_M_MIN = 5 * 1000 / 60;
     public final static double SPEED_BICYCLE_M_MIN = 12 * 1000 / 60;
+
+    public static final String DC_COEFFICIENTS = "dc.coefficients";
 }
