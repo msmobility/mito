@@ -94,7 +94,6 @@ public final class MitoModel2 {
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
-
     }
 
     private void printOutline(long startTime) {

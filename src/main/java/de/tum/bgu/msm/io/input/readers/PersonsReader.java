@@ -88,7 +88,7 @@ public class PersonsReader extends AbstractCsvReader {
 
 
         //mito uses monthly income, while SILO uses annual income
-        int monthlyIncome_EUR = Integer.parseInt(record[posIncome])/12;
+        double monthlyIncome_EUR = Double.parseDouble(record[posIncome])/12;
         hh.addIncome(monthlyIncome_EUR);
 
         MitoOccupation occupation = null;

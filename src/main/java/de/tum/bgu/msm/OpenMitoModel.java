@@ -95,7 +95,7 @@ public final class OpenMitoModel {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
         new ImpedanceOmxSkimReader(dataSet).readTomTomMatrix();
-
+        new OpenAttractorDataReader(dataSet).read();
     }
 
     private void printOutline(long startTime) {
