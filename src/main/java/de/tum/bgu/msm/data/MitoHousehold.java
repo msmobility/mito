@@ -47,7 +47,7 @@ public class MitoHousehold implements Id, MicroLocation {
         return monthlyIncome_EUR;
     }
 
-    public void addIncome(int inc) {
+    public void addIncome(double inc) {
         monthlyIncome_EUR += inc;
     }
 

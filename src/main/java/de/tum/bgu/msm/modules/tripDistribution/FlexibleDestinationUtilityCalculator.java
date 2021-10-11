@@ -27,6 +27,12 @@ public class FlexibleDestinationUtilityCalculator implements DestinationUtilityC
 
         utility += coefficients.get(ExplanatoryVariable.tomTomOdIntensity) * variables.get(ExplanatoryVariable.tomTomOdIntensity);
 
+        if (variables.get(ExplanatoryVariable.numberOfTweets) == 0){
+            return 0.;
+        } else {
+            utility += coefficients.get(ExplanatoryVariable.numberOfTweets) * Math.log(variables.get(ExplanatoryVariable.numberOfTweets));
+        }
+
         return Math.exp(utility);
     }
 }

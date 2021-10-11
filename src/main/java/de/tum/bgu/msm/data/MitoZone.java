@@ -12,6 +12,8 @@ import org.locationtech.jts.geom.Point;
 import org.matsim.core.utils.geometry.geotools.MGC;
 
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -39,6 +41,15 @@ public class MitoZone implements Id, Location {
     private float distanceToNearestRailStop;
     private Geometry geometry;
 
+    public void setOpenDataExplanatoryVariables(Map<String, Double> openDataExplanatoryVariables) {
+        this.openDataExplanatoryVariables = openDataExplanatoryVariables;
+    }
+
+    private Map<String, Double> openDataExplanatoryVariables = new HashMap<>();
+
+    public Map<String, Double> getOpenDataExplanatoryVariables() {
+        return openDataExplanatoryVariables;
+    }
 
     public MitoZone(int id, AreaTypes.SGType areaType) {
         this.zoneId = id;

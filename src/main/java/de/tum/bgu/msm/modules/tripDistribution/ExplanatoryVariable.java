@@ -10,4 +10,6 @@ public class ExplanatoryVariable {
     public final static String logAttraction= "logAttraction";
     public static String calibrationFactorBetaExpDistance = "calibrationFactorBetaExpDistance";
     public static String tomTomOdIntensity = "tomTomOdIntensity";
+    public static String numberOfTweets = "twitterCount";
+    public static String numberOfTweetsPerArea = "twitterCountDensity";
 }
