@@ -60,7 +60,7 @@ public class ModeChoice extends Module {
 
     private void modeChoiceByPurpose() {
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        for (Purpose purpose : Purpose.values()) {
+        for (Purpose purpose : purposes) {
             executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, modeChoiceCalculatorByPurpose.get(purpose)));
         }
         executor.execute();

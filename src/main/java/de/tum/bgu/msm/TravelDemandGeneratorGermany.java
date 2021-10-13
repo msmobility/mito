@@ -22,6 +22,7 @@ import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPerso
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.core.population.PopulationUtils;
 
 import java.util.List;
 
@@ -281,5 +282,8 @@ public final class TravelDemandGeneratorGermany {
         if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
+
+        String populationFile = Resources.instance.getBaseDirectory().toString() + "/" + "scenOutput/" + scenarioName + "/" + dataSet.getYear() + "/plans_sd.xml.gz";
+        PopulationUtils.writePopulation(dataSet.getPopulation(), populationFile);
     }
 }

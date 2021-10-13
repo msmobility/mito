@@ -23,10 +23,14 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
     private int posCoordX = -1;
     private int posCoordY = -1;
 
+    private int counter = 0;
+
     private static final Logger logger = Logger.getLogger(HouseholdsReaderGermany.class);
+    private final int thisPortion;
 
     public HouseholdsReaderGermany(DataSet dataSet) {
         super(dataSet);
+        this.thisPortion = Resources.instance.getInt("sp.portion", -1);
     }
 
     public int getPosTaz () {
@@ -42,7 +46,8 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
 
     @Override
     protected void processHeader(String[] header) {
-        posId = MitoUtil.findPositionInArray("hhid", header);
+        //currently, the 1 pecent file names this hhid and the 100 percent id
+        posId = MitoUtil.findPositionInArray("id", header);
         posTaz = MitoUtil.findPositionInArray("zone", header);
         posHHSize = MitoUtil.findPositionInArray("hhSize", header);
         posAutos = MitoUtil.findPositionInArray("autos", header);
@@ -55,7 +60,16 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
         int id = Integer.parseInt(record[posId]);
         int autos = Integer.parseInt(record[posAutos]);
         MitoHousehold hh = new MitoHousehold(id, 0, autos);
-        dataSet.addHousehold(hh);
+        if (counter == 9){
+            counter =0;
+        } else {
+            counter++;
+        }
+        if (counter == thisPortion || thisPortion == -1){
+            dataSet.addHousehold(hh);
+        }
+
+
 
         //int hhId = Integer.parseInt(record[posHHId]);
 
