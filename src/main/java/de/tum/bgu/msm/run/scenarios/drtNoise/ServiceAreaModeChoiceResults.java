@@ -49,13 +49,29 @@ public final class ServiceAreaModeChoiceResults {
                             .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
                             //calculate and add share to data set table
                             .forEach((mode, count) -> {
-                                        modes.add(mode, (int) (((double) count / totalTrips) * 100.));
+                                        modes.add(mode, count.intValue() );
                                     }
                             );
                     PieChart.createPieChart(Resources.instance.getBaseDirectory() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/" + purpose + "_serviceArea", modes, "Mode Choice " + purpose);
                 }
         );
 
-
+        SortedMultiset<Mode> modes = TreeMultiset.create();
+        dataSet.getTrips().values().stream().filter(trip -> {
+            try {
+                final Location tripOrigin = trip.getTripOrigin();
+                if (tripOrigin != null) {
+                    final Geometry origin = dataSet.getZones().get(tripOrigin.getZoneId()).getGeometry();
+                    final Geometry destination = dataSet.getZones().get(trip.getTripDestination().getZoneId()).getGeometry();
+                    return trip.getTripMode() != null && preparedGeometry.contains(origin) && preparedGeometry.contains(destination);
+                } else {
+                    return false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }).collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting())).forEach((mode, count) -> modes.add(mode, count.intValue() ));
+        PieChart.createPieChart(Resources.instance.getBaseDirectory() + "/" + outputSubDirectory + dataSet.getYear() + "/modeChoice/allPurposeServiceArea", modes, "Mode Choice all");
     }
 }
