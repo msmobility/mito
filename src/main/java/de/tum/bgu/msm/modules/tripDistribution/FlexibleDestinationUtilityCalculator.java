@@ -19,16 +19,16 @@ public class FlexibleDestinationUtilityCalculator implements DestinationUtilityC
                         coefficients.get(ExplanatoryVariable.calibrationFactorAlphaDistance) *
                         variables.get(ExplanatoryVariable.distance_km));
 
-        if (variables.get(ExplanatoryVariable.logAttraction) == 0){
-            return 0.;
-        } else {
-            utility += coefficients.get(ExplanatoryVariable.logAttraction) * Math.log(variables.get(ExplanatoryVariable.logAttraction));
-        }
+//        if (variables.get(ExplanatoryVariable.logAttraction) == 0){
+//            utility += 0.;
+//        } else {
+//            utility += coefficients.get(ExplanatoryVariable.logAttraction) * Math.log(variables.get(ExplanatoryVariable.logAttraction));
+//        }
 
         utility += coefficients.get(ExplanatoryVariable.tomTomOdIntensity) * variables.get(ExplanatoryVariable.tomTomOdIntensity);
 
         if (variables.get(ExplanatoryVariable.numberOfTweets) == 0){
-            return 0.;
+            utility += 0;
         } else {
             utility += coefficients.get(ExplanatoryVariable.numberOfTweets) * Math.log(variables.get(ExplanatoryVariable.numberOfTweets));
         }

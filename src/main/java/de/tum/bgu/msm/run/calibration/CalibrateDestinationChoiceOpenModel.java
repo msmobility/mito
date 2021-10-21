@@ -228,6 +228,7 @@ public final class CalibrateDestinationChoiceOpenModel {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
         new ImpedanceOmxSkimReader(dataSet).readTomTomMatrix();
+        new OpenAttractorDataReader(dataSet).read();
 
     }
 
