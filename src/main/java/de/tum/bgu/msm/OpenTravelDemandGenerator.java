@@ -1,5 +1,6 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.analysis.AttractionPrinter;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
@@ -21,6 +22,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -135,6 +137,8 @@ public final class OpenTravelDemandGenerator {
             });
             timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
+
+
 
             tripScaling = new TripScaling(dataSet, purposes);
             matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, purposes);
@@ -273,6 +277,12 @@ public final class OpenTravelDemandGenerator {
         logger.info("Running time of day choice");
         timeOfDayChoiceDiscretionary.run();
 
+//        try {
+//            new AttractionPrinter().printOutAttractions(dataSet, "attractions_mito.csv");
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        System.exit(0);
 
         logger.info("Running trip scaling");
         tripScaling.run();
