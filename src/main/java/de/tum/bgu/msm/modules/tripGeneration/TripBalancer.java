@@ -49,5 +49,6 @@ public class TripBalancer {
             double oldValue = zone.getTripAttraction(purpose);
             zone.setTripAttraction(purpose, oldValue * ratio);
         }
+        logger.info("Ratio for purpose " + purpose.toString() + " = " + ratio);
     }
 }
