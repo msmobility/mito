@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.MitoOccupationStatus;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 
 import java.io.FileNotFoundException;
@@ -45,7 +46,7 @@ public class TripDistributionCalibration extends Module {
         this.impendanceParameters = impendanceParameters;
         this.travelDistanceParameters = travelDistanceParameters;
 
-        String path = Resources.instance.getBaseDirectory().toString() + "/scenOutput/";
+        String path = Resources.instance.getBaseDirectory().toString() + "/scenOutput/" + Resources.instance.getString(Properties.SCENARIO_NAME) + "/";
 
         try {
             pw = new PrintWriter(path + "dc_calibration" + purposesString + ".csv");

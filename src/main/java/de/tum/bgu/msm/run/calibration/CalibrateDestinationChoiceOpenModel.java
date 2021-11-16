@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
@@ -191,6 +192,7 @@ public final class CalibrateDestinationChoiceOpenModel {
             distributionDiscretionary.run();
         }
 
+
         tripDistributionCalibrationDiscretionary.close();
 
 
@@ -200,6 +202,21 @@ public final class CalibrateDestinationChoiceOpenModel {
         logger.info("Running time of day choice");
         timeOfDayChoiceDiscretionary.run();
 
+        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
+        SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
+
+        if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
+            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
+            SummarizeData.writeOutTrips(dataSet, scenarioName);
+        }
+        if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
+            DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
+            ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
+            SummarizeData.writeCharts(dataSet, scenarioName);
+        }
+        if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
+            //SummarizeData.writeMatsimPlans(dataSet, scenarioName);
+        }
 
     }
 
