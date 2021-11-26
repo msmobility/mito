@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Mode;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
+import de.tum.bgu.msm.modules.tripDistribution.ExplanatoryVariable;
 import de.tum.bgu.msm.util.MitoUtil;
 
 import java.nio.file.Path;
@@ -52,6 +53,10 @@ public class DestinationChoiceCoefficientReader extends AbstractCsvReader {
     @Override
     public void read() {
         super.read(path, ",");
+
+        for (String variable : ExplanatoryVariable.getAllOptionalVars()){
+            coefficients.putIfAbsent(variable, 0.);
+        }
     }
 
     public Map<String, Double> readCoefficientsForThisPurpose() {

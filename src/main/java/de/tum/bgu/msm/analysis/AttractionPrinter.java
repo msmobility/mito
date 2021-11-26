@@ -3,6 +3,9 @@ package de.tum.bgu.msm.analysis;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.jobTypes.Category;
+import de.tum.bgu.msm.data.jobTypes.JobType;
+import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -17,6 +20,10 @@ public class AttractionPrinter {
             pw.print(",");
             pw.print("attraction_" + purpose);
         }
+        for (JobType type : MunichJobType.values()){
+            pw.print(",");
+            pw.print("jobs" + type);
+        }
         pw.println();
         final Map<Integer, MitoZone> zones = dataSet.getZones();
         zones.keySet().forEach(zoneId -> {
@@ -29,6 +36,11 @@ public class AttractionPrinter {
             for (Purpose purpose : Purpose.getAllPurposes()){
                 pw.print(",");
                 pw.print(mitoZone.getTripAttraction(purpose));
+            }
+
+            for (JobType type : MunichJobType.values()){
+                pw.print(",");
+                pw.print(mitoZone.getNumberOfEmployeesForType(type));
             }
             pw.println();
         });

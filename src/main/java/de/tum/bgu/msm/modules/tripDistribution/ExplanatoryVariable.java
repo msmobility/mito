@@ -12,4 +12,20 @@ public class ExplanatoryVariable {
     public static String tomTomOdIntensity = "tomTomOdIntensity";
     public static String numberOfTweets = "twitterCount";
     public static String numberOfTweetsPerArea = "twitterCountDensity";
+    public static String numberOfFlickrPics = "flickrCount";
+    public static String osmOther = "other";
+    public static String osmFood= "food";
+    public static String osmRetail = "retail";
+    public static String osmLeisure = "leisure";
+    public static String osmEducation = "education";
+
+
+    public static String[] getOsmTypes() {
+        return new String[]{osmOther, osmEducation, osmFood, osmRetail, osmLeisure};
+    }
+
+    public static String[] getAllOptionalVars() {
+        return  new String[]{osmOther, osmEducation, osmFood, osmRetail, osmLeisure, tomTomOdIntensity,
+                numberOfFlickrPics, numberOfTweets, numberOfTweetsPerArea};
+    }
 }

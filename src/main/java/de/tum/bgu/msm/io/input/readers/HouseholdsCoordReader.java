@@ -27,6 +27,8 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
     private int posTAZId = -1;
     private final Map<Integer, List<Node>> nodesByZone = new ConcurrentHashMap<>();
 
+    private boolean logNoCoordinateWarn = true;
+
     private SimpleFeature shapeFeature; // Alona added
 
     private static final Logger logger = Logger.getLogger(HouseholdsCoordReader.class);
@@ -68,9 +70,20 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
                 logger.warn(String.format("Household %d is supposed to live in zone %d but this zone does not exist.", hhId, taz));
             }
 
+            Coordinate homeLocation;
 
-            Coordinate homeLocation = new Coordinate(
-            		Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
+            try {
+                homeLocation = new Coordinate(
+                        Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
+
+            } catch (NumberFormatException e){
+                if (logNoCoordinateWarn){
+                    logger.warn("Some dwellings do not have coordinates. The coordinates are generated at this point randomly within the home zone");
+                }
+                logNoCoordinateWarn = false;
+                homeLocation = zone.getRandomCoord(MitoUtil.getRandomObject());
+            }
+
             hh.setHomeLocation(homeLocation);
             hh.setHomeZone(zone);
             zone.addHousehold();

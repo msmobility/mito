@@ -80,8 +80,14 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
                 Map<String, Double> openDataExplanatoryVariables = destination.getOpenDataExplanatoryVariables();
                 double numberOfTweets = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfTweets);
                 double numberOfTweetsPerArea = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfTweetsPerArea);
+                double flickrPics = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfFlickrPics);
                 variables.put(ExplanatoryVariable.numberOfTweets, numberOfTweets);
                 variables.put(ExplanatoryVariable.numberOfTweetsPerArea, numberOfTweetsPerArea);
+                variables.put(ExplanatoryVariable.numberOfFlickrPics, flickrPics);
+
+                for (String osmVariable : ExplanatoryVariable.getOsmTypes()){
+                    variables.put(osmVariable, openDataExplanatoryVariables.get(osmVariable));
+                }
 
                 final double utility =  calculator.calculateExpUtility(variables);
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {

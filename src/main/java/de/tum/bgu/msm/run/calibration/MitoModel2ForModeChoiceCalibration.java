@@ -56,7 +56,7 @@ public final class MitoModel2ForModeChoiceCalibration {
     public static MitoModel2ForModeChoiceCalibration standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel2ForModeChoiceCalibration model = new MitoModel2ForModeChoiceCalibration(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModel2ForModeChoiceCalibration model = new MitoModel2ForModeChoiceCalibration(new DataSet(), Resources.instance.getScenarioName());
         model.readStandAlone(config);
         return model;
     }

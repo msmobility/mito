@@ -17,6 +17,12 @@ public class OpenAttractorDataReader extends AbstractCsvReader {
     private int zoneNotFoundCounter = 0;
     private int twitterCount;
     private int twitterCountDensity;
+    private int flickrPicsIndex;
+    private int osmLeisureIndex;
+    private int osmOtherIndex;
+    private int osmFoodIndex;
+    private int osmRetailIndex;
+    private int osmEducationIndex;
 
     public OpenAttractorDataReader(DataSet dataSet) {
         super(dataSet);
@@ -27,6 +33,7 @@ public class OpenAttractorDataReader extends AbstractCsvReader {
         zoneIndex = MitoUtil.findPositionInArray("zoneID", header);
         twitterCount = MitoUtil.findPositionInArray(ExplanatoryVariable.numberOfTweets, header);
         twitterCountDensity = MitoUtil.findPositionInArray(ExplanatoryVariable.numberOfTweetsPerArea, header);
+        flickrPicsIndex = MitoUtil.findPositionInArray("pics", header);
     }
 
     @Override
@@ -35,9 +42,22 @@ public class OpenAttractorDataReader extends AbstractCsvReader {
         MitoZone zone = dataSet.getZones().get(zoneID);
         double numberOfTweets = Double.parseDouble(record[twitterCount]);
         double numberOfTweetsPerArea = Double.parseDouble(record[twitterCountDensity]);
+        double numberOfPics = Double.parseDouble(record[flickrPicsIndex]);
+        double leisure = Double.parseDouble(record[osmLeisureIndex]);
+        double other = Double.parseDouble(record[osmOtherIndex]);
+        double food = Double.parseDouble(record[osmFoodIndex]);
+        double retail = Double.parseDouble(record[osmRetailIndex]);
+        double education = Double.parseDouble(record[osmEducationIndex]);
+
         Map<String, Double> openDataExplanatoryVariables = new HashMap<>();
         openDataExplanatoryVariables.put(ExplanatoryVariable.numberOfTweets, numberOfTweets);
         openDataExplanatoryVariables.put(ExplanatoryVariable.numberOfTweetsPerArea, numberOfTweetsPerArea);
+        openDataExplanatoryVariables.put(ExplanatoryVariable.numberOfFlickrPics, numberOfPics);
+        openDataExplanatoryVariables.put(ExplanatoryVariable.osmLeisure, leisure);
+        openDataExplanatoryVariables.put(ExplanatoryVariable.osmEducation, education);
+        openDataExplanatoryVariables.put(ExplanatoryVariable.osmFood, food);
+        openDataExplanatoryVariables.put(ExplanatoryVariable.osmRetail, retail);
+        openDataExplanatoryVariables.put(ExplanatoryVariable.osmOther, other);
 
         if(zone != null) {
             zone.setOpenDataExplanatoryVariables(openDataExplanatoryVariables);

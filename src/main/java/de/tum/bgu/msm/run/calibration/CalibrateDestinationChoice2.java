@@ -64,7 +64,7 @@ public final class CalibrateDestinationChoice2 {
     public static CalibrateDestinationChoice2 standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        CalibrateDestinationChoice2 model = new CalibrateDestinationChoice2(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        CalibrateDestinationChoice2 model = new CalibrateDestinationChoice2(new DataSet(), Resources.instance.getScenarioName());
         model.readStandAlone(config);
         return model;
     }

@@ -45,7 +45,7 @@ public final class MitoModel {
     public static MitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel model = new MitoModel(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModel model = new MitoModel(new DataSet(), Resources.instance.getScenarioName());
         model.readStandAlone(config);
         return model;
     }

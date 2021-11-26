@@ -68,7 +68,17 @@ public final class CalibrateDestinationChoiceOpenModel {
     public static CalibrateDestinationChoiceOpenModel standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        CalibrateDestinationChoiceOpenModel model = new CalibrateDestinationChoiceOpenModel(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        CalibrateDestinationChoiceOpenModel model = new CalibrateDestinationChoiceOpenModel(new DataSet(), Resources.instance.getScenarioName());
+        model.readStandAlone(config);
+        return model;
+    }
+
+    public static CalibrateDestinationChoiceOpenModel standAloneModelMultipleRuns(String propertiesFile, ImplementationConfig config, String dcCoefFile, String scenName) {
+        logger.info(" Creating standalone version of MITO ");
+        Resources.initializeResources(propertiesFile);
+        Resources.instance.setDestinationChoiceCoefficients(Resources.instance.getBaseDirectory().resolve(dcCoefFile));
+        Resources.instance.setScenarioName(scenName);
+        CalibrateDestinationChoiceOpenModel model = new CalibrateDestinationChoiceOpenModel(new DataSet(), scenName);
         model.readStandAlone(config);
         return model;
     }
@@ -126,7 +136,7 @@ public final class CalibrateDestinationChoiceOpenModel {
                 new TripDistributionCalibration(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters, impedanceCalibrationParameters);
 
-        int iterations = 20;
+        int iterations = 10;
         for (int iteration = 0; iteration < iterations; iteration++) {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
@@ -198,6 +208,9 @@ public final class CalibrateDestinationChoiceOpenModel {
 
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        Purpose.getDiscretionaryPurposes().forEach(purpose -> {
+            ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+        });
         modeChoiceDiscretionary.run();
         logger.info("Running time of day choice");
         timeOfDayChoiceDiscretionary.run();

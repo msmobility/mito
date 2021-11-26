@@ -37,7 +37,7 @@ public class RunMitoDrt {
         model.run();
         final DataSet dataSet = model.getData();
 
-        ServiceAreaModeChoiceResults.printServiceAreaModeChoiceResults(dataSet, geometry, Resources.instance.getString(Properties.SCENARIO_NAME));
+        ServiceAreaModeChoiceResults.printServiceAreaModeChoiceResults(dataSet, geometry, Resources.instance.getScenarioName());
 
 //        boolean runAssignment = Resources.instance.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
         boolean runAssignment = false;

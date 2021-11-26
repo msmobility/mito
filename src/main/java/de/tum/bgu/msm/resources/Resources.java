@@ -23,6 +23,19 @@ public class Resources {
 
     private final Path baseDirectory;
 
+    private String scenarioName = null;
+
+    public String getScenarioName() {
+        if (scenarioName == null){
+            return Resources.instance.getString(SCENARIO_NAME);
+        } else {
+            return scenarioName;
+        }
+    }
+
+    public void setScenarioName(String scenarioName) {
+        this.scenarioName = scenarioName;
+    }
 
     private Resources(Properties properties, String baseDirectory) {
         this.properties = properties;
@@ -145,12 +158,12 @@ public class Resources {
     }
 
     public Path getOutputHouseholdPath() {
-        String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
+        String scenarioName = Resources.instance.getScenarioName();
         return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve("microData").resolve("hhInclTrips.csv");
     }
 
     public Path getOutputPersonsPath() {
-        String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
+        String scenarioName = Resources.instance.getScenarioName();
         return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve("microData").resolve("ppInclTrips.csv");
     }
 
@@ -193,8 +206,20 @@ public class Resources {
         return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.BIKE_OWNERSHIP_COEFFICIENTS));
     }
 
+    Path destinationChoiceCoefficients;
+
+    public void setDestinationChoiceCoefficients(Path destinationChoiceCoefficients) {
+        this.destinationChoiceCoefficients = destinationChoiceCoefficients;
+    }
+
     public Path getDestinationChoiceCoefficients() {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.DC_COEFFICIENTS));
+
+        if (destinationChoiceCoefficients == null){
+            return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.DC_COEFFICIENTS));
+        } else {
+            return destinationChoiceCoefficients;
+        }
+
     }
 
     public Path getTomTomMatrixPath() {

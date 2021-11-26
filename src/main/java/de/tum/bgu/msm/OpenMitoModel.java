@@ -45,7 +45,7 @@ public final class OpenMitoModel {
     public static OpenMitoModel standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        OpenMitoModel model = new OpenMitoModel(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        OpenMitoModel model = new OpenMitoModel(new DataSet(), Resources.instance.getScenarioName());
         model.readStandAlone(config);
         return model;
     }

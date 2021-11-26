@@ -277,12 +277,12 @@ public final class OpenTravelDemandGenerator {
         logger.info("Running time of day choice");
         timeOfDayChoiceDiscretionary.run();
 
-//        try {
-//            new AttractionPrinter().printOutAttractions(dataSet, "attractions_mito.csv");
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        System.exit(0);
+        try {
+            new AttractionPrinter().printOutAttractions(dataSet, "attractions_mito.csv");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.exit(0);
 
         logger.info("Running trip scaling");
         tripScaling.run();

@@ -45,7 +45,7 @@ public final class MitoModelGermany {
     public static MitoModelGermany standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModelGermany model = new MitoModelGermany(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelGermany model = new MitoModelGermany(new DataSet(), Resources.instance.getScenarioName());
         model.readStandAlone(config);
         return model;
     }

@@ -35,7 +35,7 @@ public class MitoModelDrt {
     public static MitoModelDrt standAloneModel(String propertiesFile, ImplementationConfig config, Geometry serviceArea) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModelDrt model = new MitoModelDrt(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME), serviceArea);
+        MitoModelDrt model = new MitoModelDrt(new DataSet(), Resources.instance.getScenarioName(), serviceArea);
         model.readStandAlone(config);
         return model;
     }

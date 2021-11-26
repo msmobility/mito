@@ -8,6 +8,7 @@ import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -30,13 +31,13 @@ public class TripDistributionCalibration extends Module {
 
         super(dataSet, purposes);
         iteration = 0;
-        observedAverageDistances.put(Purpose.HBE , 7.2);
-        observedAverageDistances.put(Purpose.HBW , 18.2);
-        observedAverageDistances.put(Purpose.HBO , 10.4);
-        observedAverageDistances.put(Purpose.HBR , 15.1);
-        observedAverageDistances.put(Purpose.HBS , 4.8);
-        observedAverageDistances.put(Purpose.NHBO , 10.9);
-        observedAverageDistances.put(Purpose.NHBW , 14.6);
+        observedAverageDistances.put(Purpose.HBE , 6.8);
+        observedAverageDistances.put(Purpose.HBW , 16.1);
+        observedAverageDistances.put(Purpose.HBO , 8.29);
+        observedAverageDistances.put(Purpose.HBR , 10.6);
+        observedAverageDistances.put(Purpose.HBS , 4.59);
+        observedAverageDistances.put(Purpose.NHBO , 8.34);
+        observedAverageDistances.put(Purpose.NHBW , 11.5);
 
         String purposesString = "";
         for (Purpose purpose : purposes) {
@@ -46,9 +47,16 @@ public class TripDistributionCalibration extends Module {
         this.impendanceParameters = impendanceParameters;
         this.travelDistanceParameters = travelDistanceParameters;
 
-        String path = Resources.instance.getBaseDirectory().toString() + "/scenOutput/" + Resources.instance.getString(Properties.SCENARIO_NAME) + "/";
+        String path = Resources.instance.getBaseDirectory().toString() + "/scenOutput/" + Resources.instance.getScenarioName() + "/";
 
         try {
+            final File directory = new File(path);
+            if(!directory.exists()) {
+                final boolean mkdirs = (directory).mkdirs();
+                if (!mkdirs) {
+                    throw  new RuntimeException("Cannot print out the calibration results. Stop!+");
+                }
+            }
             pw = new PrintWriter(path + "dc_calibration" + purposesString + ".csv");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
