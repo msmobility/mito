@@ -48,7 +48,8 @@ public class ZonesReader extends AbstractCsvReader {
 
     @Override
     protected void processHeader(String[] header) {
-        idIndex = MitoUtil.findPositionInArray("Zone", header);
+//        idIndex = MitoUtil.findPositionInArray("Zone", header);
+        idIndex = MitoUtil.findPositionInArray("Id", header);
         areaTypeIndex = MitoUtil.findPositionInArray("BBSR_type", header);
     }
 

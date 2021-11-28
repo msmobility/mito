@@ -37,7 +37,7 @@ public class Properties {
     public static final String AUTO_TRAVEL_DISTANCE_SKIM = "auto.travelDistance";
     public static final String NMT_TRAVEL_DISTANCE_SKIM = "nmt.travelDistance";
     public static final String AREA_TYPES_AND_RAIL_DISTANCE = "areaTypes.distToRailStop";
-    public static final String TWITTER_DATA = "zones.twitter";
+    public static final String OPEN_DATA = "zones.openData";
 
     public static final String AUTONOMOUS_VEHICLE_CHOICE = "include.AVchoice";
 

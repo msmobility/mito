@@ -128,8 +128,8 @@ public class Resources {
         return baseDirectory.resolve(getString((AREA_TYPES_AND_RAIL_DISTANCE)));
     }
 
-    public Path getOpenDataTwitterFilePath() {
-        return baseDirectory.resolve(getString((TWITTER_DATA)));
+    public Path getOpenDataFilePath() {
+        return baseDirectory.resolve(getString((OPEN_DATA)));
     }
 
     public Path getExternalDepartureTimeFilePath() {

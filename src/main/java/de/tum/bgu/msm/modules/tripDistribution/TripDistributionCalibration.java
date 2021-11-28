@@ -52,7 +52,7 @@ public class TripDistributionCalibration extends Module {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        pw.println("iteration,purpose,observed,simulated,factorDistance,factorImpedance");
+        pw.println("iteration,purpose,observed,simulated,factorDistance,factorImpedance,count,ratio");
 
     }
 
@@ -92,6 +92,9 @@ public class TripDistributionCalibration extends Module {
             ratio = Math.max(ratio, 0.5);
             ratio = Math.min(ratio, 2);
 
+            if (purpose.equals(Purpose.HBS)) {
+                System.out.println(" ");
+            }
 
             travelDistanceParameters.put(purpose, travelDistanceParameters.get(purpose) * ratio);
             pw.println(iteration + "," +
@@ -99,7 +102,8 @@ public class TripDistributionCalibration extends Module {
                     observedAverageDistances.get(purpose) + "," +
                     simulatedAverageDistances.get(purpose) + "," +
                     travelDistanceParameters.get(purpose) + "," +
-                    impendanceParameters.get(purpose));
+                    impendanceParameters.get(purpose) + "," +
+                    count + "," + ratio);
 
         }
 

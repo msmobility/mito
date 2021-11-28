@@ -11,5 +11,6 @@ public class ExplanatoryVariable {
     public static String calibrationFactorBetaExpDistance = "calibrationFactorBetaExpDistance";
     public static String tomTomOdIntensity = "tomTomOdIntensity";
     public static String numberOfTweets = "twitterCount";
-    public static String numberOfTweetsPerArea = "twitterCountDensity";
+//    public static String numberOfTweetsPerArea = "twitterCountDensity";
+    public static String numberOfFlickrPictures = "flickrCount";
 }

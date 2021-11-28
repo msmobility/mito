@@ -151,6 +151,9 @@ public final class CalibrateDestinationChoiceOpenModel {
         travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
 
         modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
+        Purpose.getDiscretionaryPurposes().forEach(purpose -> {
+            ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+        });
         timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
 
 
@@ -228,7 +231,7 @@ public final class CalibrateDestinationChoiceOpenModel {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
         new ImpedanceOmxSkimReader(dataSet).readTomTomMatrix();
-
+        new OpenAttractorDataReader(dataSet).read();
     }
 
     private void printOutline(long startTime) {

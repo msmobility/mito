@@ -17,6 +17,7 @@ public class OpenAttractorDataReader extends AbstractCsvReader {
     private int zoneNotFoundCounter = 0;
     private int twitterCount;
     private int twitterCountDensity;
+    private int flickrCount;
 
     public OpenAttractorDataReader(DataSet dataSet) {
         super(dataSet);
@@ -26,7 +27,8 @@ public class OpenAttractorDataReader extends AbstractCsvReader {
     protected void processHeader(String[] header) {
         zoneIndex = MitoUtil.findPositionInArray("zoneID", header);
         twitterCount = MitoUtil.findPositionInArray(ExplanatoryVariable.numberOfTweets, header);
-        twitterCountDensity = MitoUtil.findPositionInArray(ExplanatoryVariable.numberOfTweetsPerArea, header);
+//        twitterCountDensity = MitoUtil.findPositionInArray(ExplanatoryVariable.numberOfTweetsPerArea, header);
+        flickrCount = MitoUtil.findPositionInArray(ExplanatoryVariable.numberOfFlickrPictures, header);
     }
 
     @Override
@@ -35,14 +37,16 @@ public class OpenAttractorDataReader extends AbstractCsvReader {
         MitoZone zone = dataSet.getZones().get(zoneID);
         double numberOfTweets = Double.parseDouble(record[twitterCount]);
         double numberOfTweetsPerArea = Double.parseDouble(record[twitterCountDensity]);
+        double numberOfFlickrPictures = Double.parseDouble(record[flickrCount]);
         Map<String, Double> openDataExplanatoryVariables = new HashMap<>();
         openDataExplanatoryVariables.put(ExplanatoryVariable.numberOfTweets, numberOfTweets);
-        openDataExplanatoryVariables.put(ExplanatoryVariable.numberOfTweetsPerArea, numberOfTweetsPerArea);
-
+//        openDataExplanatoryVariables.put(ExplanatoryVariable.numberOfTweetsPerArea, numberOfTweetsPerArea);
+        openDataExplanatoryVariables.put(ExplanatoryVariable.numberOfFlickrPictures, numberOfFlickrPictures);
         if(zone != null) {
             zone.setOpenDataExplanatoryVariables(openDataExplanatoryVariables);
             logger.info(zone.getId() + " " + zone.getOpenDataExplanatoryVariables().get(ExplanatoryVariable.numberOfTweets));
-            logger.info(zone.getId() + " " + zone.getOpenDataExplanatoryVariables().get(ExplanatoryVariable.numberOfTweetsPerArea));
+//            logger.info(zone.getId() + " " + zone.getOpenDataExplanatoryVariables().get(ExplanatoryVariable.numberOfTweetsPerArea));
+            logger.info(zone.getId() + " " + zone.getOpenDataExplanatoryVariables().get(ExplanatoryVariable.numberOfFlickrPictures));
         } else {
             zoneNotFoundCounter++;
         }
@@ -50,7 +54,7 @@ public class OpenAttractorDataReader extends AbstractCsvReader {
 
     @Override
     public void read() {
-        super.read(Resources.instance.getOpenDataTwitterFilePath(),",");
+        super.read(Resources.instance.getOpenDataFilePath(),",");
         logger.warn(zoneNotFoundCounter + " zones were not present");
     }
 }
