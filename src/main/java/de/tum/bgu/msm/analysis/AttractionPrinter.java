@@ -33,7 +33,7 @@ public class AttractionPrinter {
             pw.print(mitoZone.getNumberOfHouseholds());
             pw.print(",");
             pw.print(mitoZone.getTotalEmpl());
-            for (Purpose purpose : Purpose.getAllPurposes()){
+            for (Purpose purpose : Purpose.getMandatoryPurposes()){
                 pw.print(",");
                 pw.print(mitoZone.getTripAttraction(purpose));
             }

@@ -1,7 +1,9 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.analysis.AttractionPrinter;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.io.input.readers.TripAttractionRatesReader;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
@@ -21,6 +23,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -253,6 +256,11 @@ public final class TravelDemandGenerator2 {
         logger.info("Running Module: Travel Time Budget Calculation");
         travelTimeBudgetMandatory.run();
         //((TravelTimeBudgetModule) travelTimeBudget).adjustDiscretionaryPurposeBudgets(Purpose.getMandatoryPurposes());
+//        try {
+//            new AttractionPrinter().printOutAttractions(dataSet, "C:\\Users\\Shivam\\Downloads\\trampa_sf\\attractions.csv");
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
         logger.info("Running Module: Microscopic Trip Distribution");
         distributionMandatory.run();
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");

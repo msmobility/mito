@@ -75,19 +75,31 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
                 Map<String, Double> variables  = new HashMap<>();
                 variables.put(ExplanatoryVariable.logAttraction, destination.getTripAttraction(purpose));
                 variables.put(ExplanatoryVariable.distance_km, travelDistances.getTravelDistance(origin.getId(), destination.getId()));
-                variables.put(ExplanatoryVariable.tomTomOdIntensity, impedances.get(ExplanatoryVariable.tomTomOdIntensity).getTravelTime(origin, destination, 0, null));
+                try {
+                    Map<String, Double> openDataExplanatoryVariables = destination.getOpenDataExplanatoryVariables();
+                    variables.put(ExplanatoryVariable.tomTomOdIntensity, impedances.get(ExplanatoryVariable.tomTomOdIntensity).getTravelTime(origin, destination, 0, null));
+                    double numberOfTweets = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfTweets);
+                    double numberOfTweetsPerArea = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfTweetsPerArea);
+                    double flickrPics = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfFlickrPics);
+                    variables.put(ExplanatoryVariable.numberOfTweets, numberOfTweets);
+                    variables.put(ExplanatoryVariable.numberOfTweetsPerArea, numberOfTweetsPerArea);
+                    variables.put(ExplanatoryVariable.numberOfFlickrPics, flickrPics);
+                    for (String osmVariable : ExplanatoryVariable.getOsmTypes()){
+                        variables.put(osmVariable, openDataExplanatoryVariables.get(osmVariable));
+                    }
 
-                Map<String, Double> openDataExplanatoryVariables = destination.getOpenDataExplanatoryVariables();
-                double numberOfTweets = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfTweets);
-                double numberOfTweetsPerArea = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfTweetsPerArea);
-                double flickrPics = openDataExplanatoryVariables.get(ExplanatoryVariable.numberOfFlickrPics);
-                variables.put(ExplanatoryVariable.numberOfTweets, numberOfTweets);
-                variables.put(ExplanatoryVariable.numberOfTweetsPerArea, numberOfTweetsPerArea);
-                variables.put(ExplanatoryVariable.numberOfFlickrPics, flickrPics);
-
-                for (String osmVariable : ExplanatoryVariable.getOsmTypes()){
-                    variables.put(osmVariable, openDataExplanatoryVariables.get(osmVariable));
+                } catch (Exception e) {
+                    variables.put(ExplanatoryVariable.tomTomOdIntensity, 0.0);
+                    variables.put(ExplanatoryVariable.numberOfTweets, 0.0);
+                    variables.put(ExplanatoryVariable.numberOfTweetsPerArea, 0.0);
+                    variables.put(ExplanatoryVariable.numberOfFlickrPics, 0.0);
+                    for (String osmVariable : ExplanatoryVariable.getOsmTypes()){
+                        variables.put(osmVariable, 0.0);
+                    }
                 }
+
+
+
 
                 final double utility =  calculator.calculateExpUtility(variables);
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
