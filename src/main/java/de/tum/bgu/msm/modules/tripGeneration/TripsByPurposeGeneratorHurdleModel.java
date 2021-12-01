@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 import umontreal.ssj.probdist.NegativeBinomialDist;
 
-import javax.validation.constraints.Null;
 import java.util.*;
 
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
