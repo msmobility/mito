@@ -108,7 +108,7 @@ public class ConfigureMatsim {
         config.qsim().setNumberOfThreads(16);
         config.global().setNumberOfThreads(16);
         config.parallelEventHandling().setNumberOfThreads(16);
-        config.qsim().setUsingThreadpool(false);
+        //config.qsim().setUsingThreadpool(false); removed for compatibility with 14.0
 
         config.controler().setLastIteration(Resources.instance.getInt(Properties.MATSIM_ITERATIONS));
         config.controler().setWritePlansInterval(config.controler().getLastIteration());
