@@ -31,6 +31,9 @@ public class Matrices {
                 int rowId = array[i];
                 for (int j = 0; j < dimensions[1]; j++) {
                     int colId = array[j];
+                    if (dArray[i][j] == Double.POSITIVE_INFINITY || dArray[i][j] == Double.NEGATIVE_INFINITY) {
+                        throw new RuntimeException("value is infinity");
+                    }
                     matrix.setIndexed(rowId, colId, dArray[i][j] * factor);
                 }
             }

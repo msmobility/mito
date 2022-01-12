@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.jobTypes.Category;
 import de.tum.bgu.msm.data.jobTypes.JobType;
 import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
+import de.tum.bgu.msm.data.jobTypes.sanFrancisco.SanFranciscoJobType;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -20,7 +21,7 @@ public class AttractionPrinter {
             pw.print(",");
             pw.print("attraction_" + purpose);
         }
-        for (JobType type : MunichJobType.values()){
+        for (JobType type : SanFranciscoJobType.values()){
             pw.print(",");
             pw.print("jobs" + type);
         }
@@ -38,7 +39,7 @@ public class AttractionPrinter {
                 pw.print(mitoZone.getTripAttraction(purpose));
             }
 
-            for (JobType type : MunichJobType.values()){
+            for (JobType type : SanFranciscoJobType.values()){
                 pw.print(",");
                 pw.print(mitoZone.getNumberOfEmployeesForType(type));
             }
