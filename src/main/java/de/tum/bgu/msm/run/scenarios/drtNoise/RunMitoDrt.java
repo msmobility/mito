@@ -24,7 +24,7 @@ public class RunMitoDrt {
 
     private static final Logger logger = Logger.getLogger(RunMitoDrt.class);
 
-    private static final String serviceAreaShapeFile = "D:\\resultStorage\\moia-msm\\cleverShuttleOperationArea\\cleverShuttle.shp";
+    private static final String serviceAreaShapeFile = "D:\\resultStorage\\moia-msm\\abmtrans\\shapesServiceAreas\\HolzkirchenServiceArea.shp";
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
@@ -67,7 +67,7 @@ public class RunMitoDrt {
             config.qsim().setNumberOfThreads(16);
             config.global().setNumberOfThreads(16);
             config.parallelEventHandling().setNumberOfThreads(16);
-            config.qsim().setUsingThreadpool(true);
+//            config.qsim().setUsingThreadpool(true);
 
             config.controler().setFirstIteration(0);
             config.controler().setLastIteration(150);
