@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Microscopic Transportation Orchestrator - MITO"
+url: "https://github.com/msmobility/mito"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Moeckel"
+    given-names: "Rolf"
+    orcid: "https://orcid.org/0000-0002-6874-0393"
+  - family-names: "Kuehnel"
+    given-names: "Nico"
+    orcid: "https://orcid.org/0000-0003-0527-8653"
+  - family-names: "Llorca"
+    given-names: "Carlos"
+    orcid: "https://orcid.org/0000-0002-3760-193X"   
+  - family-names: "Moreno"
+    given-names: "Ana Tsui"
+    orcid: "https://orcid.org/0000-0001-9003-4367"   
+  - family-names: "Rayaprolu"
+    given-names: "Hema"
+    orcid: "https://orcid.org/0000-0002-9978-759X"
+  doi: "10.1155/2020/1902162"
+  journal: "Journal of Advanced Transportation"
+  month: 2
+  title: "Agent-Based Simulation to Improve Policy Sensitivity of Trip-Based Models"
+  issue: 1
+  volume: 2020
+  year: 2020
