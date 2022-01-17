@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.run;
 
 import de.tum.bgu.msm.MitoModel2;
+import de.tum.bgu.msm.MitoModelSanFrancisco;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -21,7 +22,7 @@ public class MitoSanFrancisco {
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");
-        MitoModel2 model = MitoModel2.standAloneModel(args[0], SanFranciscoImplementationConfig.get());
+        MitoModelSanFrancisco model = MitoModelSanFrancisco.standAloneModel(args[0], SanFranciscoImplementationConfig.get());
         model.run();
         final DataSet dataSet = model.getData();
 

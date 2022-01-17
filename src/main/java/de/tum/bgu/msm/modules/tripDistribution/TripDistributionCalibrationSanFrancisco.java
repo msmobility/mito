@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TripDistributionCalibrationGermany extends Module {
+public class TripDistributionCalibrationSanFrancisco extends Module {
 
     private Map<Purpose, Double> observedAverageDistances = new HashMap<>();
     private Map<Purpose, Double> simulatedAverageDistances = new HashMap<>();
@@ -23,19 +23,19 @@ public class TripDistributionCalibrationGermany extends Module {
     private PrintWriter pw = null;
     private int iteration;
 
-    public TripDistributionCalibrationGermany(DataSet dataSet, List<Purpose> purposes,
-                                              Map<Purpose, Double> travelDistanceParameters,
-                                              Map<Purpose, Double> impendanceParameters) {
+    public TripDistributionCalibrationSanFrancisco(DataSet dataSet, List<Purpose> purposes,
+                                                   Map<Purpose, Double> travelDistanceParameters,
+                                                   Map<Purpose, Double> impendanceParameters) {
 
         super(dataSet, purposes);
         iteration = 0;
-        observedAverageDistances.put(Purpose.HBE, 8.2);
-        observedAverageDistances.put(Purpose.HBW, 20.9);
-        observedAverageDistances.put(Purpose.HBO, 8.2);
-        observedAverageDistances.put(Purpose.HBR, 11.7);
-        observedAverageDistances.put(Purpose.HBS, 8.2);
-        observedAverageDistances.put(Purpose.NHBO, 10.6);
-        observedAverageDistances.put(Purpose.NHBW, 10.6);
+        observedAverageDistances.put(Purpose.HBE, 7.29);
+        observedAverageDistances.put(Purpose.HBW, 18.1);
+        observedAverageDistances.put(Purpose.HBO, 7.96);
+        observedAverageDistances.put(Purpose.HBR, 9.76);
+        observedAverageDistances.put(Purpose.HBS, 6.46);
+        observedAverageDistances.put(Purpose.NHBO, 7.47);
+        observedAverageDistances.put(Purpose.NHBW, 9.54);
 
         String purposesString = "";
         for (Purpose purpose : purposes) {
