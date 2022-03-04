@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -54,7 +55,9 @@ public class ModeChoiceCalibrationData {
 
         if (pw == null){
             try {
-                pw = new PrintWriter(new File("mode_choice_calibration.csv"));
+                final File file = new File("scenOutput/" + Resources.instance.getScenarioName() + "/mode_choice_calibration.csv");
+                file.getParentFile().mkdir();
+                pw = new PrintWriter(file);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

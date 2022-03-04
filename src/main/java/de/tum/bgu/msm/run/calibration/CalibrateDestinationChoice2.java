@@ -4,8 +4,11 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
@@ -69,35 +72,25 @@ public final class CalibrateDestinationChoice2 {
         return model;
     }
 
-    public static CalibrateDestinationChoice2 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
-        logger.info(" Initializing MITO from SILO");
-        Resources.initializeResources(propertiesFile);
-        CalibrateDestinationChoice2 model = new CalibrateDestinationChoice2(dataSet, scenarioName);
-        new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
-        new OmxSkimsReader(dataSet).readSkimDistancesNMT();
-        new OmxSkimsReader(dataSet).readSkimDistancesAuto();
-        model.readAdditionalData();
-        return model;
-    }
 
     public void run() {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
         Module tripGenerationMandatory;
-        Module personTripAssignmentMandatory;
+        //Module personTripAssignmentMandatory;
         Module travelTimeBudgetMandatory;
         Module distributionMandatory;
         Module modeChoiceMandatory;
         Module timeOfDayChoiceMandatory;
 
         Module tripGenerationDiscretionary;
-        Module personTripAssignmentDiscretionary;
+        //Module personTripAssignmentDiscretionary;
         Module travelTimeBudgetDiscretionary;
         Module distributionDiscretionary;
         Module modeChoiceDiscretionary;
         Module timeOfDayChoiceDiscretionary;
 
-        List<Purpose> purposes = Purpose.getAllPurposes();
+
         tripGenerationMandatory = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getMandatoryPurposes());
         tripGenerationMandatory.run();
 
@@ -106,22 +99,18 @@ public final class CalibrateDestinationChoice2 {
 
         Map<Purpose, Double> travelDistanceCalibrationParameters = new HashMap<>();
         Map<Purpose, Double> impedanceCalibrationParameters = new HashMap<>();
-
         Purpose.getMandatoryPurposes().forEach(p -> {
             travelDistanceCalibrationParameters.put(p, 1.0);
             impedanceCalibrationParameters.put(p, 1.0);
         });
-
         distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters,
                 impedanceCalibrationParameters, false, new DestinationUtilityCalculatorFactoryImpl2());
         distributionMandatory.run();
-
         TripDistributionCalibration tripDistributionCalibrationMandatory =
                 new TripDistributionCalibration(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters, impedanceCalibrationParameters);
-
-        int iterations = 20;
+        int iterations = 10;
         for (int iteration = 0; iteration < iterations; iteration++) {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
@@ -133,47 +122,45 @@ public final class CalibrateDestinationChoice2 {
         tripDistributionCalibrationMandatory.close();
 
         modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
+        Purpose.getMandatoryPurposes().forEach(purpose -> {
+            ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose,
+                    new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+        });
         modeChoiceMandatory.run();
 
         timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
         timeOfDayChoiceMandatory.run();
 
-        tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getDiscretionaryPurposes());
-        //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
-        travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
 
+        tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getDiscretionaryPurposes());
+        travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
         modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
+        Purpose.getDiscretionaryPurposes().forEach(purpose -> {
+            ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+        });
         timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
 
 
         tripGenerationDiscretionary.run();
-        //logger.info("Running Module: Person to Trip Assignment");
-        //personTripAssignmentDiscretionary.run();
-        logger.info("Running Module: Travel Time Budget Calculation");
+
         travelTimeBudgetDiscretionary.run();
         ((TravelTimeBudgetModule) travelTimeBudgetDiscretionary).adjustDiscretionaryPurposeBudgets();
-        logger.info("Running Module: Microscopic Trip Distribution");
 
 
         Map<Purpose, Double> travelDistanceCalibrationParametersDisc = new HashMap<>();
         Map<Purpose, Double> impedanceCalibrationParametersDisc = new HashMap<>();
-
         Purpose.getDiscretionaryPurposes().forEach(p -> {
             travelDistanceCalibrationParametersDisc.put(p, 1.0);
             impedanceCalibrationParametersDisc.put(p, 1.0);
         });
-
         distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                 travelDistanceCalibrationParametersDisc,
                 impedanceCalibrationParametersDisc, false,
                 new DestinationUtilityCalculatorFactoryImpl2());
         distributionDiscretionary.run();
-
-
         TripDistributionCalibration tripDistributionCalibrationDiscretionary =
                 new TripDistributionCalibration(dataSet, Purpose.getDiscretionaryPurposes(),
                         travelDistanceCalibrationParametersDisc, impedanceCalibrationParametersDisc);
-
         for (int iteration = 0; iteration < iterations; iteration++) {
             tripDistributionCalibrationDiscretionary.update(iteration);
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
@@ -182,17 +169,27 @@ public final class CalibrateDestinationChoice2 {
                     new DestinationUtilityCalculatorFactoryImpl2());
             distributionDiscretionary.run();
         }
-
         tripDistributionCalibrationDiscretionary.close();
 
-
-
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoiceDiscretionary.run();
-        logger.info("Running time of day choice");
+
         timeOfDayChoiceDiscretionary.run();
 
+        TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
+        SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
 
+        if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
+            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
+            SummarizeData.writeOutTrips(dataSet, scenarioName);
+        }
+        if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
+            DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
+            ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
+            SummarizeData.writeCharts(dataSet, scenarioName);
+        }
+        if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
+            //SummarizeData.writeMatsimPlans(dataSet, scenarioName);
+        }
     }
 
     private void readStandAlone(ImplementationConfig config) {
@@ -218,6 +215,7 @@ public final class CalibrateDestinationChoice2 {
         new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
+        new BicycleOwnershipReaderAndModel(dataSet).read();
 
     }
 

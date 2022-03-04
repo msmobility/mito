@@ -239,6 +239,10 @@ public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
             utilities.put(mode, utility);
         }
 
+        if (hasLicense == 0){
+            utilities.put(Mode.autoDriver, Double.NEGATIVE_INFINITY);
+        }
+
         return utilities;
     }
 

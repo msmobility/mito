@@ -16,9 +16,16 @@ import java.util.Set;
 
 public class ConfigureMatsim {
 
+    //if the synthetic population is already a subsample of the real one, it is needed to further sampling
     private final static double SILO_SAMPLING_RATE = 1.;
 
+
     public static Config configureMatsim() {
+
+        //the following scale factors were applied in MITO at TG or after the entire demand generation, respectively.
+        double tripGenerationSampling = Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
+        double tripScalingFactor = Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR));
+
 
         //String outputDirectory = outputDirectoryRoot + "/" + runId + "/";
         //matsimConfig.controler().setRunId(runId);
@@ -115,8 +122,9 @@ public class ConfigureMatsim {
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
 
         config.qsim().setStuckTime(10);
-        config.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
-        config.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+
+        config.qsim().setFlowCapFactor(tripGenerationSampling * SILO_SAMPLING_RATE * tripScalingFactor);
+        config.qsim().setStorageCapFactor(tripGenerationSampling * SILO_SAMPLING_RATE * tripScalingFactor);
 
 
         String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});

@@ -34,7 +34,7 @@ public class StandAloneMATSimSanFrancisco {
         }
 
         String outputSubDirectory = "scenOutput/" + Resources.instance.getScenarioName() + "/" + Resources.instance.getString(Properties.SCENARIO_YEAR);
-        config.controler().setOutputDirectory(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + "/trafficAssignment");
+        config.controler().setOutputDirectory("F:/trampa_sf" + "/" + outputSubDirectory + "/trafficAssignment");
 
         MutableScenario matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(config);
         //population is read from an external file already created

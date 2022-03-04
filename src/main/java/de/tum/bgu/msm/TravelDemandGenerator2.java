@@ -7,6 +7,7 @@ import de.tum.bgu.msm.io.input.readers.TripAttractionRatesReader;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
@@ -123,7 +124,8 @@ public final class TravelDemandGenerator2 {
                     new DestinationUtilityCalculatorFactoryImpl2());
             modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
             Purpose.getMandatoryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+                ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose,
+                        new CalibratingModeChoiceCalculator2017Impl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData(), purpose, dataSet));
             });
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
@@ -134,7 +136,8 @@ public final class TravelDemandGenerator2 {
                     new DestinationUtilityCalculatorFactoryImpl2());
             modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
             Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+                ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose,
+                        new CalibratingModeChoiceCalculator2017Impl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData(),purpose, dataSet));
             });
             timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
