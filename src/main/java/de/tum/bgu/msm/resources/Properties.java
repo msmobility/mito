@@ -49,6 +49,7 @@ public class Properties {
 
     public static final String RUN_TRIP_SCALING = "run.trip.scaling";
     public static final String TRIP_SCALING_FACTOR = "trip.scaling.factor";
+    public static final String SP_SCALING_FACTOR = "sp.scaling.factor";
 
     public static final String RUN_TRAFFIC_ASSIGNMENT = "run.traffic.assignment";
     public static final String MATSIM_NETWORK_FILE = "matsim.network";
