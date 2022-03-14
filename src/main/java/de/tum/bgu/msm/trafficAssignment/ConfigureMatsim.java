@@ -16,7 +16,8 @@ import java.util.Set;
 
 public class ConfigureMatsim {
 
-    private final static double SILO_SAMPLING_RATE = 1.;
+    private final static double SILO_SAMPLING_RATE = Resources.instance.getDouble(Properties.SP_SCALING_FACTOR, 1.0) *
+            Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
 
     public static Config configureMatsim() {
 
