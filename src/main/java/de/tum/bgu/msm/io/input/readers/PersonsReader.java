@@ -98,7 +98,7 @@ public class PersonsReader extends AbstractCsvReader {
                 if(dataSet.getJobs().containsKey(workplace)) {
                     occupation = (dataSet.getJobs().get(workplace));
                 } else {
-                    logger.warn("Person " + id + " declared as worker does not have a valid job!");
+                    //logger.warn("Person " + id + " declared as worker does not have a valid job!");
                 }
                 break;
             case STUDENT:
