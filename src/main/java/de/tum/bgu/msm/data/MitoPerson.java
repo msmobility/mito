@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public class MitoPerson implements Id {
     private final MitoOccupation occupation;
     private final int age;
     private final boolean driversLicense;
+    private Optional<Boolean> hasBicycle = Optional.empty();
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
@@ -81,5 +83,14 @@ public class MitoPerson implements Id {
         return id;
     }
 
+    public Optional<Boolean> getHasBicycle() {
+        if (!hasBicycle.isPresent()){
+            throw new RuntimeException("The number of bicycles is needed but has not been set");
+        }
+        return hasBicycle;
+    }
 
+    public void setHasBicycle(boolean hasBicycle) {
+        this.hasBicycle = Optional.of(hasBicycle);
+    }
 }

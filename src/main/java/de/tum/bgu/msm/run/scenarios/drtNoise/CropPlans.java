@@ -27,13 +27,15 @@ public class CropPlans {
 
     public static void main(String[] args) {
 
-        final Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("D:\\resultStorage\\moia-msm\\cleverShuttleOperationArea\\cleverShuttle.shp");
+//        final Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("D:\\resultStorage\\moia-msm\\cleverShuttleOperationArea\\cleverShuttle.shp");
+        final Collection<SimpleFeature> features = ShapeFileReader.getAllFeatures("D:\\resultStorage\\moia-msm\\abmtrans\\shapesServiceAreas\\HolzkirchenServiceArea.shp");
         final SimpleFeature feature = features.iterator().next();
 
         final Geometry initialGeometry = (Geometry) feature.getDefaultGeometry();
 
         Network fullNetwork = NetworkUtils.createNetwork();
-        new MatsimNetworkReader(fullNetwork).readFile("C:\\Users\\Nico\\tum\\fabilut\\gitproject\\muc\\input\\mito\\trafficAssignment\\studyNetworkDense.xml");
+//        new MatsimNetworkReader(fullNetwork).readFile("C:\\Users\\Nico\\tum\\fabilut\\gitproject\\muc\\input\\mito\\trafficAssignment\\studyNetworkDense.xml");
+        new MatsimNetworkReader(fullNetwork).readFile("D:\\resultStorage\\moia-msm\\realisticModeChoice\\networkUpdated.xml");
         // new MatsimNetworkReader(fullNetwork).readFile("C:\\Users\\Nico\\tum\\fabilut\\gitproject\\muc\\input\\mito\\trafficAssignment\\pt\\mergedNetwork2018.xml.gz");
 
 
@@ -162,7 +164,8 @@ public class CropPlans {
                 croppedPopulation.addPerson(personCopy);
             }
         }
-        new PopulationWriter(croppedPopulation).write("D:\\resultStorage\\moia-msm\\realisticModeChoice\\outputCar\\croppedPopulationNew.xml.gz");
+//        new PopulationWriter(croppedPopulation).write("D:\\resultStorage\\moia-msm\\realisticModeChoice\\outputCar\\croppedPopulationNew.xml.gz");
+        new PopulationWriter(croppedPopulation).write("D:\\resultStorage\\moia-msm\\abmtrans\\population\\croppedPopulationHolzkirchen.xml.gz");
     }
 
     private static boolean isInArea(PreparedGeometry geometry, Activity activity, Network network) {

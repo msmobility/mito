@@ -69,7 +69,7 @@ public class PersonsReader extends AbstractCsvReader {
 
         if(!dataSet.getHouseholds().containsKey(hhid)) {
             logger.warn("Person " + id + " refers to non-existing household " + hhid + ". Ignoring this person.");
-            return;
+            //return null;
         }
         MitoHousehold hh = dataSet.getHouseholds().get(hhid);
 
@@ -86,6 +86,7 @@ public class PersonsReader extends AbstractCsvReader {
 
         final boolean driversLicense = Boolean.parseBoolean(record[posLicence]);
 
+
         //mito uses monthly income, while SILO uses annual income
         int monthlyIncome_EUR = Integer.parseInt(record[posIncome])/12;
         hh.addIncome(monthlyIncome_EUR);
@@ -97,14 +98,14 @@ public class PersonsReader extends AbstractCsvReader {
                 if(dataSet.getJobs().containsKey(workplace)) {
                     occupation = (dataSet.getJobs().get(workplace));
                 } else {
-                    logger.warn("Person " + id + " declared as student does not have a valid school!");
+                    //logger.warn("Person " + id + " declared as worker does not have a valid job!");
                 }
                 break;
             case STUDENT:
                 if(dataSet.getSchools().containsKey(school)) {
                     occupation = (dataSet.getSchools().get(school));
                 } else {
-                    logger.warn("Person " + id + " declared as student does not have a valid school!");
+                    //logger.warn("Person " + id + " declared as student does not have a valid school!");
                 }
                 break;
             case UNEMPLOYED:

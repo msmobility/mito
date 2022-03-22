@@ -96,8 +96,10 @@ public class EconomicStatusReader extends AbstractCsvReader {
         economicStatusDefinition.put(hhSizeFactor + "_Inc6000-6600", codeInc6000_6600);
         economicStatusDefinition.put(hhSizeFactor + "_Inc6600-7000", codeInc6600_7000);
         economicStatusDefinition.put(hhSizeFactor + "_Inc7000+", codeInc7000plus);
+        //return null;
     }
 
+    //TODO Convert to an enum!
     private int getEconomicStatus(MitoHousehold hh) {
         /*
         Defined as:
@@ -108,9 +110,9 @@ public class EconomicStatusReader extends AbstractCsvReader {
             5: Sehr hoch
          */
         int countAdults = (int) hh.getPersons().values().stream().filter(person ->
-                person.getAge() > 14).count();
+                person.getAge() >= 14).count();
         int countChildren = (int) hh.getPersons().values().stream().filter(person ->
-                person.getAge() <= 14).count();
+                person.getAge() < 14).count();
         // Mobilität in Deutschland 2008, Variablenaufbereitung Haushaltsdatensatz:
         // In Anlehnung an die neue Berechnungsskala der OECD gingen bei der Berechnung
         // Kinder bis zu 14 Jahren mit dem Faktor 0,3 ein. Von den Personen ab 15 Jahren

@@ -2,6 +2,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.input.readers.TripGenerationHurdleCoefficientReader;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
@@ -9,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 import umontreal.ssj.probdist.NegativeBinomialDist;
 
-import javax.validation.constraints.Null;
 import java.util.*;
 
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
@@ -29,8 +29,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
     private Map<String, Double> negBinCoef;
 
     private int casesWithMoreThanTen = 0;
-    private double speed_bicycle_m_min = 12 * 1000 / 60;
-    private double speed_walk_m_min = 12 * 1000 / 60;
+    private double speed_bicycle_m_min = Properties.SPEED_BICYCLE_M_MIN;
+    private double speed_walk_m_min = Properties.SPEED_WALK_M_MIN;
 
 
     protected TripsByPurposeGeneratorHurdleModel(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
@@ -179,7 +179,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                     utilityTravel += binLogCoef.get("pers_18to29_w");
                 } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)) {
                     utilityTravel += binLogCoef.get("pers_18to29_s");
-                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)) {
+                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED) ||
+                        p.getMitoOccupationStatus().equals(MitoOccupationStatus.RETIRED)) {
                     utilityTravel += binLogCoef.get("pers_18to29_u");
                 }
             } else if (p.getAge() < 65) {
@@ -187,7 +188,8 @@ public class TripsByPurposeGeneratorHurdleModel extends RandomizableConcurrentFu
                     utilityTravel += binLogCoef.get("pers_30to64_w");
                 } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)) {
                     utilityTravel += binLogCoef.get("pers_30to64_s");
-                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED)) {
+                } else if (p.getMitoOccupationStatus().equals(MitoOccupationStatus.UNEMPLOYED) ||
+                        p.getMitoOccupationStatus().equals(MitoOccupationStatus.RETIRED)) {
                     utilityTravel += binLogCoef.get("pers_30to64_u");
                 }
             } else {

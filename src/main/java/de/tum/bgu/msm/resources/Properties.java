@@ -49,6 +49,7 @@ public class Properties {
 
     public static final String RUN_TRIP_SCALING = "run.trip.scaling";
     public static final String TRIP_SCALING_FACTOR = "trip.scaling.factor";
+    public static final String SP_SCALING_FACTOR = "sp.scaling.factor";
 
     public static final String RUN_TRAFFIC_ASSIGNMENT = "run.traffic.assignment";
     public static final String MATSIM_NETWORK_FILE = "matsim.network";
@@ -82,4 +83,17 @@ public class Properties {
     public static final String MC_CALIBRATON_CONSTANTS_FILE = "mc.calibration.constants.file";
     public static final String MC_CALIBRATON_REGIONS_FILE = "mc.calibration.regions.file";
     public static final String MC_CALIBRATION_ITERATIONS = "mc.calibration.iterations";
+    public static final String MC_COEFFICIENTS = "mc.coefficient.file.suffix";
+
+    public static final String BIKE_OWNERSHIP_COEFFICIENTS = "bicycle.ownership.coefficients";
+
+    public static final String BUS_TRAVEL_TIME_SKIM_MATRIX = "bus.travelTime.matrix";
+    public static final String TRAM_METRO_TRAVEL_TIME_SKIM_MATRIX = "tramMetro.travelTime.matrix";
+    public static final String TRAIN_TRAVEL_TIME_SKIM_MATRIX = "train.travelTime.matrix";
+    public static final String AUTO_TRAVEL_DISTANCE_SKIM_MATRIX = "auto.travelDistance.matrix";
+    public static final String NMT_TRAVEL_DISTANCE_SKIM_MATRIX = "nmt.travelDistance.matrix";
+    public static final String AUTO_PEAK_SKIM_MATRIX = "auto.peak.travelTime.matrix";
+
+    public final static double SPEED_WALK_M_MIN = 5 * 1000 / 60;
+    public final static double SPEED_BICYCLE_M_MIN = 12 * 1000 / 60;
 }

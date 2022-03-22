@@ -16,9 +16,9 @@ import java.util.Set;
 
 public class ConfigureMatsim {
 
-    private final static double SILO_SAMPLING_RATE = 1.;
-
     public static Config configureMatsim() {
+
+
 
         //String outputDirectory = outputDirectoryRoot + "/" + runId + "/";
         //matsimConfig.controler().setRunId(runId);
@@ -108,15 +108,18 @@ public class ConfigureMatsim {
         config.qsim().setNumberOfThreads(16);
         config.global().setNumberOfThreads(16);
         config.parallelEventHandling().setNumberOfThreads(16);
-        config.qsim().setUsingThreadpool(false);
+        //config.qsim().setUsingThreadpool(false); removed for compatibility with 14.0
 
         config.controler().setLastIteration(Resources.instance.getInt(Properties.MATSIM_ITERATIONS));
         config.controler().setWritePlansInterval(config.controler().getLastIteration());
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
 
         config.qsim().setStuckTime(10);
-        config.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
-        config.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+
+        double siloSamplingFactor = Resources.instance.getDouble(Properties.SP_SCALING_FACTOR, 1.0) *
+                Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
+        config.qsim().setFlowCapFactor(siloSamplingFactor * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+        config.qsim().setStorageCapFactor(siloSamplingFactor * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
 
 
         String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
@@ -134,9 +137,14 @@ public class ConfigureMatsim {
         return config;
     }
 
+
+
     public static void setDemandSpecificConfigSettings(Config config) {
-        config.qsim().setFlowCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
-        config.qsim().setStorageCapFactor(SILO_SAMPLING_RATE * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+
+        double siloSamplingFactor = Resources.instance.getDouble(Properties.SP_SCALING_FACTOR, 1.0) *
+                Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
+        config.qsim().setFlowCapFactor(siloSamplingFactor * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
+        config.qsim().setStorageCapFactor(siloSamplingFactor * Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)));
 
         PlanCalcScoreConfigGroup.ActivityParams homeActivity = new PlanCalcScoreConfigGroup.ActivityParams("home");
         homeActivity.setTypicalDuration(12 * 60 * 60);

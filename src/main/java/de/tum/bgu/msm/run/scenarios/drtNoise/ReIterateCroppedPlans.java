@@ -37,7 +37,7 @@ public class ReIterateCroppedPlans {
         config.qsim().setNumberOfThreads(16);
         config.global().setNumberOfThreads(16);
         config.parallelEventHandling().setNumberOfThreads(16);
-        config.qsim().setUsingThreadpool(true);
+//        config.qsim().setUsingThreadpool(true);
 
         config.controler().setFirstIteration(0);
         config.controler().setLastIteration(100);

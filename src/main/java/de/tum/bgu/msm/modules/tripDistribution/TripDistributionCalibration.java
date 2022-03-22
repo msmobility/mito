@@ -1,24 +1,18 @@
 package de.tum.bgu.msm.modules.tripDistribution;
 
-import com.google.common.math.Quantiles;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoOccupationStatus;
 import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Resources;
-import org.apache.commons.math.exception.MathIllegalNumberException;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 public class TripDistributionCalibration extends Module {
 

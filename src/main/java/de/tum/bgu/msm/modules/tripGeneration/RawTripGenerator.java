@@ -7,14 +7,11 @@ import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
-
-import static de.tum.bgu.msm.data.Purpose.*;
 
 /**
  * Created by Nico on 20.07.2017.

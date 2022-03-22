@@ -13,5 +13,4 @@ public enum MitoGender {
             throw new RuntimeException("Undefined gender code given!");
         }
     }
-
 }

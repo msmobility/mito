@@ -1,14 +1,12 @@
 package de.tum.bgu.msm.run.scenarios.drtNoise;
 
 import org.matsim.api.core.v01.Scenario;
-import org.matsim.contrib.drt.optimizer.rebalancing.mincostflow.MinCostFlowRebalancingParams;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.drt.run.DrtControlerCreator;
 import org.matsim.contrib.drt.run.MultiModeDrtConfigGroup;
 import org.matsim.contrib.dvrp.run.DvrpConfigGroup;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
 public class RunDrtNoise {
@@ -89,20 +87,16 @@ public class RunDrtNoise {
 
         Scenario scenario = DrtControlerCreator.createScenarioWithDrtRouteFactory(config);
         ScenarioUtils.loadScenario(scenario);
-        Controler controler = DrtControlerCreator.createControlerWithSingleModeDrt(config, false);
+//        Controler controler = DrtControlerCreator.createControler(config, false);
 //        controler.addOverridingModule(new DrtModeAnalysisModule(drt));
 
-        MinCostFlowRebalancingParams rebalancingParams = new MinCostFlowRebalancingParams();
-
-        rebalancingParams.setInterval(300);
-        rebalancingParams.setCellSize(1000);
-        rebalancingParams.setTargetAlpha(0.3);
-        rebalancingParams.setTargetBeta(0.3);
-        rebalancingParams.setMaxTimeBeforeIdle(500);
-        rebalancingParams.setMinServiceTime(3600);
-        drt.addParameterSet(rebalancingParams);
-
-        controler.run();
+//        MinCostFlowRebalancingStrategyParams rebalancingParams = new MinCostFlowRebalancingStrategyParams();
+//
+//        rebalancingParams.setTargetAlpha(0.3);
+//        rebalancingParams.setTargetBeta(0.3);
+//        drt.addParameterSet(rebalancingParams);
+//
+//        controler.run();
     }
 
 }

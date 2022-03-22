@@ -6,7 +6,6 @@ import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class CalibrationDataReader extends AbstractCsvReader {
@@ -48,6 +47,7 @@ public class CalibrationDataReader extends AbstractCsvReader {
         dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).putIfAbsent(purpose, new HashMap<>());
         dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).get(purpose).put(mode, factor);
 
+        //return null;
     }
 
     @Override
