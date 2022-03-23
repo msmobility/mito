@@ -34,9 +34,21 @@ public class TimeOfDayUtils {
         AvailableTimeOfDay newAvailableTOD = new AvailableTimeOfDay();
         for (int minute : baseAvailableTOD.getMinutes()) {
             if (baseAvailableTOD.isAvailable(minute) == 1){
-                newAvailableTOD.blockTime(minute-1, minute);
+                newAvailableTOD.blockTime(minute - SEARCH_INTERVAL_MIN, minute);
             }
         }
         return newAvailableTOD;
+    }
+
+    public static AvailableTimeOfDay updateAvailableTimeToAvoidTooLateTermination(AvailableTimeOfDay availableTODNextTrip, int tripDuration) {
+        for (int minute : availableTODNextTrip.getMinutes()) {
+            if (minute + tripDuration > 26 * 60 ){
+                availableTODNextTrip.blockTime(minute - SEARCH_INTERVAL_MIN, minute);
+            } else {
+               //do nothing
+            }
+
+        }
+        return availableTODNextTrip;
     }
 }

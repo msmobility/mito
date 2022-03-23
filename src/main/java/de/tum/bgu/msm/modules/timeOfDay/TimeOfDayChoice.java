@@ -101,6 +101,7 @@ public final class TimeOfDayChoice extends Module {
                         int tripDuration = actDuration + 2 * travelTime;
 
                         AvailableTimeOfDay availableTODNextTrip = TimeOfDayUtils.updateAvailableTimeForNextTrip(totalAvailableTOD, tripDuration);
+                        availableTODNextTrip = TimeOfDayUtils.updateAvailableTimeToAvoidTooLateTermination(availableTODNextTrip, tripDuration);
                         TimeOfDayDistribution TODforThisTrip = TimeOfDayUtils.updateTODWithAvailability(arrivalMinuteCumProbByPurpose.get(purpose),
                                 availableTODNextTrip);
                         int departureTime = TODforThisTrip.selectTime();
