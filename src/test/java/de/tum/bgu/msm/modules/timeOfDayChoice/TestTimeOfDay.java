@@ -69,8 +69,16 @@ public class TestTimeOfDay {
         dataSet.getTrips().values().forEach(t -> {
                 int id = t.getId();
                 int from = t.getDepartureInMinutes();
-                int until = (int)(t.getDepartureInMinutesReturnTrip() +
-                        dataSet.getTravelTimes().getTravelTime(t.getTripOrigin(), t.getTripDestination(), t.getDepartureInMinutes(), t.getTripMode().toString()));
+                int until;
+                if (t.getDepartureInMinutesReturnTrip() >0){
+                    until = (int)(t.getDepartureInMinutesReturnTrip() +
+                            dataSet.getTravelTimes().getTravelTime(t.getTripOrigin(), t.getTripDestination(), t.getDepartureInMinutes(), t.getTripMode().toString()));
+                } else {
+                    until = (int) (t.getDepartureInMinutes() +
+                            dataSet.getTravelTimes().getTravelTime(t.getTripOrigin(), t.getTripDestination(), t.getDepartureInMinutes(), t.getTripMode().toString()));
+
+                }
+
             System.out.println("Trip:" + id + " starts at " + from + " and ends at " + until);
         });
 
@@ -87,8 +95,8 @@ public class TestTimeOfDay {
         trip1.setTripOrigin(zone1);
         MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY);
         trip1.setTripDestination(zone2);
-        trip1.setDepartureInMinutes(10);
-        trip1.setDepartureInMinutesReturnTrip(1195);
+        trip1.setDepartureInMinutes(16 * 60 + 30);
+        trip1.setDepartureInMinutesReturnTrip(17 * 60);
         trip1.setTripMode(Mode.autoDriver);
 
         household1 = new MitoHousehold(1, 24000, 1);
@@ -108,8 +116,8 @@ public class TestTimeOfDay {
         MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY);
         trip2.setTripDestination(zone4);
         trip2.setTripMode(Mode.autoDriver);
-        trip2.setDepartureInMinutes(1200);
-        trip2.setDepartureInMinutesReturnTrip(1400);
+        trip2.setDepartureInMinutes(8* 60);
+        trip2.setDepartureInMinutesReturnTrip(16 * 60);
 
         dataSet.addTrip(trip2);
         dataSet.addZone(zone3);
@@ -123,7 +131,7 @@ public class TestTimeOfDay {
         trip3.setTripDestination(zone2);
         trip3.setTripMode(Mode.autoDriver);
 
-        trip4 = new MitoTrip(4, Purpose.HBR);
+        trip4 = new MitoTrip(4, Purpose.NHBW);
         trip4.setPerson(person1);
         zone1.setDistanceToNearestRailStop(0.5f);
         trip4.setTripOrigin(zone1);

@@ -2,20 +2,18 @@ package de.tum.bgu.msm.data.timeOfDay;
 
 import de.tum.bgu.msm.util.MitoUtil;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TimeOfDayDistribution {
 
-    private Map<Integer, Double> internalMap;
+    private SortedMap<Integer, Double> internalMap;
     private static final int INTERVAL_MIN = 5;
-    private static final int MINUTES_IN_DAY = 24 * 60 + 1;
+    private static final int MINUTES_IN_DAY = 24 * 60 + INTERVAL_MIN;
 
 
     public TimeOfDayDistribution() {
-        internalMap = new HashMap<>();
+        internalMap = new TreeMap<>();
         for (int i = 0; i < MINUTES_IN_DAY; i = i+ INTERVAL_MIN) {
             internalMap.put(i, 0.);
         }

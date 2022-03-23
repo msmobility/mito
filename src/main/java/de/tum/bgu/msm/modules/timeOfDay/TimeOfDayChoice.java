@@ -61,7 +61,7 @@ public final class TimeOfDayChoice extends Module {
                         if (trip.getTripOrigin() != null && trip.getTripDestination() != null
                                 && trip.getTripMode() != null) {
                             tripsByPurpose.get(purpose).add(trip);
-                            if (trip.getDepartureInMinutes() > 0 && trip.isHomeBased()) {
+                            if (trip.getDepartureInMinutes() >= 0 && trip.isHomeBased()) {
                                 //the trip was already processed (i.e. mandatory trips) and blocks time of day
                                 totalAvailableTOD.blockTime(trip.getDepartureInMinutes(),
                                         trip.getDepartureInMinutesReturnTrip() + estimateTravelTimeForTripInMinutes(trip));
@@ -103,9 +103,9 @@ public final class TimeOfDayChoice extends Module {
                         AvailableTimeOfDay availableTODNextTrip = TimeOfDayUtils.updateAvailableTimeForNextTrip(totalAvailableTOD, tripDuration);
                         TimeOfDayDistribution TODforThisTrip = TimeOfDayUtils.updateTODWithAvailability(arrivalMinuteCumProbByPurpose.get(purpose),
                                 availableTODNextTrip);
-                        int arrivalTime = TODforThisTrip.selectTime();
-                        if (arrivalTime != -1) {
-                            int departureTime = arrivalTime - travelTime;
+                        int departureTime = TODforThisTrip.selectTime();
+                        if (departureTime != -1) {
+                            int arrivalTime = departureTime + travelTime;
                             totalAvailableTOD.blockTime(departureTime, departureTime + tripDuration);
                             if (trip.getTripPurpose().equals(Purpose.HBW)) {
                                 hbwAvailableTOD.blockTime(departureTime, departureTime + tripDuration);

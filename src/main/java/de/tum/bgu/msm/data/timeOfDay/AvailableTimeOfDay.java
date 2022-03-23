@@ -1,19 +1,16 @@
 package de.tum.bgu.msm.data.timeOfDay;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AvailableTimeOfDay {
 
-    private Map<Integer, Boolean> internalMap;
+    private SortedMap<Integer, Boolean> internalMap;
     private static final int INTERVAL_MIN = 5;
     private static final int MAP_SIZE = 48 * 60;
 
 
     public AvailableTimeOfDay() {
-        internalMap = new HashMap<>();
+        internalMap = new TreeMap<>();
         for (int i = 0; i < MAP_SIZE; i = i + INTERVAL_MIN) {
             internalMap.put(i, true);
         }
@@ -21,7 +18,7 @@ public class AvailableTimeOfDay {
 
     public void blockTime(int from, int until) {
         for (int i = 0; i < MAP_SIZE; i = i + INTERVAL_MIN) {
-            if (i > from && i <= until) {
+            if (i >= from && i <= until) {
                 internalMap.put(i, false);
             }
         }
@@ -41,4 +38,10 @@ public class AvailableTimeOfDay {
     }
 
 
+    @Override
+    public String toString() {
+        StringBuilder value =  new StringBuilder();
+        internalMap.values().forEach(v-> value.append(v?1:0));
+        return value.toString();
+    }
 }

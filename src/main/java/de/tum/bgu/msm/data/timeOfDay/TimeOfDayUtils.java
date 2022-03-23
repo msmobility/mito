@@ -4,6 +4,7 @@ package de.tum.bgu.msm.data.timeOfDay;
 public class TimeOfDayUtils {
 
     private static final int SEARCH_INTERVAL_MIN = 5;
+    private static final int MAP_SIZE = 48 * 60;
 
     public static TimeOfDayDistribution updateTODWithAvailability(TimeOfDayDistribution originalTOD,
                                                                   AvailableTimeOfDay availableTOD) {
@@ -19,7 +20,7 @@ public class TimeOfDayUtils {
 
         AvailableTimeOfDay newAvailableTOD = new AvailableTimeOfDay();
 
-        for (int minute = SEARCH_INTERVAL_MIN; minute < 24*60; minute = minute + SEARCH_INTERVAL_MIN) {
+        for (int minute = SEARCH_INTERVAL_MIN; minute < MAP_SIZE; minute = minute + SEARCH_INTERVAL_MIN) {
             if (baseAvailableTOD.isAvailable(minute) == 0 && baseAvailableTOD.isAvailable(minute - SEARCH_INTERVAL_MIN) == 1){
                 newAvailableTOD.blockTime(Math.max(0, minute - tripDuration), minute);
             } else if (baseAvailableTOD.isAvailable(minute) == 0) {
