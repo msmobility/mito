@@ -3,9 +3,6 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
-import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorWithMopedImpl;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
@@ -24,14 +21,6 @@ public class ModeChoiceWithMoped extends Module {
 
     public ModeChoiceWithMoped(DataSet dataSet,List<Purpose> purposes) {
         super(dataSet,purposes);
-        modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
-        modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
-        modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
-        modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
-        modeChoiceCalculatorByPurpose.put(Purpose.HBR, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
-        modeChoiceCalculatorByPurpose.put(Purpose.NHBW,new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
-        modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorWithMopedImpl(), dataSet.getModeChoiceCalibrationData()));
-        modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
     }
 
     public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {
@@ -43,6 +32,9 @@ public class ModeChoiceWithMoped extends Module {
 
     @Override
     public void run() {
+        if (modeChoiceCalculatorByPurpose.isEmpty()){
+            throw new RuntimeException("It is mandatory to define mode choice calculators. Look at TravelDemandGeneratorXXX.java");
+        }
         logger.info(" Calculating mode choice probabilities (without walk) for each trip. Modes considered - 1. Auto driver, 2. Auto passenger, 3. Bicycle, 4. Bus, 5. Train, 6. Tram or Metro ");
         modeChoiceByPurpose();
         printModeShares();
@@ -140,9 +132,11 @@ public class ModeChoiceWithMoped extends Module {
                     destinationId);
             final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originId,
                     destinationId);
-            return modeChoiceCalculator.calculateProbabilities(purpose, household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
+            EnumMap<Mode, Double> probabilities = modeChoiceCalculator.calculateProbabilities(purpose, household, trip.getPerson(), origin, destination, travelTimes, travelDistanceAuto,
                     travelDistanceNMT, dataSet.getPeakHour());
-    }
+            probabilities.put(Mode.walk,0.);
+            return probabilities;
+        }
 
         private void chooseMode(MitoTrip trip, EnumMap<Mode, Double> probabilities) {
             if (probabilities == null) {

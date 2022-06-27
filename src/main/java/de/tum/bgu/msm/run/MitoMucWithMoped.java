@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.run;
 
-import de.tum.bgu.msm.MitoModel;
 import de.tum.bgu.msm.MitoMopedModel;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
@@ -21,9 +20,9 @@ import org.matsim.core.scenario.ScenarioUtils;
  * @author Rolf Moeckel
  * Created on Feb 12, 2017 in Munich, Germany
  */
-class MitoMopedMuc {
+class MitoMucWithMoped {
 
-    private static final Logger logger = Logger.getLogger(MitoMopedMuc.class);
+    private static final Logger logger = Logger.getLogger(MitoMucWithMoped.class);
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");

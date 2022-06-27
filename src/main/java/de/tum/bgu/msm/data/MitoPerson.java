@@ -27,6 +27,7 @@ public class MitoPerson implements Id {
     private boolean transitPass;
     private boolean disable;
     private Optional<Boolean> hasBicycle = Optional.empty();
+    private MitoHousehold household;
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
@@ -101,5 +102,13 @@ public class MitoPerson implements Id {
 
     public void setHasBicycle(boolean hasBicycle) {
         this.hasBicycle = Optional.of(hasBicycle);
+    }
+
+    public MitoHousehold getHousehold() {
+        return household;
+    }
+
+    public void setHousehold(MitoHousehold household) {
+        this.household = household;
     }
 }

@@ -93,7 +93,7 @@ public final class MitoMopedModel2 {
         new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
-
+        new BicycleOwnershipReaderAndModel(dataSet).read();
     }
 
     private void printOutline(long startTime) {

@@ -1,14 +1,13 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.PedestrianModel;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceWithMoped;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
@@ -16,22 +15,13 @@ import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.util.MitoUtil;
-import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-
-import static de.tum.bgu.msm.data.Purpose.NHBO;
-import static de.tum.bgu.msm.data.Purpose.NHBW;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -138,6 +128,9 @@ public final class TravelDemandGenerator2WithMoped {
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImpl2());
             modeChoiceMandatory = new ModeChoiceWithMoped(dataSet, Purpose.getMandatoryPurposes());
+            Purpose.getMandatoryPurposes().forEach(purpose -> {
+                ((ModeChoiceWithMoped) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+            });
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getDiscretionaryPurposes());
@@ -147,11 +140,15 @@ public final class TravelDemandGenerator2WithMoped {
             distributionHomeBasedDiscretionary = new TripDistribution(dataSet, Purpose.getHomeBasedDiscretionaryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImpl2());
             modeChoiceHomeBasedDiscretionary = new ModeChoiceWithMoped(dataSet, Purpose.getHomeBasedDiscretionaryPurposes());
-
+            Purpose.getHomeBasedDiscretionaryPurposes().forEach(purpose -> {
+                ((ModeChoiceWithMoped) modeChoiceHomeBasedDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+            });
             distributionNonHomeBased = new TripDistribution(dataSet, Purpose.getNonHomeBasedPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImpl2());
             modeChoiceNonHomeBased = new ModeChoiceWithMoped(dataSet, Purpose.getNonHomeBasedPurposes());
-
+            Purpose.getNonHomeBasedPurposes().forEach(purpose -> {
+                ((ModeChoiceWithMoped) modeChoiceNonHomeBased).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+            });
             timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
 

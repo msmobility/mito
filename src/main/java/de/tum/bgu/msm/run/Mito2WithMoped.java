@@ -1,11 +1,9 @@
 package de.tum.bgu.msm.run;
 
-import de.tum.bgu.msm.MitoModel2;
 import de.tum.bgu.msm.MitoMopedModel2;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
 import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
 import org.apache.log4j.Logger;
@@ -32,9 +30,9 @@ import org.matsim.vehicles.VehicleUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MitoMoped2 {
+public class Mito2WithMoped {
 
-    private static final Logger logger = Logger.getLogger(MitoMoped2.class);
+    private static final Logger logger = Logger.getLogger(Mito2WithMoped.class);
     private static final double MAX_WALKSPEED = 5.0;
     private static final double MAX_CYCLESPEED = 15.0;
     private static final double SILO_SAMPLING_RATE = 1.;
