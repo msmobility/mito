@@ -28,6 +28,8 @@ public class MitoPerson implements Id {
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
+    private MitoHousehold household;
+
     public MitoPerson(int id, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
         this.mitoOccupationStatus = mitoOccupationStatus;
@@ -91,5 +93,13 @@ public class MitoPerson implements Id {
 
     public void setHasBicycle(boolean hasBicycle) {
         this.hasBicycle = Optional.of(hasBicycle);
+    }
+
+    public MitoHousehold getHousehold() {
+        return household;
+    }
+
+    public void setHousehold(MitoHousehold household) {
+        this.household = household;
     }
 }

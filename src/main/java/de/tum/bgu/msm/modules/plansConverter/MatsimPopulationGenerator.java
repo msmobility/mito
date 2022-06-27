@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.plansConverter;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -60,6 +61,13 @@ public final class MatsimPopulationGenerator extends Module {
 
                     String activityTypeAtOrigin = getOriginActivity(trip);
 
+                    //For all HB trips that person lives in a nursing_home, home end activity is “nursing_home”
+                    if (trip.isHomeBased()) {
+                        if(trip.getPerson().getHousehold().isNursingHome()){
+                            activityTypeAtOrigin = "nursing_home";
+                        }
+                    }
+
                     Coord originCoord;
                     if(trip.getTripOrigin() instanceof MicroLocation) {
                         originCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripOrigin()).getCoordinate());
@@ -75,6 +83,16 @@ public final class MatsimPopulationGenerator extends Module {
                     plan.addLeg(factory.createLeg(Mode.getMatsimMode(trip.getTripMode())));
 
                     String activityTypeAtDestination = getDestinationActivity(trip);
+
+                    //For work trips that worker’s job type is NURSING, destination end activity is “nursing_home”
+                    if(activityTypeAtDestination.equals("work")){
+                        MitoOccupationImpl occupation = (MitoOccupationImpl)trip.getPerson().getOccupation();
+                        if(occupation!=null){
+                            if(MunichJobType.NURSINGHOME.equals(occupation.getJobType())){
+                                activityTypeAtDestination = "nursing_work";
+                            }
+                        }
+                    }
 
                     Coord destinationCoord;
                     if(trip.getTripDestination() instanceof MicroLocation) {
@@ -133,6 +151,8 @@ public final class MatsimPopulationGenerator extends Module {
             return "education";
         } else if (purpose.equals(Purpose.HBS)){
             return "shopping";
+        } else if (purpose.equals(Purpose.HBR)){
+            return "recreation";
         } else if (purpose.equals(Purpose.AIRPORT)) {
             if (trip.getTripDestination().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)) {
                 return "airport";

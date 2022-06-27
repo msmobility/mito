@@ -13,7 +13,8 @@ public enum MunichJobType implements JobType{
     FINC(Category.OFFICE),
     RLST(Category.OFFICE),
     ADMN(Category.OFFICE),
-    SERV(Category.OFFICE);
+    SERV(Category.OFFICE),
+    NURSINGHOME(Category.OFFICE);
 
     private final Category category;
 

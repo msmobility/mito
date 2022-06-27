@@ -82,6 +82,14 @@ public class ConfigureMatsim {
         airportActivity.setTypicalDuration(1 * 60 * 60);
         config.planCalcScore().addActivityParams(airportActivity);
 
+        PlanCalcScoreConfigGroup.ActivityParams nursingHomeActivity = new PlanCalcScoreConfigGroup.ActivityParams("nursing_home");
+        nursingHomeActivity.setTypicalDuration(12 * 60 * 60);
+        config.planCalcScore().addActivityParams(nursingHomeActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams nursingWorkActivity = new PlanCalcScoreConfigGroup.ActivityParams("nursing_work");
+        nursingWorkActivity.setTypicalDuration(8 * 60 * 60);
+        config.planCalcScore().addActivityParams(nursingWorkActivity);
+
         PlansCalcRouteConfigGroup.ModeRoutingParams carPassengerParams = new PlansCalcRouteConfigGroup.ModeRoutingParams("car_passenger");
         carPassengerParams.setTeleportedModeFreespeedFactor(1.0);
         config.plansCalcRoute().addModeRoutingParams(carPassengerParams);
