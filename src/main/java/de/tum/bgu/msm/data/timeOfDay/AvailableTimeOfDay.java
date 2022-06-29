@@ -2,6 +2,12 @@ package de.tum.bgu.msm.data.timeOfDay;
 
 import java.util.*;
 
+
+/**
+This class defines a map of availability, with a key start time in minutes of the time window and a value boolean that defines
+if the window is available (true) or not (false)
+ **/
+
 public class AvailableTimeOfDay {
 
     private SortedMap<Integer, Boolean> internalMap;

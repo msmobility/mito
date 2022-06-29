@@ -5,6 +5,11 @@ import de.tum.bgu.msm.util.MitoUtil;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+/**
+ * Defines the probability distribution of starting a trip or of the duration of a trip.
+ * Defined by a map with key the starting time of the time window and valua a double indicating probability
+ */
 public class TimeOfDayDistribution {
 
     private SortedMap<Integer, Double> internalMap;
