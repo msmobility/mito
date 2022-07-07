@@ -133,7 +133,9 @@ public final class MatsimPopulationGenerator extends Module {
             return "education";
         } else if (purpose.equals(Purpose.HBS)){
             return "shopping";
-        } else if (purpose.equals(Purpose.AIRPORT)) {
+        } else if (purpose.equals(Purpose.HBR)) {
+            return "recreation";
+        }else if (purpose.equals(Purpose.AIRPORT)) {
             if (trip.getTripDestination().getZoneId() == Resources.instance.getInt(Properties.AIRPORT_ZONE)) {
                 return "airport";
             } else {

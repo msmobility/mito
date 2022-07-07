@@ -39,7 +39,7 @@ public class SummarizeData {
             }
             pwh.print(hh.getId());
             pwh.print(",");
-            pwh.print(homeZone);
+            pwh.print(homeZone.getZoneId());
             pwh.print(",");
             pwh.print(hh.getHomeLocation().x);
             pwh.print(",");
@@ -62,7 +62,7 @@ public class SummarizeData {
         LOGGER.info("  Writing person file");
         Path filepp = Resources.instance.getOutputPersonsPath();
         PrintWriter pwp = MitoUtil.openFileForSequentialWriting(filepp.toAbsolutePath().toString(), false);
-        pwp.println("id,hhID,hhSize,hhTrips,avTrips");
+        pwp.println("id,hhID,hhSize,hhTrips,avTrips,bicycle");
         for(MitoHousehold hh: dataSet.getHouseholds().values()) {
             for (MitoPerson pp : hh.getPersons().values()) {
                     pwp.print(pp.getId());
@@ -74,7 +74,9 @@ public class SummarizeData {
                     long hhTrips = Arrays.stream(Purpose.values()).mapToLong(purpose -> hh.getTripsForPurpose(purpose).size()).sum();
                     pwp.print(hhTrips);
                     pwp.print(",");
-                    pwp.println(hhTrips / hh.getHhSize());
+                    pwp.print(hhTrips / hh.getHhSize());
+                    pwp.print(",");
+                    pwp.println(pp.getHasBicycle().get());
                 }
             }
         pwp.close();

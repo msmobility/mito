@@ -74,6 +74,10 @@ public class ConfigureMatsim {
         shoppingActivity.setTypicalDuration(1 * 60 * 60);
         config.planCalcScore().addActivityParams(shoppingActivity);
 
+        PlanCalcScoreConfigGroup.ActivityParams recreationActivity = new PlanCalcScoreConfigGroup.ActivityParams("recreation");
+        recreationActivity.setTypicalDuration(1 * 60 * 60);
+        config.planCalcScore().addActivityParams(recreationActivity);
+
         PlanCalcScoreConfigGroup.ActivityParams otherActivity = new PlanCalcScoreConfigGroup.ActivityParams("other");
         otherActivity.setTypicalDuration(1 * 60 * 60);
         config.planCalcScore().addActivityParams(otherActivity);
@@ -161,6 +165,10 @@ public class ConfigureMatsim {
         PlanCalcScoreConfigGroup.ActivityParams shoppingActivity = new PlanCalcScoreConfigGroup.ActivityParams("shopping");
         shoppingActivity.setTypicalDuration(1 * 60 * 60);
         config.planCalcScore().addActivityParams(shoppingActivity);
+
+        PlanCalcScoreConfigGroup.ActivityParams recreationActivity = new PlanCalcScoreConfigGroup.ActivityParams("recreation");
+        recreationActivity.setTypicalDuration(1 * 60 * 60);
+        config.planCalcScore().addActivityParams(recreationActivity);
 
         PlanCalcScoreConfigGroup.ActivityParams otherActivity = new PlanCalcScoreConfigGroup.ActivityParams("other");
         otherActivity.setTypicalDuration(1 * 60 * 60);
