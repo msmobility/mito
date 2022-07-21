@@ -20,7 +20,7 @@ public class MitoTrip implements Id {
 
     private Mode tripMode;
 
-    private int departureInMinutes;
+    private int departureInMinutes = -1;
     private int departureInMinutesReturnTrip = -1;
 
     private Person matsimPerson;
