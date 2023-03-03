@@ -36,10 +36,10 @@ import java.util.Set;
 public class ConvertNetworkChangeEventsToSkim {
 
 
-    private static final String PROPERTIES_PATH = "/Users/nico.kuehnel/Library/CloudStorage/OneDrive-SharedLibraries-MOIAGmbH/Product Strategy - mobility analytics/1_Projects/PST-769_tomtomSkimMuc/mito2.0.properties";
-    private static final String NETWORK_PATH = "/Users/nico.kuehnel/Library/CloudStorage/OneDrive-SharedLibraries-MOIAGmbH/Product Strategy - mobility analytics/1_Projects/PST-769_tomtomSkimMuc/croppedNetwork.xml.gz";
-    private static final String NETWORK_CHANGE_EVENTS_PATH = "/Users/nico.kuehnel/Library/CloudStorage/OneDrive-SharedLibraries-MOIAGmbH/Product Strategy - mobility analytics/1_Projects/PST-769_tomtomSkimMuc/nce_munich_7day_0.75.xml.gz";
-    private static final String OUTPUT_SKIM_PATH = "/Users/nico.kuehnel/Library/CloudStorage/OneDrive-SharedLibraries-MOIAGmbH/Product Strategy - mobility analytics/1_Projects/PST-769_tomtomSkimMuc/skim.omx";
+    private static final String PROPERTIES_PATH = "mito2.0.properties";
+    private static final String NETWORK_PATH = "Network.xml.gz";
+    private static final String NETWORK_CHANGE_EVENTS_PATH = "/nce.xml.gz";
+    private static final String OUTPUT_SKIM_PATH = "skim.omx";
     private static final int TIME = 8 * 3600;
 
     public static void main(String[] args) {
