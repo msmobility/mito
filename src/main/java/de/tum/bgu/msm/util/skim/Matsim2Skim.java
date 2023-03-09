@@ -71,7 +71,7 @@ public class Matsim2Skim {
                     for (MitoZone zone : mitoZones) {
                         // Several points in a given origin zone
                         for (int i = 0; i < numberOfCalcPoints; i++) {
-                            Node originNode = nodesByZone.get(zone.getId()).get(0);
+                            Node originNode = nodesByZone.get(zone.getId()).get(i);
                             toNodes.add(new InitialNode(originNode, 0., 0.));
                         }
                     }
@@ -82,16 +82,28 @@ public class Matsim2Skim {
                         Node node = nodesByZone.get(origin.getId()).get(0);
                         calculator.calcLeastCostPath(node, aggregatedToNodes, time, null, null);
                         for (MitoZone destination : mitoZones) {
-                            LeastCostPathCalculator.Path path = calculator.constructPath(node, nodesByZone.get(destination.getId()).get(0), time);
 
-                            //convert to minutes
-                            double travelTime = path.travelTime / 60.;
-                            double distance = 0.;
-                            for (Link link : path.links) {
-                                distance += link.getLength();
+                            double meanTravelTime = 0;
+                            double meanDistance = 0;
+                            List<Node> nodes = nodesByZone.get(destination.getId());
+                            for (Node n : nodes) {
+                                LeastCostPathCalculator.Path path = calculator.constructPath(node, n, time);
+
+                                //convert to minutes
+                                double travelTime = path.travelTime / 60.;
+                                double distance = 0.;
+                                for (Link link : path.links) {
+                                    distance += link.getLength();
+                                }
+                                meanTravelTime += travelTime;
+                                meanDistance += distance;
                             }
-                            carTravelTimeMatrix.setIndexed(origin.getId(), destination.getId(), travelTime);
-                            carDistanceMatrix.setIndexed(origin.getId(), destination.getId(), distance / 1000.);
+
+                            meanTravelTime /= nodes.size();
+                            meanDistance /= nodes.size();
+
+                            carTravelTimeMatrix.setIndexed(origin.getId(), destination.getId(), meanTravelTime);
+                            carDistanceMatrix.setIndexed(origin.getId(), destination.getId(), meanDistance / 1000.);
                         }
                     }
                 } catch (Exception e) {
