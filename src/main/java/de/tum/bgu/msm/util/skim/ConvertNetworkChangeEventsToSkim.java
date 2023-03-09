@@ -14,20 +14,19 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.dvrp.router.TimeAsTravelDisutility;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.events.EventsManagerImpl;
 import org.matsim.core.mobsim.framework.Mobsim;
-import org.matsim.core.mobsim.framework.events.MobsimAfterSimStepEvent;
-import org.matsim.core.mobsim.framework.events.MobsimBeforeSimStepEvent;
-import org.matsim.core.mobsim.framework.events.MobsimInitializedEvent;
 import org.matsim.core.mobsim.qsim.QSimBuilder;
 import org.matsim.core.network.NetworkChangeEvent;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.NetworkChangeEventsParser;
+import org.matsim.core.router.costcalculators.FreespeedTravelTimeAndDisutility;
+import org.matsim.core.router.util.TravelTime;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
-import org.matsim.withinday.trafficmonitoring.WithinDayTravelTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,20 +61,14 @@ public class ConvertNetworkChangeEventsToSkim {
             NetworkUtils.addNetworkChangeEvent(network, nce);
         }
 
-        Set<String> analyzedModes = Sets.newHashSet(TransportMode.car);
+
         MutableScenario scenario = ScenarioUtils.createMutableScenario(ConfigUtils.createConfig());
         scenario.setNetwork(network);
-        final WithinDayTravelTime travelTime = new WithinDayTravelTime(scenario, analyzedModes);
+        TravelTime travelTime = new FreespeedTravelTimeAndDisutility(new PlanCalcScoreConfigGroup());
 
 
         IndexedDoubleMatrix2D travelTimeSkim = new IndexedDoubleMatrix2D(dataset.getZones().values(), dataset.getZones().values());
         IndexedDoubleMatrix2D travelDistanceSkim = new IndexedDoubleMatrix2D(dataset.getZones().values(), dataset.getZones().values());
-
-        Mobsim mobsim = queueSim(scenario);
-        travelTime.notifyMobsimInitialized(new MobsimInitializedEvent(mobsim));
-        travelTime.notifyMobsimBeforeSimStep(new MobsimBeforeSimStepEvent(mobsim, TIME));
-        travelTime.notifyMobsimAfterSimStep(new MobsimAfterSimStepEvent(mobsim, TIME));
-
         Matsim2Skim matsim2Skim = new Matsim2Skim(network, new TimeAsTravelDisutility(travelTime), travelTime);
         matsim2Skim.calculateMatrixFromMatsim(3, travelTimeSkim, travelDistanceSkim, TIME, dataset.getZones().values());
 
