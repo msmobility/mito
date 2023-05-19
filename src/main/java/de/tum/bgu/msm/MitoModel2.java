@@ -1,6 +1,7 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -80,10 +81,12 @@ public final class MitoModel2 {
         new SchoolsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
         new HouseholdsCoordReader(dataSet).read();
+        new GiveHouseholdsWithoutDwellingsCoordinates(dataSet).read();
         new PersonsReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();
         readAdditionalData();
+
     }
 
     private void readAdditionalData() {
@@ -96,6 +99,7 @@ public final class MitoModel2 {
         new BicycleOwnershipReaderAndModel(dataSet).read();
 
     }
+
 
     private void printOutline(long startTime) {
         String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTrips().size());
