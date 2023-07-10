@@ -20,7 +20,7 @@ public class ConfigureMatsimPt {
 
     private final static double SILO_SAMPLING_RATE = 0.05;
 
-    public static Config configureMatsim(int lastItration, double reroute,  double planScale,int ptCapactityFactor, String outputSubDirectory, int maxPlan) {
+    public static Config configureMatsim(int lastItration, double reroute,  double planScale,int ptCapactityFactor, int maxPlan) {
         Config config = ConfigUtils.createConfig();
 
         //general config
@@ -30,7 +30,6 @@ public class ConfigureMatsimPt {
         config.controler().setWriteEventsInterval(config.controler().getLastIteration());
         config.controler().setWriteTripsInterval(config.controler().getLastIteration());
         config.controler().setOverwriteFileSetting( OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists );
-        config.controler().setOutputDirectory(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + "/trafficAssignment");
 
         config.qsim().setEndTime(26*3600);
         config.qsim().setTrafficDynamics(QSimConfigGroup.TrafficDynamics.withHoles);
@@ -44,9 +43,9 @@ public class ConfigureMatsimPt {
         //transit config
         config.transit().setUseTransit(true);
         config.network().setInputFile("F:\\models\\mitoMunich/input/trafficAssignment/pt/2020/network_pt_road.xml.gz");
-        config.transit().setTransitScheduleFile("F:\\models\\mitoMunich/input/trafficAssignment/pt/2020/schedule_bus.xml");
+        config.transit().setTransitScheduleFile("F:\\models\\mitoMunich/input/trafficAssignment/pt/2020/schedule.xml");
         config.transit().setVehiclesFile("F:\\models\\mitoMunich/input/trafficAssignment/pt/2020/vehicles_scale_" +
-                planScale + "_" + ptCapactityFactor + "_bus.xml");
+                planScale + "_" + ptCapactityFactor + ".xml");
         config.transitRouter().setDirectWalkFactor(2);
 
         Set<String> transitModes = new HashSet<>();

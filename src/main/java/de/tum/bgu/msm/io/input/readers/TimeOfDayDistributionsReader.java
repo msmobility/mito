@@ -31,6 +31,8 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
     private int nhbw_arrival_index;
     private int airport_arrival_index;
     private int airport_deparure_index;
+    private int nhbo_duration_index;
+    private int nhbw_duration_index;
 
 
     public TimeOfDayDistributionsReader(DataSet dataSet) {
@@ -55,7 +57,9 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
         hbw_arrival_index = MitoUtil.findPositionInArray("arrival_hbw", header);
         hbw_duration_index = MitoUtil.findPositionInArray("duration_hbw", header);
         nhbo_arrival_index = MitoUtil.findPositionInArray("arrival_nhbo", header);
+        nhbo_duration_index = MitoUtil.findPositionInArray("duration_nhbo", header);
         nhbw_arrival_index = MitoUtil.findPositionInArray("arrival_nhbw", header);
+        nhbw_duration_index = MitoUtil.findPositionInArray("duration_nhbw", header);
         airport_arrival_index = MitoUtil.findPositionInArray("arrival_airport", header);
         airport_deparure_index = MitoUtil.findPositionInArray("departure_airport", header);
     }
@@ -76,6 +80,8 @@ public class TimeOfDayDistributionsReader extends AbstractCsvReader {
         durationCumProbByPurpose.get(Purpose.HBR).setProbability(minute, Double.parseDouble(record[hbo_duration_index]));
         durationCumProbByPurpose.get(Purpose.HBS).setProbability(minute, Double.parseDouble(record[hbs_duration_index]));
         durationCumProbByPurpose.get(Purpose.HBW).setProbability(minute, Double.parseDouble(record[hbw_duration_index]));
+        durationCumProbByPurpose.get(Purpose.NHBO).setProbability(minute, Double.parseDouble(record[nhbo_duration_index]));
+        durationCumProbByPurpose.get(Purpose.NHBW).setProbability(minute, Double.parseDouble(record[nhbw_duration_index]));
 
         if (Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)){
             arrivalTimeCumProbByPurpose.get(Purpose.AIRPORT).setProbability(minute, Double.parseDouble(record[airport_arrival_index]));

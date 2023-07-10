@@ -5,12 +5,16 @@ import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -68,7 +72,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     public static NhbwNhboDistribution nhbo(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites,  Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                             TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
-        return new NhbwNhboDistribution(useBudgetsInDestinationChoice, Purpose.NHBO, ImmutableList.of(HBO, HBE, HBS),
+        return new NhbwNhboDistribution(useBudgetsInDestinationChoice, Purpose.NHBO, ImmutableList.of(HBO, HBE, HBS, HBR),
                 null, baseProbabilites, householdPartition, zones, travelTimes, peakHour);
     }
 
@@ -92,8 +96,20 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                                 continue;
                             }
                             trip.setTripOrigin(origin);
+
+                            if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)&& (origin instanceof MitoZone)){
+                                Coord originCoord = CoordUtils.createCoord(((MitoZone)origin).getRandomCoord(MitoUtil.getRandomObject()));
+                                trip.setOriginCoord(originCoord);
+                            }
+
                             MitoZone destination = findDestination(trip.getTripOrigin().getZoneId());
                             trip.setTripDestination(destination);
+
+                            if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                                Coord destinationCoord = CoordUtils.createCoord(destination.getRandomCoord(MitoUtil.getRandomObject()));
+                                trip.setDestinationCoord(destinationCoord);
+                            }
+
                             if (destination == null) {
                                 logger.debug("No destination found for trip" + trip);
                                 TripDistribution.failedTripsCounter.incrementAndGet();
@@ -114,8 +130,19 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                             continue;
                         }
                         trip.setTripOrigin(origin);
+                        if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)&& (origin instanceof MitoZone)){
+                            Coord originCoord = CoordUtils.createCoord(((MitoZone)origin).getRandomCoord(MitoUtil.getRandomObject()));
+                            trip.setOriginCoord(originCoord);
+                        }
+
                         MitoZone destination = findDestinationWithoutBudget(trip.getTripOrigin().getZoneId());
                         trip.setTripDestination(destination);
+
+                        if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                            Coord destinationCoord = CoordUtils.createCoord(destination.getRandomCoord(MitoUtil.getRandomObject()));
+                            trip.setDestinationCoord(destinationCoord);
+                        }
+
                         if (destination == null) {
                             logger.debug("No destination found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();

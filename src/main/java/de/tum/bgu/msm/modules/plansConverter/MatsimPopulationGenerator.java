@@ -15,9 +15,7 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class MatsimPopulationGenerator extends Module {
@@ -71,9 +69,10 @@ public final class MatsimPopulationGenerator extends Module {
                     Coord originCoord;
                     if(trip.getTripOrigin() instanceof MicroLocation) {
                         originCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripOrigin()).getCoordinate());
+                    } else if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                        originCoord = trip.getOriginCoord();
                     } else {
-                        originCoord =
-                                CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
+                        originCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     }
 
                     Activity originActivity = factory.createActivityFromCoord(activityTypeAtOrigin, originCoord);
@@ -97,7 +96,9 @@ public final class MatsimPopulationGenerator extends Module {
                     Coord destinationCoord;
                     if(trip.getTripDestination() instanceof MicroLocation) {
                         destinationCoord = CoordUtils.createCoord(((MicroLocation) trip.getTripDestination()).getCoordinate());
-                    } else {
+                    } else if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                        destinationCoord = trip.getDestinationCoord();
+                    } else{
                         destinationCoord = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
                     }
                     Activity destinationActivity = factory.createActivityFromCoord(activityTypeAtDestination, destinationCoord);

@@ -7,7 +7,6 @@ import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.data.timeOfDay.TimeOfDayUtils;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
@@ -24,8 +23,6 @@ public final class TimeOfDayChoice extends Module {
     private EnumMap<Purpose, TimeOfDayDistribution> durationMinuteCumProbByPurpose;
     private EnumMap<Purpose, TimeOfDayDistribution> departureMinuteCumProbByPurpose;
 
-    private final static double SPEED_WALK_MS = 5 / 3.6;
-    private final static double SPEED_BICYCLE_MS = 13 / 3.6;
 
     private AtomicInteger counter = new AtomicInteger(0);
     private AtomicInteger issues = new AtomicInteger(0);
@@ -80,6 +77,7 @@ public final class TimeOfDayChoice extends Module {
                         }
                     }
                 }
+
                 for (Purpose purpose : purposes.stream().filter(p -> isHomeBasedPurpose(p)).collect(Collectors.toList())) {
                     for (MitoTrip trip : tripsByPurpose.get(purpose)) {
 
@@ -102,11 +100,13 @@ public final class TimeOfDayChoice extends Module {
 
                         AvailableTimeOfDay availableTODNextTrip = TimeOfDayUtils.updateAvailableTimeForNextTrip(totalAvailableTOD, tripDuration);
                         availableTODNextTrip = TimeOfDayUtils.updateAvailableTimeToAvoidTooLateTermination(availableTODNextTrip, tripDuration);
+                        availableTODNextTrip = TimeOfDayUtils.updateAvailableTimeToAvoidTooEarlyStart(availableTODNextTrip, travelTime);
                         TimeOfDayDistribution TODforThisTrip = TimeOfDayUtils.updateTODWithAvailability(arrivalMinuteCumProbByPurpose.get(purpose),
                                 availableTODNextTrip);
-                        int departureTime = TODforThisTrip.selectTime();
-                        if (departureTime != -1) {
-                            int arrivalTime = departureTime + travelTime;
+
+                        int arrivalTime = TODforThisTrip.selectTime();
+                        if (arrivalTime != -1) {
+                            int departureTime = arrivalTime - travelTime;
                             totalAvailableTOD.blockTime(departureTime, departureTime + tripDuration);
                             if (trip.getTripPurpose().equals(Purpose.HBW)) {
                                 hbwAvailableTOD.blockTime(departureTime, departureTime + tripDuration);
@@ -116,6 +116,7 @@ public final class TimeOfDayChoice extends Module {
 
                             int departureTimeReturn = arrivalTime + actDuration;
                             trip.setDepartureInMinutes(departureTime);
+                            trip.setArrivalInMinutes(departureTime+travelTime);
                             trip.setDepartureInMinutesReturnTrip(departureTimeReturn);
                             counter.incrementAndGet();
                             if (LongMath.isPowerOfTwo(counter.get())) {
@@ -129,6 +130,7 @@ public final class TimeOfDayChoice extends Module {
 
                 for (Purpose purpose : purposes.stream().filter(p -> !isHomeBasedPurpose(p)).collect(Collectors.toList())) {
                     for (MitoTrip trip : tripsByPurpose.get(purpose)) {
+                        int estimatedTime = estimateTravelTimeForTripInMinutes(trip);
                         AvailableTimeOfDay availableTODNextTrip;
                         if (purpose.equals(Purpose.AIRPORT)) {
                             availableTODNextTrip = new AvailableTimeOfDay();
@@ -144,16 +146,28 @@ public final class TimeOfDayChoice extends Module {
                         int arrivalTime = TimeOfDayUtils.updateTODWithAvailability(arrivalMinuteCumProbByPurpose.get(purpose),
                                 availableTODNextTrip).selectTime();
 
+
                         if (arrivalTime != -1) {
-                            trip.setDepartureInMinutes(arrivalTime - estimateTravelTimeForTripInMinutes(trip));
+                            int departureTimeInMinutes = arrivalTime - estimatedTime;
+                            //if departure is before midnight
+                            if (departureTimeInMinutes < 0) {
+                                departureTimeInMinutes = departureTimeInMinutes + 24 * 60;
+                            }
+                            trip.setDepartureInMinutes(departureTimeInMinutes);
+                            trip.setArrivalInMinutes(departureTimeInMinutes+estimatedTime);
                             counter.incrementAndGet();
                             if (LongMath.isPowerOfTwo(counter.get())) {
                                 logger.info(counter.get() + " times of day assigned");
                             }
                         } else {
                             arrivalTime = arrivalMinuteCumProbByPurpose.get(purpose).selectTime();
-                            nhbWithoutHb.incrementAndGet();
-                            trip.setDepartureInMinutes(arrivalTime - estimateTravelTimeForTripInMinutes(trip));
+                            int departureTimeInMinutes = arrivalTime - estimatedTime;
+                            //if departure is before midnight
+                            if (departureTimeInMinutes < 0) {
+                                departureTimeInMinutes = departureTimeInMinutes + 24 * 60;
+                            }
+                            trip.setDepartureInMinutes(departureTimeInMinutes);
+                            trip.setArrivalInMinutes(departureTimeInMinutes+estimatedTime);
                             counter.incrementAndGet();
                             if (LongMath.isPowerOfTwo(counter.get())) {
                                 logger.info(counter.get() + " times of day assigned");
@@ -183,13 +197,28 @@ public final class TimeOfDayChoice extends Module {
     private int estimateTravelTimeForTripInMinutes(MitoTrip trip) {
         if (trip.getTripMode().equals(Mode.walk)) {
             return (int) (dataSet.getTravelDistancesNMT().
-                    getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_WALK_MS * 60);
+                    getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId())*1000. / Properties.SPEED_WALK_M_MIN);
         } else if (trip.getTripMode().equals(Mode.bicycle)) {
             return (int) (dataSet.getTravelDistancesNMT().
-                    getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId()) / SPEED_BICYCLE_MS * 60);
+                    getTravelDistance(trip.getTripOrigin().getZoneId(), trip.getTripDestination().getZoneId())*1000. / Properties.SPEED_BICYCLE_M_MIN);
         } else {
             //both transit and car use here travel times by car
             return (int) (dataSet.getTravelTimes().getTravelTime(trip.getTripOrigin(), trip.getTripDestination(), 0, "car"));
         }
     }
+
+    private boolean isScheduleOverlapping(AvailableTimeOfDay AvailableTOD, MitoTrip trip) {
+        int travelTime = estimateTravelTimeForTripInMinutes(trip);
+        int startIndex = trip.getDepartureInMinutes()/ TimeOfDayUtils.SEARCH_INTERVAL_MIN * TimeOfDayUtils.SEARCH_INTERVAL_MIN;
+        int endIndex = Math.min(1440,trip.getDepartureInMinutesReturnTrip()+travelTime/TimeOfDayUtils.SEARCH_INTERVAL_MIN * TimeOfDayUtils.SEARCH_INTERVAL_MIN);
+
+        for (int i = startIndex; i < endIndex; i = i + TimeOfDayUtils.SEARCH_INTERVAL_MIN) {
+            if (AvailableTOD.isAvailable(i)==0){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
