@@ -27,7 +27,7 @@ public class GiveHouseholdsWithoutDwellingsCoordinates extends AbstractCsvReader
     @Override
     public void read() {
         logger.info("  Re-Reading household micro data from ascii file to give households without dwellings coordinates");
-        System.out.println("setting zone and coordinates for households without dwellings"); 
+        System.out.println("setting zone and coordinates for households without dwellings");
         Path filePath = Resources.instance.getHouseholdsFilePath();
         super.read(filePath, ",");
     }
