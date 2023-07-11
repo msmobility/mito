@@ -2,11 +2,7 @@ package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -27,6 +23,10 @@ public class MitoPerson implements Id {
     private Optional<Boolean> hasBicycle = Optional.empty();
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
+    private LinkedList<Activity> actChain = new LinkedList<>();
+
+    private MitoHousehold household;
+    private Map<SocialNetworkType, ArrayList<Integer> > alterLists = new HashMap<>();
 
     public MitoPerson(int id, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
@@ -91,5 +91,110 @@ public class MitoPerson implements Id {
 
     public void setHasBicycle(boolean hasBicycle) {
         this.hasBicycle = Optional.of(hasBicycle);
+    }
+
+    public MitoHousehold getHousehold() {
+        return household;
+    }
+
+    public void setHousehold(MitoHousehold household) {
+        this.household = household;
+    }
+
+    public Map<SocialNetworkType, ArrayList<Integer>> getAlterLists() {
+        return alterLists;
+    }
+
+    public void setAlterLists(Map<SocialNetworkType, ArrayList<Integer>> alterLists) {
+        this.alterLists = alterLists;
+    }
+
+
+    public LinkedList<Activity> getActChain() {
+        return actChain;
+    }
+
+    public void setActChain(LinkedList<Activity> actChain) {
+        this.actChain = actChain;
+    }
+
+    public static class Activity implements Comparable<Activity>{
+
+        Activity priorAct;
+        Location location;
+        int endTime;
+        Mode mode;
+        Activity afterAct;
+
+        public Activity(Location location, int endTime, Mode mode){
+            this.location=location;
+            this.endTime=endTime;
+        }
+
+        public Activity getPriorAct() {
+            return priorAct;
+        }
+
+        public void setPriorAct(Activity priorAct) {
+            this.priorAct = priorAct;
+        }
+
+        public Location getLocation() {
+            return location;
+        }
+
+        public void setLocation(Location location) {
+            this.location = location;
+        }
+
+        public int getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(int endTime) {
+            this.endTime = endTime;
+        }
+
+        public Mode getMode() {
+            return mode;
+        }
+
+        public void setMode(Mode mode) {
+            this.mode = mode;
+        }
+
+        public Activity getAfterAct() {
+            return afterAct;
+        }
+
+        public void setAfterAct(Activity afterAct) {
+            this.afterAct = afterAct;
+        }
+
+
+        public void setPriorAndAfter(Activity priorAct, Activity afterAct) {
+            this.priorAct = priorAct;
+            this.afterAct = afterAct;
+        }
+
+
+        @Override
+        public int compareTo(Activity o) {
+            if (this.endTime > o.endTime) {
+
+                // if current object is greater,then return 1
+                return 1;
+            }
+            else if (this.endTime < o.endTime) {
+
+                // if current object is greater,then return -1
+                return -1;
+            }
+            else {
+
+                // if current object is equal to o,then return 0
+                return 0;
+            }
+        }
     }
 }

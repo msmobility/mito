@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoJob;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.jobTypes.JobTypeFactory;
+import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -72,6 +73,7 @@ public class JobReader extends AbstractCsvReader {
             		Double.parseDouble(record[posJobCoordY])));
 
             MitoJob job = new MitoJob(zone, coordinate, id);
+            job.setJobType((MunichJobType)factory.getType(type.toUpperCase().replaceAll("\"","")));
             dataSet.addJob(job);
         }
     }

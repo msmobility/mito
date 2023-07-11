@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data;
 
 
+import de.tum.bgu.msm.data.jobTypes.munich.MunichJobType;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.util.Objects;
@@ -14,6 +15,8 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
 
     private int startTime = Integer.MIN_VALUE;
     private int endTime = Integer.MIN_VALUE;
+
+    private MunichJobType jobType;
 
     public MitoOccupationImpl(MitoZone occupationZone, Coordinate occupationLocation, int id) {
         this.occupationZone = Objects.requireNonNull(occupationZone);
@@ -67,5 +70,13 @@ public abstract class MitoOccupationImpl implements MitoOccupation {
     @Override
     public void setEndTime_min(int endTime_min) {
         this.endTime = endTime_min;
+    }
+
+    public MunichJobType getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(MunichJobType jobType) {
+        this.jobType = jobType;
     }
 }

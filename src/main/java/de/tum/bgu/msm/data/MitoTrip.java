@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.population.Person;
 
 /**
@@ -20,10 +21,15 @@ public class MitoTrip implements Id {
 
     private Mode tripMode;
 
-    private int departureInMinutes;
+    private int departureInMinutes = -1;
     private int departureInMinutesReturnTrip = -1;
+    private int arrivalInMinutes;
+    private int actDuration;
 
     private Person matsimPerson;
+    private int coordinatedTripId = 0;
+    private Coord destinationCoord;
+    private Coord originCoord;
 
     public MitoTrip(int tripId, Purpose tripPurpose) {
         this.tripId = tripId;
@@ -125,5 +131,45 @@ public class MitoTrip implements Id {
         } else {
             return false;
         }
+    }
+
+    public int getCoordinatedTripId() {
+        return coordinatedTripId;
+    }
+
+    public void setCoordinatedTripId(int coordinatedTripId) {
+        this.coordinatedTripId = coordinatedTripId;
+    }
+
+    public int getArrivalInMinutes() {
+        return arrivalInMinutes;
+    }
+
+    public void setArrivalInMinutes(int arrivalInMinutes) {
+        this.arrivalInMinutes = arrivalInMinutes;
+    }
+
+    public void setDestinationCoord(Coord destinationCoord) {
+        this.destinationCoord = destinationCoord;
+    }
+
+    public Coord getDestinationCoord() {
+        return destinationCoord;
+    }
+
+    public Coord getOriginCoord() {
+        return originCoord;
+    }
+
+    public void setOriginCoord(Coord originCoord) {
+        this.originCoord = originCoord;
+    }
+
+    public int getActDuration() {
+        return actDuration;
+    }
+
+    public void setActDuration(int actDuration) {
+        this.actDuration = actDuration;
     }
 }
