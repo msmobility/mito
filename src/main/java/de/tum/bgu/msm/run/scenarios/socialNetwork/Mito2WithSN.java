@@ -25,6 +25,8 @@ import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
+import static ch.sbb.matsim.mobsim.qsim.pt.SBBTransitEngineQSimModule.*;
+
 public class Mito2WithSN {
 
     private static final Logger logger = Logger.getLogger(Mito2WithSN.class);
@@ -74,12 +76,14 @@ public class Mito2WithSN {
 
                     // To use the deterministic pt simulation (Part 2 of 2):
                     controler.configureQSimComponents(components -> {
-                        SBBTransitEngineQSimModule.configure(components);
+                        new SBBTransitEngineQSimModule().configure(components);
 
                         // if you have other extensions that provide QSim components, call their configure-method here
                     });
 
                     ConfigureMatsimPt.setSBBConfig(controler.getConfig(),deterministic, maxSearchRadius, betaTransfer);
+
+
 
                 }
 
