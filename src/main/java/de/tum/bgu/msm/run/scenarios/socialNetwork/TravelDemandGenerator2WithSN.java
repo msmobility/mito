@@ -15,6 +15,7 @@ import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.coordinatedDestination.DestinationCoordination;
+import de.tum.bgu.msm.modules.tripDistribution.coordinatedDestination.DestinationCoordinationWithCliques;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
@@ -50,6 +51,7 @@ public final class TravelDemandGenerator2WithSN {
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
     private final Module destinationCoordination;
+    private final Module destinationCoordinationCliques;
 
     private TravelDemandGenerator2WithSN(
             DataSet dataSet,
@@ -68,7 +70,8 @@ public final class TravelDemandGenerator2WithSN {
             Module tripScaling,
             Module matsimPopulationGenerator,
             Module longDistanceTraffic,
-            Module destinationCoordination) {
+            Module destinationCoordination,
+            Module destinationCoordinationCliques) {
 
         this.dataSet = dataSet;
         this.tripGenerationMandatory = tripGenerationMandatory;
@@ -87,6 +90,7 @@ public final class TravelDemandGenerator2WithSN {
         this.matsimPopulationGenerator = matsimPopulationGenerator;
         this.longDistanceTraffic = longDistanceTraffic;
         this.destinationCoordination = destinationCoordination;
+        this.destinationCoordinationCliques = destinationCoordinationCliques;
     }
 
 
@@ -113,6 +117,7 @@ public final class TravelDemandGenerator2WithSN {
         private Module longDistanceTraffic;
 
         private Module destinationCoordination;
+        private Module destinationCoordinationCliques;
 
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
@@ -147,7 +152,9 @@ public final class TravelDemandGenerator2WithSN {
                 longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
             }
 
-            destinationCoordination = new DestinationCoordination(dataSet,Purpose.getAllPurposes());
+            //toggle following block comment on/off to run destination coordination with or without cliques
+            destinationCoordination = new DestinationCoordination(dataSet,Purpose.getAllPurposes()); //without cliques
+            destinationCoordinationCliques = new DestinationCoordinationWithCliques(dataSet,Purpose.getAllPurposes()); //with cliques
         }
 
         public TravelDemandGenerator2WithSN build() {
@@ -167,7 +174,8 @@ public final class TravelDemandGenerator2WithSN {
                     tripScaling,
                     matsimPopulationGenerator,
                     longDistanceTraffic,
-                    destinationCoordination);
+                    destinationCoordination,
+                    destinationCoordinationCliques);
         }
 
         public void setTripGeneration(Module tripGeneration) {
@@ -284,6 +292,7 @@ public final class TravelDemandGenerator2WithSN {
         tripScaling.run();
 
         logger.info("Running destination coordination");
+        destinationCoordinationCliques.run();
         destinationCoordination.run();
 
 

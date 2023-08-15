@@ -119,6 +119,17 @@ public class DestinationCoordination extends Module {
             }
 
             potentialTrips = potentialEgoAlterTripMap.get(egoTrip).entrySet().stream().
+                    filter(entry->SocialNetworkType.FRIEND.equals(entry.getValue())).
+                    collect(Collectors.toMap(e->e.getKey(),e->e.getValue())).keySet();
+
+            potentialTrips.removeIf(tripId -> dataSet.getTrips().get(tripId).getCoordinatedTripId()>0);
+
+            if (potentialTrips.size()>0){
+                findCoordinatedTrip(egoTrip, potentialTrips);
+                continue;
+            }
+
+            potentialTrips = potentialEgoAlterTripMap.get(egoTrip).entrySet().stream().
                     filter(entry->SocialNetworkType.COWORKER.equals(entry.getValue())||SocialNetworkType.SCHOOLMATE.equals(entry.getValue())).
                     collect(Collectors.toMap(e->e.getKey(),e->e.getValue())).keySet();
 

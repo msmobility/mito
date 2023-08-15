@@ -42,10 +42,11 @@ public class ConfigureMatsimPt {
 
         //transit config
         config.transit().setUseTransit(true);
-        config.network().setInputFile("F:\\models\\mitoMunich/input/trafficAssignment/pt/2020/network_pt_road.xml.gz");
-        config.transit().setTransitScheduleFile("F:\\models\\mitoMunich/input/trafficAssignment/pt/2020/schedule.xml");
-        config.transit().setVehiclesFile("F:\\models\\mitoMunich/input/trafficAssignment/pt/2020/vehicles_scale_" +
-                planScale + "_" + ptCapactityFactor + ".xml");
+        config.network().setInputFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/network_pt_road.xml.gz");
+        config.transit().setTransitScheduleFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/schedule.xml");
+        config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/vehicles_scale_0.05_10.xml");
+        //config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/vehicles_scale_" +
+                //planScale + "_" + ptCapactityFactor + ".xml");
         config.transitRouter().setDirectWalkFactor(2);
 
         Set<String> transitModes = new HashSet<>();

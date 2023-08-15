@@ -9,7 +9,6 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsimPt;
 import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
 import org.apache.log4j.Logger;
-import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
@@ -28,13 +27,13 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mito2TransitAssignment {
+public class Mito2TransitAssignmentMultiRun {
 
-    private static final Logger logger = Logger.getLogger(Mito2TransitAssignment.class);
+    private static final Logger logger = Logger.getLogger(Mito2TransitAssignmentMultiRun.class);
     private static boolean runMito = false;
     private static boolean runPtAssignment = true;
-    private static String popFile = "F:\\models\\mitoMunich/input/trafficAssignment/pt/matsimPlans.xml.gz";
-    private static String subTripFile = "F:\\models\\mitoMunich/input/trafficAssignment/pt/plan_busOnly/run-0.xml.gz";
+    private static String popFile = "C:\\models/MITO/mitoMunich/input/trafficAssignment/pt/matsimPlans.xml.gz";
+    private static String subTripFile = "C:\\models/MITO/mitoMunich/input/trafficAssignment/pt/plan_busOnly/run-0.xml.gz";
     private static boolean subTrip = true;
     private static int instance = 0;
     private static double planScale = 0.65;
@@ -76,7 +75,9 @@ public class Mito2TransitAssignment {
                         "_it" + lastItration + "_reroute" + reroute + "_capa" + factor + "_" + router +
                         "_" + dt + "_maxPlan" + maxPlan + "_maxRadius" + maxSearchRadius + "_betaTransfer" + betaTransfer + "_instance"+ instance +"/" +Resources.instance.getString(Properties.SCENARIO_YEAR);
 
-                config = ConfigureMatsimPt.configureMatsim(lastItration,reroute,planScale,factor,outputSubDirectory, maxPlan);
+                //old config
+                //config = ConfigureMatsimPt.configureMatsim(lastItration,reroute,planScale,factor,outputSubDirectory, maxPlan);
+                config = ConfigureMatsimPt.configureMatsim(lastItration,reroute,planScale,factor, maxPlan);
 
                 matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(config);
 

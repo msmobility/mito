@@ -1,11 +1,13 @@
-package de.tum.bgu.msm.run.scenarios.socialNetwork;
+package de.tum.bgu.msm.run.scenarios;
 
 import ch.sbb.matsim.mobsim.qsim.SBBTransitModule;
 import ch.sbb.matsim.mobsim.qsim.pt.SBBTransitEngineQSimModule;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
+import de.tum.bgu.msm.MitoModel2;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.run.scenarios.socialNetwork.MitoModel2WithSN;
 import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsimPt;
@@ -17,9 +19,9 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
 
-public class Mito2WithSN {
+public class Mito2WithTransitAssignment {
 
-    private static final Logger logger = Logger.getLogger(Mito2WithSN.class);
+    private static final Logger logger = Logger.getLogger(Mito2WithTransitAssignment.class);
 
     private static boolean runPtAssignment = true;
 
@@ -34,7 +36,7 @@ public class Mito2WithSN {
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");
-        MitoModel2WithSN model = MitoModel2WithSN.standAloneModel(args[0], MunichImplementationConfig.get());
+        MitoModel2 model = MitoModel2.standAloneModel(args[0], MunichImplementationConfig.get());
         model.run();
         final DataSet dataSet = model.getData();
 

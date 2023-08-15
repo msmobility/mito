@@ -25,29 +25,34 @@ public class SocialNetworkReader extends AbstractCsvReader {
 	}
 
 	public void read() {
-		logger.info("  Reading ego-alter household data from csv file");
-		Path filePath = Paths.get("F:\\models\\tengos_episim\\input\\mum/egoAlterHousehold5pct.csv");
-		socialNetworkType = SocialNetworkType.HOUSEHOLD;
-		super.read(filePath, ",");
-		logger.info(countError + " Egos are not existed in the trip person map.");
-		logger.info("  Reading ego-alter job data from csv file");
-		filePath = Paths.get("F:\\models\\tengos_episim\\input\\mum/egoAlterJob5pct.csv");
-		socialNetworkType = SocialNetworkType.COWORKER;
-		super.read(filePath, ",");
-		logger.info(countError + " Egos are not existed in the trip person map.");
-		logger.info("  Reading ego-alter nursing home data from csv file");
-		filePath = Paths.get("F:\\models\\tengos_episim\\input\\mum/egoAlterNursingHome5pct.csv");
-		socialNetworkType = SocialNetworkType.NURSINGHOME;
-		super.read(filePath, ",");
-		logger.info(countError + " Egos are not existed in the trip person map.");
-		logger.info("  Reading ego-alter school data from csv file");
-		filePath = Paths.get("F:\\models\\tengos_episim\\input\\mum/egoAlterSchool5pct.csv");
-		socialNetworkType = SocialNetworkType.SCHOOLMATE;
-		super.read(filePath, ",");
-		logger.info(countError + " Egos are not existed in the trip person map.");
-		logger.info("  Reading ego-alter dwelling data from csv filemum");
-		filePath = Paths.get("F:\\models\\tengos_episim\\input\\mum/egoAlterDwelling5pct.csv");
-		socialNetworkType = SocialNetworkType.NEIGHBOR;
+//		logger.info("  Reading ego-alter household data from csv file");
+//		Path filePath = Paths.get("C:\\models\\tengos_episim\\input\\egoAlterHousehold5pct.csv");
+//		socialNetworkType = SocialNetworkType.HOUSEHOLD;
+//		super.read(filePath, ",");
+//		logger.info(countError + " Egos are not existed in the trip person map.");
+//		logger.info("  Reading ego-alter job data from csv file");
+//		filePath = Paths.get("C:\\models\\tengos_episim\\input\\egoAlterJob5pct.csv");
+//		socialNetworkType = SocialNetworkType.COWORKER;
+//		super.read(filePath, ",");
+//		logger.info(countError + " Egos are not existed in the trip person map.");
+//		logger.info("  Reading ego-alter nursing home data from csv file");
+//		filePath = Paths.get("C:\\models\\tengos_episim\\input\\egoAlterNursingHome5pct.csv");
+//		socialNetworkType = SocialNetworkType.NURSINGHOME;
+//		super.read(filePath, ",");
+//		logger.info(countError + " Egos are not existed in the trip person map.");
+//		logger.info("  Reading ego-alter school data from csv file");
+//		filePath = Paths.get("C:\\models\\tengos_episim\\input\\egoAlterSchool5pct.csv");
+//		socialNetworkType = SocialNetworkType.SCHOOLMATE;
+//		super.read(filePath, ",");
+//		logger.info(countError + " Egos are not existed in the trip person map.");
+//		logger.info("  Reading ego-alter dwelling data from csv filemum");
+//		filePath = Paths.get("C:\\models\\tengos_episim\\input\\egoAlterDwelling5pct.csv");
+//		socialNetworkType = SocialNetworkType.NEIGHBOR;
+//		super.read(filePath, ",");
+//		logger.info(countError + " Egos are not existed in the trip person map.");
+		logger.info("  Reading ego-alter friend data from csv file");
+		Path filePath = Paths.get("C:\\models\\tengos_episim\\input\\egoAlterFriends5pct.csv");
+		socialNetworkType = SocialNetworkType.FRIEND;
 		super.read(filePath, ",");
 		logger.info(countError + " Egos are not existed in the trip person map.");
 	}
