@@ -152,9 +152,9 @@ public final class TravelDemandGenerator2WithSN {
                 longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
             }
 
-            //toggle following block comment on/off to run destination coordination with or without cliques
+            //toggle following two lines on/off to run destination coordination with or without cliques
             destinationCoordination = new DestinationCoordination(dataSet,Purpose.getAllPurposes()); //without cliques
-            destinationCoordinationCliques = new DestinationCoordinationWithCliques(dataSet,Purpose.getAllPurposes()); //with cliques
+            //destinationCoordinationCliques = new DestinationCoordinationWithCliques(dataSet,Purpose.getAllPurposes()); //with cliques
         }
 
         public TravelDemandGenerator2WithSN build() {
@@ -292,7 +292,7 @@ public final class TravelDemandGenerator2WithSN {
         tripScaling.run();
 
         logger.info("Running destination coordination");
-        destinationCoordinationCliques.run();
+        //destinationCoordinationCliques.run();
         destinationCoordination.run();
 
 

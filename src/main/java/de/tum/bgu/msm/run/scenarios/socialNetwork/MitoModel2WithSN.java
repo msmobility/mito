@@ -86,7 +86,7 @@ public final class MitoModel2WithSN {
         new OmxSkimsReader(dataSet).read();
         readAdditionalData();
         new SocialNetworkReader(dataSet).read(); //uncomment if using destination coordination without cliques
-        new SocialNetworkCliquesReader(dataSet).read(); //uncomment if using destination coordination with cliques
+        //new SocialNetworkCliquesReader(dataSet).read(); //uncomment if using destination coordination with cliques
     }
 
     private void readAdditionalData() {
