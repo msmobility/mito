@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.trafficAssignment;
 
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -24,7 +21,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class TripCSVToMATSimPlan {
+public class TripCSVToMATSimPlan2 {
 
     private static final double SPEED_WALK_KMH = 5.;
     private static final double SPEED_BICYCLE_KMH = 12.;
@@ -53,7 +50,7 @@ public class TripCSVToMATSimPlan {
     private static int posTimeMetroTram;
     private static int posTimeBus;
     private static int posDepartureTime;
-    private static int posDepartureTimeReturn;
+    //private static int posDepartureTimeReturn;
 
     private static Set<String> modesCar = new HashSet<>();
     private static Set<String> modesAssignment = new HashSet<>();
@@ -105,7 +102,7 @@ public class TripCSVToMATSimPlan {
                 posTimeMetroTram = MitoUtil.findPositionInArray("time_tram_metro", header);
                 posTimeBus = MitoUtil.findPositionInArray("time_bus", header);
                 posDepartureTime = MitoUtil.findPositionInArray("departure_time", header);
-                posDepartureTimeReturn = MitoUtil.findPositionInArray("departure_time_return", header);
+                //posDepartureTimeReturn = MitoUtil.findPositionInArray("departure_time_return", header);
 
 
                 while ((line = br.readLine()) != null) {
@@ -128,7 +125,7 @@ public class TripCSVToMATSimPlan {
         }
 
         PopulationWriter popwriter = new PopulationWriter(population);
-        popwriter.write("externalDemand/trips_5perc_5_matsim" + ".xml.gz");
+        popwriter.write("externalDemand/trips_total_5perc_5" + ".xml.gz");
 
         System.out.println("done.");
     }
@@ -158,7 +155,7 @@ public class TripCSVToMATSimPlan {
         Plan plan = factory.createPlan();
 
         Purpose purpose = Purpose.valueOf(t.purpose);
-        boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
+        //boolean roundTrip = !(purpose.equals(Purpose.NHBW) || purpose.equals(Purpose.NHBO));
 
         String firstActivityType = getOriginActivity(purpose);
         Coord firstCoord = new Coord(t.originX, t.originY);
@@ -182,7 +179,7 @@ public class TripCSVToMATSimPlan {
         secondAct.setStartTime(arrivalTime);
         plan.addActivity(secondAct);
 
-        if (roundTrip) {
+/*        if (roundTrip) {
             double departure_time_return = t.departure_time_return;
             //make sure the arrival time is earlier than the departure time
             departure_time_return = Math.min(departure_time_return, arrivalTime + 1);
@@ -196,7 +193,7 @@ public class TripCSVToMATSimPlan {
             //thirdAct.setLinkId(NetworkUtils.getNearestLink(carNetwork, firstCoord).getId());
             thirdAct.setStartTime(departure_time_return + Math.min(getEstimatedTravelTime(t), 3600 * 4));
             plan.addActivity(thirdAct);
-        }
+        }*/
 
         p.addPlan(plan);
         p.setSelectedPlan(plan);
@@ -281,7 +278,7 @@ public class TripCSVToMATSimPlan {
         public final double timeTramMetro_s;
         public final double timeTrain_s;
         public double departure_time;
-        public double departure_time_return;
+        //public double departure_time_return;
 
 
         public Trip(String line) {
@@ -299,11 +296,11 @@ public class TripCSVToMATSimPlan {
             } catch (NumberFormatException e) {
                 this.departure_time = 0.;
             }
-            try {
+            /*try {
                 this.departure_time_return = Double.parseDouble(data[posDepartureTimeReturn]) * 60;
             } catch (NumberFormatException e) {
                 this.departure_time_return = -1.;
-            }
+            }*/
             this.timeCar_s = Double.parseDouble(data[posTimeCar]) * 60;
             this.timeTrain_s = Double.parseDouble(data[posTimeTrain]) * 60;
             this.timeTramMetro_s = Double.parseDouble(data[posTimeMetroTram]) * 60;
