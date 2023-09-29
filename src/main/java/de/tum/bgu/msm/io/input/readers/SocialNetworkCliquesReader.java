@@ -28,7 +28,7 @@ public class SocialNetworkCliquesReader extends AbstractCsvReader {
 
 	public void read() {
 		logger.info("  Reading clique data from csv file");
-		Path filePath = Paths.get("C:\\models\\tengos_episim\\input\\cliqueListFriends5pct.csv");
+		Path filePath = Paths.get("C:\\models\\tengos_episim\\input\\social_net_edge_list_v_3.0\\cliqueListFriends5pct.csv");
 		super.read(filePath, ",");
 		logger.info(countError + "Egos do not exist in the trip person map.");
 	}

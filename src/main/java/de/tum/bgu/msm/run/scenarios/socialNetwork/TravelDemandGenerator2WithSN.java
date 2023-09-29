@@ -16,6 +16,7 @@ import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFacto
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.coordinatedDestination.DestinationCoordination;
 import de.tum.bgu.msm.modules.tripDistribution.coordinatedDestination.DestinationCoordinationWithCliques;
+import de.tum.bgu.msm.modules.tripDistribution.coordinatedDestination.DestinationCoordinationWithCliques2;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
@@ -154,7 +155,7 @@ public final class TravelDemandGenerator2WithSN {
 
             //toggle following two lines on/off to run destination coordination with or without cliques
             destinationCoordination = new DestinationCoordination(dataSet,Purpose.getAllPurposes()); //without cliques
-            //destinationCoordinationCliques = new DestinationCoordinationWithCliques(dataSet,Purpose.getAllPurposes()); //with cliques
+            destinationCoordinationCliques = new DestinationCoordinationWithCliques2(dataSet,Purpose.getAllPurposes()); //with cliques
         }
 
         public TravelDemandGenerator2WithSN build() {
@@ -292,8 +293,10 @@ public final class TravelDemandGenerator2WithSN {
         tripScaling.run();
 
         logger.info("Running destination coordination");
-        //destinationCoordinationCliques.run();
+
         destinationCoordination.run();
+
+        destinationCoordinationCliques.run();
 
 
         matsimPopulationGenerator.run();
