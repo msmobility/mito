@@ -6,6 +6,7 @@ import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 import de.tum.bgu.msm.MitoModel2;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsimPt;
 import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
 import org.apache.log4j.Logger;
@@ -31,15 +32,15 @@ import java.util.List;
 public class Mito2TransitAssignment {
 
     private static final Logger logger = Logger.getLogger(Mito2TransitAssignment.class);
-    private static boolean runMito = false;
+    private static boolean runMito = true;
     private static boolean runPtAssignment = true;
     private static String popFile = "F:\\models\\mitoMunich/input/trafficAssignment/pt/matsimPlans.xml.gz";
     private static String subTripFile = "F:\\models\\mitoMunich/input/trafficAssignment/pt/plan_busOnly/run-0.xml.gz";
     private static boolean subTrip = true;
     private static int instance = 0;
-    private static double planScale = 0.65;
-    private static int lastItration = 1;
-    private static double reroute = 1;
+    private static double planScale = 0.05;
+    private static int lastItration = 25;
+    private static double reroute = 0.2;
     private static boolean useSBB = true;
     private static boolean deterministic = false;
     private static int minCapacityFactor = 10;
@@ -69,35 +70,36 @@ public class Mito2TransitAssignment {
             MutableScenario matsimScenario;
             if (runPtAssignment) {
                 logger.info("Running traffic assignment in MATsim");
-                String router = useSBB?"SBB":"woSBB";
-                String dt = deterministic?"dt":"notDt";
-                String scenario = subTrip?"subTrip_benedikt":Resources.instance.getString(Properties.SCENARIO_NAME);
-                String outputSubDirectory = "scenOutput/" + scenario +
-                        "_it" + lastItration + "_reroute" + reroute + "_capa" + factor + "_" + router +
-                        "_" + dt + "_maxPlan" + maxPlan + "_maxRadius" + maxSearchRadius + "_betaTransfer" + betaTransfer + "_instance"+ instance +"/" +Resources.instance.getString(Properties.SCENARIO_YEAR);
+                //String router = useSBB?"SBB":"woSBB";
+                //String dt = deterministic?"dt":"notDt";
+                //String scenario = subTrip?"subTrip_benedikt":Resources.instance.getString(Properties.SCENARIO_NAME);
+                //String outputSubDirectory = "scenOutput/" + scenario +
+                //        "_it" + lastItration + "_reroute" + reroute + "_capa" + factor + "_" + router +
+                //        "_" + dt + "_maxPlan" + maxPlan + "_maxRadius" + maxSearchRadius + "_betaTransfer" + betaTransfer + "_instance"+ instance +"/" +Resources.instance.getString(Properties.SCENARIO_YEAR);
+                String outputSubDirectory = "scenOutput/" + Resources.instance.getString(Properties.SCENARIO_NAME) + "/" +Resources.instance.getString(Properties.SCENARIO_YEAR);
 
-                config = ConfigureMatsimPt.configureMatsim(lastItration,reroute,planScale,factor,outputSubDirectory, maxPlan);
+                config = ConfigureMatsimPt.configureMatsim(lastItration,reroute,planScale,factor, maxPlan);
+                config.controler().setOutputDirectory(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + "/trafficAssignment");
 
                 matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(config);
 
+                PopulationReader popReader = new PopulationReader(matsimScenario);
+                Population populationPt = PopulationUtils.createPopulation(ConfigUtils.createConfig());
+
                 if (runMito){
-                    matsimScenario.setPopulation(model.getData().getPopulation());
+                    logger.warn("Total number of all agents: " + matsimScenario.getPopulation().getPersons().size());
+                    MainModeIdentifierImpl mainModeIdentifier = new MainModeIdentifierImpl();
+                    for (Person pp : model.getData().getPopulation().getPersons().values()) {
+                        String mode = mainModeIdentifier.identifyMainMode(TripStructureUtils.getLegs(pp.getSelectedPlan()));
+                        if (mode.equals("pt")) {
+                            populationPt.addPerson(pp);
+                        }
+                    }
+                    matsimScenario.setPopulation(populationPt);
                     logger.warn("size of pt pop:" + matsimScenario.getPopulation().getPersons().size());
                 }else {
-
-                    PopulationReader popReader = new PopulationReader(matsimScenario);
-                    Population populationPt = PopulationUtils.createPopulation(ConfigUtils.createConfig());
-
                     if(subTrip){
                         popReader.readFile(subTripFile);
-                        /*//debugging
-                        for(Person pp : matsimScenario.getPopulation().getPersons().values()){
-                            if (pp.getId().toString().equals("379637_2900")){
-                                populationPt.addPerson(pp);
-                            }
-                        }
-                        matsimScenario.setPopulation(populationPt);
-                        //debugging end*/
                     }else {
                         popReader.readFile(popFile);
                         logger.warn("Total number of all agents: " + matsimScenario.getPopulation().getPersons().size());
@@ -110,9 +112,8 @@ public class Mito2TransitAssignment {
                             }
                         }
                         matsimScenario.setPopulation(populationPt);
+                        logger.warn("size of pt pop:" + matsimScenario.getPopulation().getPersons().size());
                     }
-
-                    logger.warn("size of pt pop:" + matsimScenario.getPopulation().getPersons().size());
                 }
 
                 Controler controler = new Controler(matsimScenario);
