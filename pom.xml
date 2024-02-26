@@ -4,8 +4,15 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.tum.bgu.msm</groupId>
-    <artifactId>mito</artifactId>
-    <name>MITO</name>
+    <artifactId>mito-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>mito-parent</name>
+    <modules>
+        <module>mitoCore</module>
+        <module>extensions</module>
+        <module>useCases</module>
+        <module>analysis</module>
+    </modules>
     <version>master-SNAPSHOT</version>
     <description>Microscopic Transportation Orchestrator</description>
     <inceptionYear>2015</inceptionYear>
@@ -140,111 +147,7 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-	   <version>2.17.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.parallelcolt</groupId>
-            <artifactId>parallelcolt</artifactId>
-            <version>0.10.1</version>
-        </dependency>
-        <dependency>
-            <groupId>omx</groupId>
-            <artifactId>omx</artifactId>
-            <version>2</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>de.tum.bgu.msm</groupId>-->
-            <!--<artifactId>MoPeD_Java</artifactId>-->
-            <!--<version>1.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-            <version>3.2</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>org.matsim</groupId>
-            <artifactId>matsim</artifactId>
-            <version>${matsimVersion}</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.media</groupId>
-                    <artifactId>jai_core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jgridshift</groupId>
-                    <artifactId>jgridshift</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.matsim.contrib</groupId>
-            <artifactId>dvrp</artifactId>
-            <version>${matsimVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.media</groupId>
-                    <artifactId>jai_core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jgridshift</groupId>
-                    <artifactId>jgridshift</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.matsim.contrib</groupId>
-            <artifactId>drt</artifactId>
-            <version>${matsimVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.matsim.contrib</groupId>
-            <artifactId>accessibility</artifactId>
-            <version>${matsimVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.media</groupId>
-                    <artifactId>jai_core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jgridshift</groupId>
-                    <artifactId>jgridshift</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.knowm.xchart</groupId>
-            <artifactId>xchart</artifactId>
-            <version>3.6.3</version>
-        </dependency>
-        <dependency>
-            <groupId>ca.umontreal.iro.simul</groupId>
-            <artifactId>ssj</artifactId>
-            <version>3.3.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>jfree</groupId>
-                    <artifactId>jfreechart</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <matsimVersion>14.0-PR1766</matsimVersion>

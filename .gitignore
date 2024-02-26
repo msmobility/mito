@@ -1,7 +1,9 @@
 .idea/workspace.xml
 out
-/.classpath
-/.project
+*.gitignore
+*.class
+*.classpath
+*.project
 /bin/
 /.settings/
 /target/
@@ -9,4 +11,4 @@ out
 *.iml
 
 *.log
-/test/muc/scenOutput/
+/useCases/munich/test/muc/scenOutput/
