@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.util;
 
 import de.tum.bgu.msm.data.jobTypes.JobTypeFactory;
-import de.tum.bgu.msm.data.jobTypes.munich.MunichJobTypeFactory;
+import de.tum.bgu.msm.data.jobTypes.MunichJobTypeFactory;
 
 public class MunichImplementationConfig implements ImplementationConfig {
 

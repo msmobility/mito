@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.util;
 
 import de.tum.bgu.msm.data.jobTypes.JobTypeFactory;
-import de.tum.bgu.msm.data.jobTypes.kagawa.JobTypeFactoryTak;
+import de.tum.bgu.msm.data.jobTypes.JobTypeFactoryTak;
 
 public class KagawaImplementationConfig implements ImplementationConfig {
 

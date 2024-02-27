@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.TripGenCalculatorPersonBasedHurdleNegBin;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
@@ -16,7 +17,7 @@ import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
-import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneratorType;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -87,7 +88,11 @@ public final class TravelDemandGenerator {
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
             List<Purpose> purposes = Purpose.getAllPurposes();
-            tripGeneration = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration(), purposes);
+            tripGeneration = new TripGeneration(dataSet, purposes);
+            Purpose.getAllPurposes().forEach(purpose -> {
+                ((TripGeneration) tripGeneration).registerTripGenerator(purpose, TripGeneratorType.SampleEnumeration,null);
+            });
+
             personTripAssignment = new PersonTripAssignment(dataSet, purposes);
             travelTimeBudget = new TravelTimeBudgetModule(dataSet, purposes);
             distribution = new TripDistribution(dataSet, purposes, true, new DestinationUtilityCalculatorFactoryImpl());

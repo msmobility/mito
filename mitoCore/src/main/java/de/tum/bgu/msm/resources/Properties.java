@@ -30,7 +30,7 @@ public class Properties {
     public static final String SCALE_FACTOR_FOR_TRIP_GENERATION = "tg.scale.factor";
     public static final String TG_BINARY_LOGIT_COEFFICIENTS = "tg.binary.logit.coeffs";
     public static final String TG_NEGATIVE_BINOMIAL_COEFFICIENTS = "tg.negative.binomial.coeffs";
-
+    public static final String TG_ORDERED_LOGIT_COEFFICIENTS = "tg.ordered.logit.coeffs";
     public static final String BUS_TRAVEL_TIME_SKIM = "bus.travelTime";
     public static final String TRAM_METRO_TRAVEL_TIME_SKIM = "tramMetro.travelTime";
     public static final String TRAIN_TRAVEL_TIME_SKIM = "train.travelTime";

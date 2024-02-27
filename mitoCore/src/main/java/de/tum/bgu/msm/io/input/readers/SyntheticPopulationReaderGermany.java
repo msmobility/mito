@@ -183,7 +183,7 @@ public class SyntheticPopulationReaderGermany extends AbstractCsvReader {
                 }
             }
 
-            MitoPerson pp = new MitoPerson(id, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
+            MitoPerson pp = new MitoPerson(id, hh, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
 
             //int worker = Integer.parseInt(record[posOccupation]); //int worker = Integer.parseInt(record[posWorker]);
 

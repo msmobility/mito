@@ -27,18 +27,8 @@ public class ModeChoice extends Module {
     public ModeChoice(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
         boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
+        //TODO: move AV related codes to useCases/munich/scenarios
         //AV option is deactivated for now, since it uses outdate mode choice calculators.
-
-//        modeChoiceCalculatorByPurpose.put(Purpose.HBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBW, dataSet), dataSet.getModeChoiceCalibrationData()));
-//        modeChoiceCalculatorByPurpose.put(Purpose.HBE, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBE, dataSet), dataSet.getModeChoiceCalibrationData()));
-//        modeChoiceCalculatorByPurpose.put(Purpose.HBS, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBS, dataSet), dataSet.getModeChoiceCalibrationData()));
-//        modeChoiceCalculatorByPurpose.put(Purpose.HBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBO, dataSet), dataSet.getModeChoiceCalibrationData()));
-//        modeChoiceCalculatorByPurpose.put(Purpose.HBR, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.HBR, dataSet), dataSet.getModeChoiceCalibrationData()));
-//        modeChoiceCalculatorByPurpose.put(Purpose.NHBW, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.NHBW, dataSet), dataSet.getModeChoiceCalibrationData()));
-//        modeChoiceCalculatorByPurpose.put(Purpose.NHBO, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(Purpose.NHBO, dataSet), dataSet.getModeChoiceCalibrationData()));
-//        modeChoiceCalculatorByPurpose.put(Purpose.AIRPORT, new CalibratingModeChoiceCalculatorImpl(new AirportModeChoiceCalculator(), dataSet.getModeChoiceCalibrationData()));
-//        logger.info("Using the mode choice calculators obtained from MID 2017. Register alternative mode choice calculators is desired.");
-
     }
 
     public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {

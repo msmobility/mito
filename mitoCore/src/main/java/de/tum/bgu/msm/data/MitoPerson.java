@@ -2,11 +2,7 @@ package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
@@ -24,17 +20,19 @@ public class MitoPerson implements Id {
     private final MitoOccupation occupation;
     private final int age;
     private final boolean driversLicense;
+    private final MitoHousehold household;
     private Optional<Boolean> hasBicycle = Optional.empty();
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
-    public MitoPerson(int id, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
+    public MitoPerson(int id, MitoHousehold household, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
         this.mitoOccupationStatus = mitoOccupationStatus;
         this.occupation = occupation;
         this.age = age;
         this.mitoGender = mitoGender;
         this.driversLicense = driversLicense;
+        this.household = household;
     }
 
     public MitoOccupation getOccupation() {
@@ -91,5 +89,9 @@ public class MitoPerson implements Id {
 
     public void setHasBicycle(boolean hasBicycle) {
         this.hasBicycle = Optional.of(hasBicycle);
+    }
+
+    public MitoHousehold getHousehold() {
+        return household;
     }
 }

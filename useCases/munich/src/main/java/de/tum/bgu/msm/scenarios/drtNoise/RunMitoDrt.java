@@ -4,7 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
-import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
+import de.tum.bgu.msm.util.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Geometry;
 import org.matsim.api.core.v01.network.Network;

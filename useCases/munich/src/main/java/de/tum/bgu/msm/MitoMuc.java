@@ -5,7 +5,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
-import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
+import de.tum.bgu.msm.util.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;

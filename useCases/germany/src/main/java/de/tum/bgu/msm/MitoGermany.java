@@ -5,7 +5,7 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
-import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
+import de.tum.bgu.msm.util.GermanyImplementationConfig;
 import org.apache.log4j.Logger;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -19,7 +19,7 @@ public class MitoGermany {
 
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");
-        MitoModelGermany model = MitoModelGermany.standAloneModel(args[0], MunichImplementationConfig.get());
+        MitoModelGermany model = MitoModelGermany.standAloneModel(args[0], GermanyImplementationConfig.get());
         model.run();
         final DataSet dataSet = model.getData();
 

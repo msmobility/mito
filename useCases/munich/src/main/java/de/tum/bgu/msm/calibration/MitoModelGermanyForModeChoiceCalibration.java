@@ -11,7 +11,6 @@ import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Imp
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImplGermany;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
-import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
@@ -74,7 +73,7 @@ public final class MitoModelGermanyForModeChoiceCalibration {
 
     private void runForThisPurposes(List<Purpose> purposes) {
         logger.info("Running Module: Microscopic Trip Generation");
-        TripGeneration tg = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), purposes);
+        TripGeneration tg = new TripGeneration(dataSet, purposes);
         tg.run();
         if (dataSet.getTrips().isEmpty()) {
             logger.warn("No trips created. End of program.");

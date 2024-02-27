@@ -10,7 +10,6 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -70,7 +69,7 @@ public class ModeChoiceTest {
 
     private void fillDataSet() {
         trip1 = new MitoTrip(1, Purpose.HBW);
-        MitoPerson person1 = new MitoPerson(1, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
+        MitoPerson person1 = new MitoPerson(1, household1, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
         trip1.setPerson(person1);
         MitoZone zone1 = DummyZone.dummy;
         zone1.setDistanceToNearestRailStop(0.5f);
@@ -90,7 +89,7 @@ public class ModeChoiceTest {
         dataSet.addPerson(person1);
 
         trip2 = new MitoTrip(2, Purpose.HBO);
-        MitoPerson person2 = new MitoPerson(2, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
+        MitoPerson person2 = new MitoPerson(2, household2, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
         trip2.setPerson(person2);
         MitoZone zone3 = new MitoZone(3, AreaTypes.SGType.CORE_CITY);
         zone3.setDistanceToNearestRailStop(0.5f);

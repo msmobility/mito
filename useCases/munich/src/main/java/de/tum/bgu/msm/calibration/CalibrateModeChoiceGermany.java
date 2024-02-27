@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.calibration;
 
-import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
+import de.tum.bgu.msm.util.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 
 /**

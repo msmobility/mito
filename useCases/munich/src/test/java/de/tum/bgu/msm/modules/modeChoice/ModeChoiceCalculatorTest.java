@@ -40,7 +40,7 @@ public class ModeChoiceCalculatorTest {
         zone.setDistanceToNearestRailStop(0.5f);
         //origin.setAreaTypeHBWModeChoice(AreaType.HBW_mediumSizedCity);
         MitoHousehold hh = new MitoHousehold(1, 20000, 1);
-        MitoPerson pp = new MitoPerson(1, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
+        MitoPerson pp = new MitoPerson(1, hh, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
         hh.addPerson(pp);
         MitoTrip trip = new MitoTrip(1, Purpose.HBS);
         trip.setTripOrigin(zone);

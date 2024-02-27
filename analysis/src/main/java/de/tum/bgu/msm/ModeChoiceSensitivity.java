@@ -6,9 +6,7 @@ import de.tum.bgu.msm.io.input.readers.CalibrationDataReader;
 import de.tum.bgu.msm.io.input.readers.CalibrationRegionMapReader;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2008Impl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 
@@ -66,7 +64,7 @@ public class ModeChoiceSensitivity {
         for (int income : incomes) {
 
             MitoHousehold hh = new MitoHousehold(1, income, 1);
-            MitoPerson pp = new MitoPerson(1, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
+            MitoPerson pp = new MitoPerson(1, hh, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
             hh.addPerson(pp);
             pp.setHasBicycle(true);
             MitoTrip trip = new MitoTrip(1, Purpose.HBS);

@@ -13,9 +13,9 @@ import java.util.*;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.DROPPED_TRIPS_AT_BORDER_COUNTER;
 import static de.tum.bgu.msm.modules.tripGeneration.RawTripGenerator.TRIP_ID_COUNTER;
 
-class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFunction<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> implements TripsByPurposeGenerator {
+class TripGeneratorSampleEnumeration extends RandomizableConcurrentFunction<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> implements TripGenerator {
 
-    private static final Logger logger = Logger.getLogger(TripsByPurposeGeneratorSampleEnumeration.class);
+    private static final Logger logger = Logger.getLogger(TripGeneratorSampleEnumeration.class);
     private final boolean dropAtBorder = Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER);
 
     private Map<MitoHousehold, List<MitoTrip>> tripsByHH = new HashMap<>();
@@ -27,7 +27,7 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
     private double scaleFactorForGeneration;
 
 
-    TripsByPurposeGeneratorSampleEnumeration(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
+    TripGeneratorSampleEnumeration(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
@@ -44,14 +44,14 @@ class TripsByPurposeGeneratorSampleEnumeration extends RandomizableConcurrentFun
         for (; iterator.hasNext(); ) {
             MitoHousehold next = iterator.next();
             if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration) {
-                generateTripsForHousehold(next, scaleFactorForGeneration);
+                generateTripsForHousehold(next);
             }
         }
         return new Tuple<>(purpose, tripsByHH);
     }
 
 
-    private void generateTripsForHousehold(MitoHousehold hh, double scaleFactorForGeneration) {
+    private void generateTripsForHousehold(MitoHousehold hh) {
         HouseholdType hhType = householdTypeManager.determineHouseholdType(hh);
         if (hhType == null) {
             logger.error("Could not create trips for Household " + hh.getId() + " for Purpose " + purpose + ": No Household Type applicable");

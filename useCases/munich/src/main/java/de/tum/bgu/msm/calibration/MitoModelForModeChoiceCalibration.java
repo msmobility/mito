@@ -14,7 +14,6 @@ import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
-import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactorySampleEnumeration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
@@ -70,7 +69,7 @@ public final class MitoModelForModeChoiceCalibration {
         List<Purpose> purposes = Purpose.getAllPurposes();
 
         logger.info("Running Module: Microscopic Trip Generation");
-        TripGeneration tg = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactorySampleEnumeration(), purposes);
+        TripGeneration tg = new TripGeneration(dataSet, purposes);
         tg.run();
         if (dataSet.getTrips().isEmpty()) {
             logger.warn("No trips created. End of program.");

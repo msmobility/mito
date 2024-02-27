@@ -14,12 +14,11 @@ import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFacto
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistributionCalibrationGermany;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
-import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdle;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
-import de.tum.bgu.msm.util.munich.MunichImplementationConfig;
+import de.tum.bgu.msm.util.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -100,7 +99,7 @@ public final class CalibrateDestinationChoiceGermany {
         Module timeOfDayChoiceDiscretionary;
 
         List<Purpose> purposes = Purpose.getAllPurposes();
-        tripGenerationMandatory = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getMandatoryPurposes());
+        tripGenerationMandatory = new TripGeneration(dataSet, Purpose.getMandatoryPurposes());
         tripGenerationMandatory.run();
 
         travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
@@ -145,7 +144,7 @@ public final class CalibrateDestinationChoiceGermany {
         timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
         timeOfDayChoiceMandatory.run();
 
-        tripGenerationDiscretionary = new TripGeneration(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdle(), Purpose.getDiscretionaryPurposes());
+        tripGenerationDiscretionary = new TripGeneration(dataSet, Purpose.getDiscretionaryPurposes());
         //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
         travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
 
