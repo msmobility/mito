@@ -4,21 +4,20 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImplGermany;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
-import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImplGermany;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.TripDistributionCalibrationGermany;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.GermanyImplementationConfig;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
-import de.tum.bgu.msm.util.MunichImplementationConfig;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -52,7 +51,7 @@ public final class CalibrateDestinationChoiceGermany {
     private DataSet dataSet;
 
     public static void main(String[] args) {
-        CalibrateDestinationChoiceGermany model = CalibrateDestinationChoiceGermany.standAloneModel(args[0], MunichImplementationConfig.get());
+        CalibrateDestinationChoiceGermany model = CalibrateDestinationChoiceGermany.standAloneModel(args[0], GermanyImplementationConfig.get());
         model.run();
     }
 
@@ -115,7 +114,7 @@ public final class CalibrateDestinationChoiceGermany {
 
         distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters,
-                impedanceCalibrationParameters, false, new DestinationUtilityCalculatorFactoryImplGermany());
+                impedanceCalibrationParameters, false, new DestinationUtilityCalculatorImplGermany());
         distributionMandatory.run();
 
         TripDistributionCalibrationGermany tripDistributionCalibrationMandatory =
@@ -127,7 +126,7 @@ public final class CalibrateDestinationChoiceGermany {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                     tripDistributionCalibrationMandatory.getTravelDistanceParameters(),
-                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false, new DestinationUtilityCalculatorFactoryImplGermany());
+                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false, new DestinationUtilityCalculatorImplGermany());
             distributionMandatory.run();
         }
 
@@ -178,7 +177,7 @@ public final class CalibrateDestinationChoiceGermany {
         distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                 travelDistanceCalibrationParametersDisc,
                 impedanceCalibrationParametersDisc, false,
-                new DestinationUtilityCalculatorFactoryImplGermany());
+                new DestinationUtilityCalculatorImplGermany());
         distributionDiscretionary.run();
 
 
@@ -191,7 +190,7 @@ public final class CalibrateDestinationChoiceGermany {
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                     tripDistributionCalibrationDiscretionary.getTravelDistanceParameters(),
                     tripDistributionCalibrationDiscretionary.getImpendanceParameters(), false,
-                    new DestinationUtilityCalculatorFactoryImplGermany());
+                    new DestinationUtilityCalculatorImplGermany());
             distributionDiscretionary.run();
         }
 

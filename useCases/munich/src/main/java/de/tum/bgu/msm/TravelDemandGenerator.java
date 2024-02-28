@@ -3,8 +3,8 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
+import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImpl;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.TripGenCalculatorPersonBasedHurdleNegBin;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
@@ -14,7 +14,6 @@ import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
-import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneratorType;
@@ -95,7 +94,7 @@ public final class TravelDemandGenerator {
 
             personTripAssignment = new PersonTripAssignment(dataSet, purposes);
             travelTimeBudget = new TravelTimeBudgetModule(dataSet, purposes);
-            distribution = new TripDistribution(dataSet, purposes, true, new DestinationUtilityCalculatorFactoryImpl());
+            distribution = new TripDistribution(dataSet, purposes, true, new DestinationUtilityCalculatorImpl());
             modeChoice = new ModeChoice(dataSet, purposes);
             timeOfDayChoice = new TimeOfDayChoice(dataSet, purposes);
             tripScaling = new TripScaling(dataSet, purposes);

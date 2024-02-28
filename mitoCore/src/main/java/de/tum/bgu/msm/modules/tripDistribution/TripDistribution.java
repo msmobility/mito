@@ -42,21 +42,21 @@ public final class TripDistribution extends Module {
     private final Map<Purpose, Double> impedanceCalibrationParameters;
     private final boolean useBudgetsInDestinationChoice;
 
-    private final DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory;
+    private final DestinationUtilityCalculator destinationUtilityCalculator;
 
     public TripDistribution(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
-                            Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
+                            Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculator destinationUtilityCalculator) {
         super(dataSet, purposes);
         this.travelDistanceCalibrationParameters = travelDistanceCalibrationParameters;
         this.impedanceCalibrationParameters = impedanceCalibrationParameters;
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
-        this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
+        this.destinationUtilityCalculator = destinationUtilityCalculator;
     }
 
-    public TripDistribution(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
+    public TripDistribution(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculator destinationUtilityCalculator) {
         super(dataSet, purposes);
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
-        this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
+        this.destinationUtilityCalculator = destinationUtilityCalculator;
         travelDistanceCalibrationParameters = new HashMap<>();
         impedanceCalibrationParameters = new HashMap<>();
         for (Purpose purpose : Purpose.getAllPurposes()){
@@ -82,7 +82,7 @@ public final class TripDistribution extends Module {
             if (!purpose.equals(Purpose.AIRPORT)){
                 //Distribution of trips to the airport does not need a matrix of weights
                 utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
-                        destinationUtilityCalculatorFactory,
+                        destinationUtilityCalculator,
                         travelDistanceCalibrationParameters.get(purpose),
                         impedanceCalibrationParameters.get(purpose)));
             }

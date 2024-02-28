@@ -4,11 +4,11 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImpl2;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
-import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
@@ -81,7 +81,7 @@ public final class MitoModel2ForModeChoiceCalibration {
         }
 
         logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet, purposes, false, new DestinationUtilityCalculatorFactoryImpl2());
+        TripDistribution distribution = new TripDistribution(dataSet, purposes, false, new DestinationUtilityCalculatorImpl2());
         distribution.run();
 
         ModeChoice modeChoice = new ModeChoice(dataSet, purposes);

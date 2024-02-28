@@ -1,6 +1,7 @@
-package de.tum.bgu.msm.modules.tripDistribution;
+package de.tum.bgu.msm.modules;
 
 import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculator;
 
 public class DestinationUtilityCalculatorImplGermany implements DestinationUtilityCalculator {
 
@@ -30,7 +31,7 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
     private double maxDistance_km;
     private double attractionParam = 1.;
 
-    DestinationUtilityCalculatorImplGermany(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+    public void prepare(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
         switch (purpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;

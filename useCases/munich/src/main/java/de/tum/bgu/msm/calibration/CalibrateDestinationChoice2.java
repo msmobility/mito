@@ -4,13 +4,12 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImpl2;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
-import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.TripDistributionCalibration;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -113,7 +112,7 @@ public final class CalibrateDestinationChoice2 {
 
         distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                 travelDistanceCalibrationParameters,
-                impedanceCalibrationParameters, false, new DestinationUtilityCalculatorFactoryImpl2());
+                impedanceCalibrationParameters, false, new DestinationUtilityCalculatorImpl2());
         distributionMandatory.run();
 
         TripDistributionCalibration tripDistributionCalibrationMandatory =
@@ -125,7 +124,7 @@ public final class CalibrateDestinationChoice2 {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                     tripDistributionCalibrationMandatory.getTravelDistanceParameters(),
-                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false, new DestinationUtilityCalculatorFactoryImpl2());
+                    tripDistributionCalibrationMandatory.getImpendanceParameters(), false, new DestinationUtilityCalculatorImpl2());
             distributionMandatory.run();
         }
 
@@ -165,7 +164,7 @@ public final class CalibrateDestinationChoice2 {
         distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                 travelDistanceCalibrationParametersDisc,
                 impedanceCalibrationParametersDisc, false,
-                new DestinationUtilityCalculatorFactoryImpl2());
+                new DestinationUtilityCalculatorImpl2());
         distributionDiscretionary.run();
 
 
@@ -178,7 +177,7 @@ public final class CalibrateDestinationChoice2 {
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                     tripDistributionCalibrationDiscretionary.getTravelDistanceParameters(),
                     tripDistributionCalibrationDiscretionary.getImpendanceParameters(), false,
-                    new DestinationUtilityCalculatorFactoryImpl2());
+                    new DestinationUtilityCalculatorImpl2());
             distributionDiscretionary.run();
         }
 

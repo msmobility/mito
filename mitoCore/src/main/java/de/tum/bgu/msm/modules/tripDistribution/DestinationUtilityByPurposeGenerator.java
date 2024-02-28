@@ -23,13 +23,14 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
 
 
     DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet,
-                                         DestinationUtilityCalculatorFactory factory,
+                                         DestinationUtilityCalculator calculator,
                                          double travelDistanceCalibrationK,
                                          double impendanceCalibrationK) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
-        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
+        this.calculator = calculator;
+        calculator.prepare(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
     }
 
     @Override

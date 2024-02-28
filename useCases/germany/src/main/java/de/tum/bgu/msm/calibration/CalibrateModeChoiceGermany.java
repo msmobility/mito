@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.calibration;
 
-import de.tum.bgu.msm.util.MunichImplementationConfig;
+import de.tum.bgu.msm.util.GermanyImplementationConfig;
 import org.apache.log4j.Logger;
 
 /**
@@ -16,7 +16,7 @@ class CalibrateModeChoiceGermany {
     public static void main(String[] args) {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        MitoModelGermanyForModeChoiceCalibration model = MitoModelGermanyForModeChoiceCalibration.standAloneModel(args[0], MunichImplementationConfig.get());
+        MitoModelGermanyForModeChoiceCalibration model = MitoModelGermanyForModeChoiceCalibration.standAloneModel(args[0], GermanyImplementationConfig.get());
         model.run();
 
 
