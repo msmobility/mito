@@ -4,7 +4,7 @@ import de.tum.bgu.msm.DummyOccupation;
 import de.tum.bgu.msm.DummyZone;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.junit.Assert;

@@ -42,21 +42,20 @@ public final class TripDistribution extends Module {
     private final Map<Purpose, Double> impedanceCalibrationParameters;
     private final boolean useBudgetsInDestinationChoice;
 
-    private final DestinationUtilityCalculator destinationUtilityCalculator;
+    private final Map<Purpose, DestinationUtilityCalculator> destinationUtilityCalculatorByPurpose = new EnumMap<>(Purpose.class);
+
 
     public TripDistribution(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
-                            Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculator destinationUtilityCalculator) {
+                            Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice) {
         super(dataSet, purposes);
         this.travelDistanceCalibrationParameters = travelDistanceCalibrationParameters;
         this.impedanceCalibrationParameters = impedanceCalibrationParameters;
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
-        this.destinationUtilityCalculator = destinationUtilityCalculator;
     }
 
-    public TripDistribution(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculator destinationUtilityCalculator) {
+    public TripDistribution(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice) {
         super(dataSet, purposes);
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
-        this.destinationUtilityCalculator = destinationUtilityCalculator;
         travelDistanceCalibrationParameters = new HashMap<>();
         impedanceCalibrationParameters = new HashMap<>();
         for (Purpose purpose : Purpose.getAllPurposes()){
@@ -65,6 +64,13 @@ public final class TripDistribution extends Module {
         }
 
 
+    }
+
+    public void registerDestinationUtilityCalculator(Purpose purpose, DestinationUtilityCalculator destinationUtilityCalculator) {
+        final DestinationUtilityCalculator prev = destinationUtilityCalculatorByPurpose.put(purpose, destinationUtilityCalculator);
+        if (prev != null) {
+            logger.info("Overwrote destination utility calculator for purpose " + purpose + " with " + destinationUtilityCalculator.getClass());
+        }
     }
 
     @Override
@@ -82,7 +88,7 @@ public final class TripDistribution extends Module {
             if (!purpose.equals(Purpose.AIRPORT)){
                 //Distribution of trips to the airport does not need a matrix of weights
                 utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
-                        destinationUtilityCalculator,
+                        destinationUtilityCalculatorByPurpose.get(purpose),
                         travelDistanceCalibrationParameters.get(purpose),
                         impedanceCalibrationParameters.get(purpose)));
             }

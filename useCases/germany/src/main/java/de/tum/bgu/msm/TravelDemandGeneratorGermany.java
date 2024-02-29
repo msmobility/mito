@@ -6,17 +6,18 @@ import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
 import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImplGermany;
+import de.tum.bgu.msm.modules.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.Module;
+import de.tum.bgu.msm.modules.TripGenCalculatorPersonBasedHurdleNegBin;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
+import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
-//import de.tum.bgu.msm.modules.tripDistribution.DestinationUtilityCalculatorFactoryImpl2;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneratorType;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
@@ -115,10 +116,16 @@ public final class TravelDemandGeneratorGermany {
             //from here
             List<Purpose> purposes = Purpose.getAllPurposes();
             tripGenerationMandatory = new TripGeneration(dataSet, Purpose.getMandatoryPurposes());
+            Purpose.getMandatoryPurposes().forEach(purpose -> {
+                ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
+            });
             //personTripAssignmentMandatory = new PersonTripAssignment(dataSet, Purpose.getMandatoryPurposes());
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
-            distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(), false,
-                    new DestinationUtilityCalculatorImplGermany());
+            distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(), false
+            );
+            Purpose.getMandatoryPurposes().forEach(purpose -> {
+                ((TripDistribution) distributionMandatory).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImplGermany(purpose,1.,1.));
+            });
             modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
             Purpose.getMandatoryPurposes().forEach(purpose -> {
                 ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
@@ -126,10 +133,17 @@ public final class TravelDemandGeneratorGermany {
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, Purpose.getDiscretionaryPurposes());
+            Purpose.getDiscretionaryPurposes().forEach(purpose -> {
+                ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
+            });
             //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
-            distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(), false,
-                    new DestinationUtilityCalculatorImplGermany());
+            distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(), false
+            );
+            Purpose.getDiscretionaryPurposes().forEach(purpose -> {
+                ((TripDistribution) distributionDiscretionary).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImplGermany(purpose,1.,1.));
+            });
+
             modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
             Purpose.getDiscretionaryPurposes().forEach(purpose -> {
                 ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));

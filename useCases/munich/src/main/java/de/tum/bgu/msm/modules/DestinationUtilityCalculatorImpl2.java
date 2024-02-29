@@ -29,7 +29,7 @@ public class DestinationUtilityCalculatorImpl2 implements DestinationUtilityCalc
     private double distanceParam;
     private double impedanceParam;
 
-    public void prepare(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+    public DestinationUtilityCalculatorImpl2(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
         switch (purpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;

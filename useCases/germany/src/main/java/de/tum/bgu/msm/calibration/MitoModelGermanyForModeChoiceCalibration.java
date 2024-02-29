@@ -5,12 +5,14 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImplGermany;
+import de.tum.bgu.msm.modules.ModeChoiceCalculator2017Impl;
+import de.tum.bgu.msm.modules.TripGenCalculatorPersonBasedHurdleNegBin;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
-import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
+import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
+import de.tum.bgu.msm.modules.tripGeneration.TripGeneratorType;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
@@ -74,6 +76,10 @@ public final class MitoModelGermanyForModeChoiceCalibration {
     private void runForThisPurposes(List<Purpose> purposes) {
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet, purposes);
+        purposes.forEach(purpose -> {
+            ((TripGeneration) tg).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
+        });
+
         tg.run();
         if (dataSet.getTrips().isEmpty()) {
             logger.warn("No trips created. End of program.");
@@ -81,7 +87,11 @@ public final class MitoModelGermanyForModeChoiceCalibration {
         }
 
         logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet, purposes, false, new DestinationUtilityCalculatorImplGermany());
+        TripDistribution distribution = new TripDistribution(dataSet, purposes, false);
+        purposes.forEach(purpose -> {
+            ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImplGermany(purpose,1.,1.));
+        });
+
         distribution.run();
 
         ModeChoice modeChoice = new ModeChoice(dataSet, purposes);

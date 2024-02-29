@@ -1,9 +1,9 @@
-package de.tum.bgu.msm.modules.modeChoice.calculators.av;
+package de.tum.bgu.msm.scenarios.av;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.modules.ModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
 
 import java.util.EnumMap;
 

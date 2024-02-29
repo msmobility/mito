@@ -1,16 +1,18 @@
-package de.tum.bgu.msm.modules.modeChoice.calculators;
+package de.tum.bgu.msm.modules;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.ModeChoiceCoefficientReader;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.AbstractModeChoiceCalculator;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.collections.Tuple;
 
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
-public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
+import static de.tum.bgu.msm.data.Mode.*;
+
+public class ModeChoiceCalculator2008Impl extends AbstractModeChoiceCalculator {
 
     private final Purpose purpose;
     private final static Logger logger = Logger.getLogger(ModeChoiceCalculator2008Impl.class);
@@ -19,72 +21,15 @@ public class ModeChoiceCalculator2008Impl implements ModeChoiceCalculator {
     public ModeChoiceCalculator2008Impl(Purpose purpose, DataSet dataSet) {
         this.purpose = purpose;
         coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
+        setNests();
     }
 
-
-    @Override
-    public EnumMap<Mode, Double> calculateProbabilities(
-            Purpose purpose,
-            MitoHousehold household,
-            MitoPerson person,
-            MitoZone originZone,
-            MitoZone destinationZone,
-            TravelTimes travelTimes,
-            double travelDistanceAuto,
-            double travelDistanceNMT,
-            double peakHour_s) {
-
-        EnumMap<Mode, Double> utilities = calculateUtilities(
-                purpose, household, person, originZone, destinationZone, travelTimes
-                , travelDistanceAuto, travelDistanceNMT, peakHour_s);
-
-        final double utilityAutoD = utilities.get(Mode.autoDriver);
-        final double utilityAutoP = utilities.get(Mode.autoPassenger);
-        final double utilityBicycle = utilities.get(Mode.bicycle);
-        final double utilityBus = utilities.get(Mode.bus);
-        final double utilityTrain = utilities.get(Mode.train);
-        final double utilityTramMetro = utilities.get(Mode.tramOrMetro);
-        final double utilityWalk = utilities.get(Mode.walk);
-
-        double expsumNestAuto = Math.exp(utilityAutoD / coef.get(Mode.autoDriver).get("nestingCoefficient")) + Math.exp(utilityAutoP / coef.get(Mode.autoDriver).get("nestingCoefficient"));
-        double expsumNestTransit = Math.exp(utilityBus / coef.get(Mode.train).get("nestingCoefficient")) + Math.exp(utilityTrain / coef.get(Mode.train).get("nestingCoefficient")) + Math.exp(utilityTramMetro / coef.get(Mode.train).get("nestingCoefficient"));
-        double expsumTopLevel = Math.exp(coef.get(Mode.autoDriver).get("nestingCoefficient") * Math.log(expsumNestAuto)) + Math.exp(utilityBicycle) + Math.exp(utilityWalk) + Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit));
-
-        double probabilityAutoD;
-        double probabilityAutoP;
-        if (expsumNestAuto > 0) {
-            probabilityAutoD = (Math.exp(utilityAutoD / coef.get(Mode.autoPassenger).get("nestingCoefficient")) / expsumNestAuto) * (Math.exp(coef.get(Mode.autoPassenger).get("nestingCoefficient") * Math.log(expsumNestAuto)) / expsumTopLevel);
-            probabilityAutoP = (Math.exp(utilityAutoP / coef.get(Mode.autoPassenger).get("nestingCoefficient")) / expsumNestAuto) * (Math.exp(coef.get(Mode.autoPassenger).get("nestingCoefficient") * Math.log(expsumNestAuto)) / expsumTopLevel);
-        } else {
-            probabilityAutoD = 0.0;
-            probabilityAutoP = 0.0;
-        }
-
-        double probabilityBus;
-        double probabilityTrain;
-        double probabilityTramMetro;
-        if (expsumNestTransit > 0) {
-            probabilityBus = (Math.exp(utilityBus / coef.get(Mode.train).get("nestingCoefficient")) / expsumNestTransit) * (Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit)) / expsumTopLevel);
-            probabilityTrain = (Math.exp(utilityTrain / coef.get(Mode.train).get("nestingCoefficient")) / expsumNestTransit) * (Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit)) / expsumTopLevel);
-            probabilityTramMetro = (Math.exp(utilityTramMetro / coef.get(Mode.train).get("nestingCoefficient")) / expsumNestTransit) * (Math.exp(coef.get(Mode.train).get("nestingCoefficient") * Math.log(expsumNestTransit)) / expsumTopLevel);
-        } else {
-            probabilityBus = 0.0;
-            probabilityTrain = 0.0;
-            probabilityTramMetro = 0.0;
-        }
-        double probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
-        double probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
-
-
-        EnumMap<Mode, Double> probabilities = new EnumMap<>(Mode.class);
-        probabilities.put(Mode.autoDriver, probabilityAutoD);
-        probabilities.put(Mode.autoPassenger, probabilityAutoP);
-        probabilities.put(Mode.bicycle, probabilityBicycle);
-        probabilities.put(Mode.bus, probabilityBus);
-        probabilities.put(Mode.train, probabilityTrain);
-        probabilities.put(Mode.tramOrMetro, probabilityTramMetro);
-        probabilities.put(Mode.walk, probabilityWalk);
-        return probabilities;
+    public void setNests() {
+        List<Tuple<EnumSet<Mode>, Double>> nests = new ArrayList<>();
+        nests.add(new Tuple<>(EnumSet.of(autoDriver,autoPassenger), coef.get(Mode.autoDriver).get("nestingCoefficient")));
+        nests.add(new Tuple<>(EnumSet.of(train, tramOrMetro, bus), coef.get(Mode.train).get("nestingCoefficient")));
+        nests.add(new Tuple<>(EnumSet.of(walk,bicycle), 1.));
+        super.setNests(nests);
     }
 
     @Override

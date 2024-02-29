@@ -31,7 +31,7 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
     private double maxDistance_km;
     private double attractionParam = 1.;
 
-    public void prepare(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
+    public DestinationUtilityCalculatorImplGermany(Purpose purpose, double travelDistanceCalibrationK, double impendanceCalibrationK) {
         switch (purpose) {
             case HBW:
                 distanceParam = TRAVEL_DISTANCE_PARAM_HBW;

@@ -4,9 +4,9 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.CalibrationDataReader;
 import de.tum.bgu.msm.io.input.readers.CalibrationRegionMapReader;
+import de.tum.bgu.msm.modules.ModeChoiceCalculator2017Impl;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
-import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
+import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 

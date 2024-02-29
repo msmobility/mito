@@ -1,16 +1,18 @@
-package de.tum.bgu.msm.modules.modeChoice.calculators;
+package de.tum.bgu.msm.modules;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.ModeChoiceCoefficientReader;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
+import de.tum.bgu.msm.modules.modeChoice.AbstractModeChoiceCalculator;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import org.matsim.core.utils.collections.Tuple;
 
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
-public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
+import static de.tum.bgu.msm.data.Mode.*;
+
+public class ModeChoiceCalculator2017Impl extends AbstractModeChoiceCalculator {
 
     private static final double SPEED_WALK_KMH = 4;
     private static final double SPEED_BICYCLE_KMH = 10;
@@ -21,97 +23,18 @@ public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
     public ModeChoiceCalculator2017Impl(Purpose purpose, DataSet dataSet) {
         this.purpose = purpose;
         coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
+        setNests();
+    }
+
+    public void setNests() {
+        List<Tuple<EnumSet<Mode>, Double>> nests = new ArrayList<>();
+        nests.add(new Tuple<>(EnumSet.of(autoDriver,autoPassenger), coef.get(Mode.autoDriver).get("nestingCoefficient")));
+        nests.add(new Tuple<>(EnumSet.of(train, tramOrMetro, bus), coef.get(Mode.train).get("nestingCoefficient")));
+        nests.add(new Tuple<>(EnumSet.of(walk,bicycle), 1.));
+        super.setNests(nests);
     }
 
 
-    @Override
-    public EnumMap<Mode, Double> calculateProbabilities(
-            Purpose purpose,
-            MitoHousehold household,
-            MitoPerson person,
-            MitoZone originZone,
-            MitoZone destinationZone,
-            TravelTimes travelTimes,
-            double travelDistanceAuto,
-            double travelDistanceNMT,
-            double peakHour_s) {
-
-        EnumMap<Mode, Double> utilities = calculateUtilities(
-                purpose, household, person, originZone, destinationZone, travelTimes
-                , travelDistanceAuto, travelDistanceNMT, peakHour_s);
-
-        final double utilityAutoD = utilities.get(Mode.autoDriver);
-        final double utilityAutoP = utilities.get(Mode.autoPassenger);
-        final double utilityBicycle = utilities.get(Mode.bicycle);
-        final double utilityBus = utilities.get(Mode.bus);
-        final double utilityTrain = utilities.get(Mode.train);
-        final double utilityTramMetro = utilities.get(Mode.tramOrMetro);
-        final double utilityTaxi = utilities.get(Mode.taxi);
-        final double utilityWalk = utilities.get(Mode.walk);
-
-        final Double nestingCoefficientAutoModes = coef.get(Mode.autoDriver).get("nestingCoefficient");
-        final Double nestingCoefficientPtModes = coef.get(Mode.train).get("nestingCoefficient");
-
-        double expsumNestAuto =
-                Math.exp(utilityAutoD / nestingCoefficientAutoModes) +
-                Math.exp(utilityAutoP / nestingCoefficientAutoModes);
-        double expsumNestTransit =
-                Math.exp(utilityBus / nestingCoefficientPtModes) +
-                Math.exp(utilityTrain / nestingCoefficientPtModes) +
-                Math.exp(utilityTramMetro / nestingCoefficientPtModes) +
-                Math.exp(utilityTaxi / nestingCoefficientPtModes);
-        double expsumTopLevel =
-                Math.exp(nestingCoefficientAutoModes * Math.log(expsumNestAuto)) +
-                Math.exp(utilityBicycle) +
-                Math.exp(utilityWalk) +
-                Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
-
-        double probabilityAutoD;
-        double probabilityAutoP;
-        if (expsumNestAuto > 0) {
-            probabilityAutoD =
-                    (Math.exp(utilityAutoD / nestingCoefficientAutoModes) / expsumNestAuto) * (Math.exp(nestingCoefficientAutoModes * Math.log(expsumNestAuto)) / expsumTopLevel);
-            probabilityAutoP =
-                    (Math.exp(utilityAutoP / nestingCoefficientAutoModes) / expsumNestAuto) * (Math.exp(nestingCoefficientAutoModes * Math.log(expsumNestAuto)) / expsumTopLevel);
-        } else {
-            probabilityAutoD = 0.0;
-            probabilityAutoP = 0.0;
-        }
-
-        double probabilityBus;
-        double probabilityTrain;
-        double probabilityTramMetro;
-        double probabilityTaxi;
-        if (expsumNestTransit > 0) {
-            probabilityBus =
-                    (Math.exp(utilityBus / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
-            probabilityTrain =
-                    (Math.exp(utilityTrain / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
-            probabilityTramMetro =
-                    (Math.exp(utilityTramMetro / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
-            probabilityTaxi =
-                    (Math.exp(utilityTaxi / nestingCoefficientPtModes) / expsumNestTransit) * (Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit)) / expsumTopLevel);
-        } else {
-            probabilityBus = 0.0;
-            probabilityTrain = 0.0;
-            probabilityTramMetro = 0.0;
-            probabilityTaxi = 0.0;
-        }
-        double probabilityBicycle = Math.exp(utilityBicycle) / expsumTopLevel;
-        double probabilityWalk = Math.exp(utilityWalk) / expsumTopLevel;
-
-
-        EnumMap<Mode, Double> probabilities = new EnumMap<>(Mode.class);
-        probabilities.put(Mode.autoDriver, probabilityAutoD);
-        probabilities.put(Mode.autoPassenger, probabilityAutoP);
-        probabilities.put(Mode.bicycle, probabilityBicycle);
-        probabilities.put(Mode.bus, probabilityBus);
-        probabilities.put(Mode.train, probabilityTrain);
-        probabilities.put(Mode.tramOrMetro, probabilityTramMetro);
-        probabilities.put(Mode.taxi, probabilityTaxi);
-        probabilities.put(Mode.walk, probabilityWalk);
-        return probabilities;
-    }
 
     @Override
     public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
@@ -299,13 +222,5 @@ public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
         generalizedCosts.put(Mode.walk, gcWalk);
         return generalizedCosts;
 
-    }
-
-    private static boolean isMotorized(Mode mode) {
-        if (mode.equals(Mode.walk) || mode.equals(Mode.bicycle)){
-            return false;
-        } else {
-            return true;
-        }
     }
 }

@@ -5,7 +5,10 @@ import de.tum.bgu.msm.modules.tripGeneration.TripGenPredictor;
 import de.tum.bgu.msm.resources.Properties;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TripGenCalculatorPersonBasedHurdleNegBin implements TripGenPredictor {
     private static final Logger logger = Logger.getLogger(TripGenCalculatorPersonBasedHurdleNegBin.class);

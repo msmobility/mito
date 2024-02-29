@@ -30,7 +30,6 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
         this.calculator = calculator;
-        calculator.prepare(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
     }
 
     @Override

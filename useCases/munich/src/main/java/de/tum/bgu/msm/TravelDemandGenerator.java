@@ -3,11 +3,10 @@ package de.tum.bgu.msm;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
-import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImpl;
+import de.tum.bgu.msm.modules.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.personTripAssignment.PersonTripAssignment;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
@@ -94,8 +93,15 @@ public final class TravelDemandGenerator {
 
             personTripAssignment = new PersonTripAssignment(dataSet, purposes);
             travelTimeBudget = new TravelTimeBudgetModule(dataSet, purposes);
-            distribution = new TripDistribution(dataSet, purposes, true, new DestinationUtilityCalculatorImpl());
+            distribution = new TripDistribution(dataSet, purposes, true);
+            Purpose.getAllPurposes().forEach(purpose -> {
+                ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl(purpose,1.,1.));
+            });
             modeChoice = new ModeChoice(dataSet, purposes);
+            for (Purpose purpose : Purpose.getAllPurposes()){
+                ((ModeChoice) modeChoice).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
+                logger.info("Registering mode choice calculators based on 2008 MiD survey");
+            }
             timeOfDayChoice = new TimeOfDayChoice(dataSet, purposes);
             tripScaling = new TripScaling(dataSet, purposes);
             matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, purposes);
@@ -216,10 +222,6 @@ public final class TravelDemandGenerator {
         distribution.run();
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        for (Purpose purpose : Purpose.getAllPurposes()){
-            ((ModeChoice) modeChoice).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
-            logger.info("Registering mode choice calculators based on 2008 MiD survey");
-        }
         modeChoice.run();
 
         logger.info("Running time of day choice");
