@@ -87,9 +87,9 @@ public final class MitoModel2ForModeChoiceCalibration {
         }
 
         logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet, purposes, false);
+        TripDistribution distribution = new TripDistribution(dataSet, purposes);
         purposes.forEach(purpose -> {
-            ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl2(purpose,1.,1.));
+            ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl2(purpose));
         });
 
         distribution.run();

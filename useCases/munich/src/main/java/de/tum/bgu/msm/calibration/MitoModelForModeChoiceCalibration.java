@@ -6,7 +6,6 @@ import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImpl;
-import de.tum.bgu.msm.modules.TripGenCalculatorPersonBasedHurdleNegBin;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
@@ -91,9 +90,9 @@ public final class MitoModelForModeChoiceCalibration {
         ttb.run();
 
         logger.info("Running Module: Microscopic Trip Distribution");
-        TripDistribution distribution = new TripDistribution(dataSet, purposes, false);
+        TripDistribution distribution = new TripDistribution(dataSet, purposes);
         purposes.forEach(purpose -> {
-            ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl(purpose,1.,1.));
+            ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl(purpose));
         });
         distribution.run();
 

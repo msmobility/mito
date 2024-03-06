@@ -23,7 +23,10 @@ import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 import org.matsim.core.population.PopulationUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static de.tum.bgu.msm.data.Purpose.*;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -34,6 +37,7 @@ import java.util.List;
 public final class TravelDemandGeneratorGermany {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGeneratorGermany.class);
+    private static final List<Purpose> PURPOSES = List.of(HBW,HBE,HBS,HBR,HBO,NHBW,NHBO); // todo: check whether HBR should be here
     private final DataSet dataSet;
 
     private final Module tripGenerationMandatory;
@@ -114,41 +118,39 @@ public final class TravelDemandGeneratorGermany {
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
             //from here
-            List<Purpose> purposes = Purpose.getAllPurposes();
-            tripGenerationMandatory = new TripGeneration(dataSet, Purpose.getMandatoryPurposes());
-            Purpose.getMandatoryPurposes().forEach(purpose -> {
+            List<Purpose> purposes = PURPOSES;
+            List<Purpose> mandatoryPurposes = new ArrayList<>(PURPOSES);
+            mandatoryPurposes.retainAll(Purpose.getMandatoryPurposes());
+            List<Purpose> discretionaryPurposes = new ArrayList<>(PURPOSES);
+            discretionaryPurposes.removeAll(mandatoryPurposes);
+
+            tripGenerationMandatory = new TripGeneration(dataSet, mandatoryPurposes);
+            mandatoryPurposes.forEach(purpose -> {
                 ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
             });
-            //personTripAssignmentMandatory = new PersonTripAssignment(dataSet, Purpose.getMandatoryPurposes());
-            travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
-            distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(), false
-            );
-            Purpose.getMandatoryPurposes().forEach(purpose -> {
-                ((TripDistribution) distributionMandatory).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImplGermany(purpose,1.,1.));
-            });
-            modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
-            Purpose.getMandatoryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
-            });
-            timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
+            //personTripAssignmentMandatory = new PersonTripAssignment(dataSet, mandatoryPurposes);
+            travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, mandatoryPurposes);
+            distributionMandatory = new TripDistribution(dataSet, mandatoryPurposes);
+            mandatoryPurposes.forEach(purpose -> ((TripDistribution) distributionMandatory).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImplGermany(purpose)));
+
+            modeChoiceMandatory = new ModeChoice(dataSet, mandatoryPurposes);
+            mandatoryPurposes.forEach(purpose -> ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData())));
+
+            timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, mandatoryPurposes);
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, Purpose.getDiscretionaryPurposes());
-            Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
-            });
+            Purpose.getDiscretionaryPurposes().forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
             //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
-            travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
-            distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(), false
-            );
-            Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                ((TripDistribution) distributionDiscretionary).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImplGermany(purpose,1.,1.));
-            });
 
-            modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
-            Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
-            });
-            timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
+            travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, discretionaryPurposes);
+
+            distributionDiscretionary = new TripDistribution(dataSet, discretionaryPurposes);
+            // Register ALL purposes here, because we need the mandatory purpose matrices for NHBW / NHBO
+            purposes.forEach(purpose -> ((TripDistribution) distributionDiscretionary).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImplGermany(purpose)));
+
+            modeChoiceDiscretionary = new ModeChoice(dataSet, discretionaryPurposes);
+            discretionaryPurposes.forEach(purpose -> ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData())));
+            timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, discretionaryPurposes);
             //until here it must be divided into two blocks - mandatory and discretionary
 
             tripScaling = new TripScaling(dataSet, purposes);

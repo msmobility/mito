@@ -22,7 +22,7 @@ public class MitoPerson implements Id {
     private final boolean driversLicense;
     private final MitoHousehold household;
     private Optional<Boolean> hasBicycle = Optional.empty();
-
+    private ModeSet modeSet;
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
     public MitoPerson(int id, MitoHousehold household, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
@@ -93,5 +93,13 @@ public class MitoPerson implements Id {
 
     public MitoHousehold getHousehold() {
         return household;
+    }
+
+    public ModeSet getModeSet() {
+        return modeSet;
+    }
+
+    public void setModeSet(ModeSet modeSet) {
+        this.modeSet = modeSet;
     }
 }

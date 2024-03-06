@@ -27,14 +27,14 @@ public class TripAttractionRatesReader extends AbstractCsvReader {
     @Override
     protected void processHeader(String[] header) {
         variableIndex = MitoUtil.findPositionInArray("IndependentVariable", header);
-        for(Purpose purpose: Purpose.values()) {
+        for(Purpose purpose: Purpose.getAllPurposes()) {
             indexForPurpose.put(purpose, MitoUtil.findPositionInArray(purpose.name(), header));
         }
     }
 
     @Override
     protected void processRecord(String[] record) {
-        for(Purpose purpose: Purpose.values()) {
+        for(Purpose purpose: Purpose.getAllPurposes()) {
             AttractionCalculator.ExplanatoryVariable variable = AttractionCalculator.ExplanatoryVariable.valueOf(record[variableIndex]);
             double rate = Double.parseDouble(record[indexForPurpose.get(purpose)]);
             purpose.setTripAttractionForVariable(variable, rate);

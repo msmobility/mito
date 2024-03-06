@@ -14,13 +14,17 @@ import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.tripDistributors.TripDistributorType;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripGeneratorType;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static de.tum.bgu.msm.data.Purpose.*;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -31,6 +35,8 @@ import java.util.List;
 public final class TravelDemandGenerator {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
+
+    private static final List<Purpose> PURPOSES = List.of(HBW,HBE,HBS,HBR,HBO,NHBW,NHBO);
     private final DataSet dataSet;
 
     private final Module tripGeneration;
@@ -85,20 +91,33 @@ public final class TravelDemandGenerator {
 
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
-            List<Purpose> purposes = Purpose.getAllPurposes();
+            List<Purpose> purposes = PURPOSES; // todo: specify this in properties file
+
             tripGeneration = new TripGeneration(dataSet, purposes);
-            Purpose.getAllPurposes().forEach(purpose -> {
+            purposes.forEach(purpose -> {
                 ((TripGeneration) tripGeneration).registerTripGenerator(purpose, TripGeneratorType.SampleEnumeration,null);
             });
 
             personTripAssignment = new PersonTripAssignment(dataSet, purposes);
             travelTimeBudget = new TravelTimeBudgetModule(dataSet, purposes);
-            distribution = new TripDistribution(dataSet, purposes, true);
-            Purpose.getAllPurposes().forEach(purpose -> {
-                ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl(purpose,1.,1.));
-            });
+            distribution = new TripDistribution(dataSet, purposes);
+            Purpose.getAllPurposes().forEach(purpose -> ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl(purpose)));
+
+            // Override discretionary purposes with TTB version
+            List<Purpose> discretionaryPurposes = new ArrayList<>(purposes);
+            discretionaryPurposes.retainAll(Purpose.getDiscretionaryPurposes());
+
+            List<Purpose> homeBasedDiscretionaryPurposes = new ArrayList<>(discretionaryPurposes);
+            homeBasedDiscretionaryPurposes.retainAll(Purpose.getHomeBasedPurposes());
+            homeBasedDiscretionaryPurposes.forEach(purpose -> ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, TripDistributorType.HomeBasedDiscretionaryWithTTB, new DestinationUtilityCalculatorImpl(purpose)));
+
+            List<Purpose> nonHomeBasedDisretionaryPurposes = new ArrayList<>(discretionaryPurposes);
+            nonHomeBasedDisretionaryPurposes.removeAll(Purpose.getHomeBasedPurposes());
+            nonHomeBasedDisretionaryPurposes.forEach(purpose -> ((TripDistribution) distribution).registerDestinationUtilityCalculator(purpose, TripDistributorType.NonHomeBasedDiscretionaryWithTTB, new DestinationUtilityCalculatorImpl(purpose)));
+
+
             modeChoice = new ModeChoice(dataSet, purposes);
-            for (Purpose purpose : Purpose.getAllPurposes()){
+            for (Purpose purpose : purposes){
                 ((ModeChoice) modeChoice).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorImpl(), dataSet.getModeChoiceCalibrationData()));
                 logger.info("Registering mode choice calculators based on 2008 MiD survey");
             }

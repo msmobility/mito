@@ -55,6 +55,10 @@ public class MitoHousehold implements Id, MicroLocation {
         return autos;
     }
 
+    public double getAutosPerAdult() {
+        return autos / (double) persons.values().stream().filter(p -> p.getAge() >= 16).count();
+    }
+
     public void setHomeZone(MitoZone homeZone) {
         this.homeZone = homeZone;
     }
