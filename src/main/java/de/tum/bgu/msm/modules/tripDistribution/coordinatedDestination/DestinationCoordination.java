@@ -172,7 +172,7 @@ public class DestinationCoordination extends Module {
         int select = MitoUtil.select(probabilities, MitoUtil.getRandomObject());
 
         if(select > 0){
-            egoTrip.setCoordinatedTripId(select);
+            egoTrip.setCoordinatedTripId(egoTrip.getTripId());
             MitoTrip coordinatedTrip = dataSet.getTrips().get(select);
             coordinatedTrip.setCoordinatedTripId(egoTrip.getTripId());
             resetCoordinatedTrip(egoTrip, coordinatedTrip);

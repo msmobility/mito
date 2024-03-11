@@ -22,7 +22,7 @@ public class SocialNetworkCliquesReader extends AbstractCsvReader {
 		return cliqueList;
 	}
 
-	public SocialNetworkCliquesReader(DataSet dataSet) {
+	public  SocialNetworkCliquesReader(DataSet dataSet) {
 		super(dataSet);
 	}
 

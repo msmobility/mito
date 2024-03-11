@@ -154,7 +154,7 @@ public final class TravelDemandGenerator2WithSN {
             }
 
             //toggle following two lines on/off to run destination coordination with or without cliques
-            destinationCoordination = new DestinationCoordination(dataSet,Purpose.getAllPurposes()); //without cliques
+            //destinationCoordination = new DestinationCoordination(dataSet,Purpose.getAllPurposes()); //without cliques
             destinationCoordinationCliques = new DestinationCoordinationWithCliques2(dataSet,Purpose.getAllPurposes()); //with cliques
         }
 
@@ -294,9 +294,9 @@ public final class TravelDemandGenerator2WithSN {
 
         logger.info("Running destination coordination");
 
-        destinationCoordination.run();
+        //destinationCoordination.run();
 
-        destinationCoordinationCliques.run();
+        //destinationCoordinationCliques.run();
 
 
         matsimPopulationGenerator.run();

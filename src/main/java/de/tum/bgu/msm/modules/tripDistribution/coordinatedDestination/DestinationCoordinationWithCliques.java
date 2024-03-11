@@ -44,7 +44,7 @@ public class DestinationCoordinationWithCliques extends Module {
 
         Map<MitoTrip, Map<Integer, Set<MitoTrip>>> potentialCliqueTripList = new HashMap<>();
 
-        for(Map.Entry<Integer, List<Integer>> clique : cliqueList.entrySet()){
+        for (Map.Entry<Integer, List<Integer>> clique : cliqueList.entrySet()) {
             List<Integer> egoList = clique.getValue();
 
             // choose a random ego from egoList and get their trip list
@@ -52,8 +52,8 @@ public class DestinationCoordinationWithCliques extends Module {
             Integer randomSelectedEgo = egoList.get(randomIndex);
 
             List<Integer> randomSelectedEgoTripList = new ArrayList<>();
-            for(MitoTrip egoTrip : dataSet.getPersons().get(randomSelectedEgo).getTrips()){
-                if(egoTrip.getTripPurpose().equals(Purpose.HBW) || egoTrip.getTripPurpose().equals(Purpose.HBE)){
+            for (MitoTrip egoTrip : dataSet.getPersons().get(randomSelectedEgo).getTrips()) {
+                if (egoTrip.getTripPurpose().equals(Purpose.HBW) || egoTrip.getTripPurpose().equals(Purpose.HBE)) {
                     continue;
                 }
                 randomSelectedEgoTripList.add(egoTrip.getId());
@@ -88,12 +88,12 @@ public class DestinationCoordinationWithCliques extends Module {
                     }
 
                     // Put matching trips into matchingEgoTripListMap
-                    matchingEgoTripListMap.put(egoList.get(i),otherEgoTripSet);
+                    matchingEgoTripListMap.put(egoList.get(i), otherEgoTripSet);
 
-                    totalPotentialMatchedTrips+= otherEgoTripSet.size();
+                    totalPotentialMatchedTrips += otherEgoTripSet.size();
 
                 }
-                if(!matchingEgoTripListMap.isEmpty()) {
+                if (!matchingEgoTripListMap.isEmpty()) {
                     potentialCliqueTripList.put(dataSet.getTrips().get(tripOfRandomSelectedEgo), matchingEgoTripListMap);
                 }
             }
@@ -159,25 +159,24 @@ public class DestinationCoordinationWithCliques extends Module {
 
         }
 
-        int discretionaryTripCounts = dataSet.getTrips().values().stream().filter(mitoTrip -> !mitoTrip.getTripPurpose().equals(Purpose.HBW)&!mitoTrip.getTripPurpose().equals(Purpose.HBE)).collect(Collectors.toList()).size();
-        double newShareOfCoordination_no = (targetShareOfCoordination_no * discretionaryTripCounts-(discretionaryTripCounts-totalPotentialMatchedTrips) )/ totalPotentialMatchedTrips;
+        int discretionaryTripCounts = dataSet.getTrips().values().stream().filter(mitoTrip -> !mitoTrip.getTripPurpose().equals(Purpose.HBW) & !mitoTrip.getTripPurpose().equals(Purpose.HBE)).collect(Collectors.toList()).size();
+        double newShareOfCoordination_no = (targetShareOfCoordination_no * discretionaryTripCounts - (discretionaryTripCounts - totalPotentialMatchedTrips)) / totalPotentialMatchedTrips;
 
 
-            logger.info("Calculation info in destination coordination. No coordination share: " + newShareOfCoordination_no +
-                    " discretionary trip count: " + discretionaryTripCounts +
-                    " potential ego trip count: " + totalPotentialMatchedTrips);
-
+        logger.info("Calculation info in destination coordination. No coordination share: " + newShareOfCoordination_no +
+                " discretionary trip count: " + discretionaryTripCounts +
+                " potential ego trip count: " + totalPotentialMatchedTrips);
 
 
         //draw for no/has coordination
-        potentialCliqueTripList.keySet().removeIf(tripId -> MitoUtil.getRandomObject().nextDouble()<targetShareOfCoordination_no);
+        potentialCliqueTripList.keySet().removeIf(tripId -> MitoUtil.getRandomObject().nextDouble() < targetShareOfCoordination_no);
 
         List<MitoTrip> shuffledTripList = potentialCliqueTripList.keySet().stream().collect(Collectors.toList());
         Collections.shuffle(shuffledTripList);
         //select one trip from compatible egos in same clique's trips
-        for(MitoTrip egoTrip : shuffledTripList) {
+        for (MitoTrip egoTrip : shuffledTripList) {
             Map<Integer, Set<MitoTrip>> matchingCliqueEgoTripSetMap = potentialCliqueTripList.get(egoTrip);
-            for (Map.Entry<Integer, Set<MitoTrip>> matchingCliqueEgo : matchingCliqueEgoTripSetMap.entrySet()){
+            for (Map.Entry<Integer, Set<MitoTrip>> matchingCliqueEgo : matchingCliqueEgoTripSetMap.entrySet()) {
                 Set<MitoTrip> potentialTrips;
                 potentialTrips = matchingCliqueEgoTripSetMap.get(matchingCliqueEgo.getKey());
                 potentialTrips.removeIf(trip -> trip.getCoordinatedTripId() > 0);
@@ -195,23 +194,25 @@ public class DestinationCoordinationWithCliques extends Module {
     private void findCoordinatedTrip(MitoTrip egoTrip, Set<MitoTrip> potentialTrips) {
         //apply weight for potential trips based on distance
         Map<Integer, Double> probabilities = new HashMap<>();
-        for(MitoTrip potentialTrip : potentialTrips){
+        for (MitoTrip potentialTrip : potentialTrips) {
             final int egoDestinationId = egoTrip.getTripDestination().getZoneId();
             final int alterDestinationId = potentialTrip.getTripDestination().getZoneId();
             final double distanceOffset = dataSet.getTravelDistancesAuto().getTravelDistance(egoDestinationId, alterDestinationId);
-            probabilities.put(potentialTrip.getTripId(), 1./distanceOffset);
+            probabilities.put(potentialTrip.getTripId(), 1. / distanceOffset);
         }
+
+
 
         //select one coordinated trip
         int select = MitoUtil.select(probabilities, MitoUtil.getRandomObject());
 
-        if(select > 0){
+        if (select > 0) {
             egoTrip.setCoordinatedTripId(select);
             MitoTrip coordinatedTrip = dataSet.getTrips().get(select);
             coordinatedTrip.setCoordinatedTripId(egoTrip.getTripId());
             resetCoordinatedTrip(egoTrip, coordinatedTrip);
             coordinateTrip++;
-        }else{
+        } else {
             logger.warn(" Fail to find coordinated trip for trip: " + egoTrip.getId());
         }
     }
@@ -220,19 +221,19 @@ public class DestinationCoordinationWithCliques extends Module {
         //define the primary and secondary trip HBS/HBR/HBO>NHB
         MitoTrip secondaryTrip;
         MitoTrip primaryTrip;
-        if (isNonHomeBasedPurpose(coordinatedTrip.getTripPurpose())){
+        if (isNonHomeBasedPurpose(coordinatedTrip.getTripPurpose())) {
             secondaryTrip = coordinatedTrip;
             primaryTrip = egoTrip;
-        }else if (isNonHomeBasedPurpose(egoTrip.getTripPurpose())){
+        } else if (isNonHomeBasedPurpose(egoTrip.getTripPurpose())) {
             secondaryTrip = egoTrip;
             primaryTrip = coordinatedTrip;
-        }else {
+        } else {
             secondaryTrip = coordinatedTrip;
             primaryTrip = egoTrip;
         }
 
         secondaryTrip.setTripDestination(primaryTrip.getTripDestination());
-        if(primaryTrip.getTripDestination() instanceof MicroLocation){
+        if (primaryTrip.getTripDestination() instanceof MicroLocation) {
             microlocationCoordinated++;
         }
         secondaryTrip.setDestinationCoord(primaryTrip.getDestinationCoord());
@@ -241,16 +242,16 @@ public class DestinationCoordinationWithCliques extends Module {
 
 
     private List<Purpose> getMatchedPurpose(Purpose tripPurpose) {
-        switch (tripPurpose){
+        switch (tripPurpose) {
             case HBS:
-                return Arrays.asList(new Purpose[]{Purpose.HBS,Purpose.NHBW,Purpose.NHBO});
+                return Arrays.asList(new Purpose[]{Purpose.HBS, Purpose.NHBW, Purpose.NHBO});
             case HBR:
-                return Arrays.asList(new Purpose[]{Purpose.HBR,Purpose.NHBW,Purpose.NHBO});
+                return Arrays.asList(new Purpose[]{Purpose.HBR, Purpose.NHBW, Purpose.NHBO});
             case HBO:
-                return Arrays.asList(new Purpose[]{Purpose.HBO,Purpose.NHBW,Purpose.NHBO});
+                return Arrays.asList(new Purpose[]{Purpose.HBO, Purpose.NHBW, Purpose.NHBO});
             case NHBW:
             case NHBO:
-                return Arrays.asList(new Purpose[]{Purpose.HBS,Purpose.HBO,Purpose.HBR,Purpose.NHBW,Purpose.NHBO});
+                return Arrays.asList(new Purpose[]{Purpose.HBS, Purpose.HBO, Purpose.HBR, Purpose.NHBW, Purpose.NHBO});
             default:
                 logger.warn("Purpose is not found!");
         }
@@ -258,7 +259,7 @@ public class DestinationCoordinationWithCliques extends Module {
         return null;
     }
 
-    private boolean  isNonHomeBasedPurpose(Purpose p) {
+    private boolean isNonHomeBasedPurpose(Purpose p) {
         if (p.equals(Purpose.NHBW) || p.equals(Purpose.NHBO)) {
             return true;
         } else {
@@ -266,6 +267,6 @@ public class DestinationCoordinationWithCliques extends Module {
         }
 
     }
-}
 
+}
 
