@@ -1,6 +1,5 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.readers.GenericCsvReader;
@@ -143,7 +142,7 @@ public class HouseholdTypeManager {
         } else {
             logger.info("Home MitoZone for Household  " + hh.getId() + " is null!");
         }
-        return determineHouseholdType(hh.getHhSize(), DataSet.getNumberOfWorkersForHousehold(hh),
+        return determineHouseholdType(hh.getHhSize(), hh.getNumberOfWorkersForHousehold(),
                 hh.getEconomicStatus(), hh.getAutos(), areaType);
     }
 

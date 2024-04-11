@@ -1,6 +1,8 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
+import de.tum.bgu.msm.data.MitoTripFactoryImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
@@ -38,7 +40,7 @@ public final class TravelDemandGeneratorGermany {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGeneratorGermany.class);
     private static final List<Purpose> PURPOSES = List.of(HBW,HBE,HBS,HBR,HBO,NHBW,NHBO); // todo: check whether HBR should be here
-    private final DataSet dataSet;
+    private final DataSetImpl dataSet;
 
     private final Module tripGenerationMandatory;
     private final Module personTripAssignmentMandatory;
@@ -57,7 +59,7 @@ public final class TravelDemandGeneratorGermany {
     private final Module longDistanceTraffic;
 
     private TravelDemandGeneratorGermany(
-            DataSet dataSet,
+            DataSetImpl dataSet,
             Module tripGenerationMandatory,
             Module personTripAssignmentMandatory,
             Module travelTimeBudgetMandatory,
@@ -95,7 +97,7 @@ public final class TravelDemandGeneratorGermany {
 
     public static class Builder {
 
-        private final DataSet dataSet;
+        private final DataSetImpl dataSet;
 
         private Module tripGenerationMandatory;
         private Module personTripAssignmentMandatory;
@@ -115,7 +117,7 @@ public final class TravelDemandGeneratorGermany {
         private Module matsimPopulationGenerator;
         private Module longDistanceTraffic;
 
-        public Builder(DataSet dataSet) {
+        public Builder(DataSetImpl dataSet) {
             this.dataSet = dataSet;
             //from here
             List<Purpose> purposes = PURPOSES;
@@ -126,7 +128,7 @@ public final class TravelDemandGeneratorGermany {
 
             tripGenerationMandatory = new TripGeneration(dataSet, mandatoryPurposes);
             mandatoryPurposes.forEach(purpose -> {
-                ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
+                ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
             });
             //personTripAssignmentMandatory = new PersonTripAssignment(dataSet, mandatoryPurposes);
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, mandatoryPurposes);
@@ -139,7 +141,7 @@ public final class TravelDemandGeneratorGermany {
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, mandatoryPurposes);
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, Purpose.getDiscretionaryPurposes());
-            Purpose.getDiscretionaryPurposes().forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
+            Purpose.getDiscretionaryPurposes().forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
             //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
 
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, discretionaryPurposes);

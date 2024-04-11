@@ -20,8 +20,6 @@ public class TripGeneratorHouseholdBasedHurdleNegBin extends RandomizableConcurr
 
     private final DataSet dataSet;
     private final Purpose purpose;
-
-    private double scaleFactorForGeneration;
     private final TripGenPredictor tripGenerationCalculator;
 
     private Map<String, Double> binLogCoef;
@@ -29,12 +27,13 @@ public class TripGeneratorHouseholdBasedHurdleNegBin extends RandomizableConcurr
 
     private int casesWithMoreThanTen = 0;
 
-    protected TripGeneratorHouseholdBasedHurdleNegBin(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration, TripGenPredictor tripGenerationCalculator) {
+    private final MitoTripFactory mitoTripFactory;
+
+    protected TripGeneratorHouseholdBasedHurdleNegBin(DataSet dataSet, Purpose purpose, MitoTripFactory mitoTripFactory, TripGenPredictor tripGenerationCalculator) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
-        this.scaleFactorForGeneration = scaleFactorForGeneration;
-
+        this.mitoTripFactory = mitoTripFactory;
         this.tripGenerationCalculator = tripGenerationCalculator;
 
         this.binLogCoef =
@@ -51,12 +50,9 @@ public class TripGeneratorHouseholdBasedHurdleNegBin extends RandomizableConcurr
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
-        final Iterator<MitoHousehold> iterator = dataSet.getHouseholds().values().iterator();
+        final Iterator<MitoHousehold> iterator = dataSet.getModelledHouseholds().values().iterator();
         for (; iterator.hasNext(); ) {
-            MitoHousehold next = iterator.next();
-            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration) {
-                generateTripsForHousehold(next);
-            }
+            generateTripsForHousehold(iterator.next());
         }
         logger.warn("Cases with more than ten trips per household - might be a problem if too frequent: " + casesWithMoreThanTen +
                 " for purpose " + purpose);
@@ -67,7 +63,7 @@ public class TripGeneratorHouseholdBasedHurdleNegBin extends RandomizableConcurr
         int numberOfTrips = hurdleEstimateTrips(hh);
         List<MitoTrip> trips = new ArrayList<>();
         for (int i = 0; i < numberOfTrips; i++) {
-            MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
+            MitoTrip trip = mitoTripFactory.createTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
             if (trip != null) {
                 trips.add(trip);
             }

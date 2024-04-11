@@ -1,6 +1,8 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
+import de.tum.bgu.msm.data.MitoTripFactoryImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.*;
@@ -112,7 +114,7 @@ public final class TravelDemandGenerator2 {
         private Module matsimPopulationGenerator;
         private Module longDistanceTraffic;
 
-        public Builder(DataSet dataSet) {
+        public Builder(DataSetImpl dataSet) {
             this.dataSet = dataSet;
 
             List<Purpose> purposes = PURPOSES;
@@ -123,7 +125,7 @@ public final class TravelDemandGenerator2 {
 
             //from here
             tripGenerationMandatory = new TripGeneration(dataSet, mandatoryPurposes);
-            mandatoryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
+            mandatoryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
 
             distributionMandatory = new TripDistribution(dataSet, mandatoryPurposes);
             mandatoryPurposes.forEach(purpose -> ((TripDistribution) distributionMandatory).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl3(purpose)));
@@ -134,7 +136,7 @@ public final class TravelDemandGenerator2 {
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, mandatoryPurposes);
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, discretionaryPurposes);
-            discretionaryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
+            discretionaryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
 
             distributionDiscretionary = new TripDistribution(dataSet, discretionaryPurposes);
             // Register ALL purposes here, because we need the mandatory purpose matrices for NHBW / NHBO

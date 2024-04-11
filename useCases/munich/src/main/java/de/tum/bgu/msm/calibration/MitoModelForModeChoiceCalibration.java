@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.calibration;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
+import de.tum.bgu.msm.data.MitoTripFactoryImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
@@ -47,9 +49,9 @@ public final class MitoModelForModeChoiceCalibration {
     private static final Logger logger = Logger.getLogger(MitoModelForModeChoiceCalibration.class);
     private final String scenarioName;
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
 
-    private MitoModelForModeChoiceCalibration(DataSet dataSet, String scenarioName) {
+    private MitoModelForModeChoiceCalibration(DataSetImpl dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
@@ -58,7 +60,7 @@ public final class MitoModelForModeChoiceCalibration {
     public static MitoModelForModeChoiceCalibration standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModelForModeChoiceCalibration model = new MitoModelForModeChoiceCalibration(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelForModeChoiceCalibration model = new MitoModelForModeChoiceCalibration(new DataSetImpl(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
@@ -72,7 +74,7 @@ public final class MitoModelForModeChoiceCalibration {
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet, purposes);
         purposes.forEach(purpose -> {
-            ((TripGeneration) tg).registerTripGenerator(purpose, TripGeneratorType.SampleEnumeration,null);
+            ((TripGeneration) tg).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.SampleEnumeration,null);
         });
 
         tg.run();
@@ -153,10 +155,8 @@ public final class MitoModelForModeChoiceCalibration {
     }
 
     private void readAdditionalData() {
-        new TripAttractionRatesReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
-        new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
 

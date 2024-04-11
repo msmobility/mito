@@ -1,6 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -34,9 +34,9 @@ public final class MitoModel2 {
     private static final Logger logger = Logger.getLogger(MitoModel2.class);
     private final String scenarioName;
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
 
-    private MitoModel2(DataSet dataSet, String scenarioName) {
+    private MitoModel2(DataSetImpl dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
@@ -45,12 +45,12 @@ public final class MitoModel2 {
     public static MitoModel2 standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel2 model = new MitoModel2(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModel2 model = new MitoModel2(new DataSetImpl(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static MitoModel2 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static MitoModel2 initializeModelFromSilo(String propertiesFile, DataSetImpl dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         MitoModel2 model = new MitoModel2(dataSet, scenarioName);
@@ -87,10 +87,8 @@ public final class MitoModel2 {
     }
 
     private void readAdditionalData() {
-        new TripAttractionRatesReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
-        new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
@@ -107,7 +105,7 @@ public final class MitoModel2 {
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
-    public DataSet getData() {
+    public DataSetImpl getData() {
         return dataSet;
     }
 

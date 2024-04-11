@@ -1,248 +1,91 @@
 package de.tum.bgu.msm.data;
 
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
 import org.matsim.api.core.v01.population.Population;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.Map;
 
-public class DataSet {
+public interface DataSet {
+    TravelDistances getTravelDistancesAuto();
 
-    private TravelTimes travelTimes;
+    TravelDistances getTravelDistancesNMT();
 
-    private TravelDistances travelDistancesAuto;
-    private TravelDistances travelDistancesNMT;
+    void setTravelDistancesAuto(TravelDistances travelDistancesAuto);
 
-    private double peakHour = Double.NaN;
+    void setTravelDistancesNMT(TravelDistances travelDistancesNMT);
 
-    private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
-    private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
-    private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
-    private final Map<Integer, MitoSchool> schools = new LinkedHashMap<>();
-    private final Map<Integer, MitoJob> jobs = new LinkedHashMap<>();
+    TravelTimes getTravelTimes();
 
-    private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
-    private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
+    TravelTimes setTravelTimes(TravelTimes travelTimes);
 
+    Map<Integer, MitoPerson> getPersons();
 
-    private final Table<Purpose, Mode, Double> modeSharesByPurpose
-            = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
+    Map<Integer, MitoZone> getZones();
 
+    Map<Integer, MitoHousehold> getHouseholds();
 
-    private int year;
+    Map<Integer, MitoSchool> getSchools();
 
-    private EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose;
-    private EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose;
-    private EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose;
+    Map<Integer, MitoJob> getJobs();
 
-    private Population population;
-    private final ModeChoiceCalibrationData modeChoiceCalibrationData = new ModeChoiceCalibrationData();
+    Map<Integer, MitoTrip> getTrips();
 
-    public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
+    Map<Integer, MitoTrip> getTripSubsample();
 
-    public TravelDistances getTravelDistancesNMT(){return this.travelDistancesNMT;}
+    void addTrip(MitoTrip trip);
 
-    public void setTravelDistancesAuto(TravelDistances travelDistancesAuto){this.travelDistancesAuto = travelDistancesAuto;}
+    void addTrips(Collection<MitoTrip> addedTrips);
 
-    public void setTravelDistancesNMT(TravelDistances travelDistancesNMT){this.travelDistancesNMT = travelDistancesNMT;}
+    void addTripToSubsample(MitoTrip trip);
 
-    public TravelTimes getTravelTimes() {
-        return this.travelTimes;
-    }
+    void addZone(MitoZone zone);
 
-    public TravelTimes setTravelTimes(TravelTimes travelTimes) {
-        return this.travelTimes = travelTimes;
-    }
+    void addHousehold(MitoHousehold household);
 
-    public Map<Integer, MitoPerson> getPersons() {
-        return Collections.unmodifiableMap(persons);
-    }
+    void addPerson(MitoPerson person);
 
-    public Map<Integer, MitoZone> getZones() {
-        return Collections.unmodifiableMap(zones);
-    }
+    void addJob(MitoJob job);
 
-    public Map<Integer, MitoHousehold> getHouseholds() {
-        return Collections.unmodifiableMap(households);
-    }
+    void addSchool(MitoSchool school);
 
-    public Map<Integer, MitoSchool> getSchools() {
-        return Collections.unmodifiableMap(schools);
-    }
+    void removeTrip(int tripId);
 
-    public Map<Integer, MitoJob> getJobs() {
-        return Collections.unmodifiableMap(jobs);
-    }
+    double getPeakHour();
 
-    public Map<Integer, MitoTrip> getTrips() {
-        return Collections.unmodifiableMap(trips);
-    }
+    void setPeakHour(double peakHour);
 
-    public Map<Integer, MitoTrip> getTripSubsample() {
-        return Collections.unmodifiableMap(tripSubsample);
-    }
+    void addModeShareForPurpose(Purpose purpose, Mode mode, Double share);
 
-    public void addTrip(final MitoTrip trip) {
-        MitoTrip test = trips.putIfAbsent(trip.getId(), trip);
-        if(test != null) {
-            throw new IllegalArgumentException("MitoTrip id " + trip.getId() + " already exists!");
-        }
-    }
+    Double getModeShareForPurpose(Purpose purpose, Mode mode);
 
-    public void addTrips(final Collection<MitoTrip> addedTrips) {
-        for(MitoTrip trip: addedTrips) {
-            addTrip(trip);
-        }
-    }
+    int getYear();
 
-    public void addTripToSubsample(final MitoTrip trip) {
-        MitoTrip test = tripSubsample.putIfAbsent(trip.getId(), trip);
-        if(test != null) {
-            throw new IllegalArgumentException("MitoTrip id " + trip.getId() + " already exists!");
-        }
-    }
+    void setYear(int year);
 
-    public void addZone(final MitoZone zone) {
-        MitoZone test = zones.putIfAbsent(zone.getId(), zone);
-        if(test != null) {
-            throw new IllegalArgumentException("MitoZone id " + zone.getId() + " already exists!");
-        }
-    }
+    EnumMap<Purpose, DoubleMatrix1D> getArrivalMinuteCumProbByPurpose();
 
-    public void addHousehold(final MitoHousehold household) {
-        MitoHousehold test = households.putIfAbsent(household.getId(), household);
-        if(test != null) {
-            throw new IllegalArgumentException("MitoHousehold id " + household.getId() + " already exists!");
-        }
-    }
+    void setArrivalMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose);
 
-    public void addPerson(final MitoPerson person) {
-        MitoPerson test = persons.putIfAbsent(person.getId(), person);
-        if(test != null) {
-            throw new IllegalArgumentException("MitoPerson id " + person.getId() + " already exists!");
-        }
-    }
+    EnumMap<Purpose, DoubleMatrix1D> getDurationMinuteCumProbByPurpose();
 
-    public void addJob(final MitoJob job) {
-        MitoJob test = jobs.putIfAbsent(job.getId(), job);
-        if(test != null) {
-            throw new IllegalArgumentException("MitoJob id " + job.getId() + " already exists!");
-        }
-    }
+    void setDurationMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose);
 
-    public void addSchool(final MitoSchool school) {
-        MitoSchool test = schools.putIfAbsent(school.getId(), school);
-        if(test != null) {
-            throw new IllegalArgumentException("MitoSchool id " + school.getId() + " already exists!");
-        }
-    }
+    EnumMap<Purpose, DoubleMatrix1D> getDepartureMinuteCumProbByPurpose();
 
-    public synchronized void removeTrip(final int tripId) {
-        trips.remove(tripId);
-    }
+    void setDepartureMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose);
 
-    public double getPeakHour() {
-        return peakHour;
-    }
+    ModeChoiceCalibrationData getModeChoiceCalibrationData();
 
-    public void setPeakHour(double peakHour) {
-        this.peakHour = peakHour;
-    }
+    void setPopulation(Population population);
 
-    public static int getFemalesForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getMitoGender().equals(MitoGender.FEMALE)).count();
-    }
+    Population getPopulation();
 
-    public static int getChildrenForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getAge() < 18).count();
-    }
+    Map<Integer, MitoPerson> getModelledPersons();
 
-    public static int getYoungAdultsForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getAge() >= 18 && person.getAge() <= 25).count();
-
-    }
-
-    public static int getRetireesForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getAge() > 65).count();
-    }
-
-    public static int getNumberOfWorkersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getMitoOccupationStatus() == MitoOccupationStatus.WORKER).count();
-
-    }
-
-    public static int getStudentsForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(person ->
-                person.getMitoOccupationStatus() == MitoOccupationStatus.STUDENT).count();
-
-    }
-
-    public static int getLicenseHoldersForHousehold(MitoHousehold household) {
-        return (int) household.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
-    }
-
-    public void addModeShareForPurpose(Purpose purpose, Mode mode, Double share){
-        modeSharesByPurpose.put(purpose, mode, share);
-    }
-
-    public Double getModeShareForPurpose(Purpose purpose, Mode mode){
-        return modeSharesByPurpose.get(purpose, mode);
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year){
-        this.year = year;
-    }
-
-    public EnumMap<Purpose, DoubleMatrix1D> getArrivalMinuteCumProbByPurpose() {
-        return arrivalMinuteCumProbByPurpose;
-    }
-
-    public void setArrivalMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> arrivalMinuteCumProbByPurpose) {
-        this.arrivalMinuteCumProbByPurpose = arrivalMinuteCumProbByPurpose;
-    }
-
-    public EnumMap<Purpose, DoubleMatrix1D> getDurationMinuteCumProbByPurpose() {
-        return durationMinuteCumProbByPurpose;
-    }
-
-    public void setDurationMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> durationMinuteCumProbByPurpose) {
-        this.durationMinuteCumProbByPurpose = durationMinuteCumProbByPurpose;
-    }
-
-    public EnumMap<Purpose, DoubleMatrix1D> getDepartureMinuteCumProbByPurpose() {
-        return departureMinuteCumProbByPurpose;
-    }
-
-    public void setDepartureMinuteCumProbByPurpose(EnumMap<Purpose, DoubleMatrix1D> departureMinuteCumProbByPurpose) {
-        this.departureMinuteCumProbByPurpose = departureMinuteCumProbByPurpose;
-    }
-
-    public void setPopulation(Population population) {
-        this.population = population;
-    }
-
-    public Population getPopulation() {
-        return population;
-    }
-
-    public ModeChoiceCalibrationData getModeChoiceCalibrationData() {
-        return modeChoiceCalibrationData;
-    }
-
-
-
-
+    Map<Integer, MitoHousehold>  getModelledHouseholds();
 }

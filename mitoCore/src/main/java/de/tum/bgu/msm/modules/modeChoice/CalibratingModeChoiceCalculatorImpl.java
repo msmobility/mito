@@ -2,17 +2,8 @@ package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
-import org.matsim.core.utils.collections.Tuple;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.List;
-
-import static de.tum.bgu.msm.data.Mode.*;
-import static de.tum.bgu.msm.data.Mode.bicycle;
 
 public class CalibratingModeChoiceCalculatorImpl extends AbstractModeChoiceCalculator {
 

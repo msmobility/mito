@@ -1,6 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.resources.Properties;
@@ -33,7 +33,7 @@ public class ExternalFlowStandAlone {
 
         float scalingFactor = 0.05f;
 
-        DataSet dataSet = new DataSet();
+        DataSetImpl dataSet = new DataSetImpl();
         dataSet.setYear(Resources.instance.getInt(Properties.SCENARIO_YEAR, 2011));
         LongDistanceTraffic longDistanceTraffic = new LongDistanceTraffic(dataSet, scalingFactor, Arrays.asList(Purpose.values()));
 

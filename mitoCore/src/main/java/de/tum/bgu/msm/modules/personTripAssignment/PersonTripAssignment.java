@@ -24,7 +24,7 @@ public class PersonTripAssignment extends Module {
 
     @Override
     public void run() {
-        for (MitoHousehold household : dataSet.getHouseholds().values()) {
+        for (MitoHousehold household : dataSet.getModelledHouseholds().values()) {
             for (Purpose purpose : purposes) {
                 //todo check that the order of purposes affects the assignment. It crashes if a non-home based is done before a home-based
                 for (Iterator<MitoTrip> iterator = household.getTripsForPurpose(purpose).listIterator(); iterator.hasNext(); ) {

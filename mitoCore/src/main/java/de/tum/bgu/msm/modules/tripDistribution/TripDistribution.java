@@ -2,10 +2,7 @@ package de.tum.bgu.msm.modules.tripDistribution;
 
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AtomicDouble;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.MitoPerson;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.tripDistribution.tripDistributors.*;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -75,7 +72,6 @@ public class TripDistribution extends Module {
             logger.info("Registered distribution calculator for purpose " + purpose + " with " + utilityCalculator.getClass() + " and " + type.toString());
         }
         initialise(purpose);
-        categorisePersons(purpose, utilityCalculator.getCategories());
     }
 
     public void registerDestinationUtilityCalculator(Purpose purpose, AbstractDestinationUtilityCalculator utilityCalculator) {
@@ -84,6 +80,9 @@ public class TripDistribution extends Module {
 
     @Override
     public void run() {
+        logger.info("Categorise persons for building person-based utility matrices...");
+        categorisePersons(tripDistributionCalculatorsByPurpose.keySet());
+
         logger.info("Building destination choice utility matrices...");
         buildMatrices(tripDistributionCalculatorsByPurpose.keySet());
 
@@ -108,27 +107,38 @@ public class TripDistribution extends Module {
         logger.info("Calibration complete! \uD83C\uDF89");
     }
 
-    private void categorisePersons(Purpose purpose, List<Predicate<MitoPerson>> categories) {
-        double[] personsPerCategory = new double[categories.size()];
-        Map<Integer,Integer> categorisedPersons = new HashMap<>();
-        for (Map.Entry<Integer,MitoPerson> e : dataSet.getPersons().entrySet()) {
-            int ppId = e.getKey();
-            for(int i = 0 ; i < categories.size() ; i++) {
-                if(categories.get(i).test(e.getValue())) {
-                    personsPerCategory[i]++;
-                    Integer prev = categorisedPersons.put(ppId,i);
-                    if(prev != null) {
-                        throw new RuntimeException("Person " + ppId + " in multiple trip distribution categories for purpose " + purpose);
+    private void categorisePersons(Collection<Purpose> purposes) {
+
+        for(Purpose purpose : purposes) {
+            List<Predicate<MitoPerson>> categories = tripDistributionCalculatorsByPurpose.get(purpose).getFirst().getCategories();
+            double[] personsPerCategory = new double[categories.size()];
+            Map<Integer,Integer> categorisedPersons = new HashMap<>();
+            for (Map.Entry<Integer,MitoPerson> e : dataSet.getModelledPersons().entrySet()) {
+
+                //TODO: check with Corin logic conflict here 1) no trip for purpose RRT, then it is possible that person mode set AutoPt, then results in error in no category found
+                //TODO: but if skip when no trip for purpose, will cause error in find random origin function
+                if (purpose.equals(RRT) & !e.getValue().hasTripsForPurpose(purpose)){
+                    continue;
+                }
+                int ppId = e.getKey();
+                for(int i = 0 ; i < categories.size() ; i++) {
+                    if(categories.get(i).test(e.getValue())) {
+                        personsPerCategory[i]++;
+                        Integer prev = categorisedPersons.put(ppId,i);
+                        if(prev != null) {
+                            throw new RuntimeException("Person " + ppId + " in multiple trip distribution categories for purpose " + purpose);
+                        }
                     }
                 }
+                if(!categorisedPersons.containsKey(ppId)) {
+                    throw new RuntimeException("Person " + ppId + " in no trip distribution categories for purpose " + purpose);
+                }
             }
-            if(!categorisedPersons.containsKey(ppId)) {
-                throw new RuntimeException("Person " + ppId + " in no trip distribution categories for purpose " + purpose);
-            }
+            personCategories.put(purpose, categorisedPersons);
+            logger.info("Organised " + dataSet.getModelledPersons().size() + " MitoPersons into " + categories.size() + " categories.\n" +
+                    "Persons in each category: " + Arrays.toString(personsPerCategory));
         }
-        personCategories.put(purpose, categorisedPersons);
-        logger.info("Organised " + dataSet.getPersons().size() + " MitoPersons into " + categories.size() + " categories.\n" +
-                "Persons in each category: " + Arrays.toString(personsPerCategory));
+
     }
 
     private void initialise(Purpose purpose) {
@@ -159,7 +169,7 @@ public class TripDistribution extends Module {
     private void distributeTrips(Collection<Purpose> purposes) {
 
         // Create partitions
-        final Collection<MitoHousehold> households = dataSet.getHouseholds().values();
+        final Collection<MitoHousehold> households = dataSet.getModelledHouseholds().values();
         final int partitionSize = (int) ((double) households.size() / (numberOfThreads)) + 1;
         Iterable<List<MitoHousehold>> partitions = Iterables.partition(households, partitionSize);
 
@@ -169,15 +179,15 @@ public class TripDistribution extends Module {
         // Home-based trips
         List<Callable<Void>> homeBasedTasks = new ArrayList<>();
         List<Callable<Void>> otherTasks = new ArrayList<>();
-        for (final List<MitoHousehold> partition : partitions) {
+        //for (final List<MitoHousehold> partition : partitions) {
             for (Purpose purpose : purposes) {
                 if (Purpose.getHomeBasedPurposes().contains(purpose)) {
-                    homeBasedTasks.add(getDistributor(purpose,partition, tripDistributionCalculatorsByPurpose.get(purpose).getSecond()));
+                    homeBasedTasks.add(getDistributor(purpose,households, tripDistributionCalculatorsByPurpose.get(purpose).getSecond()));
                 } else {
-                    otherTasks.add(getDistributor(purpose,partition, tripDistributionCalculatorsByPurpose.get(purpose).getSecond()));
+                    otherTasks.add(getDistributor(purpose,households, tripDistributionCalculatorsByPurpose.get(purpose).getSecond()));
                 }
             }
-        }
+        //}
 
         // Run tasks in order
         ConcurrentExecutor<Void> executor;

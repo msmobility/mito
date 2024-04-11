@@ -115,7 +115,7 @@ public class PersonsReader extends AbstractCsvReader {
                 break;
         }
 
-        MitoPerson pp = new MitoPerson(id, hh, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
+        MitoPerson pp = new MitoPersonImpl(id, hh, mitoOccupationStatus, occupation, age, mitoGender, driversLicense);
 
         hh.addPerson(pp);
         dataSet.addPerson(pp);

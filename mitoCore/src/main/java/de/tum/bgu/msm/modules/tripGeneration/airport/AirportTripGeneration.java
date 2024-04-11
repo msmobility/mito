@@ -50,7 +50,7 @@ public class AirportTripGeneration {
 
         int tripsToFromAirport = (int) (numberOfTripsCalculator.calculateTripRate(dataSet.getYear()) * scaleFacotForTripGeneration);
         while (counter < tripsToFromAirport) {
-            MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), Purpose.AIRPORT);
+            MitoTrip trip = new MitoTripImpl(TRIP_ID_COUNTER.incrementAndGet(), Purpose.AIRPORT);
             dataSet.addTrip(trip);
             //look for a zone and household
             int destinationZone = MitoUtil.select(zonalProbabilities, MitoUtil.getRandomObject());

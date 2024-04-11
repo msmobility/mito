@@ -53,7 +53,7 @@ public class ModeChoiceCalculator2017Impl extends AbstractModeChoiceCalculator {
         }
         int economicStatus = household.getEconomicStatus();
 
-        //int hhChildren = DataSet.getChildrenForHousehold(household);
+        //int hhChildren = household.getChildrenForHousehold();
 
         //final float distanceToNearestRailStop = originZone.getDistanceToNearestRailStop();
 

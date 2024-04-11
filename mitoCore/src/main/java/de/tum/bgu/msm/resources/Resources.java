@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-
 import static de.tum.bgu.msm.resources.Properties.*;
 
 /**
@@ -141,17 +140,17 @@ public class Resources {
     }
 
     public Path getOutputHouseholdPath() {
-        String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
+        String scenarioName = Resources.instance.getString(SCENARIO_NAME);
         return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve("microData").resolve("hhInclTrips.csv");
     }
 
     public Path getOutputPersonsPath() {
-        String scenarioName = Resources.instance.getString(de.tum.bgu.msm.resources.Properties.SCENARIO_NAME);
+        String scenarioName = Resources.instance.getString(SCENARIO_NAME);
         return baseDirectory.resolve("scenOutput").resolve(scenarioName).resolve("microData").resolve("ppInclTrips.csv");
     }
 
     public Path getExternalZonesListFilePath() {
-        return baseDirectory.resolve(getString(de.tum.bgu.msm.resources.Properties.EXTERNAL_ZONES_LIST_FILE));
+        return baseDirectory.resolve(getString(EXTERNAL_ZONES_LIST_FILE));
     }
 
     public Path getRelativePath(String property) {
@@ -163,33 +162,46 @@ public class Resources {
     }
 
     public Path getCalibrationFactorsPath() {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.MC_CALIBRATON_CONSTANTS_FILE));
+        return baseDirectory.resolve(Resources.instance.getString(MC_CALIBRATON_CONSTANTS_FILE));
     }
 
     public Path getCalibrationRegionsPath() {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.MC_CALIBRATON_REGIONS_FILE));
+        return baseDirectory.resolve(Resources.instance.getString(MC_CALIBRATON_REGIONS_FILE));
     }
 
     public Path getTripGenerationCoefficientsHurdleBinaryLogit() {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_BINARY_LOGIT_COEFFICIENTS));
+        return baseDirectory.resolve(Resources.instance.getString(TG_BINARY_LOGIT_COEFFICIENTS));
     }
 
     public Path getTripGenerationCoefficientsHurdleNegativeBinomial() {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_NEGATIVE_BINOMIAL_COEFFICIENTS));
+        return baseDirectory.resolve(Resources.instance.getString(TG_NEGATIVE_BINOMIAL_COEFFICIENTS));
     }
 
     public Path getTripGenerationCoefficientsHurdleOrderedLogit() {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.TG_ORDERED_LOGIT_COEFFICIENTS));
+        return baseDirectory.resolve(Resources.instance.getString(TG_ORDERED_LOGIT_COEFFICIENTS));
     }
 
     public Path getModeChoiceCoefficients(Purpose purpose) {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.MC_COEFFICIENTS) +
+        return baseDirectory.resolve(Resources.instance.getString(MC_COEFFICIENTS) +
                 "_" +
                 purpose.toString().toLowerCase() +
                 ".csv");
     }
 
     public Path getBicycleOwnershipInputFile() {
-        return baseDirectory.resolve(Resources.instance.getString(de.tum.bgu.msm.resources.Properties.BIKE_OWNERSHIP_COEFFICIENTS));
+        return baseDirectory.resolve(Resources.instance.getString(BIKE_OWNERSHIP_COEFFICIENTS));
     }
+
+    public Path getModeSetCoefficients() {
+        return baseDirectory.resolve(Resources.instance.getString(MODE_SET_COEFFICIENTS));
+    }
+
+    public Path getModeSetConstants() {
+        return baseDirectory.resolve(Resources.instance.getString(MODE_SET_CONSTANTS));
+    }
+
+    public Path getDayProbabilitiesFilePath() {
+        return baseDirectory.resolve(Resources.instance.getString(DAY_OF_WEEK_PROBABILITIES));
+    }
+
 }

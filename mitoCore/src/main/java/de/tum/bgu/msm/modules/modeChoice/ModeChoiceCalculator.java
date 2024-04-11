@@ -2,12 +2,8 @@ package de.tum.bgu.msm.modules.modeChoice;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.util.LogitTools;
-import org.matsim.core.utils.collections.Tuple;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.List;
 
 public interface ModeChoiceCalculator {
 

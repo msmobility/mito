@@ -1,5 +1,8 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.data.Id;
+import de.tum.bgu.msm.data.Mode;
+
 import java.util.EnumSet;
 import static de.tum.bgu.msm.data.Mode.*;
 

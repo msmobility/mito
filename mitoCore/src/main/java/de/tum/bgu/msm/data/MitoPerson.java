@@ -1,105 +1,39 @@
 package de.tum.bgu.msm.data;
 
-import org.apache.log4j.Logger;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import java.util.*;
+public interface MitoPerson extends Id {
+    MitoOccupation getOccupation();
 
-/**
- * Holds person objects for the Microsimulation Transport Orchestrator (MITO)
- * @author Rolf Moeckel
- * Created on June 8, 2017 in Munich, Germany
- *
- */
-public class MitoPerson implements Id {
-
-    private static final Logger logger = Logger.getLogger(MitoPerson.class);
-
-    private final int id;
-    private final MitoGender mitoGender;
-    private final MitoOccupationStatus mitoOccupationStatus;
-    private final MitoOccupation occupation;
-    private final int age;
-    private final boolean driversLicense;
-    private final MitoHousehold household;
-    private Optional<Boolean> hasBicycle = Optional.empty();
-    private ModeSet modeSet;
-    private Set<MitoTrip> trips = new LinkedHashSet<>();
-
-    public MitoPerson(int id, MitoHousehold household, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
-        this.id = id;
-        this.mitoOccupationStatus = mitoOccupationStatus;
-        this.occupation = occupation;
-        this.age = age;
-        this.mitoGender = mitoGender;
-        this.driversLicense = driversLicense;
-        this.household = household;
-    }
-
-    public MitoOccupation getOccupation() {
-        return occupation;
-    }
-
-    public MitoOccupationStatus getMitoOccupationStatus() {
-        return mitoOccupationStatus;
-    }
+    MitoOccupationStatus getMitoOccupationStatus();
 
     @Override
-    public int getId() {
-        return this.id;
-    }
+    int getId();
 
-    public int getAge() {
-        return age;
-    }
+    int getAge();
 
-    public MitoGender getMitoGender() {
-        return mitoGender;
-    }
+    MitoGender getMitoGender();
 
-    public boolean hasDriversLicense() {
-        return driversLicense;
-    }
+    boolean hasDriversLicense();
 
-    public Set<MitoTrip> getTrips() {
-        return Collections.unmodifiableSet(this.trips);
-    }
+    Set<MitoTrip> getTrips();
 
-    public void addTrip(MitoTrip trip) {
-        this.trips.add(trip);
-        if(trip.getPerson() != this) {
-            trip.setPerson(this);
-        }
-    }
+    void addTrip(MitoTrip trip);
 
-    public void removeTripFromPerson(MitoTrip trip){
-        trips.remove(trip);
-    }
+    void removeTripFromPerson(MitoTrip trip);
 
     @Override
-    public int hashCode() {
-        return id;
-    }
+    int hashCode();
 
-    public Optional<Boolean> getHasBicycle() {
-        if (!hasBicycle.isPresent()){
-            throw new RuntimeException("The number of bicycles is needed but has not been set");
-        }
-        return hasBicycle;
-    }
+    Optional<Boolean> getHasBicycle();
 
-    public void setHasBicycle(boolean hasBicycle) {
-        this.hasBicycle = Optional.of(hasBicycle);
-    }
+    void setHasBicycle(boolean hasBicycle);
 
-    public MitoHousehold getHousehold() {
-        return household;
-    }
+    MitoHousehold getHousehold();
 
-    public ModeSet getModeSet() {
-        return modeSet;
-    }
+    List<MitoTrip> getTripsForPurpose(Purpose purpose);
 
-    public void setModeSet(ModeSet modeSet) {
-        this.modeSet = modeSet;
-    }
+    boolean hasTripsForPurpose(Purpose purpose);
 }

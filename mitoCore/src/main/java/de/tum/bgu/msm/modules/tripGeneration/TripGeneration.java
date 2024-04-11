@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoTripFactory;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.tripGeneration.airport.AirportTripGeneration;
@@ -23,37 +24,34 @@ public class TripGeneration extends Module {
 
     private static final Logger logger = Logger.getLogger(TripGeneration.class);
     private final boolean addAirportDemand;
-
-    private double scaleFactorForTripGeneration;
     private final Map<Purpose, TripGenerator> tripGeneratorByPurpose = new EnumMap<>(Purpose.class);
 
     public TripGeneration(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
         //TODO: move to airport scenario
         addAirportDemand = Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false);
-        scaleFactorForTripGeneration = Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
     }
 
 
-    public void registerTripGenerator(Purpose purpose, TripGeneratorType tripGeneratorType, TripGenPredictor tripGenerationCalculator) {
+    public void registerTripGenerator(Purpose purpose, MitoTripFactory mitoTripFactory, TripGeneratorType tripGeneratorType, TripGenPredictor tripGenerationCalculator) {
         TripGenerator tripsByPurposeGenerator;
 
         switch (tripGeneratorType){
             case SampleEnumeration:
-                tripsByPurposeGenerator = new TripGeneratorSampleEnumeration(dataSet, purpose, scaleFactorForTripGeneration);
+                tripsByPurposeGenerator = new TripGeneratorSampleEnumeration(dataSet, purpose, mitoTripFactory);
                 break;
             case HouseholdBasedHurdleNegBin:
-                tripsByPurposeGenerator = new TripGeneratorHouseholdBasedHurdleNegBin(dataSet, purpose, scaleFactorForTripGeneration, tripGenerationCalculator);
+                tripsByPurposeGenerator = new TripGeneratorHouseholdBasedHurdleNegBin(dataSet, purpose, mitoTripFactory, tripGenerationCalculator);
                 break;
             case PersonBasedHurdleNegBin:
-                tripsByPurposeGenerator = new TripGeneratorPersonBasedHurdleNegBin(dataSet, purpose, scaleFactorForTripGeneration, tripGenerationCalculator);
+                tripsByPurposeGenerator = new TripGeneratorPersonBasedHurdleNegBin(dataSet, purpose, mitoTripFactory, tripGenerationCalculator);
                 break;
             case PersonBasedHurdlePolr:
-                tripsByPurposeGenerator = new TripGeneratorPersonBasedHurdlePolr(dataSet, purpose, scaleFactorForTripGeneration, tripGenerationCalculator);
+                tripsByPurposeGenerator = new TripGeneratorPersonBasedHurdlePolr(dataSet, purpose, mitoTripFactory, tripGenerationCalculator);
                 break;
             default:
                 logger.warn("Trip generator type is not given. The default generator: " + TripGeneratorPersonBasedHurdleNegBin.class.getName() + " will be applied.");
-                tripsByPurposeGenerator = new TripGeneratorPersonBasedHurdleNegBin(dataSet, purpose, scaleFactorForTripGeneration, tripGenerationCalculator);
+                tripsByPurposeGenerator = new TripGeneratorPersonBasedHurdleNegBin(dataSet, purpose, mitoTripFactory, tripGenerationCalculator);
 
         }
 

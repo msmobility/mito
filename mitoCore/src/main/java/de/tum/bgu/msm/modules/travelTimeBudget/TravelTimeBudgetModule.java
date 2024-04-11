@@ -43,9 +43,9 @@ public class TravelTimeBudgetModule extends Module {
         List<Future<?>> results = new ArrayList<>();
         for (Purpose purpose : purposes){
             if (Purpose.getDiscretionaryPurposes().contains(purpose)){
-                results.add(service.submit(new DiscretionaryBudgetCalculator(purpose, dataSet.getHouseholds().values())));
+                results.add(service.submit(new DiscretionaryBudgetCalculator(purpose, dataSet.getModelledHouseholds().values())));
             } else if (Purpose.getMandatoryPurposes().contains(purpose)){
-                results.add(service.submit(new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), purpose, dataSet.getTravelTimes(), dataSet.getPeakHour())));
+                results.add(service.submit(new MandatoryBudgetCalculator(dataSet.getModelledHouseholds().values(), purpose, dataSet.getTravelTimes(), dataSet.getPeakHour())));
                 //results.add(service.submit((new MandatoryBudgetCalculator(dataSet.getHouseholds().values(), Purpose.HBE, dataSet.getTravelTimes(), dataSet.getPeakHour()))));
             }
         }
@@ -68,7 +68,7 @@ public class TravelTimeBudgetModule extends Module {
 
     public void adjustDiscretionaryPurposeBudgets() {
 
-        for (MitoHousehold household : dataSet.getHouseholds().values()) {
+        for (MitoHousehold household : dataSet.getModelledHouseholds().values()) {
             try {
                 double totalTravelTimeBudget = travelTimeCalc.calculateBudget(household, "Total");
                 double discretionaryTTB = totalTravelTimeBudget - household.getTravelTimeBudgetForPurpose(Purpose.HBW) -

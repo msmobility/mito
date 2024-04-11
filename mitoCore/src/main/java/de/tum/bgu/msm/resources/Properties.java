@@ -96,4 +96,10 @@ public class Properties {
 
     public final static double SPEED_WALK_M_MIN = 5 * 1000 / 60;
     public final static double SPEED_BICYCLE_M_MIN = 12 * 1000 / 60;
+
+    public static final String DAY_OF_WEEK_PROBABILITIES = "day.of.week.probabilities.file";
+
+    public static final String MODE_SET_COEFFICIENTS = "modeSet.coeffs";
+    public static final String MODE_SET_CONSTANTS = "modeSet.ASCs";
+
 }

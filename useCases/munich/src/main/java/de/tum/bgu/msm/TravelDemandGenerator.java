@@ -1,6 +1,8 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
+import de.tum.bgu.msm.data.MitoTripFactoryImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.*;
@@ -89,13 +91,13 @@ public final class TravelDemandGenerator {
         private Module matsimPopulationGenerator;
         private Module longDistanceTraffic;
 
-        public Builder(DataSet dataSet) {
+        public Builder(DataSetImpl dataSet) {
             this.dataSet = dataSet;
             List<Purpose> purposes = PURPOSES; // todo: specify this in properties file
 
             tripGeneration = new TripGeneration(dataSet, purposes);
             purposes.forEach(purpose -> {
-                ((TripGeneration) tripGeneration).registerTripGenerator(purpose, TripGeneratorType.SampleEnumeration,null);
+                ((TripGeneration) tripGeneration).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.SampleEnumeration,null);
             });
 
             personTripAssignment = new PersonTripAssignment(dataSet, purposes);

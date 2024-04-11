@@ -1,6 +1,8 @@
 package de.tum.bgu.msm.calibration;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
+import de.tum.bgu.msm.data.MitoTripFactoryImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
@@ -45,9 +47,9 @@ public final class MitoModelGermanyForModeChoiceCalibration {
     private static final Logger logger = Logger.getLogger(MitoModelGermanyForModeChoiceCalibration.class);
     private final String scenarioName;
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
 
-    private MitoModelGermanyForModeChoiceCalibration(DataSet dataSet, String scenarioName) {
+    private MitoModelGermanyForModeChoiceCalibration(DataSetImpl dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
@@ -56,7 +58,7 @@ public final class MitoModelGermanyForModeChoiceCalibration {
     public static MitoModelGermanyForModeChoiceCalibration standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModelGermanyForModeChoiceCalibration model = new MitoModelGermanyForModeChoiceCalibration(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelGermanyForModeChoiceCalibration model = new MitoModelGermanyForModeChoiceCalibration(new DataSetImpl(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
@@ -77,7 +79,7 @@ public final class MitoModelGermanyForModeChoiceCalibration {
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet, purposes);
         purposes.forEach(purpose -> {
-            ((TripGeneration) tg).registerTripGenerator(purpose, TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
+            ((TripGeneration) tg).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
         });
 
         tg.run();
@@ -137,10 +139,8 @@ public final class MitoModelGermanyForModeChoiceCalibration {
     }
 
     private void readAdditionalData() {
-        new TripAttractionRatesReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
-        new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();

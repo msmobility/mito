@@ -17,22 +17,17 @@ class TripGeneratorSampleEnumeration extends RandomizableConcurrentFunction<Tupl
 
     private static final Logger logger = Logger.getLogger(TripGeneratorSampleEnumeration.class);
     private final boolean dropAtBorder = Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER);
-
     private Map<MitoHousehold, List<MitoTrip>> tripsByHH = new HashMap<>();
-
     private final DataSet dataSet;
     private final Purpose purpose;
-
     private final HouseholdTypeManager householdTypeManager;
-    private double scaleFactorForGeneration;
-
-
-    TripGeneratorSampleEnumeration(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration) {
+    private final MitoTripFactory mitoTripFactory;
+    TripGeneratorSampleEnumeration(DataSet dataSet, Purpose purpose, MitoTripFactory mitoTripFactory) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
         householdTypeManager = new HouseholdTypeManager(purpose);
-        this.scaleFactorForGeneration = scaleFactorForGeneration;
+        this.mitoTripFactory = mitoTripFactory;
     }
 
     @Override
@@ -40,12 +35,9 @@ class TripGeneratorSampleEnumeration extends RandomizableConcurrentFunction<Tupl
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
-        final Iterator<MitoHousehold> iterator = dataSet.getHouseholds().values().iterator();
+        final Iterator<MitoHousehold> iterator = dataSet.getModelledHouseholds().values().iterator();
         for (; iterator.hasNext(); ) {
-            MitoHousehold next = iterator.next();
-            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration) {
-                generateTripsForHousehold(next);
-            }
+            generateTripsForHousehold(iterator.next());
         }
         return new Tuple<>(purpose, tripsByHH);
     }
@@ -92,7 +84,7 @@ class TripGeneratorSampleEnumeration extends RandomizableConcurrentFunction<Tupl
             DROPPED_TRIPS_AT_BORDER_COUNTER.incrementAndGet();
             return null;
         }
-        return new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
+        return mitoTripFactory.createTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
     }
 
     private boolean reduceTripGenAtStudyAreaBorder(MitoZone tripOrigin) {

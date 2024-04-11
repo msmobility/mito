@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.scenarios.drtNoise;
 
 import de.tum.bgu.msm.TravelDemandGenerator;
-import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
@@ -22,10 +22,10 @@ public class MitoModelDrt {
     private static final Logger logger = Logger.getLogger(MitoModelDrt.class);
     private final String scenarioName;
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
     private Geometry serviceArea;
 
-    private MitoModelDrt(DataSet dataSet, String scenarioName, Geometry serviceArea) {
+    private MitoModelDrt(DataSetImpl dataSet, String scenarioName, Geometry serviceArea) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         this.serviceArea = serviceArea;
@@ -35,7 +35,7 @@ public class MitoModelDrt {
     public static MitoModelDrt standAloneModel(String propertiesFile, ImplementationConfig config, Geometry serviceArea) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModelDrt model = new MitoModelDrt(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME), serviceArea);
+        MitoModelDrt model = new MitoModelDrt(new DataSetImpl(), Resources.instance.getString(Properties.SCENARIO_NAME), serviceArea);
         model.readStandAlone(config);
         return model;
     }
@@ -76,10 +76,8 @@ public class MitoModelDrt {
     }
 
     private void readAdditionalData() {
-        new TripAttractionRatesReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
-        new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
 
@@ -95,7 +93,7 @@ public class MitoModelDrt {
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
-    public DataSet getData() {
+    public DataSetImpl getData() {
         return dataSet;
     }
 

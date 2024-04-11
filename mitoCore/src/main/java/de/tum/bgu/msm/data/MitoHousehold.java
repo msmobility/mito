@@ -22,16 +22,17 @@ public class MitoHousehold implements Id, MicroLocation {
     private final int autos;
     private MitoZone homeZone;
     private Coordinate homeLocation;
-
+    private final boolean modelled;
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
 
     private final Map<Integer, MitoPerson> persons  = new HashMap<>();
 
-    public MitoHousehold(int id, int monthlyIncome_EUR, int autos) {
+    public MitoHousehold(int id, int monthlyIncome_EUR, int autos, boolean modelled) {
         this.hhId = id;
         this.monthlyIncome_EUR = monthlyIncome_EUR;
         this.autos = autos;
+        this.modelled = modelled;
     }
 
     @Override
@@ -119,6 +120,43 @@ public class MitoHousehold implements Id, MicroLocation {
         this.homeLocation = homeLocation;
     }
 
+    public int getFemalesForHousehold() {
+        return (int) this.getPersons().values().stream().filter(person ->
+                person.getMitoGender().equals(MitoGender.FEMALE)).count();
+    }
+
+    public int getChildrenForHousehold() {
+        return (int) this.getPersons().values().stream().filter(person ->
+                person.getAge() < 18).count();
+    }
+
+    public int getYoungAdultsForHousehold() {
+        return (int) this.getPersons().values().stream().filter(person ->
+                person.getAge() >= 18 && person.getAge() <= 25).count();
+
+    }
+
+    public int getRetireesForHousehold() {
+        return (int) this.getPersons().values().stream().filter(person ->
+                person.getAge() > 65).count();
+    }
+
+    public int getNumberOfWorkersForHousehold() {
+        return (int) this.getPersons().values().stream().filter(person ->
+                person.getMitoOccupationStatus() == MitoOccupationStatus.WORKER).count();
+
+    }
+
+    public int getStudentsForHousehold() {
+        return (int) this.getPersons().values().stream().filter(person ->
+                person.getMitoOccupationStatus() == MitoOccupationStatus.STUDENT).count();
+
+    }
+
+    public int getLicenseHoldersForHousehold() {
+        return (int) this.getPersons().values().stream().filter(MitoPerson::hasDriversLicense).count();
+    }
+
     @Override
     public Coordinate getCoordinate() {
         return homeLocation;
@@ -141,5 +179,9 @@ public class MitoHousehold implements Id, MicroLocation {
         } else {
             return false;
         }
+    }
+
+    public boolean isModelled() {
+        return modelled;
     }
 }

@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
@@ -27,6 +28,9 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
 
     private static final Logger logger = Logger.getLogger(HouseholdsReaderGermany.class);
     private final int thisPortion;
+
+    private static final double scaleFactorForTripGeneration = Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
+
 
     public HouseholdsReaderGermany(DataSet dataSet) {
         super(dataSet);
@@ -59,7 +63,13 @@ public class HouseholdsReaderGermany extends AbstractCsvReader {
     protected void processRecord(String[] record) {
         int id = Integer.parseInt(record[posId]);
         int autos = Integer.parseInt(record[posAutos]);
-        MitoHousehold hh = new MitoHousehold(id, 0, autos);
+
+
+        // is the household modelled? (depends on scale factor)
+        //TODO: check with Wei if this is applicable for SP germany
+        boolean isModelled = MitoUtil.getRandomObject().nextDouble() < scaleFactorForTripGeneration;
+
+        MitoHousehold hh = new MitoHousehold(id, 0, autos, isModelled);
         if (counter == 9){
             counter =0;
         } else {

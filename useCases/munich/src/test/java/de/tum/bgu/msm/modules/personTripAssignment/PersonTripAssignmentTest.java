@@ -15,31 +15,31 @@ import static org.junit.Assert.assertNotNull;
 
 public class PersonTripAssignmentTest {
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
 
     public void setupAndRun() {
         MitoUtil.initializeRandomNumber(new Random(42));
-        dataSet = new DataSet();
+        dataSet = new DataSetImpl();
 
-        MitoHousehold household = new MitoHousehold(1, 1, 1);
-        household.addPerson(new MitoPerson(1, household, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 35, MitoGender.MALE, true));
-        household.addPerson(new MitoPerson(2, household, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 30, MitoGender.FEMALE, true));
-        household.addPerson(new MitoPerson(3, household, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 10, MitoGender.FEMALE, false));
-        household.addPerson(new MitoPerson(4, household, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 15, MitoGender.MALE, false));
-        household.addPerson(new MitoPerson(5, household, MitoOccupationStatus.UNEMPLOYED, null, 70, MitoGender.FEMALE, false));
+        MitoHousehold household = new MitoHousehold(1, 1, 1, Boolean.TRUE);
+        household.addPerson(new MitoPersonImpl(1, household, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 35, MitoGender.MALE, true));
+        household.addPerson(new MitoPersonImpl(2, household, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 30, MitoGender.FEMALE, true));
+        household.addPerson(new MitoPersonImpl(3, household, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 10, MitoGender.FEMALE, false));
+        household.addPerson(new MitoPersonImpl(4, household, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 15, MitoGender.MALE, false));
+        household.addPerson(new MitoPersonImpl(5, household, MitoOccupationStatus.UNEMPLOYED, null, 70, MitoGender.FEMALE, false));
         dataSet.addHousehold(household);
 
-        MitoTrip tripHBW = new MitoTrip(1, Purpose.HBW);
+        MitoTrip tripHBW = new MitoTripImpl(1, Purpose.HBW);
         household.setTripsByPurpose(Lists.newArrayList(tripHBW), Purpose.HBW);
-        MitoTrip tripHBE = new MitoTrip(2, Purpose.HBE);
+        MitoTrip tripHBE = new MitoTripImpl(2, Purpose.HBE);
         household.setTripsByPurpose(Lists.newArrayList(tripHBE), Purpose.HBE);
-        MitoTrip tripHBS = new MitoTrip(3, Purpose.HBS);
+        MitoTrip tripHBS = new MitoTripImpl(3, Purpose.HBS);
         household.setTripsByPurpose(Lists.newArrayList(tripHBS), Purpose.HBS);
-        MitoTrip tripHBO = new MitoTrip(4, Purpose.HBO);
+        MitoTrip tripHBO = new MitoTripImpl(4, Purpose.HBO);
         household.setTripsByPurpose(Lists.newArrayList(tripHBO), Purpose.HBO);
-        MitoTrip tripNHBW = new MitoTrip(5, Purpose.NHBW);
+        MitoTrip tripNHBW = new MitoTripImpl(5, Purpose.NHBW);
         household.setTripsByPurpose(Lists.newArrayList(tripNHBW), Purpose.NHBW);
-        MitoTrip tripNHBO = new MitoTrip(6, Purpose.NHBO);
+        MitoTrip tripNHBO = new MitoTripImpl(6, Purpose.NHBO);
         household.setTripsByPurpose(Lists.newArrayList(tripNHBO), Purpose.NHBO);
 
         dataSet.addTrip(tripHBW);

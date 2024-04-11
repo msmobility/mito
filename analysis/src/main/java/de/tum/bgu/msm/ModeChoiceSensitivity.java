@@ -56,18 +56,18 @@ public class ModeChoiceSensitivity {
         zone.setDistanceToNearestRailStop(0.5f);
         //origin.setAreaTypeHBWModeChoice(AreaType.HBW_mediumSizedCity);
 
-        DataSet dataSet = new DataSet();
+        DataSet dataSet = new DataSetImpl();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
 
         int counter = 0;
         for (int income : incomes) {
 
-            MitoHousehold hh = new MitoHousehold(1, income, 1);
-            MitoPerson pp = new MitoPerson(1, hh, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
+            MitoHousehold hh = new MitoHousehold(1, income, 1, Boolean.TRUE);
+            MitoPerson pp = new MitoPersonImpl(1, hh, MitoOccupationStatus.STUDENT, DummyOccupation.dummy, 20, MitoGender.FEMALE, true);
             hh.addPerson(pp);
             pp.setHasBicycle(true);
-            MitoTrip trip = new MitoTrip(1, Purpose.HBS);
+            MitoTrip trip = new MitoTripImpl(1, Purpose.HBS);
             trip.setTripOrigin(zone);
             trip.setTripDestination(zone);
 

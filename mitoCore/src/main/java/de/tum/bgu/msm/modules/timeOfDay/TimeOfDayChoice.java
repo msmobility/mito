@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.timeOfDay;
 import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.io.input.readers.TimeOfDayDistributionsReader;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -26,6 +27,7 @@ public final class TimeOfDayChoice extends Module {
 
     public TimeOfDayChoice(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
+        new TimeOfDayDistributionsReader(dataSet, purposes).read();
     }
 
     @Override
@@ -42,7 +44,7 @@ public final class TimeOfDayChoice extends Module {
     private void chooseDepartureTimes() {
 
         for (Purpose purpose : purposes){
-            dataSet.getHouseholds().values().forEach(hh-> {
+            dataSet.getModelledHouseholds().values().forEach(hh-> {
                 List<MitoTrip> trips = hh.getTripsForPurpose(purpose);
                 for (MitoTrip trip : trips){
 
@@ -51,6 +53,8 @@ public final class TimeOfDayChoice extends Module {
                         int departureTimeInMinutes;
                         if (trip.getTripPurpose().equals(Purpose.AIRPORT) &&
                                 trip.getTripOrigin().equals(dataSet.getZones().get(Resources.instance.getInt(Properties.AIRPORT_ZONE)))){
+                            departureTimeInMinutes = chooseDepartureTime(trip);
+                        } else if (trip.getTripPurpose().equals(Purpose.RRT)){
                             departureTimeInMinutes = chooseDepartureTime(trip);
                         } else {
                             int arrivalTimeInMinutes = chooseArrivalTime(trip);

@@ -1,6 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
@@ -21,7 +21,7 @@ public class MitoGermany {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO) based on 2017 models");
         MitoModelGermany model = MitoModelGermany.standAloneModel(args[0], GermanyImplementationConfig.get());
         model.run();
-        final DataSet dataSet = model.getData();
+        final DataSetImpl dataSet = model.getData();
 
         boolean runAssignment = Resources.instance.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
 

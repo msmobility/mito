@@ -104,7 +104,7 @@ public class ModeChoice extends Module {
         public Void call() {
             countTripsSkipped = 0;
             try {
-                for (MitoHousehold household : dataSet.getHouseholds().values()) {
+                for (MitoHousehold household : dataSet.getModelledHouseholds().values()) {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         chooseMode(trip, calculateTripProbabilities(household, trip));
                     }

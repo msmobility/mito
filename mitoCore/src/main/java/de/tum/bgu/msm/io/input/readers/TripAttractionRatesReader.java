@@ -8,15 +8,18 @@ import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 public class TripAttractionRatesReader extends AbstractCsvReader {
 
     private final Map<Purpose, Integer> indexForPurpose = new EnumMap<>(Purpose.class);
     private int variableIndex;
+    private List<Purpose> purposes;
 
-    public TripAttractionRatesReader(DataSet dataSet) {
+    public TripAttractionRatesReader(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet);
+        this.purposes = purposes;
     }
 
     @Override
@@ -27,14 +30,14 @@ public class TripAttractionRatesReader extends AbstractCsvReader {
     @Override
     protected void processHeader(String[] header) {
         variableIndex = MitoUtil.findPositionInArray("IndependentVariable", header);
-        for(Purpose purpose: Purpose.getAllPurposes()) {
+        for(Purpose purpose: purposes) {
             indexForPurpose.put(purpose, MitoUtil.findPositionInArray(purpose.name(), header));
         }
     }
 
     @Override
     protected void processRecord(String[] record) {
-        for(Purpose purpose: Purpose.getAllPurposes()) {
+        for(Purpose purpose: purposes) {
             AttractionCalculator.ExplanatoryVariable variable = AttractionCalculator.ExplanatoryVariable.valueOf(record[variableIndex]);
             double rate = Double.parseDouble(record[indexForPurpose.get(purpose)]);
             purpose.setTripAttractionForVariable(variable, rate);

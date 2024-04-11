@@ -2,10 +2,7 @@ package de.tum.bgu.msm.modules;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.io.input.readers.ModeChoiceCoefficientReader;
 import de.tum.bgu.msm.modules.modeChoice.AbstractModeChoiceCalculator;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
-import de.tum.bgu.msm.resources.Resources;
 import org.matsim.core.utils.collections.Tuple;
 
 import java.util.ArrayList;
@@ -337,7 +334,7 @@ public class ModeChoiceCalculatorImpl extends AbstractModeChoiceCalculator {
 
         int hhSize = household.getHhSize();
         int hhAutos = household.getAutos();
-        int hhChildren = DataSet.getChildrenForHousehold(household);
+        int hhChildren = household.getChildrenForHousehold();
 
         final float distanceToNearestRailStop = originZone.getDistanceToNearestRailStop();
 

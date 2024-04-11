@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class ModeChoiceTest {
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
     private MitoHousehold household1;
     private MitoTrip trip1;
     private MitoHousehold household2;
@@ -27,7 +27,7 @@ public class ModeChoiceTest {
         MitoUtil.initializeRandomNumber(new Random(42));
         Resources.initializeResources("./useCases/munich/test/muc/test.properties");
 
-        dataSet = new DataSet();
+        dataSet = new DataSetImpl();
         dataSet.setTravelDistancesAuto((origin, destination) -> 1000);
         dataSet.setTravelDistancesNMT((origin, destination) -> 1000);
         dataSet.setTravelTimes(new TravelTimes() {
@@ -68,8 +68,8 @@ public class ModeChoiceTest {
 
 
     private void fillDataSet() {
-        trip1 = new MitoTrip(1, Purpose.HBW);
-        MitoPerson person1 = new MitoPerson(1, household1, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
+        trip1 = new MitoTripImpl(1, Purpose.HBW);
+        MitoPerson person1 = new MitoPersonImpl(1, household1, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
         trip1.setPerson(person1);
         MitoZone zone1 = DummyZone.dummy;
         zone1.setDistanceToNearestRailStop(0.5f);
@@ -78,7 +78,7 @@ public class ModeChoiceTest {
         MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY);
         trip1.setTripDestination(zone2);
 
-        household1 = new MitoHousehold(1, 24000, 1);
+        household1 = new MitoHousehold(1, 24000, 1, Boolean.TRUE);
         household1.setHomeZone(zone1);
         household1.addPerson(person1);
         household1.setTripsByPurpose(Collections.singletonList(trip1), Purpose.HBW);
@@ -88,8 +88,8 @@ public class ModeChoiceTest {
         dataSet.addHousehold(household1);
         dataSet.addPerson(person1);
 
-        trip2 = new MitoTrip(2, Purpose.HBO);
-        MitoPerson person2 = new MitoPerson(2, household2, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
+        trip2 = new MitoTripImpl(2, Purpose.HBO);
+        MitoPerson person2 = new MitoPersonImpl(2, household2, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
         trip2.setPerson(person2);
         MitoZone zone3 = new MitoZone(3, AreaTypes.SGType.CORE_CITY);
         zone3.setDistanceToNearestRailStop(0.5f);
@@ -97,7 +97,7 @@ public class ModeChoiceTest {
         MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY);
         trip2.setTripDestination(zone4);
 
-        household2 = new MitoHousehold(2, 24000, 1);
+        household2 = new MitoHousehold(2, 24000, 1, Boolean.TRUE);
         household2.setHomeZone(zone3);
         household2.addPerson(person2);
         household2.setTripsByPurpose(Collections.singletonList(trip2), Purpose.HBO);

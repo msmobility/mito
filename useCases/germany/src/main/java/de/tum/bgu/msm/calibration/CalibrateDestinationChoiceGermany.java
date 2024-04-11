@@ -1,6 +1,8 @@
+/*
 package de.tum.bgu.msm.calibration;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+*/
 /**
  * Implements the Microsimulation Transport Orchestrator (MITO)
  *
@@ -41,20 +44,21 @@ import java.util.Random;
  * - otherEmplByZone
  * - totalEmplByZone
  * - sizeOfZonesInAcre
- */
+ *//*
+
 public final class CalibrateDestinationChoiceGermany {
 
     private static final Logger logger = Logger.getLogger(CalibrateDestinationChoiceGermany.class);
     private final String scenarioName;
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
 
     public static void main(String[] args) {
         CalibrateDestinationChoiceGermany model = CalibrateDestinationChoiceGermany.standAloneModel(args[0], GermanyImplementationConfig.get());
         model.run();
     }
 
-    private CalibrateDestinationChoiceGermany(DataSet dataSet, String scenarioName) {
+    private CalibrateDestinationChoiceGermany(DataSetImpl dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
@@ -63,12 +67,12 @@ public final class CalibrateDestinationChoiceGermany {
     public static CalibrateDestinationChoiceGermany standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        CalibrateDestinationChoiceGermany model = new CalibrateDestinationChoiceGermany(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        CalibrateDestinationChoiceGermany model = new CalibrateDestinationChoiceGermany(new DataSetImpl(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static CalibrateDestinationChoiceGermany initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static CalibrateDestinationChoiceGermany initializeModelFromSilo(String propertiesFile, DataSetImpl dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         CalibrateDestinationChoiceGermany model = new CalibrateDestinationChoiceGermany(dataSet, scenarioName);
@@ -258,3 +262,4 @@ public final class CalibrateDestinationChoiceGermany {
 
 
 }
+*/

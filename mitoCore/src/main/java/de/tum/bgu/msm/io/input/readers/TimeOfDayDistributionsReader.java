@@ -5,80 +5,62 @@ import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix1D;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
+import de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
 import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 public class TimeOfDayDistributionsReader extends AbstractCsvReader {
 
     private final EnumMap<Purpose, DoubleMatrix1D> arrivalTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, DoubleMatrix1D> durationCumProbByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, DoubleMatrix1D> departureTimeCumProbByPurpose = new EnumMap<>(Purpose.class);
-
     private int minuteIndex;
-    private int hbe_arrival_index;
-    private int hbe_duration_index;
-    private int hbo_arrival_index;
-    private int hbo_duration_index;
-    private int hbs_arrival_index;
-    private int hbs_duration_index;
-    private int hbw_arrival_index;
-    private int hbw_duration_index;
-    private int nhbo_arrival_index;
-    private int nhbw_arrival_index;
+    private final Map<Purpose, Integer> arrivalIndexForPurpose = new EnumMap<>(Purpose.class);
+    private final Map<Purpose, Integer> durationIndexForPurpose = new EnumMap<>(Purpose.class);
+    private final Map<Purpose, Integer> departureIndexForPurpose = new EnumMap<>(Purpose.class);
     private int airport_arrival_index;
-    private int airport_deparure_index;
+    private int airport_departure_index;
+    private List<Purpose> purposes;
 
-
-    public TimeOfDayDistributionsReader(DataSet dataSet) {
-
+    public TimeOfDayDistributionsReader(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet);
-        for (Purpose purpose : Purpose.values()) {
+        for (Purpose purpose : purposes) {
             arrivalTimeCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
             durationCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
             departureTimeCumProbByPurpose.put(purpose, new DenseDoubleMatrix1D(24 * 60 + 1));
         }
+        this.purposes = purposes;
     }
 
     @Override
     protected void processHeader(String[] header) {
         minuteIndex = MitoUtil.findPositionInArray("minute", header);
-        hbe_arrival_index = MitoUtil.findPositionInArray("arrival_hbe", header);
-        hbe_duration_index = MitoUtil.findPositionInArray("duration_hbe", header);
-        hbo_arrival_index = MitoUtil.findPositionInArray("arrival_hbo", header);
-        hbo_duration_index = MitoUtil.findPositionInArray("duration_hbo", header);
-        hbs_arrival_index = MitoUtil.findPositionInArray("arrival_hbs", header);
-        hbs_duration_index = MitoUtil.findPositionInArray("duration_hbs", header);
-        hbw_arrival_index = MitoUtil.findPositionInArray("arrival_hbw", header);
-        hbw_duration_index = MitoUtil.findPositionInArray("duration_hbw", header);
-        nhbo_arrival_index = MitoUtil.findPositionInArray("arrival_nhbo", header);
-        nhbw_arrival_index = MitoUtil.findPositionInArray("arrival_nhbw", header);
+        for(Purpose purpose: purposes) {
+            arrivalIndexForPurpose.put(purpose, MitoUtil.findPositionInArray("arrival_" + purpose.name(), header));
+            durationIndexForPurpose.put(purpose, MitoUtil.findPositionInArray("duration_" + purpose.name(), header));
+            departureIndexForPurpose.put(purpose,MitoUtil.findPositionInArray("departure_" + purpose.name(), header));
+        }
         airport_arrival_index = MitoUtil.findPositionInArray("arrival_airport", header);
-        airport_deparure_index = MitoUtil.findPositionInArray("departure_airport", header);
+        airport_departure_index = MitoUtil.findPositionInArray("departure_airport", header);
     }
 
     @Override
     protected void processRecord(String[] record) {
         int minute = Integer.parseInt(record[minuteIndex]);
-        arrivalTimeCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBR).setQuick(minute, Double.parseDouble(record[hbo_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.NHBO).setQuick(minute, Double.parseDouble(record[nhbo_arrival_index]));
-        arrivalTimeCumProbByPurpose.get(Purpose.NHBW).setQuick(minute, Double.parseDouble(record[nhbw_arrival_index]));
-
-        durationCumProbByPurpose.get(Purpose.HBE).setQuick(minute, Double.parseDouble(record[hbe_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBO).setQuick(minute, Double.parseDouble(record[hbo_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBR).setQuick(minute, Double.parseDouble(record[hbo_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBS).setQuick(minute, Double.parseDouble(record[hbs_duration_index]));
-        durationCumProbByPurpose.get(Purpose.HBW).setQuick(minute, Double.parseDouble(record[hbw_duration_index]));
+        for(Purpose purpose: purposes) {
+            departureTimeCumProbByPurpose.get(purpose).setQuick(minute, departureIndexForPurpose.get(purpose)==-1? 0. : Double.parseDouble(record[departureIndexForPurpose.get(purpose)]));
+            arrivalTimeCumProbByPurpose.get(purpose).setQuick(minute, arrivalIndexForPurpose.get(purpose)==-1? 0. : Double.parseDouble(record[arrivalIndexForPurpose.get(purpose)]));
+            durationCumProbByPurpose.get(purpose).setQuick(minute, durationIndexForPurpose.get(purpose)==-1? 0. : Double.parseDouble(record[durationIndexForPurpose.get(purpose)]));
+        }
 
         if (Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false)){
             arrivalTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_arrival_index]));
-            departureTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_deparure_index]));
+            departureTimeCumProbByPurpose.get(Purpose.AIRPORT).setQuick(minute, Double.parseDouble(record[airport_departure_index]));
         }
     }
 

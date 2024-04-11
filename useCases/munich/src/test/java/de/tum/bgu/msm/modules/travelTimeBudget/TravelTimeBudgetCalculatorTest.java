@@ -21,7 +21,7 @@ public class TravelTimeBudgetCalculatorTest {
 
         calculator = new TravelTimeBudgetCalculatorImpl();
 
-        dataSet = new DataSet();
+        dataSet = new DataSetImpl();
         addZone();
         addHouseholds();
         addPersons();
@@ -108,36 +108,36 @@ public class TravelTimeBudgetCalculatorTest {
     }
 
     private void addHouseholds() {
-        MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0);
+        MitoHousehold emptyHousehold = new MitoHousehold(1, 10000, 0, Boolean.TRUE);
         emptyHousehold.setHomeZone(dummyZone);
         dataSet.addHousehold(emptyHousehold);
 
-        MitoHousehold poorRetirees = new MitoHousehold(2, 10000, 0);
+        MitoHousehold poorRetirees = new MitoHousehold(2, 10000, 0, Boolean.TRUE);
         poorRetirees.setHomeZone(dummyZone);
         dataSet.addHousehold(poorRetirees);
 
-        MitoHousehold poorBigFamily = new MitoHousehold(3, 10000, 0);
+        MitoHousehold poorBigFamily = new MitoHousehold(3, 10000, 0, Boolean.TRUE);
         poorBigFamily.setHomeZone(dummyZone);
         dataSet.addHousehold(poorBigFamily);
 
-        MitoHousehold richBigFamily = new MitoHousehold(4, 500000, 0);
+        MitoHousehold richBigFamily = new MitoHousehold(4, 500000, 0, Boolean.TRUE);
         richBigFamily.setHomeZone(dummyZone);
         dataSet.addHousehold(richBigFamily);
     }
 
     private void addPersons() {
         MitoHousehold household2 = dataSet.getHouseholds().get(2);
-        MitoPerson retiree21 = new MitoPerson(21, household2, MitoOccupationStatus.UNEMPLOYED, null, 70, MitoGender.MALE, false);
-        MitoPerson retiree22 = new MitoPerson(22, household2, MitoOccupationStatus.UNEMPLOYED, null, 70, MitoGender.FEMALE, false);
+        MitoPerson retiree21 = new MitoPersonImpl(21, household2, MitoOccupationStatus.UNEMPLOYED, null, 70, MitoGender.MALE, false);
+        MitoPerson retiree22 = new MitoPersonImpl(22, household2, MitoOccupationStatus.UNEMPLOYED, null, 70, MitoGender.FEMALE, false);
         household2.addPerson(retiree21);
         household2.addPerson(retiree22);
 
         MitoHousehold household3 = dataSet.getHouseholds().get(3);
-        MitoPerson worker31 = new MitoPerson(31, household3, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.MALE, true);
-        MitoPerson worker32 = new MitoPerson(32, household3, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.FEMALE, true);
-        MitoPerson worker33 = new MitoPerson(33, household3, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 20, MitoGender.MALE, false);
-        MitoPerson child34 = new MitoPerson(34, household3, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
-        MitoPerson child35 = new MitoPerson(35, household3, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
+        MitoPerson worker31 = new MitoPersonImpl(31, household3, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.MALE, true);
+        MitoPerson worker32 = new MitoPersonImpl(32, household3, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.FEMALE, true);
+        MitoPerson worker33 = new MitoPersonImpl(33, household3, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 20, MitoGender.MALE, false);
+        MitoPerson child34 = new MitoPersonImpl(34, household3, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
+        MitoPerson child35 = new MitoPersonImpl(35, household3, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
 
         household3.addPerson(worker31);
         household3.addPerson(worker32);
@@ -146,11 +146,11 @@ public class TravelTimeBudgetCalculatorTest {
         household3.addPerson(child35);
 
         MitoHousehold household4 = dataSet.getHouseholds().get(4);
-        MitoPerson worker41 = new MitoPerson(41, household4, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.MALE, true);
-        MitoPerson worker42 = new MitoPerson(42, household4, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.FEMALE, true);
-        MitoPerson worker43 = new MitoPerson(43, household4, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 20, MitoGender.MALE, false);
-        MitoPerson child44 = new MitoPerson(44, household4, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
-        MitoPerson child45 = new MitoPerson(45, household4, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
+        MitoPerson worker41 = new MitoPersonImpl(41, household4, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.MALE, true);
+        MitoPerson worker42 = new MitoPersonImpl(42, household4, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 45, MitoGender.FEMALE, true);
+        MitoPerson worker43 = new MitoPersonImpl(43, household4, MitoOccupationStatus.WORKER, DummyOccupation.dummy, 20, MitoGender.MALE, false);
+        MitoPerson child44 = new MitoPersonImpl(44, household4, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
+        MitoPerson child45 = new MitoPersonImpl(45, household4, MitoOccupationStatus.STUDENT, null, 10, MitoGender.FEMALE, false);
 
         household4.addPerson(worker41);
         household4.addPerson(worker42);

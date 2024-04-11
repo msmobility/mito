@@ -1,7 +1,7 @@
 package de.tum.bgu.msm.util.skim;
 
-import com.google.common.collect.Sets;
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.ZonesReader;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
@@ -30,7 +30,6 @@ import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ConvertNetworkChangeEventsToSkim {
 
@@ -46,7 +45,7 @@ public class ConvertNetworkChangeEventsToSkim {
         Resources.initializeResources(PROPERTIES_PATH);
         MitoUtil.initializeRandomNumber();
 
-        DataSet dataset = new DataSet();
+        DataSet dataset = new DataSetImpl();
         new ZonesReader(dataset).read();
 
 

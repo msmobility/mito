@@ -16,22 +16,18 @@ public class TripGeneratorPersonBasedHurdlePolr extends RandomizableConcurrentFu
 
     private static final Logger logger = Logger.getLogger(TripGeneratorPersonBasedHurdlePolr.class);
     private Map<MitoHousehold, List<MitoTrip>> tripsByHH = new HashMap<>();
-
     private final DataSet dataSet;
     private final Purpose purpose;
-
-    private double scaleFactorForGeneration;
-
+    private final MitoTripFactory mitoTripFactory;
     private final TripGenPredictor tripGenerationCalculator;
-
     private Map<String, Double> binLogCoef;
     private Map<String, Double> polrCoef;
 
-    protected TripGeneratorPersonBasedHurdlePolr(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration, TripGenPredictor tripGenerationCalculator) {
+    protected TripGeneratorPersonBasedHurdlePolr(DataSet dataSet, Purpose purpose, MitoTripFactory mitoTripFactory, TripGenPredictor tripGenerationCalculator) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
-        this.scaleFactorForGeneration = scaleFactorForGeneration;
+        this.mitoTripFactory = mitoTripFactory;
         this.tripGenerationCalculator = tripGenerationCalculator;
         this.binLogCoef =
                 new TripGenerationHurdleCoefficientReader(dataSet, purpose,
@@ -47,14 +43,10 @@ public class TripGeneratorPersonBasedHurdlePolr extends RandomizableConcurrentFu
         logger.info("  Generating trips with purpose " + purpose + " (multi-threaded)");
         logger.info("Created trip frequency distributions for " + purpose);
         logger.info("Started assignment of trips for hh, purpose: " + purpose);
-        final Iterator<MitoHousehold> iterator = dataSet.getHouseholds().values().iterator();
+        final Iterator<MitoHousehold> iterator = dataSet.getModelledHouseholds().values().iterator();
         for (; iterator.hasNext(); ) {
-            MitoHousehold next = iterator.next();
-            if (MitoUtil.getRandomObject().nextDouble() < scaleFactorForGeneration) {
-                generateTripsForHousehold(next);
-            }
+            generateTripsForHousehold(iterator.next());
         }
-
         return new Tuple<>(purpose, tripsByHH);
     }
 
@@ -65,7 +57,7 @@ public class TripGeneratorPersonBasedHurdlePolr extends RandomizableConcurrentFu
             tripsByHH.putIfAbsent(hh, new ArrayList<>());
             List<MitoTrip> currentTrips = tripsByHH.get(hh);
             for (int i = 0; i < numberOfTrips; i++) {
-                MitoTrip trip = new MitoTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
+                MitoTrip trip = mitoTripFactory.createTrip(TRIP_ID_COUNTER.incrementAndGet(), purpose);
                 trip.setPerson(person);
                 if (trip != null) {
                     currentTrips.add(trip);

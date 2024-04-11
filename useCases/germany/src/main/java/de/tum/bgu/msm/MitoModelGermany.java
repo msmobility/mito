@@ -1,6 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -34,9 +34,9 @@ public final class MitoModelGermany {
     private static final Logger logger = Logger.getLogger(MitoModelGermany.class);
     private final String scenarioName;
 
-    private DataSet dataSet;
+    private DataSetImpl dataSet;
 
-    private MitoModelGermany(DataSet dataSet, String scenarioName) {
+    private MitoModelGermany(DataSetImpl dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
@@ -45,12 +45,12 @@ public final class MitoModelGermany {
     public static MitoModelGermany standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModelGermany model = new MitoModelGermany(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModelGermany model = new MitoModelGermany(new DataSetImpl(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static MitoModelGermany initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static MitoModelGermany initializeModelFromSilo(String propertiesFile, DataSetImpl dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         MitoModelGermany model = new MitoModelGermany(dataSet, scenarioName);
@@ -89,10 +89,8 @@ public final class MitoModelGermany {
     }
 
     private void readAdditionalData() {
-        new TripAttractionRatesReader(dataSet).read();
         new ModeChoiceInputReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
-        new TimeOfDayDistributionsReader(dataSet).read();
         new CalibrationDataReader(dataSet).read();
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
@@ -109,7 +107,7 @@ public final class MitoModelGermany {
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
-    public DataSet getData() {
+    public DataSetImpl getData() {
         return dataSet;
     }
 

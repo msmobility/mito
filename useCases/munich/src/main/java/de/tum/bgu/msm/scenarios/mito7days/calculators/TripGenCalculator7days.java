@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.scenarios.mito7days;
+package de.tum.bgu.msm.scenarios.mito7days.calculators;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripGeneration.TripGenPredictor;
@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TripGenCalculatorPersonBasedHurdleNegBin implements TripGenPredictor {
+public class TripGenCalculator7days implements TripGenPredictor {
 
     private final DataSet dataSet;
 
-    public TripGenCalculatorPersonBasedHurdleNegBin(DataSet dataSet) {
+    public TripGenCalculator7days(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 
@@ -43,7 +43,7 @@ public class TripGenCalculatorPersonBasedHurdleNegBin implements TripGenPredicto
         }
 
         // Number of children in household
-        int householdChildren = DataSet.getChildrenForHousehold(hh);
+        int householdChildren = hh.getChildrenForHousehold();
         if(householdChildren == 1) {
             predictor += coefficients.get("hh.children_1");
         }

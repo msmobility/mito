@@ -2,128 +2,57 @@ package de.tum.bgu.msm.data;
 
 import org.matsim.api.core.v01.population.Person;
 
-/**
- * Holds trip objects for the Microsimulation Transport Orchestrator (MITO)
- *
- * @author Rolf Moeckel
- * Created on Mar 26, 2017 in Munich, Germany
- */
-public class MitoTrip implements Id {
+public interface MitoTrip extends Id{
+    
+    int getId();
+    
+    Location getTripOrigin();
 
-    private final int tripId;
-    private final Purpose tripPurpose;
+    
+    void setTripOrigin(Location origin);
 
-    private Location tripOrigin;
-    private Location tripDestination;
+    
+    Purpose getTripPurpose();
 
-    private MitoPerson person;
+    
+    Location getTripDestination();
 
-    private Mode tripMode;
+    
+    void setTripDestination(Location destination);
 
-    private int departureInMinutes;
-    private int departureInMinutesReturnTrip = -1;
+    
+    MitoPerson getPerson();
 
-    private Person matsimPerson;
+    
+    void setPerson(MitoPerson person);
 
-    public MitoTrip(int tripId, Purpose tripPurpose) {
-        this.tripId = tripId;
-        this.tripPurpose = tripPurpose;
-    }
+    
+    Mode getTripMode();
 
-    @Override
-    public int getId() {
-        return tripId;
-    }
+    
+    void setTripMode(Mode tripMode);
 
-    public Location getTripOrigin() {
-        return tripOrigin;
-    }
+    
+    void setDepartureInMinutes(int departureInMinutes);
 
-    public void setTripOrigin(Location origin) {
-        this.tripOrigin = origin;
-    }
+    
+    void setDepartureInMinutesReturnTrip(int departureInMinutesReturnTrip);
 
-    public Purpose getTripPurpose() {
-        return tripPurpose;
-    }
+    
+    int getDepartureInMinutes();
 
-    public Location getTripDestination() {
-        return this.tripDestination;
-    }
+    
+    int getDepartureInMinutesReturnTrip();
 
-    public void setTripDestination(Location destination) {
-        this.tripDestination = destination;
-    }
+    
+    int getTripId();
 
-    public MitoPerson getPerson() {
-        return person;
-    }
+    
+    Person getMatsimPerson();
 
-    public void setPerson(MitoPerson person) {
-        this.person = person;
-//        if (!person.getTrips().contains(this)) {
-//            person.addTrip(this);
-//        }
-    }
+    
+    void setMatsimPerson(Person matsimPerson);
 
-    public Mode getTripMode() {
-        return tripMode;
-    }
-
-    public void setTripMode(Mode tripMode) {
-        this.tripMode = tripMode;
-    }
-
-    public void setDepartureInMinutes(int departureInMinutes) {
-        this.departureInMinutes = departureInMinutes;
-    }
-
-    public void setDepartureInMinutesReturnTrip(int departureInMinutesReturnTrip) {
-        this.departureInMinutesReturnTrip = departureInMinutesReturnTrip;
-    }
-
-    public int getDepartureInMinutes() {
-        return departureInMinutes;
-    }
-
-    public int getDepartureInMinutesReturnTrip() {
-        return departureInMinutesReturnTrip;
-    }
-
-    public int getTripId() {
-        return tripId;
-    }
-
-    public Person getMatsimPerson() {
-        return matsimPerson;
-    }
-
-    public void setMatsimPerson(Person matsimPerson) {
-        this.matsimPerson = matsimPerson;
-    }
-
-    public boolean isHomeBased() {
-        return !this.getTripPurpose().equals(Purpose.NHBW) &&
-                !this.getTripPurpose().equals(Purpose.NHBO) &&
-                !this.getTripPurpose().equals(Purpose.AIRPORT);
-    }
-
-    @Override
-    public String toString() {
-        return "Trip [id: " + this.tripId + " purpose: " + this.tripPurpose + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        return tripId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof MitoTrip) {
-            return tripId == ((MitoTrip) o).tripId;
-        } else {
-            return false;
-        }
-    }
+    
+    boolean isHomeBased();
 }

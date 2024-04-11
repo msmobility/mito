@@ -1,6 +1,6 @@
 package de.tum.bgu.msm.scenarios.drtNoise;
 
-import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
@@ -35,7 +35,7 @@ public class RunMitoDrt {
 
         MitoModelDrt model = MitoModelDrt.standAloneModel(args[0], MunichImplementationConfig.get(), geometry);
         model.run();
-        final DataSet dataSet = model.getData();
+        final DataSetImpl dataSet = model.getData();
 
         ServiceAreaModeChoiceResults.printServiceAreaModeChoiceResults(dataSet, geometry, Resources.instance.getString(Properties.SCENARIO_NAME));
 

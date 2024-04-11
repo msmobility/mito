@@ -1,9 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.Purpose;
-import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;

@@ -1,9 +1,6 @@
 package de.tum.bgu.msm.modules.travelTimeBudget;
 
-import de.tum.bgu.msm.data.AreaTypes;
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import org.apache.log4j.Logger;
 
 class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
@@ -13,10 +10,10 @@ class TravelTimeBudgetCalculatorImpl implements TravelTimeBudgetCalculator {
     @Override
     public double calculateBudget(MitoHousehold household, String purpose) {
 
-        int retirees = DataSet.getRetireesForHousehold(household);
-        int females = DataSet.getFemalesForHousehold(household);
-        int youngAdults = DataSet.getYoungAdultsForHousehold(household);
-        int workers = DataSet.getNumberOfWorkersForHousehold(household);
+        int retirees = household.getRetireesForHousehold();
+        int females = household.getFemalesForHousehold();
+        int youngAdults = household.getYoungAdultsForHousehold();
+        int workers = household.getNumberOfWorkersForHousehold();
         int cars = household.getAutos();
 
         int HBW = household.getTripsForPurpose(Purpose.HBW).size();

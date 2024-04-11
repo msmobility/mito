@@ -41,7 +41,7 @@ public class ModeChoiceCalculator2008Impl extends AbstractModeChoiceCalculator {
 
         int hhSize = household.getHhSize();
         int hhAutos = household.getAutos();
-        int hhChildren = DataSet.getChildrenForHousehold(household);
+        int hhChildren = household.getChildrenForHousehold();
 
         final float distanceToNearestRailStop = originZone.getDistanceToNearestRailStop();
 

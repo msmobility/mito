@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.jobTypes.Category;
+import de.tum.bgu.msm.io.input.readers.TripAttractionRatesReader;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class AttractionCalculator {
     AttractionCalculator(DataSet dataSet, List<Purpose> purposes) {
         this.dataSet = dataSet;
         this.purposes = purposes;
+        new TripAttractionRatesReader(dataSet, purposes).read();
     }
 
     public void run() {
