@@ -24,6 +24,8 @@ public class Properties {
 
     public static final String AUTO_PEAK_SKIM = "auto.peak.travelTime";
 
+    public static final String TRIP_PURPOSES = "trip.purposes";
+
     public static final String TRIP_ATTRACTION_RATES = "trip.attraction.rates";
     public static final String TRIP_PRODUCTION_OUTPUT = "trip.production.output";
     public static final String TRIP_ATTRACTION_OUTPUT = "trip.attraction.output";

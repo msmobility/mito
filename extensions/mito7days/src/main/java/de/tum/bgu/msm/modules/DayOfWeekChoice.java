@@ -1,23 +1,23 @@
 package de.tum.bgu.msm.modules;
 
+import com.google.common.collect.Lists;
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.io.DayProbabilitiesReader;
+import de.tum.bgu.msm.io.DaysOfWeekReader;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 
 
 public final class DayOfWeekChoice extends Module {
 
     private static final Logger logger = Logger.getLogger(DayOfWeekChoice.class);
 
-    private EnumMap<Purpose, EnumMap<Day, Double>> dayProbabilitiesByPurpose;
+    private final EnumMap<Purpose, ArrayList<LinkedHashMap<String,Integer>>> probabilitiesByPurpose;
 
     public DayOfWeekChoice(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
-        dayProbabilitiesByPurpose =  new DayProbabilitiesReader(dataSet).readCoefficients();
+        probabilitiesByPurpose =  new DaysOfWeekReader(dataSet).readCoefficients();
     }
 
     @Override
@@ -27,21 +27,41 @@ public final class DayOfWeekChoice extends Module {
     }
 
     private void chooseDepartureDay() {
-        //old version
-        dataSet.getTrips().values().forEach(trip -> {
-            Day day = MitoUtil.select(dayProbabilitiesByPurpose.get(trip.getTripPurpose()), MitoUtil.getRandomObject());
-            ((MitoTrip7days)trip).setDepartureDay(day);
-        });
+        for (Purpose purpose : Purpose.values()) {
+            for (MitoPerson person : dataSet.getPersons().values()) {
+                List<MitoTrip> trips = person.getTripsForPurpose(purpose);
+                if (trips.isEmpty()) continue;
+                assignDays(purpose, trips);
+            }
+        }
+    }
 
-        //new version control within individual distribution
-        //TODO: Corin to add a new function for choose departure day
-        /*for (Purpose purpose : purposes) {
-            EnumMap<Day, Double> dayProbabilitiesThisPurpose = dayProbabilitiesByPurpose.get(purpose);
-            dataSet.getPersons().values().forEach(person -> person.getTrips().stream().filter(mitoTrip ->
-                    purpose.equals(mitoTrip.getTripPurpose())).collect(Collectors.toList()).forEach(trip -> {
-                Day day = MitoUtil.select(dayProbabilitiesThisPurpose, MitoUtil.getRandomObject());
-                ((MitoTrip7days)trip).se++++++++tDepartureDay(day);
-            }));
-        }*/
+    private void assignDays(Purpose purpose, List<MitoTrip> trips) {
+
+        LinkedHashMap<String, Integer> candidates;
+
+        // Select candidates. If number of trips is too large, split into smaller partitions and try again
+        try {
+            candidates = probabilitiesByPurpose.get(purpose).get(trips.size());
+        } catch (IndexOutOfBoundsException e) {
+            for (List<MitoTrip> partition : Lists.partition(trips, 7)) {
+                assignDays(purpose, partition);
+            }
+            return;
+        }
+
+        // Select day sequence
+        double[] frequencies = candidates.values().stream().mapToDouble(Integer::doubleValue).toArray();
+        int index = MitoUtil.select(frequencies, MitoUtil.getRandomObject());
+        Iterator<String> it = candidates.keySet().iterator();
+        for (int i = 0; i < index; i++) it.next();
+        String sequence = it.next();
+
+        // Assign sequence to trips
+        int i = 0;
+        for (MitoTrip trip : trips) {
+            ((MitoTrip7days) trip).setDepartureDay(Day.getDay(sequence.charAt(i)));
+            i++;
+        }
     }
 }

@@ -35,8 +35,6 @@ public final class TravelDemandGenerator7days {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator7days.class);
 
-    private static final List<Purpose> PURPOSES = List.of(HBW,HBE,HBS,HBR,HBO,NHBW,NHBO,RRT);
-
     private final DataSet dataSet;
 
     private final Module tripGenerationMandatory;
@@ -116,10 +114,12 @@ public final class TravelDemandGenerator7days {
         public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
 
-            List<Purpose> purposes = PURPOSES;
-            List<Purpose> mandatoryPurposes = new ArrayList<>(PURPOSES);
+            List<Purpose> purposes = Purpose.getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES));
+            logger.info("Simulating trips for the following purposes: " + purposes.stream().map(Enum::toString).collect(Collectors.joining(",")));
+
+            List<Purpose> mandatoryPurposes = new ArrayList<>(purposes);
             mandatoryPurposes.retainAll(Purpose.getMandatoryPurposes());
-            List<Purpose> discretionaryPurposes = new ArrayList<>(PURPOSES);
+            List<Purpose> discretionaryPurposes = new ArrayList<>(purposes);
             discretionaryPurposes.removeAll(mandatoryPurposes);
 
             //from here

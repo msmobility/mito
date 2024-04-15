@@ -46,4 +46,32 @@ public enum Day implements Id {
 
         }
     }
+
+    public static Day getDay(char code) {
+        switch(code){
+            case 'M':
+            case 'm':
+                return monday;
+            case 'T':
+            case 't':
+                return tuesday;
+            case 'W':
+            case 'w':
+                return wednesday;
+            case 'R':
+            case 'r':
+                return thursday;
+            case 'F':
+            case 'f':
+                return friday;
+            case 'S':
+            case 's':
+                return saturday;
+            case 'U':
+            case 'u':
+                return sunday;
+            default:
+                throw new RuntimeException("No such day code: " + code);
+        }
+    }
 }

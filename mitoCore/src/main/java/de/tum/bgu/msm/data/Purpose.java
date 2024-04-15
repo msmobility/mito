@@ -1,9 +1,7 @@
 package de.tum.bgu.msm.data;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator.ExplanatoryVariable;
 
@@ -77,6 +75,10 @@ public enum Purpose implements Id {
         list.add(NHBO);
         list.add(NHBW);
         return list;
+    }
+
+    public static List<Purpose> getListedPurposes(String string) {
+        return Arrays.stream(string.split(",")).map(Purpose::valueOf).collect(Collectors.toList());
     }
 
 }
