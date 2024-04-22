@@ -2,15 +2,11 @@ package de.tum.bgu.msm.analysis.logsumAccessibility;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.io.input.readers.ModeChoiceCoefficientReader;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
-import de.tum.bgu.msm.resources.Resources;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-public class LogsumCalculator extends ModeChoiceCalculator2017Impl {
+public class LogsumCalculator2 {
 
     //private final ModeChoiceCalculator base;
     private final Map<Mode, Map<String, Double>> coef;
@@ -18,17 +14,14 @@ public class LogsumCalculator extends ModeChoiceCalculator2017Impl {
     private static final double SPEED_WALK_KMH = 4;
     private static final double SPEED_BICYCLE_KMH = 10;
 
-    public LogsumCalculator(Purpose purpose, DataSet dataSet) {
-        super(purpose, dataSet);
-        //this.base = base;
+    public LogsumCalculator2(Purpose purpose, DataSet dataSet) {
         this.purpose = purpose;
         this.coef = ModeChoiceCoefficientSingleton.getInstance(dataSet, purpose).getCoefficients();
   }
 
     public double calculateLogsumByZone(
             Purpose purpose,
-            MitoHousehold household,
-            MitoPerson person,
+            Boolean hasEV,
             MitoZone originZone,
             MitoZone destinationZone,
             TravelTimes travelTimes,
@@ -36,8 +29,8 @@ public class LogsumCalculator extends ModeChoiceCalculator2017Impl {
             double travelDistanceNMT,
             double peakHour_s) {
 
-        EnumMap<Mode, Double> utilities = calculateUtilities(
-                purpose, household, person, originZone, destinationZone, travelTimes
+        EnumMap<Mode, Double> utilities = calculateUtilities(hasEV,
+                originZone, destinationZone, travelTimes
                 , travelDistanceAuto, travelDistanceNMT, peakHour_s);
 
         final double utilityAutoD = utilities.get(Mode.autoDriver);
@@ -69,121 +62,98 @@ public class LogsumCalculator extends ModeChoiceCalculator2017Impl {
         return Math.log(expsumTopLevel);
     }
 
-    @Override
-    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
-        int age = person.getAge();
-        int isMale = person.getMitoGender() == MitoGender.MALE ? 1 : 0;
-        int hasLicense = person.hasDriversLicense() ? 1 : 0;
-        int hhSize = household.getHhSize();
-        int hhAutos = household.getAutos();
-        MitoOccupationStatus occupationStatus = person.getMitoOccupationStatus();
-
-        boolean hhHasBicycles = false;
-        for (MitoPerson p : household.getPersons().values()) {
-            if (p.getHasBicycle().get()) {
-                hhHasBicycles = true;
-            }
+    public EnumMap<Mode, Double> calculateUtilities(Boolean hasEV, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+        float hhSize1, hhSize2, hhSize3, hhSize4,isMale, isFemale,worker, unemployed, student, retired,age_0_to_17,
+                age_18_to_29,age_30_to_39,age_40_to_49,age_50_to_59, age_above_60, econStatus1, econStatus2, econStatus3,
+                econStatus4, econStatus5, hhAutos0, hhAutos1,hhAutos2, monthlyInc;
+        if (hasEV == true){
+            hhSize1 = 0.1426f;
+            hhSize2 = 0.2526f;
+            hhSize3 = 0.2184f;
+            hhSize4 = 0.3864f;
+            isMale = 0.5f;
+            isFemale = 0.5f;
+            worker = 0.4189f;
+            unemployed = 0.4256f;
+            student = 0.1554f;
+            retired = 0.0f;
+            age_0_to_17 = 0.1803f;
+            age_18_to_29 = 0.137f;
+            age_30_to_39 = 0.1278f;
+            age_40_to_49 = 0.1872f;
+            age_50_to_59 = 0.1441f;
+            age_above_60 = 0.2236f;
+            econStatus1 = 0.111f;
+            econStatus2 = 0.115f;
+            econStatus3 = 0.27f;
+            econStatus4 = 0.32f;
+            econStatus5 = 0.184f;
+            hhAutos0 = 0.0f;
+            hhAutos1 = 0.4705f;
+            hhAutos2 = 0.5295f;
+            monthlyInc = 3345f;
+        }else{
+            hhSize1 = 0.1908f;
+            hhSize2 = 0.3058f;
+            hhSize3 = 0.1921f;
+            hhSize4 = 0.3113f;
+            isMale = 0.489f;
+            isFemale = 0.511f;
+            worker = 0.3839f;
+            unemployed = 0.4698f;
+            student = 0.1463f;
+            retired = 0.0f;
+            age_0_to_17 = 0.1659f;
+            age_18_to_29 = 0.1387f;
+            age_30_to_39 = 0.1367f;
+            age_40_to_49 = 0.1717f;
+            age_50_to_59 = 0.1448f;
+            age_above_60 = 0.2523f;
+            econStatus1 = 0.148f;
+            econStatus2 = 0.134f;
+            econStatus3 = 0.291f;
+            econStatus4 = 0.28f;
+            econStatus5 = 0.146f;
+            hhAutos0 = 0.122f;
+            hhAutos1 = 0.5249f;
+            hhAutos2 = 0.3531f;
+            monthlyInc = 2891f;
         }
-        int economicStatus = household.getEconomicStatus();
+        boolean hhHasBicycles = true;
 
-        //int hhChildren = DataSet.getChildrenForHousehold(household);
-
-        //final float distanceToNearestRailStop = originZone.getDistanceToNearestRailStop();
-
-//        int isCoreCity = originZone.getAreaTypeSG() == AreaTypes.SGType.CORE_CITY ? 1 : 0;
-//        int isMediumCity = originZone.getAreaTypeSG() == AreaTypes.SGType.MEDIUM_SIZED_CITY ? 1 : 0;
-//        int isTown = originZone.getAreaTypeSG() == AreaTypes.SGType.TOWN ? 1 : 0;
-//        int isRural = originZone.getAreaTypeSG() == AreaTypes.SGType.RURAL ? 1 : 0;
-
-//        int isAgglomerationR = originZone.getAreaTypeR() == AreaTypes.RType.AGGLOMERATION ? 1 : 0;
-//        int isRuralR = originZone.getAreaTypeR() == AreaTypes.RType.RURAL ? 1 : 0;
-//        int isUrbanR = originZone.getAreaTypeR() == AreaTypes.RType.URBAN ? 1 : 0;
-
-//        int isMunichTrip = originZone.isMunichZone() ? 1 : 0;
-
-        EnumMap<Mode, Double> generalizedCosts = calculateGeneralizedCosts(purpose, household, person,
+        EnumMap<Mode, Double> generalizedCosts = calculateGeneralizedCosts(monthlyInc,
                 originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, peakHour_s);
 
-
         EnumMap<Mode, Double> utilities = new EnumMap<>(Mode.class);
+
         for (Mode mode :coef.keySet()){
             //double distance = isMotorized(mode)? travelDistanceAuto : travelDistanceNMT;
             final Map<String, Double> modeCoef = coef.get(mode);
             double utility = modeCoef.get("intercept");
-            if (isMale ==  1){
-                utility += modeCoef.get("gender_male");
-            } else {
-                utility += modeCoef.get("gender_female");
-            }
-            switch (occupationStatus){
-                case WORKER:
-                    utility += modeCoef.get("is_employed");
-                    break;
-                case UNEMPLOYED:
-                    utility += modeCoef.get("is_homemaker_or_other");
-                    break;
-                case STUDENT:
-                    utility += modeCoef.get("is_student");
-                    break;
-                case RETIRED:
-                    utility += modeCoef.get("is_retired_or_pensioner");
-                    break;
-            }
-            if (age < 18){
-                utility += modeCoef.get("age_0_to_17");
-            } else if (age < 30){
-                utility += modeCoef.get("age_18_to_29");
-            } else if (age < 40){
-                utility += modeCoef.get("age_30_to_39");
-            } else if (age < 50){
-                utility += modeCoef.get("age_40_to_49");
-            } else if (age < 60) {
-                utility += modeCoef.get("age_50_to_59");
-            } else {
-                utility += modeCoef.get("age_above_60");
-            }
-            switch(economicStatus){
-                case 0:
-                    utility += modeCoef.get("is_economic_status_very_low");
-                    break;
-                case 1:
-                    utility += modeCoef.get("is_economic_status_low");
-                    break;
-                case 2:
-                    utility += modeCoef.get("is_economic_status_medium");
-                    break;
-                case 3:
-                    utility += modeCoef.get("is_economic_status_high");
-                    break;
-                case 4:
-                    utility += modeCoef.get("is_economic_status_very_high");
-                    break;
-            }
-            switch (hhSize){
-                case 1:
-                    utility += modeCoef.get("is_hh_one_person");
-                    break;
-                case 2:
-                    utility += modeCoef.get("is_hh_two_persons");
-                    break;
-                case 3:
-                    utility += modeCoef.get("is_hh_three_persons");
-                    break;
-                default:
-                    utility += modeCoef.get("is_hh_four_or_more_persons");
-                    break;
-            }
-            switch (hhAutos){
-                case 0:
-                    utility += modeCoef.get("hh_no_car");
-                    break;
-                case 1:
-                    utility += modeCoef.get("hh_one_car");
-                    break;
-                default:
-                    utility += modeCoef.get("hh_two_or_more_cars");
-                    break;
-            }
+            utility += isMale * modeCoef.get("gender_male");
+            utility += isFemale * modeCoef.get("gender_female");
+            utility += worker * modeCoef.get("is_employed");
+            utility += unemployed * modeCoef.get("is_homemaker_or_other");
+            utility += student * modeCoef.get("is_student");
+            utility += retired * modeCoef.get("is_retired_or_pensioner");
+            utility += age_0_to_17*modeCoef.get("age_0_to_17");
+            utility += age_18_to_29*modeCoef.get("age_18_to_29");
+            utility += age_30_to_39*modeCoef.get("age_30_to_39");
+            utility += age_40_to_49*modeCoef.get("age_40_to_49");
+            utility += age_50_to_59*modeCoef.get("age_50_to_59");
+            utility += age_above_60*modeCoef.get("age_above_60");
+            utility += econStatus1*modeCoef.get("is_economic_status_very_low");
+            utility += econStatus2*modeCoef.get("is_economic_status_low");
+            utility += econStatus3*modeCoef.get("is_economic_status_medium");
+            utility += econStatus4*modeCoef.get("is_economic_status_high");
+            utility += econStatus5*modeCoef.get("is_economic_status_very_high");
+            utility += hhSize1*modeCoef.get("is_hh_one_person");
+            utility += hhSize2*modeCoef.get("is_hh_two_persons");
+            utility += hhSize3*modeCoef.get("is_hh_three_persons");
+            utility += hhSize4*modeCoef.get("is_hh_four_or_more_persons");
+            utility += hhAutos0*modeCoef.get("hh_no_car");
+            utility += hhAutos1*modeCoef.get("hh_one_car");
+            utility += hhAutos2*modeCoef.get("hh_two_or_more_cars");
             if (hhHasBicycles){
                 utility += modeCoef.get("hh_has_bike");
             } else {
@@ -198,8 +168,7 @@ public class LogsumCalculator extends ModeChoiceCalculator2017Impl {
         return utilities;
     }
 
-    @Override
-    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone,
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(float monthlyInc, MitoZone originZone,
                                                            MitoZone destinationZone, TravelTimes travelTimes,
                                                            double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
 
@@ -210,8 +179,6 @@ public class LogsumCalculator extends ModeChoiceCalculator2017Impl {
         double timeTramMetro = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "tramMetro");
         double timeTaxi = timeAutoD;
 
-        int monthlyIncome_EUR = household.getMonthlyIncome_EUR();
-
         double gcAutoD;
         double gcAutoP;
         double gcBus;
@@ -221,14 +188,14 @@ public class LogsumCalculator extends ModeChoiceCalculator2017Impl {
         double gcWalk = travelDistanceNMT / SPEED_WALK_KMH * 60;
         double gcBicycle = travelDistanceNMT / SPEED_BICYCLE_KMH * 60;
 
-        if (monthlyIncome_EUR <= 1500) {
+        if (monthlyInc <= 1500) {
             gcAutoD = timeAutoD + (travelDistanceAuto * coef.get(Mode.autoDriver).get("costPerKm")) / coef.get(Mode.autoDriver).get("vot_under_1500_eur_min");
             gcAutoP = timeAutoP + (travelDistanceAuto * coef.get(Mode.autoPassenger).get("costPerKm")) / coef.get(Mode.autoPassenger).get("vot_under_1500_eur_min");
             gcBus = timeBus + (travelDistanceAuto * coef.get(Mode.bus).get("costPerKm")) / coef.get(Mode.bus).get("vot_under_1500_eur_min");
             gcTrain = timeTrain + (travelDistanceAuto * coef.get(Mode.train).get("costPerKm")) / coef.get(Mode.train).get("vot_under_1500_eur_min");
             gcTramMetro = timeTramMetro + (travelDistanceAuto * coef.get(Mode.tramOrMetro).get("costPerKm")) / coef.get(Mode.tramOrMetro).get("vot_under_1500_eur_min");
             gcTaxi = timeTaxi + (travelDistanceAuto * coef.get(Mode.taxi).get("costPerKm")) / coef.get(Mode.taxi).get("vot_under_1500_eur_min");
-        } else if (monthlyIncome_EUR <= 5600) {
+        } else if (monthlyInc <= 5600) {
             gcAutoD = timeAutoD + (travelDistanceAuto * coef.get(Mode.autoDriver).get("costPerKm")) / coef.get(Mode.autoDriver).get("vot_1500_to_5600_eur_min");
             gcAutoP = timeAutoP + (travelDistanceAuto * coef.get(Mode.autoPassenger).get("costPerKm")) / coef.get(Mode.autoPassenger).get("vot_1500_to_5600_eur_min");
             gcBus = timeBus + (travelDistanceAuto * coef.get(Mode.bus).get("costPerKm")) / coef.get(Mode.bus).get("vot_1500_to_5600_eur_min");

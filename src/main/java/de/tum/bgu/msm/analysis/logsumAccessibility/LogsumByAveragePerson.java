@@ -1,3 +1,4 @@
+/*
 package de.tum.bgu.msm.analysis.logsumAccessibility;
 
 import de.tum.bgu.msm.analysis.DummyOccupation;
@@ -152,3 +153,4 @@ public class LogsumByAveragePerson {
         }
     }
 }
+*/

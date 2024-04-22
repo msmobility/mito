@@ -1,11 +1,9 @@
 package de.tum.bgu.msm.analysis.logsumAccessibility;
 
-import de.tum.bgu.msm.analysis.DummyOccupation;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.EconomicStatusReader;
-import de.tum.bgu.msm.io.input.readers.ModeChoiceCoefficientReader;
 import de.tum.bgu.msm.io.input.readers.OmxSkimsReader;
 import de.tum.bgu.msm.io.input.readers.ZonesReader;
 import de.tum.bgu.msm.resources.Resources;
@@ -15,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,27 +25,19 @@ public class LogsumByAveragePerson_TransportPolicy {
     private static final Map<Integer, Boolean> evForbidden = new HashMap<>();
 
     private final DataSet dataSet = new DataSet();
-    private final ArrayList<MitoTrip> trips = new ArrayList<>();
-    private Purpose givenPurpose;
-    private final Map<Integer, Double> logsums = new HashMap<>();
-    MitoHousehold hh;
-    MitoPerson pp;
+    private Purpose[] givenPurposes = {Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR};
     private Map<Mode, Map<String, Double>> coef;
-
-
 
     public static void main(String[] args) throws FileNotFoundException {
         LogsumByAveragePerson_TransportPolicy logsumByAveragePerson = new LogsumByAveragePerson_TransportPolicy();
-
 
         logsumByAveragePerson.setup();
         logsumByAveragePerson.load();
         logsumByAveragePerson.run();
     }
 
-
     public void setup() throws FileNotFoundException {
-        Resources.initializeResources("D:/data/germany_sd/germany_sd.properties");
+        Resources.initializeResources("C:\\models\\MITO\\mitoMunich\\mito.properties");
     }
 
     public void load() {
@@ -56,99 +45,71 @@ public class LogsumByAveragePerson_TransportPolicy {
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
-        givenPurpose = Purpose.HBW;
-
-        this.coef = new ModeChoiceCoefficientReader(dataSet, givenPurpose, Resources.instance.getModeChoiceCoefficients(givenPurpose)).readCoefficientsForThisPurpose();
     }
 
     public void run() {
+        boolean[] hasEVOptions = {true,false};
+        for (Purpose purpose : givenPurposes) {
+            for(boolean hasEV : hasEVOptions) {
+                this.coef = ModeChoiceCoefficientSingleton.getInstance(dataSet, purpose).getCoefficients();
 
-        logger.info("Running logsum-based accessibility calculation for " + trips.size() + " synthetic trips/travellers");
-        AtomicInteger counterTrip = new AtomicInteger(0);
+                logger.info("Running logsum-based accessibility calculation for purpose: " + purpose);
 
-        //Todo Initialize the logsumTable
-        for (MitoZone origin : dataSet.getZones().values()) {
-            logsumTable.put(origin.getId(), new HashMap<>());
+                logsumTable.clear();
+                for (MitoZone origin : dataSet.getZones().values()) {
+                    logsumTable.put(origin.getId(), new HashMap<>());
+                    for (MitoZone destination : dataSet.getZones().values()) {
+                        logsumTable.get(origin.getId()).put(destination.getId(), 0.0);
+                    }
+                }
+
+                calculateLogsums(logsumTable, purpose, hasEV);
+
+                logger.info("Finished synthetic logsum calculator");
+                writeLogsumAccessibility(logsumTable, purpose, hasEV);
+            }
+        }
+    }
+
+    private void calculateLogsums(Map<Integer, Map<Integer, Double>> logsumTable, Purpose purpose, boolean hasEV) {
+        for(MitoZone origin : dataSet.getZones().values()){
             for (MitoZone destination : dataSet.getZones().values()) {
-                logsumTable.get(origin.getId()).put(destination.getId(), 0.0);
+                logsumTable.get(origin.getZoneId())
+                        .put(destination.getZoneId(), calculateLogsumsByZone(origin.getZoneId(), destination.getZoneId(), purpose, hasEV));
             }
         }
-
-        createAveragePopulation();
-        createSyntheticTrips();
-
-        trips.parallelStream().forEach(tripFromArray -> {
-            calculateLogsums(tripFromArray, logsumTable);
-
-            if (counterTrip.getAndIncrement() % 100 == 0) {
-                logger.info("Trips logsums assigned: " + counterTrip.get());
-            }
-
-        });
-        logger.info("Finished synthetic logsum calculator");
-
-        writeLogsumAccessibility(logsumTable);
-
     }
 
-    private void createSyntheticTrips() {
+    private double calculateLogsumsByZone(int origin, int destination, Purpose purpose, Boolean hasEV) {
 
-        for (MitoZone zone : dataSet.getZones().values()) {
-            MitoTrip trip = new MitoTrip(zone.getZoneId(), givenPurpose);
-            trip.setTripOrigin(zone);
-            trip.setTripDestination(zone);
-            trip.setPerson(pp);
-            trips.add(trip);
-        }
+        LogsumCalculator2 calculator = new LogsumCalculator2(purpose, null);
 
-    }
-
-    private void calculateLogsums(MitoTrip trip, Map<Integer, Map<Integer, Double>> logsumTable) {
-        for (MitoZone destination : dataSet.getZones().values()) {
-            logsumTable.get(trip.getTripOrigin().getZoneId())
-                    .put(destination.getZoneId(), calculateLogsumsByZone(trip, destination.getZoneId()));
-        }
-    }
-
-    private double calculateLogsumsByZone(MitoTrip trip, int destination) {
-        trip.setTripDestination(dataSet.getZones().get(destination));
-
-        LogsumCalculator calculator = new LogsumCalculator(givenPurpose, null);
-
-        MitoZone originZone = dataSet.getZones().get(trip.getTripOrigin().getZoneId());
+        MitoZone originZone = dataSet.getZones().get(origin);
         MitoZone destinationZone = dataSet.getZones().get(destination);
 
         TravelTimes travelTimes = dataSet.getTravelTimes();
         final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(originZone.getId(), destinationZone.getId());
         final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originZone.getId(), destinationZone.getId());
 
-        return calculator.calculateLogsumByZone(givenPurpose, hh, pp, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, 0);
+        return calculator.calculateLogsumByZone(purpose, hasEV, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, 0);
     }
 
-    private void createAveragePopulation() {
-        int hhAutos = 1;
-        int income = 1600;
-        int age = 32;
 
-        //Todo create an average person based on the trip list
-        hh = new MitoHousehold(1, income, 1);
-        pp = new MitoPerson(1, MitoOccupationStatus.WORKER, null, age, MitoGender.MALE, true);
-        hh.addPerson(pp);
-        pp.setHasBicycle(true);
-    }
-
-    private void writeLogsumAccessibility(Map<Integer, Map<Integer, Double>> logsumTable){
-        PrintWriter pw = null;
+    private void writeLogsumAccessibility(Map<Integer, Map<Integer, Double>> logsumTable, Purpose purpose, boolean hasEV){
+        PrintWriter pw;
         try {
-            pw = new PrintWriter("C:/Users/Wei/Desktop/logsumTable_lowEmission.csv");
-            pw.println("origin,destination,mode,logsum");
-
-            for (MitoZone destination : dataSet.getZones().values()) {
-                pw.println(dataSet.getZones().get(3094).getZoneId() + "," + destination.getId() + "," + logsumTable.get(dataSet.getZones().get(3094).getId()).get(destination.getId()));
+            String evStatus = hasEV ? "hasEV" : "noEV";
+            String fileName = "C:/models/MITO/mitoMunich/skims" + purpose + "_" + evStatus + ".csv";
+            pw = new PrintWriter(fileName);
+            pw.println("origin,destination,logsum");
+            for(MitoZone origin : dataSet.getZones().values()){
+                for (MitoZone destination : dataSet.getZones().values()) {
+                    pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
+                }
             }
 
             pw.close();
-
+            logger.info("Output written to " + fileName);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
