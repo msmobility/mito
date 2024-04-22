@@ -54,12 +54,12 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
     protected void processRecord(String[] record) {
         int hhId = Integer.parseInt(record[posHHId]);
 
-
         //vacant dwellings
         if (hhId > 0) {
             MitoHousehold hh = dataSet.getHouseholds().get(hhId);
+
             if (hh == null) {
-                logger.warn(String.format("Household %d does not exist in mito.", hhId));
+                //logger.warn(String.format("Household %d does not exist in mito.", hhId));
                 return;
             }
             int taz = Integer.parseInt(record[posTAZId]);
@@ -72,9 +72,12 @@ public class HouseholdsCoordReader extends AbstractCsvReader {
             Coordinate homeLocation = new Coordinate(
             		Double.parseDouble(record[posCoordX]), Double.parseDouble(record[posCoordY]));
             hh.setHomeLocation(homeLocation);
+
             hh.setHomeZone(zone);
             zone.addHousehold();
         }
     }
+
+
 
 }

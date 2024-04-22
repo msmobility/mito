@@ -11,6 +11,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Nico
  */
@@ -45,6 +48,8 @@ public class ZonesReader extends AbstractCsvReader {
             }
         }
     }
+
+
 
     @Override
     protected void processHeader(String[] header) {

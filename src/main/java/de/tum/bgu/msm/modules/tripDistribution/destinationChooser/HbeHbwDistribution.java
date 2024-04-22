@@ -3,11 +3,15 @@ package de.tum.bgu.msm.modules.tripDistribution.destinationChooser;
 import com.google.common.math.LongMath;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -76,7 +80,10 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
             final int internalIndex = MitoUtil.select(probabilities.toNonIndexedArray(), random, probabilities.zSum());
             final MitoZone destination = zonesCopy.get(probabilities.getIdForInternalIndex(internalIndex));
             trip.setTripDestination(destination);
-
+            if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                Coord destinationCoord = CoordUtils.createCoord(destination.getRandomCoord(MitoUtil.getRandomObject()));
+                trip.setDestinationCoord(destinationCoord);
+            }
         }
     }
 

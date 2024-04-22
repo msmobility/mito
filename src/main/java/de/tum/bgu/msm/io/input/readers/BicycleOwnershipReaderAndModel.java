@@ -43,6 +43,8 @@ public class BicycleOwnershipReaderAndModel extends AbstractCsvReader {
     private void assignBicycleOwnership() {
         for (MitoHousehold hh : dataSet.getHouseholds().values()){
             int economicStatus = hh.getEconomicStatus();
+
+
             AreaTypes.SGType areaTypeSG = hh.getHomeZone().getAreaTypeSG();
             int cars = hh.getAutos();
             double distanceToTransit = hh.getHomeZone().getDistanceToNearestRailStop() * 1000; //the model says distance to transit!

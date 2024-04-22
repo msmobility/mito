@@ -7,12 +7,16 @@ import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -91,6 +95,12 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                             trip.setTripOrigin(household);
                             MitoZone zone = findDestination();
                             trip.setTripDestination(zone);
+
+                            if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                                Coord destinationCoord = CoordUtils.createCoord(zone.getRandomCoord(MitoUtil.getRandomObject()));
+                                trip.setDestinationCoord(destinationCoord);
+                            }
+
                             if (zone == null) {
                                 logger.debug("No destination found for trip" + trip);
                                 TripDistribution.failedTripsCounter.incrementAndGet();
@@ -108,6 +118,12 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                         updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId());
                         MitoZone zone = findDestination();
                         trip.setTripDestination(zone);
+
+                        if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                            Coord destinationCoord = CoordUtils.createCoord(zone.getRandomCoord(MitoUtil.getRandomObject()));
+                            trip.setDestinationCoord(destinationCoord);
+                        }
+
                         if (zone == null) {
                             logger.debug("No destination found for trip" + trip);
                             TripDistribution.failedTripsCounter.incrementAndGet();

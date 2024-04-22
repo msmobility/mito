@@ -119,7 +119,16 @@ public class EconomicStatusReader extends AbstractCsvReader {
         // im Haushalt wurde eine Person mit dem Faktor 1, alle weiteren Personen ab 15
         // Jahren mit dem Faktor 0,5 gewichtet.
         float weightedHhSize = MitoUtil.rounder(Math.min(3.5f, 1.0f + (countAdults - 1f) * 0.5f + countChildren * 0.3f), 1);
+        //todo fix households with 1 child in SILO (adult moves out of household and leaves child behind when marrying or aging up)
+        //to round weighted househouse size to 1 when household only has 1 child
+        if (weightedHhSize < 1){
+            weightedHhSize = 1.0f;
+        }
         String incomeCategory = getMidIncomeCategory(hh.getMonthlyIncome_EUR());
+/*        if (economicStatusDefinition.get(weightedHhSize+"_"+incomeCategory) == null){
+            System.out.println("This person is the problem");
+        }*/
+
         return economicStatusDefinition.get(weightedHhSize+"_"+incomeCategory);
     }
 

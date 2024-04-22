@@ -86,7 +86,7 @@ public class SummarizeData {
         LOGGER.info("  Writing trips file");
         String file = Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + dataSet.getYear() + "/microData/trips.csv";
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(file, false);
-        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return");
+        pwh.println("id,origin,originX,originY,destination,destinationX,destinationY,purpose,person,distance,time_auto,time_bus,time_train,time_tram_metro,mode,departure_time,departure_time_return,coordinatedTrip");
         for (MitoTrip trip : dataSet.getTrips().values()) {
             pwh.print(trip.getId());
             pwh.print(",");
@@ -106,10 +106,10 @@ public class SummarizeData {
             } else{
                 if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         origin != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
-                    pwh.print(coordinate.getX());
+                    //Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripOrigin().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
+                    pwh.print(trip.getOriginCoord().getX());
                     pwh.print(",");
-                    pwh.print(coordinate.getY());
+                    pwh.print(trip.getOriginCoord().getY());
                     pwh.print(",");
                 } else {
                     pwh.print("null");
@@ -134,10 +134,10 @@ public class SummarizeData {
             }else{
                 if (Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION, false) &&
                         destination != null){
-                    Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
-                    pwh.print(coordinate.getX());
+                    //Coord coordinate = CoordUtils.createCoord(dataSet.getZones().get(trip.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
+                    pwh.print(trip.getDestinationCoord().getX());
                     pwh.print(",");
-                    pwh.print(coordinate.getY());
+                    pwh.print(trip.getDestinationCoord().getY());
                     pwh.print(",");
                 } else {
                     pwh.print("null");
@@ -176,11 +176,13 @@ public class SummarizeData {
             int departureOfReturnTrip = trip.getDepartureInMinutesReturnTrip();
             if (departureOfReturnTrip != -1){
                 pwh.print(",");
-                pwh.println(departureOfReturnTrip);
+                pwh.print(departureOfReturnTrip);
             } else {
                 pwh.print(",");
-                pwh.println("NA");
+                pwh.print("NA");
             }
+            pwh.print(",");
+            pwh.println(trip.getCoordinatedTripId());
 
         }
         pwh.close();

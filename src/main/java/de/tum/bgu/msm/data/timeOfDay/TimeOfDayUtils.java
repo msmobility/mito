@@ -3,7 +3,7 @@ package de.tum.bgu.msm.data.timeOfDay;
 
 public class TimeOfDayUtils {
 
-    private static final int SEARCH_INTERVAL_MIN = 5;
+    public static final int SEARCH_INTERVAL_MIN = 5;
     private static final int MAP_SIZE = 48 * 60;
 
 
@@ -66,6 +66,18 @@ public class TimeOfDayUtils {
                 availableTODNextTrip.blockTime(minute - SEARCH_INTERVAL_MIN, minute);
             } else {
                //do nothing
+            }
+
+        }
+        return availableTODNextTrip;
+    }
+
+    public static AvailableTimeOfDay updateAvailableTimeToAvoidTooEarlyStart(AvailableTimeOfDay availableTODNextTrip, int travelTime) {
+        for (int minute : availableTODNextTrip.getMinutes()) {
+            if (minute - travelTime < 0 ){
+                availableTODNextTrip.blockTime(minute - SEARCH_INTERVAL_MIN, minute);
+            } else {
+                //do nothing
             }
 
         }

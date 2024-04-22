@@ -11,7 +11,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.matsim.core.utils.geometry.geotools.MGC;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -166,6 +168,7 @@ public class MitoZone implements Id, Location {
         Point p = MGC.coordinate2Point(coordinate);
         return new Coordinate(p.getX(), p.getY());
     }
+
 
     @Override
     public int hashCode() {

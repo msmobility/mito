@@ -1,7 +1,7 @@
-package de.tum.bgu.msm;
+package de.tum.bgu.msm.run.scenarios.socialNetwork;
 
+import de.tum.bgu.msm.TravelDemandGenerator2;
 import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -30,31 +30,31 @@ import java.util.Random;
  * - totalEmplByZone
  * - sizeOfZonesInAcre
  */
-public final class MitoModel2 {
+public final class MitoModel2WithSN {
 
-    private static final Logger logger = Logger.getLogger(MitoModel2.class);
+    private static final Logger logger = Logger.getLogger(MitoModel2WithSN.class);
     private final String scenarioName;
 
     private DataSet dataSet;
 
-    private MitoModel2(DataSet dataSet, String scenarioName) {
+    private MitoModel2WithSN(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
     }
 
-    public static MitoModel2 standAloneModel(String propertiesFile, ImplementationConfig config) {
+    public static MitoModel2WithSN standAloneModel(String propertiesFile, ImplementationConfig config) {
         logger.info(" Creating standalone version of MITO ");
         Resources.initializeResources(propertiesFile);
-        MitoModel2 model = new MitoModel2(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
+        MitoModel2WithSN model = new MitoModel2WithSN(new DataSet(), Resources.instance.getString(Properties.SCENARIO_NAME));
         model.readStandAlone(config);
         return model;
     }
 
-    public static MitoModel2 initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
+    public static MitoModel2WithSN initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
-        MitoModel2 model = new MitoModel2(dataSet, scenarioName);
+        MitoModel2WithSN model = new MitoModel2WithSN(dataSet, scenarioName);
         new OmxSkimsReader(dataSet).readOnlyTransitTravelTimes();
         new OmxSkimsReader(dataSet).readSkimDistancesNMT();
         new OmxSkimsReader(dataSet).readSkimDistancesAuto();
@@ -66,7 +66,7 @@ public final class MitoModel2 {
         long startTime = System.currentTimeMillis();
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
 
-        TravelDemandGenerator2 ttd = new TravelDemandGenerator2.Builder(dataSet).build();
+        TravelDemandGenerator2WithSN ttd = new TravelDemandGenerator2WithSN.Builder(dataSet).build();
         ttd.generateTravelDemand(scenarioName);
         printOutline(startTime);
     }
@@ -81,12 +81,12 @@ public final class MitoModel2 {
         new SchoolsReader(dataSet).read();
         new HouseholdsReader(dataSet).read();
         new HouseholdsCoordReader(dataSet).read();
-        new GiveHouseholdsWithoutDwellingsCoordinates(dataSet).read();
         new PersonsReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();
         readAdditionalData();
-
+        new SocialNetworkReader(dataSet).read(); //uncomment if using destination coordination without cliques
+        new SocialNetworkCliquesReader(dataSet).read(); //uncomment if using destination coordination with cliques
     }
 
     private void readAdditionalData() {
@@ -99,7 +99,6 @@ public final class MitoModel2 {
         new BicycleOwnershipReaderAndModel(dataSet).read();
 
     }
-
 
     private void printOutline(long startTime) {
         String trips = MitoUtil.customFormat("  " + "###,###", dataSet.getTrips().size());

@@ -544,7 +544,8 @@ public class ModeChoiceCalculatorImpl implements ModeChoiceCalculator {
     }
 
     @Override
-    public EnumMap<Mode, Double> calculateGeneralizedCosts(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateGeneralizedCosts(
+            Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
 
         double timeAutoD = travelTimes.getTravelTime(originZone, destinationZone, peakHour_s, "car");
         double timeAutoP = timeAutoD;
