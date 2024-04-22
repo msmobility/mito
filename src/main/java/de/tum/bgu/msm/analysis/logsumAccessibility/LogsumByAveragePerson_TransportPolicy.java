@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.readers.EconomicStatusReader;
+import de.tum.bgu.msm.io.input.readers.ModeChoiceCoefficientReader;
 import de.tum.bgu.msm.io.input.readers.OmxSkimsReader;
 import de.tum.bgu.msm.io.input.readers.ZonesReader;
 import de.tum.bgu.msm.resources.Resources;
@@ -51,7 +52,7 @@ public class LogsumByAveragePerson_TransportPolicy {
         boolean[] hasEVOptions = {true,false};
         for (Purpose purpose : givenPurposes) {
             for(boolean hasEV : hasEVOptions) {
-                this.coef = ModeChoiceCoefficientSingleton.getInstance(dataSet, purpose).getCoefficients();
+                this.coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
 
                 logger.info("Running logsum-based accessibility calculation for purpose: " + purpose);
 
@@ -75,14 +76,14 @@ public class LogsumByAveragePerson_TransportPolicy {
         for(MitoZone origin : dataSet.getZones().values()){
             for (MitoZone destination : dataSet.getZones().values()) {
                 logsumTable.get(origin.getZoneId())
-                        .put(destination.getZoneId(), calculateLogsumsByZone(origin.getZoneId(), destination.getZoneId(), purpose, hasEV));
+                        .put(destination.getZoneId(), calculateLogsumsByZone(origin.getZoneId(), destination.getZoneId(), hasEV));
             }
         }
     }
 
-    private double calculateLogsumsByZone(int origin, int destination, Purpose purpose, Boolean hasEV) {
+    private double calculateLogsumsByZone(int origin, int destination, Boolean hasEV) {
 
-        LogsumCalculator2 calculator = new LogsumCalculator2(purpose, null);
+        LogsumCalculator2 calculator = new LogsumCalculator2(this.coef);
 
         MitoZone originZone = dataSet.getZones().get(origin);
         MitoZone destinationZone = dataSet.getZones().get(destination);
@@ -91,7 +92,7 @@ public class LogsumByAveragePerson_TransportPolicy {
         final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(originZone.getId(), destinationZone.getId());
         final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originZone.getId(), destinationZone.getId());
 
-        return calculator.calculateLogsumByZone(purpose, hasEV, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, 0);
+        return calculator.calculateLogsumByZone(hasEV, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, 0);
     }
 
 
@@ -99,7 +100,7 @@ public class LogsumByAveragePerson_TransportPolicy {
         PrintWriter pw;
         try {
             String evStatus = hasEV ? "hasEV" : "noEV";
-            String fileName = "C:/models/MITO/mitoMunich/skims" + purpose + "_" + evStatus + ".csv";
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_" + evStatus + ".csv";
             pw = new PrintWriter(fileName);
             pw.println("origin,destination,logsum");
             for(MitoZone origin : dataSet.getZones().values()){

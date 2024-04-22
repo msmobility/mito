@@ -1,0 +1,57 @@
+package de.tum.bgu.msm.io.input.readers;
+
+import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.io.input.AbstractCsvReader;
+import org.apache.log4j.Logger;
+import de.tum.bgu.msm.data.Purpose;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+public class LogsumReader extends AbstractCsvReader {
+    private static final Logger logger = Logger.getLogger(LogsumReader.class);
+
+    private int posOrigin = -1;
+    private int posDestination = -1;
+    private int posLogsum = -1;
+    private int countError;
+
+    private Map<Purpose, Map<Integer, Map<Integer, Double>>> logsumData = new HashMap<>();
+    private List<Purpose> purposes = Arrays.asList(Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR);
+
+
+    public LogsumReader(DataSet dataSet) {
+        super(dataSet);
+        for (Purpose purpose : purposes) {
+            logsumData.put(purpose, new HashMap<>());
+        }
+    }
+
+    public void read() {
+        for (Purpose purpose : purposes) {
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_hasEV" + ".csv";
+            Path filePath = Paths.get(fileName);
+            super.read(filePath, ",");
+            logger.info("  Reading logsum from csv file" + fileName);
+        }
+    }
+
+    @Override
+    public void processHeader(String[] header) {
+        List<String> headerList = Arrays.asList(header);
+        posOrigin = headerList.indexOf("origin");
+        posDestination = headerList.indexOf("destination");
+        posLogsum = headerList.indexOf("logsum");
+    }
+
+    @Override
+    public void processRecord(String[] record) {
+        final int origin = Integer.parseInt(record[posOrigin]);
+        final int destination = Integer.parseInt(record[posDestination]);
+        final double logsum = Double.parseDouble(record[posLogsum]);
+
+        for (Purpose purpose : purposes) {
+            logsumData.get(purpose).computeIfAbsent(origin, k -> new HashMap<>()).put(destination, logsum);
+        }
+    }
+}

@@ -5,10 +5,13 @@ package de.tum.bgu.msm.analysis.logsumAccessibility;
         import de.tum.bgu.msm.data.Mode;
         import de.tum.bgu.msm.io.input.readers.ModeChoiceCoefficientReader;
         import de.tum.bgu.msm.resources.Resources;
+
+        import java.util.HashMap;
         import java.util.Map;
 
 public class ModeChoiceCoefficientSingleton {
-    private static ModeChoiceCoefficientSingleton instance;
+
+    private static Map<Purpose, ModeChoiceCoefficientSingleton> instances = new HashMap<>();
     private Map<Mode, Map<String, Double>> coefficients;
 
     private ModeChoiceCoefficientSingleton(DataSet dataSet, Purpose purpose) {
@@ -16,10 +19,10 @@ public class ModeChoiceCoefficientSingleton {
     }
 
     public static synchronized ModeChoiceCoefficientSingleton getInstance(DataSet dataSet, Purpose purpose) {
-        if (instance == null) {
-            instance = new ModeChoiceCoefficientSingleton(dataSet, purpose);
+        if (!instances.containsKey(purpose)) {
+            instances.put(purpose, new ModeChoiceCoefficientSingleton(dataSet, purpose));
         }
-        return instance;
+        return instances.get(purpose);
     }
 
     public Map<Mode, Map<String, Double>> getCoefficients() {

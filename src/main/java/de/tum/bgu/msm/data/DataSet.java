@@ -29,6 +29,13 @@ public class DataSet {
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
+    private Map<Purpose, Map<Integer, Map<Integer, Double>>> logsumData = new EnumMap<>(Purpose.class);
+
+    {
+        for (Purpose purpose : Purpose.values()) {
+            logsumData.put(purpose, new HashMap<>());
+        }
+    }
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
@@ -244,6 +251,12 @@ public class DataSet {
     }
 
 
+    public double getLogsum(Purpose purpose, int originId, int destinationId) {
+        return logsumData.get(purpose).getOrDefault(originId, Collections.emptyMap()).getOrDefault(destinationId, Double.NaN);
+    }
 
+    public void setLogsum(Purpose purpose, int originId, int destinationId, double logsum) {
+        logsumData.get(purpose).computeIfAbsent(originId, k -> new HashMap<>()).put(destinationId, logsum);
+    }
 
 }

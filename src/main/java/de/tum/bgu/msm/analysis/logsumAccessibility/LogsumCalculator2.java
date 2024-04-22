@@ -10,17 +10,14 @@ public class LogsumCalculator2 {
 
     //private final ModeChoiceCalculator base;
     private final Map<Mode, Map<String, Double>> coef;
-    private final Purpose purpose;
     private static final double SPEED_WALK_KMH = 4;
     private static final double SPEED_BICYCLE_KMH = 10;
 
-    public LogsumCalculator2(Purpose purpose, DataSet dataSet) {
-        this.purpose = purpose;
-        this.coef = ModeChoiceCoefficientSingleton.getInstance(dataSet, purpose).getCoefficients();
+    public LogsumCalculator2(Map<Mode, Map<String, Double>> coef) {
+        this.coef = coef;
   }
 
     public double calculateLogsumByZone(
-            Purpose purpose,
             Boolean hasEV,
             MitoZone originZone,
             MitoZone destinationZone,
