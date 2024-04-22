@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.data;
 
+import de.tum.bgu.msm.data.timeOfDay.AvailableTimeOfDay;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
