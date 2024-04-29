@@ -84,7 +84,9 @@ public class AttractionCalculator {
                     }
                     tripAttraction += attribute * rate;
                 }
+
                 zone.setTripAttraction(purpose, tripAttraction);
+
             }
         }
     }

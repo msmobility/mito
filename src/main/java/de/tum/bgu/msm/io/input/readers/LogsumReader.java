@@ -1,7 +1,11 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoZone;
+import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
+import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import de.tum.bgu.msm.data.Purpose;
 import java.nio.file.Path;
@@ -16,15 +20,19 @@ public class LogsumReader extends AbstractCsvReader {
     private int posLogsum = -1;
     private int countError;
 
-    private Map<Purpose, Map<Integer, Map<Integer, Double>>> logsumData = new HashMap<>();
+    private Map<Purpose, IndexedDoubleMatrix2D> logsumMatrices = new HashMap<>();
+    private final EnumMap<Purpose, TravelDistances> logsumMatricesByPurpose = new EnumMap<Purpose, TravelDistances>(Purpose.class);
+
     private List<Purpose> purposes = Arrays.asList(Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR);
 
 
     public LogsumReader(DataSet dataSet) {
         super(dataSet);
+        int[] zoneIds = convertArrayListToIntArray(dataSet.getZones().values());
         for (Purpose purpose : purposes) {
-            logsumData.put(purpose, new HashMap<>());
+            logsumMatrices.put(purpose, new IndexedDoubleMatrix2D(zoneIds));
         }
+
     }
 
     public void read() {
@@ -32,8 +40,11 @@ public class LogsumReader extends AbstractCsvReader {
             String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_hasEV" + ".csv";
             Path filePath = Paths.get(fileName);
             super.read(filePath, ",");
-            logger.info("  Reading logsum from csv file" + fileName);
+            logger.info("Reading logsum from csv file" + fileName);
+
+            logsumMatricesByPurpose.put(purpose, new MatrixTravelDistances(logsumMatrices.get(purpose)));
         }
+        dataSet.setLogsumByPurpose(logsumMatricesByPurpose);
     }
 
     @Override
@@ -51,7 +62,18 @@ public class LogsumReader extends AbstractCsvReader {
         final double logsum = Double.parseDouble(record[posLogsum]);
 
         for (Purpose purpose : purposes) {
-            logsumData.get(purpose).computeIfAbsent(origin, k -> new HashMap<>()).put(destination, logsum);
+            IndexedDoubleMatrix2D matrix = logsumMatrices.get(purpose);
+            matrix.setIndexed(origin, destination, logsum);
         }
+    }
+
+    public static int[] convertArrayListToIntArray (Collection<MitoZone> zones) {
+        int[] list = new int[zones.size()];
+        int i = 0;
+        for (MitoZone zone : zones){
+            list[i] = zone.getId();
+            i++;
+        }
+        return list;
     }
 }

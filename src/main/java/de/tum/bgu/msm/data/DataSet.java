@@ -7,6 +7,7 @@ import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.matsim.api.core.v01.population.Population;
 
 import java.util.*;
@@ -17,6 +18,8 @@ public class DataSet {
 
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
+
+    private TravelDistances logsum;
 
     private double peakHour = Double.NaN;
 
@@ -29,13 +32,7 @@ public class DataSet {
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
-    private Map<Purpose, Map<Integer, Map<Integer, Double>>> logsumData = new EnumMap<>(Purpose.class);
-
-    {
-        for (Purpose purpose : Purpose.values()) {
-            logsumData.put(purpose, new HashMap<>());
-        }
-    }
+    private EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose;
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
@@ -251,12 +248,12 @@ public class DataSet {
     }
 
 
-    public double getLogsum(Purpose purpose, int originId, int destinationId) {
-        return logsumData.get(purpose).getOrDefault(originId, Collections.emptyMap()).getOrDefault(destinationId, Double.NaN);
+    public EnumMap<Purpose, TravelDistances> getLogsumByPurpose() {
+        return logsumMatrixByPurpose;
     }
 
-    public void setLogsum(Purpose purpose, int originId, int destinationId, double logsum) {
-        logsumData.get(purpose).computeIfAbsent(originId, k -> new HashMap<>()).put(destinationId, logsum);
+    public void setLogsumByPurpose(EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose) {
+        this.logsumMatrixByPurpose = logsumMatrixByPurpose;
     }
 
 }

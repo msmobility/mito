@@ -98,6 +98,8 @@ public final class MitoModel2 {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
 
+        //new LogsumReader(dataSet).read();
+
     }
 
 
