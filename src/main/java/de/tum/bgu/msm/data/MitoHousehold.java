@@ -24,6 +24,10 @@ public class MitoHousehold implements Id, MicroLocation {
     private Coordinate homeLocation;
     private boolean nursingHome = false;
 
+
+
+    private boolean hasEV = false;
+
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
 
@@ -146,5 +150,13 @@ public class MitoHousehold implements Id, MicroLocation {
 
     public void setNursingHome(boolean nursingHome) {
         this.nursingHome = nursingHome;
+    }
+
+    public boolean isHasEV() {
+        return hasEV;
+    }
+
+    public void setHasEV(boolean hasEV) {
+        this.hasEV = hasEV;
     }
 }

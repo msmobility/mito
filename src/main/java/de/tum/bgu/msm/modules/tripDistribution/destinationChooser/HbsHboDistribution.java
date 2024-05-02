@@ -36,7 +36,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
 
     private final double peakHour;
     private final Purpose purpose;
-    private final IndexedDoubleMatrix2D baseProbabilities;
+    private final IndexedDoubleMatrix2D baseProbabilitiesEV;
+    private final IndexedDoubleMatrix2D baseProbabilitiesNoEV;
     private final TravelTimes travelTimes;
 
     private final Collection<MitoHousehold> householdPartition;
@@ -49,33 +50,35 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     private double hhBudgetPerTrip;
     private double adjustedBudget;
 
-    private HbsHboDistribution(boolean useBudgetsInDestinationChoice, Purpose purpose, IndexedDoubleMatrix2D baseProbabilities,
+    private HbsHboDistribution(boolean useBudgetsInDestinationChoice, Purpose purpose, IndexedDoubleMatrix2D baseProbabilitiesEV,
+                               IndexedDoubleMatrix2D baseProbabilitiesNoEV,
                                Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                TravelTimes travelTimes, double peakHour) {
         super(MitoUtil.getRandomObject().nextLong());
         USE_BUDGETS_IN_DESTINATION_CHOICE = useBudgetsInDestinationChoice;
         this.purpose = purpose;
         this.householdPartition = householdPartition;
-        this.baseProbabilities = baseProbabilities;
+        this.baseProbabilitiesEV = baseProbabilitiesEV;
+        this.baseProbabilitiesNoEV = baseProbabilitiesNoEV;
         this.zonesCopy = new HashMap<>(zones);
-        this.destinationProbabilities = new double[baseProbabilities.columns()];
+        this.destinationProbabilities = new double[baseProbabilitiesEV.columns()];
         this.travelTimes = travelTimes;
         this.peakHour = peakHour;
     }
 
-    public static HbsHboDistribution hbs(IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+    public static HbsHboDistribution hbs(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                          TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
-        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBS, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
+        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBS, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones, travelTimes, peakHour);
     }
 
-    public static HbsHboDistribution hbo(IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+    public static HbsHboDistribution hbo(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                          TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
-        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBO, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
+        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBO, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones, travelTimes, peakHour);
     }
 
-    public static HbsHboDistribution hbr(IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+    public static HbsHboDistribution hbr(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                          TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
-        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBR, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
+        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBR, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones, travelTimes, peakHour);
     }
 
     @Override
@@ -90,10 +93,10 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                 if (USE_BUDGETS_IN_DESTINATION_CHOICE){
                     if (hasBudgetForPurpose(household)) {
                         updateBudgets(household);
-                        updateDestinationProbabilities(household.getHomeZone().getId());
+                        updateDestinationProbabilities(household.getHomeZone().getId(), household.isHasEV());
                         for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                             trip.setTripOrigin(household);
-                            MitoZone zone = findDestination();
+                            MitoZone zone = findDestination(household.isHasEV());
                             trip.setTripDestination(zone);
 
                             if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
@@ -115,8 +118,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                 } else {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         trip.setTripOrigin(household);
-                        updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId());
-                        MitoZone zone = findDestination();
+                        updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId(), household.isHasEV());
+                        MitoZone zone = findDestination(household.isHasEV());
                         trip.setTripDestination(zone);
 
                         if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
@@ -165,7 +168,9 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     /**
      * Copy probabilities for every destination for the current home origin
      */
-    private void updateDestinationProbabilities(int origin) {
+
+    private void updateDestinationProbabilities(int origin, boolean isHouseholdEV) {
+        IndexedDoubleMatrix2D baseProbabilities = isHouseholdEV ? baseProbabilitiesEV : baseProbabilitiesNoEV;
         final IndexedDoubleMatrix1D row = baseProbabilities.viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
@@ -177,7 +182,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         });
     }
 
-    private void updateDestinationProbabilitiesWithoutBudgets(int origin) {
+    private void updateDestinationProbabilitiesWithoutBudgets(int origin, boolean isHouseholdEV) {
+        IndexedDoubleMatrix2D baseProbabilities = isHouseholdEV ? baseProbabilitiesEV : baseProbabilitiesNoEV;
         final IndexedDoubleMatrix1D row = baseProbabilities.viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
@@ -197,9 +203,17 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         adjustedBudget = hhBudgetPerTrip * ratio;
     }
 
-    private MitoZone findDestination() {
+    private MitoZone findDestination(boolean isHouseholdEV) {
+
         final int destinationInternalIndex = MitoUtil.select(destinationProbabilities, random);
-        return zonesCopy.get(baseProbabilities.getIdForInternalColumnIndex(destinationInternalIndex));
+
+        IndexedDoubleMatrix2D baseProbabilities = isHouseholdEV ? baseProbabilitiesEV : baseProbabilitiesNoEV;
+
+        // Get the actual zone ID using the internal index from the base probabilities matrix
+        int zoneID = baseProbabilities.getIdForInternalColumnIndex(destinationInternalIndex);
+
+        // Retrieve and return the MitoZone object corresponding to the zone ID from zonesCopy map
+        return zonesCopy.get(zoneID);
     }
 }
 

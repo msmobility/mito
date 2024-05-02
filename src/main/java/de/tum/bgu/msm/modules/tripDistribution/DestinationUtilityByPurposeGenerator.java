@@ -22,7 +22,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
     private final Map<Integer, MitoZone> zones;
     private final TravelDistances travelDistances;
     private final DataSet dataSet;
-    private final EnumMap<Purpose, TravelDistances> logsum;
+    private final EnumMap<Purpose, TravelDistances> logsum_EV;
 
 
     DestinationUtilityByPurposeGenerator(Purpose purpose, DataSet dataSet,
@@ -32,7 +32,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
-        this.logsum = dataSet.getLogsumByPurpose();
+        this.logsum_EV = dataSet.getLogsumByPurpose_EV();
         this.dataSet = dataSet;
         calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
     }
@@ -45,18 +45,19 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
             for (MitoZone destination : zones.values()) {
                 //Using Logsum
 
-/*                final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
-                        logsum.get(purpose).getTravelDistance(origin.getId(), destination.getId()));
+                final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
+                        logsum_EV.get(purpose).getTravelDistance(origin.getId(), destination.getId()));
 
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
                     throw new RuntimeException(utility + " utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination + " | Logsum: "
-                            + logsum.get(purpose).getTravelDistance(origin.getId(), destination.getId()) +
+                            + logsum_EV.get(purpose).getTravelDistance(origin.getId(), destination.getId()) +
                             " | Purpose: " + purpose + " | attraction rate: " + destination.getTripAttraction(purpose));
                 }
-                utilityMatrix.setIndexed(origin.getId(), destination.getId(), utility);*/
+                utilityMatrix.setIndexed(origin.getId(), destination.getId(), utility);
 
                 //Using distance
+/*
                 final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
                         travelDistances.getTravelDistance(origin.getId(), destination.getId()));
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
@@ -68,6 +69,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
                             " | Purpose: " + purpose + " | attraction rate: " + destination.getTripAttraction(purpose));
                 }
                 utilityMatrix.setIndexed(origin.getId(), destination.getId(), utility);
+*/
 
 
 

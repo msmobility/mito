@@ -25,7 +25,7 @@ import static de.tum.bgu.msm.data.Purpose.*;
 /**
  * @author Nico
  */
-public final class TripDistribution extends Module {
+public final class TripDistributionLogsumEVnoEV extends Module {
 
     public final static AtomicInteger distributedTripsCounter = new AtomicInteger(0);
     public final static AtomicInteger failedTripsCounter = new AtomicInteger(0);
@@ -34,9 +34,10 @@ public final class TripDistribution extends Module {
     public final static AtomicInteger completelyRandomNhbTrips = new AtomicInteger(0);
 
     //todo turn to static to be mantained for both mandatory and discretionary - we expect to remove ttb from the trip distribution
-    private static EnumMap<Purpose, IndexedDoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
+    //private static EnumMap<Purpose, IndexedDoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
+    private static EnumMap<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>> utilityMatrices = new EnumMap<>(Purpose.class);
 
-    private final static Logger logger = Logger.getLogger(TripDistribution.class);
+    private final static Logger logger = Logger.getLogger(TripDistributionLogsumEVnoEV.class);
 
     private final Map<Purpose, Double> travelDistanceCalibrationParameters;
     private final Map<Purpose, Double> impedanceCalibrationParameters;
@@ -44,8 +45,8 @@ public final class TripDistribution extends Module {
 
     private final DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory;
 
-    public TripDistribution(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
-                            Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
+    public TripDistributionLogsumEVnoEV(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
+                                        Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
         super(dataSet, purposes);
         this.travelDistanceCalibrationParameters = travelDistanceCalibrationParameters;
         this.impedanceCalibrationParameters = impedanceCalibrationParameters;
@@ -53,7 +54,7 @@ public final class TripDistribution extends Module {
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
     }
 
-    public TripDistribution(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
+    public TripDistributionLogsumEVnoEV(DataSet dataSet, List<Purpose> purposes, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
         super(dataSet, purposes);
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
@@ -77,19 +78,20 @@ public final class TripDistribution extends Module {
     }
 
     private void buildMatrices() {
-        List<Callable<Tuple<Purpose,IndexedDoubleMatrix2D>>> utilityCalcTasks = new ArrayList<>();
+        List<Callable<Tuple<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>>>> utilityCalcTasks = new ArrayList<>();
         for (Purpose purpose : purposes) {
-            if (!purpose.equals(Purpose.AIRPORT)){
-                //Distribution of trips to the airport does not need a matrix of weights
-                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator(purpose, dataSet,
+            if (!purpose.equals(Purpose.AIRPORT)) {
+                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator2(purpose, dataSet,
                         destinationUtilityCalculatorFactory,
                         travelDistanceCalibrationParameters.get(purpose),
                         impedanceCalibrationParameters.get(purpose)));
             }
         }
-        ConcurrentExecutor<Tuple<Purpose, IndexedDoubleMatrix2D>> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
-        List<Tuple<Purpose,IndexedDoubleMatrix2D>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);
-        for(Tuple<Purpose, IndexedDoubleMatrix2D> result: results) {
+
+
+        ConcurrentExecutor<Tuple<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>>> executor = ConcurrentExecutor.fixedPoolService(purposes.size());
+        List<Tuple<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>>> results = executor.submitTasksAndWaitForCompletion(utilityCalcTasks);
+        for (Tuple<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>> result : results) {
             utilityMatrices.put(result.getFirst(), result.getSecond());
         }
     }
@@ -108,19 +110,21 @@ public final class TripDistribution extends Module {
         List<Callable<Void>> homeBasedTasks = new ArrayList<>();
         for (final List<MitoHousehold> partition : partitions) {
             for (Purpose purpose : purposes){
+                Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D> matrices = utilityMatrices.get(purpose);
+                IndexedDoubleMatrix2D matrixEV = matrices.getFirst();
+                IndexedDoubleMatrix2D matrixNoEV = matrices.getSecond();
                 if (purpose.equals(HBW)){
-                    homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(purpose), partition, dataSet.getZones()));
-
+                    homeBasedTasks.add(HbeHbwDistribution.hbw(matrixEV, matrixNoEV, partition, dataSet.getZones()));
                 } else if (purpose.equals(HBE)) {
-                    homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(purpose), partition, dataSet.getZones()));
+                    homeBasedTasks.add(HbeHbwDistribution.hbe(matrixEV, matrixNoEV, partition, dataSet.getZones()));
                 } else if (purpose.equals(HBS)){
-                    homeBasedTasks.add(HbsHboDistribution.hbs(utilityMatrices.get(purpose), partition, dataSet.getZones(),
+                    homeBasedTasks.add(HbsHboDistribution.hbs(matrixEV, matrixNoEV, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 } else if (purpose.equals(HBO)) {
-                    homeBasedTasks.add(HbsHboDistribution.hbo(utilityMatrices.get(purpose), partition, dataSet.getZones(),
+                    homeBasedTasks.add(HbsHboDistribution.hbo(matrixEV, matrixNoEV, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 } else if (purpose.equals(HBR)){
-                    homeBasedTasks.add(HbsHboDistribution.hbr(utilityMatrices.get(purpose), partition, dataSet.getZones(),
+                    homeBasedTasks.add(HbsHboDistribution.hbr(matrixEV, matrixNoEV, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
             }

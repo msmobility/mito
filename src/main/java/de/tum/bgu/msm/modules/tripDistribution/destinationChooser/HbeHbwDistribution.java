@@ -26,30 +26,30 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
 
     private final Purpose purpose;
     private final MitoOccupationStatus mitoOccupationStatus;
-    private final IndexedDoubleMatrix2D baseProbabilities;
+    private final IndexedDoubleMatrix2D baseProbabilitiesEV;
+    private final IndexedDoubleMatrix2D baseProbabilitiesNoEV;
 
     private final Collection<MitoHousehold> householdPartition;
     private final Map<Integer, MitoZone> zonesCopy;
 
     private HbeHbwDistribution(Purpose purpose, MitoOccupationStatus mitoOccupationStatus,
-                               IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition,
+                               IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition,
                                Map<Integer, MitoZone> zones) {
         super(MitoUtil.getRandomObject().nextLong());
         this.purpose = purpose;
         this.mitoOccupationStatus = mitoOccupationStatus;
-        this.baseProbabilities = baseProbabilities;
+        this.baseProbabilitiesEV = baseProbabilitiesEV;
+        this.baseProbabilitiesNoEV = baseProbabilitiesNoEV;
         this.householdPartition = householdPartition;
         this.zonesCopy = new HashMap<>(zones);
     }
 
-    public static HbeHbwDistribution hbe(IndexedDoubleMatrix2D baseprobabilities, Collection<MitoHousehold> householdPartition,
-                                         Map<Integer, MitoZone> zones) {
-        return new HbeHbwDistribution(Purpose.HBE, MitoOccupationStatus.STUDENT, baseprobabilities, householdPartition, zones);
+    public static HbeHbwDistribution hbe(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones) {
+        return new HbeHbwDistribution(Purpose.HBE, MitoOccupationStatus.STUDENT, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones);
     }
 
-    public static HbeHbwDistribution hbw(IndexedDoubleMatrix2D baseprobabilities, Collection<MitoHousehold> householdPartition,
-                                         Map<Integer, MitoZone> zones) {
-        return new HbeHbwDistribution(Purpose.HBW, MitoOccupationStatus.WORKER, baseprobabilities, householdPartition, zones);
+    public static HbeHbwDistribution hbw(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones) {
+        return new HbeHbwDistribution(Purpose.HBW, MitoOccupationStatus.WORKER, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones);
     }
 
     @Override
@@ -60,6 +60,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
                 logger.info(counter + " households done for Purpose " + purpose);
             }
             if (hasTripsForPurpose(household)) {
+
                 for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                     trip.setTripOrigin(household);
                     findDestination(household, trip);
@@ -72,6 +73,7 @@ public final class HbeHbwDistribution extends RandomizableConcurrentFunction<Voi
     }
 
     private void findDestination(MitoHousehold household, MitoTrip trip) {
+        IndexedDoubleMatrix2D baseProbabilities = household.isHasEV() ? baseProbabilitiesEV : baseProbabilitiesNoEV;
         if (isFixedByOccupation(trip)) {
                 trip.setTripDestination(trip.getPerson().getOccupation());
         } else {

@@ -83,6 +83,7 @@ public final class MitoModel2 {
         new HouseholdsCoordReader(dataSet).read();
         new GiveHouseholdsWithoutDwellingsCoordinates(dataSet).read();
         new PersonsReader(dataSet).read();
+        new VehicleReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();
         readAdditionalData();
@@ -98,7 +99,7 @@ public final class MitoModel2 {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
 
-        //new LogsumReader(dataSet).read();
+        new LogsumReader(dataSet).read();
 
     }
 

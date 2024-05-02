@@ -14,6 +14,7 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.collections.Tuple;
 import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.util.*;
@@ -37,7 +38,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private final Purpose purpose;
     private final List<Purpose> priorPurposes;
     private final MitoOccupationStatus relatedMitoOccupationStatus;
-    private final EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities;
+    private final EnumMap<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>> baseProbabilities;
     private final TravelTimes travelTimes;
 
     private double idealBudgetSum = 0;
@@ -50,7 +51,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     private double mean;
 
     private NhbwNhboDistribution(boolean useBudgetsInDestinationChoice, Purpose purpose, List<Purpose> priorPurposes, MitoOccupationStatus relatedMitoOccupationStatus,
-                                 EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                 EnumMap<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>> baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                  TravelTimes travelTimes, double peakHour) {
         super(MitoUtil.getRandomObject().nextLong());
         USE_BUDGETS_IN_DESTINATION_CHOICE = useBudgetsInDestinationChoice;
@@ -64,13 +65,13 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         this.householdPartition = householdPartition;
     }
 
-    public static NhbwNhboDistribution nhbw(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites,  Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+    public static NhbwNhboDistribution nhbw(EnumMap<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>> baseProbabilites, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                             TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
         return new NhbwNhboDistribution(useBudgetsInDestinationChoice, Purpose.NHBW, Collections.singletonList(Purpose.HBW),
                 MitoOccupationStatus.WORKER, baseProbabilites, householdPartition, zones, travelTimes, peakHour);
     }
 
-    public static NhbwNhboDistribution nhbo(EnumMap<Purpose, IndexedDoubleMatrix2D> baseProbabilites,  Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+    public static NhbwNhboDistribution nhbo(EnumMap<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>> baseProbabilites, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
                                             TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
         return new NhbwNhboDistribution(useBudgetsInDestinationChoice, Purpose.NHBO, ImmutableList.of(HBO, HBE, HBS, HBR),
                 null, baseProbabilites, householdPartition, zones, travelTimes, peakHour);
@@ -85,6 +86,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
+                IndexedDoubleMatrix2D selectedMatrix = household.isHasEV() ? baseProbabilities.get(purpose).getFirst() : baseProbabilities.get(purpose).getSecond();
                 if (USE_BUDGETS_IN_DESTINATION_CHOICE){
                     if (hasBudgetForPurpose(household)) {
                         updateBudgets(household);
@@ -102,7 +104,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                                 trip.setOriginCoord(originCoord);
                             }
 
-                            MitoZone destination = findDestination(trip.getTripOrigin().getZoneId());
+                            MitoZone destination = findDestination(trip.getTripOrigin().getZoneId(),selectedMatrix);
                             trip.setTripDestination(destination);
 
                             if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
@@ -135,7 +137,7 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
                             trip.setOriginCoord(originCoord);
                         }
 
-                        MitoZone destination = findDestinationWithoutBudget(trip.getTripOrigin().getZoneId());
+                        MitoZone destination = findDestinationWithoutBudget(trip.getTripOrigin().getZoneId(), selectedMatrix);
                         trip.setTripDestination(destination);
 
                         if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
@@ -209,8 +211,8 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
         return findRandomOrigin(household, selectedPurpose);
     }
 
-    private MitoZone findDestination(int origin) {
-        final IndexedDoubleMatrix1D row = baseProbabilities.get(purpose).viewRow(origin);
+    private MitoZone findDestination(int origin,IndexedDoubleMatrix2D matrix) {
+        final IndexedDoubleMatrix1D row = matrix.viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         IntStream.range(0, baseProbs.length).parallel().forEach(i -> {
             //divide travel time by 2 as home based trips' budget account for the return trip as well
@@ -224,8 +226,8 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
     }
 
 
-    private MitoZone findDestinationWithoutBudget(int origin) {
-        final IndexedDoubleMatrix1D row = baseProbabilities.get(purpose).viewRow(origin);
+    private MitoZone findDestinationWithoutBudget(int origin, IndexedDoubleMatrix2D matrix) {
+        final IndexedDoubleMatrix1D row = matrix.viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         int destinationInternalId = MitoUtil.select(baseProbs, random);
         return zonesCopy.get(row.getIdForInternalIndex(destinationInternalId));
@@ -233,7 +235,8 @@ public final class NhbwNhboDistribution extends RandomizableConcurrentFunction<V
 
     private MitoZone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
         TripDistribution.completelyRandomNhbTrips.incrementAndGet();
-        final IndexedDoubleMatrix1D originProbabilities = baseProbabilities.get(priorPurpose).viewRow(household.getHomeZone().getId());
+        IndexedDoubleMatrix2D matrix = household.isHasEV() ? baseProbabilities.get(priorPurpose).getFirst() : baseProbabilities.get(priorPurpose).getSecond();
+        final IndexedDoubleMatrix1D originProbabilities = matrix.viewRow(household.getHomeZone().getId());
         final int destinationInternalId = MitoUtil.select(originProbabilities.toNonIndexedArray(), random);
         return zonesCopy.get(originProbabilities.getIdForInternalIndex(destinationInternalId));
     }

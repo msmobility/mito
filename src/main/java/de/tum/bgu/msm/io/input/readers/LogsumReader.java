@@ -18,10 +18,10 @@ public class LogsumReader extends AbstractCsvReader {
     private int posOrigin = -1;
     private int posDestination = -1;
     private int posLogsum = -1;
-    private int countError;
 
     private Map<Purpose, IndexedDoubleMatrix2D> logsumMatrices = new HashMap<>();
-    private final EnumMap<Purpose, TravelDistances> logsumMatricesByPurpose = new EnumMap<Purpose, TravelDistances>(Purpose.class);
+    private final EnumMap<Purpose, TravelDistances> logsumMatricesByPurpose_EV = new EnumMap<Purpose, TravelDistances>(Purpose.class);
+    private final EnumMap<Purpose, TravelDistances> logsumMatricesByPurpose_NoEV = new EnumMap<Purpose, TravelDistances>(Purpose.class);
 
     private List<Purpose> purposes = Arrays.asList(Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR);
 
@@ -42,9 +42,19 @@ public class LogsumReader extends AbstractCsvReader {
             super.read(filePath, ",");
             logger.info("Reading logsum from csv file" + fileName);
 
-            logsumMatricesByPurpose.put(purpose, new MatrixTravelDistances(logsumMatrices.get(purpose)));
+            logsumMatricesByPurpose_EV.put(purpose, new MatrixTravelDistances(logsumMatrices.get(purpose)));
         }
-        dataSet.setLogsumByPurpose(logsumMatricesByPurpose);
+        dataSet.setLogsumByPurpose(logsumMatricesByPurpose_EV);
+        for (Purpose purpose : purposes) {
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
+            Path filePath = Paths.get(fileName);
+            super.read(filePath, ",");
+            logger.info("Reading logsum from csv file" + fileName);
+
+            logsumMatricesByPurpose_NoEV.put(purpose, new MatrixTravelDistances(logsumMatrices.get(purpose)));
+        }
+        dataSet.setLogsumByPurpose(logsumMatricesByPurpose_NoEV);
+
     }
 
     @Override

@@ -1,13 +1,11 @@
 package de.tum.bgu.msm.data;
 
-import cern.colt.matrix.tdouble.DoubleMatrix1D;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
-import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.matsim.api.core.v01.population.Population;
 
 import java.util.*;
@@ -32,7 +30,8 @@ public class DataSet {
     private final Map<Integer, MitoTrip> trips = new LinkedHashMap<>();
     private final Map<Integer, MitoTrip> tripSubsample = new LinkedHashMap<>();
 
-    private EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose;
+    private EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose_EV;
+    private EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose_NoEV;
 
     private final Table<Purpose, Mode, Double> modeSharesByPurpose
             = ArrayTable.create(Arrays.asList(Purpose.values()), Arrays.asList(Mode.values()));
@@ -248,12 +247,20 @@ public class DataSet {
     }
 
 
-    public EnumMap<Purpose, TravelDistances> getLogsumByPurpose() {
-        return logsumMatrixByPurpose;
+    public EnumMap<Purpose, TravelDistances> getLogsumByPurpose_EV() {
+        return logsumMatrixByPurpose_EV;
     }
 
-    public void setLogsumByPurpose(EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose) {
-        this.logsumMatrixByPurpose = logsumMatrixByPurpose;
+    public void setLogsumByPurpose_EV(EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose) {
+        this.logsumMatrixByPurpose_EV = logsumMatrixByPurpose;
+    }
+
+    public EnumMap<Purpose, TravelDistances> getLogsumByPurpose_NoEV() {
+        return logsumMatrixByPurpose_NoEV;
+    }
+
+    public void setLogsumByPurpose_NoEV(EnumMap<Purpose, TravelDistances> logsumMatrixByPurpose) {
+        this.logsumMatrixByPurpose_NoEV = logsumMatrixByPurpose;
     }
 
 }
