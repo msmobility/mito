@@ -78,7 +78,7 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
     }
 
     @Override
-    public double calculateUtility(double attraction, double travelDistance) {
+    public double calculateExpUtility(double attraction, double travelDistance) {
         if(attraction == 0) {
             return 0.;
         }

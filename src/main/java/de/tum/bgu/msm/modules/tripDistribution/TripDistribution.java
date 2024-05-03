@@ -5,10 +5,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -22,9 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.tum.bgu.msm.data.Purpose.*;
 
-/**
- * @author Nico
- */
+
 public final class TripDistribution extends Module {
 
     public final static AtomicInteger distributedTripsCounter = new AtomicInteger(0);
@@ -92,6 +87,7 @@ public final class TripDistribution extends Module {
         for(Tuple<Purpose, IndexedDoubleMatrix2D> result: results) {
             utilityMatrices.put(result.getFirst(), result.getSecond());
         }
+
     }
 
     private void distributeTrips() {
@@ -110,7 +106,6 @@ public final class TripDistribution extends Module {
             for (Purpose purpose : purposes){
                 if (purpose.equals(HBW)){
                     homeBasedTasks.add(HbeHbwDistribution.hbw(utilityMatrices.get(purpose), partition, dataSet.getZones()));
-
                 } else if (purpose.equals(HBE)) {
                     homeBasedTasks.add(HbeHbwDistribution.hbe(utilityMatrices.get(purpose), partition, dataSet.getZones()));
                 } else if (purpose.equals(HBS)){
@@ -123,6 +118,7 @@ public final class TripDistribution extends Module {
                     homeBasedTasks.add(HbsHboDistribution.hbr(utilityMatrices.get(purpose), partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
+
             }
         }
 
@@ -141,6 +137,7 @@ public final class TripDistribution extends Module {
                     nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
+
 
 
             }

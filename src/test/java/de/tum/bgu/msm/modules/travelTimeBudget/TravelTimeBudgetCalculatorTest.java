@@ -158,7 +158,7 @@ public class TravelTimeBudgetCalculatorTest {
     }
 
     private void addZone() {
-        dummyZone = new MitoZone(1, AreaTypes.SGType.CORE_CITY);
+        dummyZone = new MitoZone(1, AreaTypes.SGType.CORE_CITY,10);
         dataSet.addZone(dummyZone);
     }
 }

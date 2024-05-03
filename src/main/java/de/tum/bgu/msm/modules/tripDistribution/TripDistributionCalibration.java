@@ -18,14 +18,14 @@ public class TripDistributionCalibration extends Module {
 
     private Map<Purpose, Double> observedAverageDistances = new HashMap<>();
     private Map<Purpose, Double> simulatedAverageDistances = new HashMap<>();
-    private Map<Purpose, Double> travelDistanceParameters;
-    private Map<Purpose, Double> impendanceParameters;
+    private Map<Purpose, Double> logsumParameters;
+    private Map<Purpose, Double> attractionParameters;
     private PrintWriter pw = null;
     private int iteration;
 
     public TripDistributionCalibration(DataSet dataSet, List<Purpose> purposes,
-                                       Map<Purpose, Double> travelDistanceParameters,
-                                       Map<Purpose, Double> impendanceParameters) {
+                                       Map<Purpose, Double> logsumParameters,
+                                       Map<Purpose, Double> attractionParameters) {
 
         super(dataSet, purposes);
         iteration = 0;
@@ -33,6 +33,7 @@ public class TripDistributionCalibration extends Module {
         observedAverageDistances.put(Purpose.HBW , 18.1);
         observedAverageDistances.put(Purpose.HBO , 10.4);
         observedAverageDistances.put(Purpose.HBS , 5.07);
+        observedAverageDistances.put(Purpose.HBR , 10.4);
         observedAverageDistances.put(Purpose.NHBO , 11.7);
         observedAverageDistances.put(Purpose.NHBW , 16.1);
 
@@ -41,8 +42,8 @@ public class TripDistributionCalibration extends Module {
             purposesString += "_" + purpose.toString();
         }
 
-        this.impendanceParameters = impendanceParameters;
-        this.travelDistanceParameters = travelDistanceParameters;
+        this.attractionParameters = attractionParameters;
+        this.logsumParameters = logsumParameters;
 
         String path = Resources.instance.getBaseDirectory().toString() + "/scenOutput/";
 
@@ -92,13 +93,13 @@ public class TripDistributionCalibration extends Module {
             ratio = Math.min(ratio, 2);
 
 
-            travelDistanceParameters.put(purpose, travelDistanceParameters.get(purpose) * ratio);
+            logsumParameters.put(purpose, logsumParameters.get(purpose) * ratio);
             pw.println(iteration + "," +
                     purpose + "," +
                     observedAverageDistances.get(purpose) + "," +
                     simulatedAverageDistances.get(purpose) + "," +
-                    travelDistanceParameters.get(purpose) + "," +
-                    impendanceParameters.get(purpose));
+                    logsumParameters.get(purpose) + "," +
+                    attractionParameters.get(purpose));
 
         }
 
@@ -114,12 +115,12 @@ public class TripDistributionCalibration extends Module {
     public void run() {
     }
 
-    public Map<Purpose, Double> getTravelDistanceParameters() {
-        return travelDistanceParameters;
+    public Map<Purpose, Double> getLogsumParameters() {
+        return logsumParameters;
     }
 
-    public Map<Purpose, Double> getImpendanceParameters() {
-        return impendanceParameters;
+    public Map<Purpose, Double> getAttractionParameters() {
+        return attractionParameters;
     }
 
     public void close(){

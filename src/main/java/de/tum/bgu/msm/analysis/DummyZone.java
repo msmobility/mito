@@ -8,7 +8,7 @@ public class DummyZone extends MitoZone {
     public static final DummyZone dummy = new DummyZone();
 
     private DummyZone() {
-        super(1, AreaTypes.SGType.CORE_CITY);
+        super(1, AreaTypes.SGType.CORE_CITY,10);
     }
 
     @Override

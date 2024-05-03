@@ -6,9 +6,9 @@ import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.AirportDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistribution;
-import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbeHbwDistributionLogsum;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.HbsHboDistributionLogsum;
+import de.tum.bgu.msm.modules.tripDistribution.destinationChooser.NhbwNhboDistributionLogsum;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -34,22 +34,21 @@ public final class TripDistributionLogsumEVnoEV extends Module {
     public final static AtomicInteger completelyRandomNhbTrips = new AtomicInteger(0);
 
     //todo turn to static to be mantained for both mandatory and discretionary - we expect to remove ttb from the trip distribution
-    //private static EnumMap<Purpose, IndexedDoubleMatrix2D> utilityMatrices = new EnumMap<>(Purpose.class);
     private static EnumMap<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>> utilityMatrices = new EnumMap<>(Purpose.class);
 
     private final static Logger logger = Logger.getLogger(TripDistributionLogsumEVnoEV.class);
 
-    private final Map<Purpose, Double> travelDistanceCalibrationParameters;
-    private final Map<Purpose, Double> impedanceCalibrationParameters;
+    private final Map<Purpose, Double> logsumCalibrationParameters;
+    private final Map<Purpose, Double> attractionCalibrationParameters;
     private final boolean useBudgetsInDestinationChoice;
 
     private final DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory;
 
-    public TripDistributionLogsumEVnoEV(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> travelDistanceCalibrationParameters,
-                                        Map<Purpose, Double> impedanceCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
+    public TripDistributionLogsumEVnoEV(DataSet dataSet, List<Purpose> purposes, Map<Purpose, Double> logsumCalibrationParameters,
+                                        Map<Purpose, Double> attractionCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
         super(dataSet, purposes);
-        this.travelDistanceCalibrationParameters = travelDistanceCalibrationParameters;
-        this.impedanceCalibrationParameters = impedanceCalibrationParameters;
+        this.logsumCalibrationParameters = logsumCalibrationParameters;
+        this.attractionCalibrationParameters = attractionCalibrationParameters;
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
     }
@@ -58,11 +57,11 @@ public final class TripDistributionLogsumEVnoEV extends Module {
         super(dataSet, purposes);
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
-        travelDistanceCalibrationParameters = new HashMap<>();
-        impedanceCalibrationParameters = new HashMap<>();
+        logsumCalibrationParameters = new HashMap<>();
+        attractionCalibrationParameters = new HashMap<>();
         for (Purpose purpose : Purpose.getAllPurposes()){
-            travelDistanceCalibrationParameters.put(purpose, 1.0);
-            impedanceCalibrationParameters.put(purpose, 1.0);
+            logsumCalibrationParameters.put(purpose, 1.0);
+            attractionCalibrationParameters.put(purpose, 1.0);
         }
 
 
@@ -81,10 +80,10 @@ public final class TripDistributionLogsumEVnoEV extends Module {
         List<Callable<Tuple<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>>>> utilityCalcTasks = new ArrayList<>();
         for (Purpose purpose : purposes) {
             if (!purpose.equals(Purpose.AIRPORT)) {
-                utilityCalcTasks.add(new DestinationUtilityByPurposeGenerator2(purpose, dataSet,
+                utilityCalcTasks.add(new DestinationUtilityByPurposeGeneratorEVnoEV(purpose, dataSet,
                         destinationUtilityCalculatorFactory,
-                        travelDistanceCalibrationParameters.get(purpose),
-                        impedanceCalibrationParameters.get(purpose)));
+                        logsumCalibrationParameters.get(purpose),
+                        attractionCalibrationParameters.get(purpose)));
             }
         }
 
@@ -114,17 +113,17 @@ public final class TripDistributionLogsumEVnoEV extends Module {
                 IndexedDoubleMatrix2D matrixEV = matrices.getFirst();
                 IndexedDoubleMatrix2D matrixNoEV = matrices.getSecond();
                 if (purpose.equals(HBW)){
-                    homeBasedTasks.add(HbeHbwDistribution.hbw(matrixEV, matrixNoEV, partition, dataSet.getZones()));
+                    homeBasedTasks.add(HbeHbwDistributionLogsum.hbw(matrixEV, matrixNoEV, partition, dataSet.getZones()));
                 } else if (purpose.equals(HBE)) {
-                    homeBasedTasks.add(HbeHbwDistribution.hbe(matrixEV, matrixNoEV, partition, dataSet.getZones()));
+                    homeBasedTasks.add(HbeHbwDistributionLogsum.hbe(matrixEV, matrixNoEV, partition, dataSet.getZones()));
                 } else if (purpose.equals(HBS)){
-                    homeBasedTasks.add(HbsHboDistribution.hbs(matrixEV, matrixNoEV, partition, dataSet.getZones(),
+                    homeBasedTasks.add(HbsHboDistributionLogsum.hbs(matrixEV, matrixNoEV, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 } else if (purpose.equals(HBO)) {
-                    homeBasedTasks.add(HbsHboDistribution.hbo(matrixEV, matrixNoEV, partition, dataSet.getZones(),
+                    homeBasedTasks.add(HbsHboDistributionLogsum.hbo(matrixEV, matrixNoEV, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 } else if (purpose.equals(HBR)){
-                    homeBasedTasks.add(HbsHboDistribution.hbr(matrixEV, matrixNoEV, partition, dataSet.getZones(),
+                    homeBasedTasks.add(HbsHboDistributionLogsum.hbr(matrixEV, matrixNoEV, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
             }
@@ -139,10 +138,10 @@ public final class TripDistributionLogsumEVnoEV extends Module {
 
             for (Purpose purpose : purposes){
                 if (purpose.equals(NHBW)){
-                    nonHomeBasedTasks.add(NhbwNhboDistribution.nhbw(utilityMatrices, partition, dataSet.getZones(),
+                    nonHomeBasedTasks.add(NhbwNhboDistributionLogsum.nhbw(utilityMatrices, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 } else if (purpose.equals(NHBO)){
-                    nonHomeBasedTasks.add(NhbwNhboDistribution.nhbo(utilityMatrices, partition, dataSet.getZones(),
+                    nonHomeBasedTasks.add(NhbwNhboDistributionLogsum.nhbo(utilityMatrices, partition, dataSet.getZones(),
                             dataSet.getTravelTimes(), dataSet.getPeakHour(),useBudgetsInDestinationChoice));
                 }
 

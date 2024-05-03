@@ -13,9 +13,9 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class DestinationUtilityByPurposeGenerator2 implements Callable<Tuple<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>>> {
+public class DestinationUtilityByPurposeGeneratorEVnoEV implements Callable<Tuple<Purpose, Tuple<IndexedDoubleMatrix2D, IndexedDoubleMatrix2D>>> {
 
-    private final static Logger logger = Logger.getLogger(DestinationUtilityByPurposeGenerator2.class);
+    private final static Logger logger = Logger.getLogger(DestinationUtilityByPurposeGeneratorEVnoEV.class);
 
     private final DestinationUtilityCalculator calculator;
     private final Purpose purpose;
@@ -26,17 +26,17 @@ public class DestinationUtilityByPurposeGenerator2 implements Callable<Tuple<Pur
     private final EnumMap<Purpose, TravelDistances> logsum_NoEV;
 
 
-    DestinationUtilityByPurposeGenerator2(Purpose purpose, DataSet dataSet,
-                                          DestinationUtilityCalculatorFactory factory,
-                                          double travelDistanceCalibrationK,
-                                          double impendanceCalibrationK) {
+    DestinationUtilityByPurposeGeneratorEVnoEV(Purpose purpose, DataSet dataSet,
+                                               DestinationUtilityCalculatorFactory factory,
+                                               double travelDistanceCalibrationK,
+                                               double attractionCalibrationK) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
         this.logsum_EV = dataSet.getLogsumByPurpose_EV();
         this.logsum_NoEV = dataSet.getLogsumByPurpose_NoEV();
         this.dataSet = dataSet;
-        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, impendanceCalibrationK);
+        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, attractionCalibrationK);
     }
 
     @Override
@@ -46,11 +46,10 @@ public class DestinationUtilityByPurposeGenerator2 implements Callable<Tuple<Pur
         long counter = 0;
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
-                //Using Logsum
 
-                double utilityEV = calculator.calculateUtility(destination.getTripAttraction(purpose),
+                double utilityEV = calculator.calculateExpUtility(destination.getTripAttraction(purpose),
                         dataSet.getLogsumByPurpose_EV().get(purpose).getTravelDistance(origin.getId(), destination.getId()));
-                double utilityNoEV = calculator.calculateUtility(destination.getTripAttraction(purpose),
+                double utilityNoEV = calculator.calculateExpUtility(destination.getTripAttraction(purpose),
                         dataSet.getLogsumByPurpose_NoEV().get(purpose).getTravelDistance(origin.getId(), destination.getId()));
                 if (Double.isInfinite(utilityEV) || Double.isNaN(utilityEV)) {
                     throw new RuntimeException(utilityEV + " utility calculated! Please check calculation!" +

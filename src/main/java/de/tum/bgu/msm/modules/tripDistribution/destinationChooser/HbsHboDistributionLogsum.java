@@ -6,13 +6,17 @@ import de.tum.bgu.msm.data.MitoTrip;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.modules.tripDistribution.TripDistribution;
+import de.tum.bgu.msm.modules.tripDistribution.TripDistributionLogsumEVnoEV;
+import de.tum.bgu.msm.resources.Properties;
+import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,17 +26,18 @@ import java.util.stream.IntStream;
 /**
  * @author Nico
  */
-public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
+public class HbsHboDistributionLogsum extends RandomizableConcurrentFunction<Void> {
 
     private final static double VARIANCE_DOUBLED = 30 * 2;
     private final static double SQRT_INV = 1.0 / Math.sqrt(Math.PI * VARIANCE_DOUBLED);
 
-    private final static Logger logger = Logger.getLogger(HbsHboDistribution.class);
+    private final static Logger logger = Logger.getLogger(HbsHboDistributionLogsum.class);
     private final boolean USE_BUDGETS_IN_DESTINATION_CHOICE;
 
     private final double peakHour;
     private final Purpose purpose;
-    private final IndexedDoubleMatrix2D baseProbabilities;
+    private final IndexedDoubleMatrix2D baseProbabilitiesEV;
+    private final IndexedDoubleMatrix2D baseProbabilitiesNoEV;
     private final TravelTimes travelTimes;
 
     private final Collection<MitoHousehold> householdPartition;
@@ -45,33 +50,35 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     private double hhBudgetPerTrip;
     private double adjustedBudget;
 
-    private HbsHboDistribution(boolean useBudgetsInDestinationChoice, Purpose purpose, IndexedDoubleMatrix2D baseProbabilities,
-                               Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
-                               TravelTimes travelTimes, double peakHour) {
+    private HbsHboDistributionLogsum(boolean useBudgetsInDestinationChoice, Purpose purpose, IndexedDoubleMatrix2D baseProbabilitiesEV,
+                                     IndexedDoubleMatrix2D baseProbabilitiesNoEV,
+                                     Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                     TravelTimes travelTimes, double peakHour) {
         super(MitoUtil.getRandomObject().nextLong());
         USE_BUDGETS_IN_DESTINATION_CHOICE = useBudgetsInDestinationChoice;
         this.purpose = purpose;
         this.householdPartition = householdPartition;
-        this.baseProbabilities = baseProbabilities;
+        this.baseProbabilitiesEV = baseProbabilitiesEV;
+        this.baseProbabilitiesNoEV = baseProbabilitiesNoEV;
         this.zonesCopy = new HashMap<>(zones);
-        this.destinationProbabilities = new double[baseProbabilities.columns()];
+        this.destinationProbabilities = new double[baseProbabilitiesEV.columns()];
         this.travelTimes = travelTimes;
         this.peakHour = peakHour;
     }
 
-    public static HbsHboDistribution hbs(IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
-                                         TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
-        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBS, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
+    public static HbsHboDistributionLogsum hbs(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                               TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
+        return new HbsHboDistributionLogsum(useBudgetsInDestinationChoice, Purpose.HBS, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones, travelTimes, peakHour);
     }
 
-    public static HbsHboDistribution hbo(IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
-                                         TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
-        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBO, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
+    public static HbsHboDistributionLogsum hbo(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                               TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
+        return new HbsHboDistributionLogsum(useBudgetsInDestinationChoice, Purpose.HBO, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones, travelTimes, peakHour);
     }
 
-    public static HbsHboDistribution hbr(IndexedDoubleMatrix2D baseProbabilities, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
-                                         TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
-        return new HbsHboDistribution(useBudgetsInDestinationChoice, Purpose.HBR, baseProbabilities, householdPartition, zones, travelTimes, peakHour);
+    public static HbsHboDistributionLogsum hbr(IndexedDoubleMatrix2D baseProbabilitiesEV, IndexedDoubleMatrix2D baseProbabilitiesNoEV, Collection<MitoHousehold> householdPartition, Map<Integer, MitoZone> zones,
+                                               TravelTimes travelTimes, double peakHour, boolean useBudgetsInDestinationChoice) {
+        return new HbsHboDistributionLogsum(useBudgetsInDestinationChoice, Purpose.HBR, baseProbabilitiesEV, baseProbabilitiesNoEV, householdPartition, zones, travelTimes, peakHour);
     }
 
     @Override
@@ -86,34 +93,46 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
                 if (USE_BUDGETS_IN_DESTINATION_CHOICE){
                     if (hasBudgetForPurpose(household)) {
                         updateBudgets(household);
-                        updateDestinationProbabilities(household.getHomeZone().getId());
+                        updateDestinationProbabilities(household.getHomeZone().getId(), household.isHasEV());
                         for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                             trip.setTripOrigin(household);
-                            MitoZone zone = findDestination();
+                            MitoZone zone = findDestination(household.isHasEV());
                             trip.setTripDestination(zone);
+
+                            if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                                Coord destinationCoord = CoordUtils.createCoord(zone.getRandomCoord(MitoUtil.getRandomObject()));
+                                trip.setDestinationCoord(destinationCoord);
+                            }
+
                             if (zone == null) {
                                 logger.debug("No destination found for trip" + trip);
-                                TripDistribution.failedTripsCounter.incrementAndGet();
+                                TripDistributionLogsumEVnoEV.failedTripsCounter.incrementAndGet();
                                 continue;
                             }
                             postProcessTrip(trip);
-                            TripDistribution.distributedTripsCounter.incrementAndGet();
+                            TripDistributionLogsumEVnoEV.distributedTripsCounter.incrementAndGet();
                         }
                     } else {
-                        TripDistribution.failedTripsCounter.incrementAndGet();
+                        TripDistributionLogsumEVnoEV.failedTripsCounter.incrementAndGet();
                     }
                 } else {
                     for (MitoTrip trip : household.getTripsForPurpose(purpose)) {
                         trip.setTripOrigin(household);
-                        updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId());
-                        MitoZone zone = findDestination();
+                        updateDestinationProbabilitiesWithoutBudgets(household.getHomeZone().getId(), household.isHasEV());
+                        MitoZone zone = findDestination(household.isHasEV());
                         trip.setTripDestination(zone);
+
+                        if(Resources.instance.getBoolean(Properties.FILL_MICRO_DATA_WITH_MICROLOCATION,false)){
+                            Coord destinationCoord = CoordUtils.createCoord(zone.getRandomCoord(MitoUtil.getRandomObject()));
+                            trip.setDestinationCoord(destinationCoord);
+                        }
+
                         if (zone == null) {
                             logger.debug("No destination found for trip" + trip);
-                            TripDistribution.failedTripsCounter.incrementAndGet();
+                            TripDistributionLogsumEVnoEV.failedTripsCounter.incrementAndGet();
                             continue;
                         }
-                        TripDistribution.distributedTripsCounter.incrementAndGet();
+                        TripDistributionLogsumEVnoEV.distributedTripsCounter.incrementAndGet();
                     }
                 }
             }
@@ -149,7 +168,9 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
     /**
      * Copy probabilities for every destination for the current home origin
      */
-    private void updateDestinationProbabilities(int origin) {
+
+    private void updateDestinationProbabilities(int origin, boolean isHouseholdEV) {
+        IndexedDoubleMatrix2D baseProbabilities = isHouseholdEV ? baseProbabilitiesEV : baseProbabilitiesNoEV;
         final IndexedDoubleMatrix1D row = baseProbabilities.viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
@@ -161,7 +182,8 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         });
     }
 
-    private void updateDestinationProbabilitiesWithoutBudgets(int origin) {
+    private void updateDestinationProbabilitiesWithoutBudgets(int origin, boolean isHouseholdEV) {
+        IndexedDoubleMatrix2D baseProbabilities = isHouseholdEV ? baseProbabilitiesEV : baseProbabilitiesNoEV;
         final IndexedDoubleMatrix1D row = baseProbabilities.viewRow(origin);
         double[] baseProbs = row.toNonIndexedArray();
         IntStream.range(0, destinationProbabilities.length).parallel().forEach(i -> {
@@ -181,8 +203,17 @@ public class HbsHboDistribution extends RandomizableConcurrentFunction<Void> {
         adjustedBudget = hhBudgetPerTrip * ratio;
     }
 
-    private MitoZone findDestination() {
+    private MitoZone findDestination(boolean isHouseholdEV) {
+
         final int destinationInternalIndex = MitoUtil.select(destinationProbabilities, random);
-        return zonesCopy.get(baseProbabilities.getIdForInternalColumnIndex(destinationInternalIndex));
+
+        IndexedDoubleMatrix2D baseProbabilities = isHouseholdEV ? baseProbabilitiesEV : baseProbabilitiesNoEV;
+
+        // Get the actual zone ID using the internal index from the base probabilities matrix
+        int zoneID = baseProbabilities.getIdForInternalColumnIndex(destinationInternalIndex);
+
+        // Retrieve and return the MitoZone object corresponding to the zone ID from zonesCopy map
+        return zonesCopy.get(zoneID);
     }
 }
+

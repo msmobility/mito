@@ -19,7 +19,7 @@ public class HouseHoldTypeManagerTest {
     public void setupTest() {
         Resources.initializeResources("./test/muc/test.properties");
 
-        zone = new MitoZone(1, AreaTypes.SGType.RURAL);
+        zone = new MitoZone(1, AreaTypes.SGType.RURAL,10);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class HouseHoldTypeManagerTest {
         }
 
         MitoHousehold household1 = new MitoHousehold(1,  4, 1);
-        household1.setHomeZone(new MitoZone(1, AreaTypes.SGType.CORE_CITY));
+        household1.setHomeZone(new MitoZone(1, AreaTypes.SGType.CORE_CITY,10));
         household1.addPerson(new MitoPerson(1, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true));
         MitoHousehold household2 = new MitoHousehold(2,  4, 1);
         household2.setHomeZone(zone);

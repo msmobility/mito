@@ -45,7 +45,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
             for (MitoZone destination : zones.values()) {
                 //Using Logsum
 
-                final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
+                final double utility =  calculator.calculateExpUtility(destination.getTripAttraction(purpose),
                         logsum_EV.get(purpose).getTravelDistance(origin.getId(), destination.getId()));
 
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
@@ -58,7 +58,7 @@ public class DestinationUtilityByPurposeGenerator implements Callable<Tuple<Purp
 
                 //Using distance
 /*
-                final double utility =  calculator.calculateUtility(destination.getTripAttraction(purpose),
+                final double utility =  calculator.calculateExpUtility(destination.getTripAttraction(purpose),
                         travelDistances.getTravelDistance(origin.getId(), destination.getId()));
                 if (Double.isInfinite(utility) || Double.isNaN(utility)) {
                     System.out.println("Destination zone: " + destination + "for Purpose: " + purpose +

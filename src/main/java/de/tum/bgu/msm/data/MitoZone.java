@@ -37,14 +37,16 @@ public class MitoZone implements Id, Location {
 
     private final AreaTypes.SGType areaTypeSG;
     private AreaTypes.RType areaTypeR;
+    private final double zoneArea;
 
     private float distanceToNearestRailStop;
     private Geometry geometry;
 
 
-    public MitoZone(int id, AreaTypes.SGType areaType) {
+    public MitoZone(int id, AreaTypes.SGType areaType, double zoneArea) {
         this.zoneId = id;
         this.areaTypeSG = areaType;
+        this.zoneArea = zoneArea;
     }
 
     //TODO: is this supposed to stay in master?
@@ -188,4 +190,6 @@ public class MitoZone implements Id, Location {
     public int getZoneId() {
         return zoneId;
     }
+
+    public double getZoneArea(){return zoneArea;}
 }

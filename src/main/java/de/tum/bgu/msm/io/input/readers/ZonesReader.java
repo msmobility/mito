@@ -11,9 +11,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.matsim.core.utils.gis.ShapeFileReader;
 import org.opengis.feature.simple.SimpleFeature;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Nico
  */
@@ -22,6 +19,7 @@ public class ZonesReader extends AbstractCsvReader {
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(ZonesReader.class);
     private int idIndex;
     private int areaTypeIndex;
+    private int zoneAreaIndex;
 
     public ZonesReader(DataSet dataSet) {
         super(dataSet);
@@ -55,14 +53,16 @@ public class ZonesReader extends AbstractCsvReader {
     protected void processHeader(String[] header) {
         idIndex = MitoUtil.findPositionInArray("Zone", header);
         areaTypeIndex = MitoUtil.findPositionInArray("BBSR_type", header);
+        zoneAreaIndex = MitoUtil.findPositionInArray("Area", header);
     }
 
     @Override
     protected void processRecord(String[] record) {
         int zoneId = Integer.parseInt(record[idIndex]);
         int region = Integer.parseInt(record[areaTypeIndex]);
+        double zoneArea = Double.parseDouble(record[zoneAreaIndex]);
         AreaTypes.SGType areaType = AreaTypes.SGType.valueOf(region);
-        MitoZone zone = new MitoZone(zoneId, areaType);
+        MitoZone zone = new MitoZone(zoneId, areaType, zoneArea);
         dataSet.addZone(zone);
     }
 }

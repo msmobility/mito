@@ -93,7 +93,7 @@ public class TestTimeOfDay {
         MitoZone zone1 = DummyZone.dummy;
         zone1.setDistanceToNearestRailStop(0.5f);
         trip1.setTripOrigin(zone1);
-        MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY);
+        MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY,10);
         trip1.setTripDestination(zone2);
         trip1.setDepartureInMinutes(16 * 60 + 30);
         trip1.setDepartureInMinutesReturnTrip(17 * 60);
@@ -110,10 +110,10 @@ public class TestTimeOfDay {
 
         trip2 = new MitoTrip(2, Purpose.HBE);
         trip2.setPerson(person1);
-        MitoZone zone3 = new MitoZone(3, AreaTypes.SGType.CORE_CITY);
+        MitoZone zone3 = new MitoZone(3, AreaTypes.SGType.CORE_CITY,10);
         zone3.setDistanceToNearestRailStop(0.5f);
         trip2.setTripOrigin(zone3);
-        MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY);
+        MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY,10);
         trip2.setTripDestination(zone4);
         trip2.setTripMode(Mode.autoDriver);
         trip2.setDepartureInMinutes(8* 60);

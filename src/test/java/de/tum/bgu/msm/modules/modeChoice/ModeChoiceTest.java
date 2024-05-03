@@ -76,7 +76,7 @@ public class ModeChoiceTest {
         zone1.setDistanceToNearestRailStop(0.5f);
 
         trip1.setTripOrigin(zone1);
-        MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY);
+        MitoZone zone2 = new MitoZone(2, AreaTypes.SGType.CORE_CITY,10);
         trip1.setTripDestination(zone2);
 
         household1 = new MitoHousehold(1, 24000, 1);
@@ -92,10 +92,10 @@ public class ModeChoiceTest {
         trip2 = new MitoTrip(2, Purpose.HBO);
         MitoPerson person2 = new MitoPerson(2, MitoOccupationStatus.WORKER, null, 30, MitoGender.MALE, true);
         trip2.setPerson(person2);
-        MitoZone zone3 = new MitoZone(3, AreaTypes.SGType.CORE_CITY);
+        MitoZone zone3 = new MitoZone(3, AreaTypes.SGType.CORE_CITY,10);
         zone3.setDistanceToNearestRailStop(0.5f);
         trip2.setTripOrigin(zone3);
-        MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY);
+        MitoZone zone4 = new MitoZone(4, AreaTypes.SGType.CORE_CITY,10);
         trip2.setTripDestination(zone4);
 
         household2 = new MitoHousehold(2, 24000, 1);
