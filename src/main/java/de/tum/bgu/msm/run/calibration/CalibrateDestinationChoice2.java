@@ -128,7 +128,7 @@ public final class CalibrateDestinationChoice2 {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistribution(dataSet, Purpose.getMandatoryPurposes(),
                     tripDistributionCalibrationMandatory.getLogsumParameters(),
-                    tripDistributionCalibrationMandatory.getAttractionParameters(), false, new DestinationUtilityCalculatorFactoryImpl2());
+                    tripDistributionCalibrationMandatory.getDistanceParameters(), false, new DestinationUtilityCalculatorFactoryImpl2());
             distributionMandatory.run();
         }
 
@@ -186,7 +186,7 @@ public final class CalibrateDestinationChoice2 {
             tripDistributionCalibrationDiscretionary.update(iteration);
             distributionDiscretionary = new TripDistribution(dataSet, Purpose.getDiscretionaryPurposes(),
                     tripDistributionCalibrationDiscretionary.getLogsumParameters(),
-                    tripDistributionCalibrationDiscretionary.getAttractionParameters(), false,
+                    tripDistributionCalibrationDiscretionary.getDistanceParameters(), false,
                     new DestinationUtilityCalculatorFactoryImpl2());
             distributionDiscretionary.run();
         }

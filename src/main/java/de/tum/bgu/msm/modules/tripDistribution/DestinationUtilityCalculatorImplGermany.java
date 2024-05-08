@@ -88,4 +88,9 @@ public class DestinationUtilityCalculatorImplGermany implements DestinationUtili
         double impedance = impedanceParam * Math.exp(distanceParam * travelDistance);
         return Math.exp(impedance) * Math.pow(attraction, attractionParam);
     }
+
+    @Override
+    public double calculateExpUtility2(double tripAttraction, double travelDistance, double travelDistance1) {
+        return 0;
+    }
 }

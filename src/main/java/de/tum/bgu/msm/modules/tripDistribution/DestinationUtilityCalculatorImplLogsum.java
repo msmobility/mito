@@ -4,53 +4,65 @@ import de.tum.bgu.msm.data.Purpose;
 
 public class DestinationUtilityCalculatorImplLogsum implements DestinationUtilityCalculator {
 
-    private final static double LOGSUM_PARAM_HBW = 0.5*6.75918471643653;
+    private final static double LOGSUM_PARAM_HBW = 1;
+    private final static double DISTANCE_PARAM_HBW = -0.5*0.122210778859941;
 
-    private final static double LOGSUM_PARAM_HBE = 0.5*16.4313941966351;
+    private final static double LOGSUM_PARAM_HBE = 1;
+    private final static double DISTANCE_PARAM_HBE = -0.5*0.468797162530719;
 
-    private final static double LOGSUM_PARAM_HBS = 0.5*21.37783557176;
-
-    private final static double LOGSUM_PARAM_HBO = 0.5*11.9924433009633;
-
-    private final static double LOGSUM_PARAM_HBR = 0.5*11.9685601413591;
-
-    private final static double logsumParamNhbw = 0.5*7.10808298720081;
-
-    private final static double logsumParamNhbo = 0.5*7.40653414348498;
-
+    private final static double LOGSUM_PARAM_HBS = 1;
+    private final static double DISTANCE_PARAM_HBS = -0.5*0.710841160126759;
+    private final static double LOGSUM_PARAM_HBO = 1;
+    private final static double DISTANCE_PARAM_HBO = -0.5*0.289173930886765;
+    private final static double LOGSUM_PARAM_HBR = 1;
+    private final static double DISTANCE_PARAM_HBR = -0.5*0.288421176167328;
+    private final static double logsumParamNhbw = 1;
+    private final static double DISTANCE_PARAM_NHBW = -0.5*0.135173960756805;
+    private final static double logsumParamNhbo = 1;
+    private final static double DISTANCE_PARAM_NHBO = -0.5*0.204288310023297;
     private final static double ALPHA_PARAM =  1;
     private double attractionParam;
     private double logsumParam;
+    private double distanceParam;
 
-    DestinationUtilityCalculatorImplLogsum(Purpose purpose, double travelDistanceCalibrationK, double attractionCalibrationK) {
+    DestinationUtilityCalculatorImplLogsum(Purpose purpose, double logsumCalibrationK, double distanceCalibrationK) {
         switch (purpose) {
             case HBW:
                 logsumParam = LOGSUM_PARAM_HBW;
+                distanceParam = DISTANCE_PARAM_HBW;
                 break;
             case HBE:
                 logsumParam = LOGSUM_PARAM_HBE;
+                distanceParam = DISTANCE_PARAM_HBE;
                 break;
             case HBS:
                 logsumParam = LOGSUM_PARAM_HBS;
+                distanceParam = DISTANCE_PARAM_HBS;
                 break;
             case HBO:
                 logsumParam = LOGSUM_PARAM_HBO;
+                distanceParam = DISTANCE_PARAM_HBO;
                 break;
             case HBR:
                 logsumParam = LOGSUM_PARAM_HBR;
+                distanceParam = DISTANCE_PARAM_HBR;
                 break;
             case NHBW:
                 logsumParam = logsumParamNhbw;
+                distanceParam = DISTANCE_PARAM_NHBW;
                 break;
             case NHBO:
                 logsumParam = logsumParamNhbo;
+                distanceParam = DISTANCE_PARAM_NHBO;
                 break;
             case AIRPORT:
             default:
                 throw new RuntimeException("not implemented!");
         }
 
-        logsumParam = logsumParam * travelDistanceCalibrationK;
+        logsumParam = logsumParam * logsumCalibrationK;
+
+        //distanceParam = distanceParam * distanceCalibrationK;
 
         attractionParam = ALPHA_PARAM;
 
@@ -65,6 +77,16 @@ public class DestinationUtilityCalculatorImplLogsum implements DestinationUtilit
         }
         //check whether attraction is divided by zone area
         double utility = logsumParam *logsum + Math.log(attraction);
+
+        return Math.exp(utility);
+    }
+
+    public double calculateExpUtility2(double attraction, double logsum, double travelDistance) {
+        if(attraction == 0) {
+            return 0.;
+        }
+        //check whether attraction is divided by zone area
+        double utility = logsumParam *logsum + Math.log(attraction) + distanceParam*travelDistance;
 
         return Math.exp(utility);
     }

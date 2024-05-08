@@ -76,4 +76,9 @@ public class DestinationUtilityCalculatorImpl implements DestinationUtilityCalcu
         double impedance = impedanceParam * Math.exp(distanceParam * travelDistance);
         return Math.exp(impedance) * attraction;
     }
+
+    @Override
+    public double calculateExpUtility2(double tripAttraction, double travelDistance, double travelDistance1) {
+        return 0;
+    }
 }

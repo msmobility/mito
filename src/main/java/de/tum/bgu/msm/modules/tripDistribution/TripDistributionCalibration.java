@@ -19,13 +19,13 @@ public class TripDistributionCalibration extends Module {
     private Map<Purpose, Double> observedAverageDistances = new HashMap<>();
     private Map<Purpose, Double> simulatedAverageDistances = new HashMap<>();
     private Map<Purpose, Double> logsumParameters;
-    private Map<Purpose, Double> attractionParameters;
+    private Map<Purpose, Double> distanceParameters;
     private PrintWriter pw = null;
     private int iteration;
 
     public TripDistributionCalibration(DataSet dataSet, List<Purpose> purposes,
                                        Map<Purpose, Double> logsumParameters,
-                                       Map<Purpose, Double> attractionParameters) {
+                                       Map<Purpose, Double> distanceParameters) {
 
         super(dataSet, purposes);
         iteration = 0;
@@ -42,7 +42,7 @@ public class TripDistributionCalibration extends Module {
             purposesString += "_" + purpose.toString();
         }
 
-        this.attractionParameters = attractionParameters;
+        this.distanceParameters = distanceParameters;
         this.logsumParameters = logsumParameters;
 
         String path = Resources.instance.getBaseDirectory().toString() + "/scenOutput/";
@@ -92,14 +92,14 @@ public class TripDistributionCalibration extends Module {
             ratio = Math.max(ratio, 0.5);
             ratio = Math.min(ratio, 2);
 
-
-            logsumParameters.put(purpose, logsumParameters.get(purpose) * ratio);
+            logsumParameters.put(purpose,logsumParameters.get(purpose)*ratio);
+            //distanceParameters.put(purpose, distanceParameters.get(purpose) * ratio);
             pw.println(iteration + "," +
                     purpose + "," +
                     observedAverageDistances.get(purpose) + "," +
                     simulatedAverageDistances.get(purpose) + "," +
                     logsumParameters.get(purpose) + "," +
-                    attractionParameters.get(purpose));
+                    distanceParameters.get(purpose));
 
         }
 
@@ -119,8 +119,8 @@ public class TripDistributionCalibration extends Module {
         return logsumParameters;
     }
 
-    public Map<Purpose, Double> getAttractionParameters() {
-        return attractionParameters;
+    public Map<Purpose, Double> getDistanceParameters() {
+        return distanceParameters;
     }
 
     public void close(){

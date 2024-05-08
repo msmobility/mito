@@ -127,7 +127,7 @@ public final class CalibrateDestinationChoiceLogsum {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getMandatoryPurposes(),
                     tripDistributionCalibrationMandatory.getLogsumParameters(),
-                    tripDistributionCalibrationMandatory.getAttractionParameters(), false, new DestinationUtilityCalculatorFactoryImplLogsum());
+                    tripDistributionCalibrationMandatory.getDistanceParameters(), false, new DestinationUtilityCalculatorFactoryImplLogsum());
             distributionMandatory.run();
             logger.info("Finish trip distribution mandatory calibration iteration " + iteration);
         }
@@ -164,29 +164,29 @@ public final class CalibrateDestinationChoiceLogsum {
 
 
         Map<Purpose, Double> logsumCalibrationParametersDisc = new HashMap<>();
-        Map<Purpose, Double> attractionCalibrationParametersDisc = new HashMap<>();
+        Map<Purpose, Double> distanceCalibrationParametersDisc = new HashMap<>();
 
         Purpose.getDiscretionaryPurposes().forEach(p -> {
             logsumCalibrationParametersDisc.put(p, 1.0);
-            attractionCalibrationParametersDisc.put(p, 1.0);
+            distanceCalibrationParametersDisc.put(p, 1.0);
         });
 
         distributionDiscretionary = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getDiscretionaryPurposes(),
                 logsumCalibrationParametersDisc,
-                attractionCalibrationParametersDisc, false,
+                distanceCalibrationParametersDisc, false,
                 new DestinationUtilityCalculatorFactoryImplLogsum());
         distributionDiscretionary.run();
 
 
         TripDistributionCalibration tripDistributionCalibrationDiscretionary =
                 new TripDistributionCalibration(dataSet, Purpose.getDiscretionaryPurposes(),
-                        logsumCalibrationParametersDisc, attractionCalibrationParametersDisc);
+                        logsumCalibrationParametersDisc, distanceCalibrationParametersDisc);
 
         for (int iteration = 0; iteration < iterations; iteration++) {
             tripDistributionCalibrationDiscretionary.update(iteration);
             distributionDiscretionary = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getDiscretionaryPurposes(),
                     tripDistributionCalibrationDiscretionary.getLogsumParameters(),
-                    tripDistributionCalibrationDiscretionary.getAttractionParameters(), false,
+                    tripDistributionCalibrationDiscretionary.getDistanceParameters(), false,
                     new DestinationUtilityCalculatorFactoryImplLogsum());
             distributionDiscretionary.run();
             logger.info("Finish trip distribution discretionary calibration iteration " + iteration);

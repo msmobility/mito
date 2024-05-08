@@ -39,7 +39,7 @@ public final class TripDistributionLogsumEVnoEV extends Module {
     private final static Logger logger = Logger.getLogger(TripDistributionLogsumEVnoEV.class);
 
     private final Map<Purpose, Double> logsumCalibrationParameters;
-    private final Map<Purpose, Double> attractionCalibrationParameters;
+    private final Map<Purpose, Double> distanceCalibrationParameters;
     private final boolean useBudgetsInDestinationChoice;
 
     private final DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory;
@@ -48,7 +48,7 @@ public final class TripDistributionLogsumEVnoEV extends Module {
                                         Map<Purpose, Double> attractionCalibrationParameters, boolean useBudgetsInDestinationChoice, DestinationUtilityCalculatorFactory destinationUtilityCalculatorFactory) {
         super(dataSet, purposes);
         this.logsumCalibrationParameters = logsumCalibrationParameters;
-        this.attractionCalibrationParameters = attractionCalibrationParameters;
+        this.distanceCalibrationParameters = attractionCalibrationParameters;
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
     }
@@ -58,10 +58,10 @@ public final class TripDistributionLogsumEVnoEV extends Module {
         this.useBudgetsInDestinationChoice = useBudgetsInDestinationChoice;
         this.destinationUtilityCalculatorFactory = destinationUtilityCalculatorFactory;
         logsumCalibrationParameters = new HashMap<>();
-        attractionCalibrationParameters = new HashMap<>();
+        distanceCalibrationParameters = new HashMap<>();
         for (Purpose purpose : Purpose.getAllPurposes()){
             logsumCalibrationParameters.put(purpose, 1.0);
-            attractionCalibrationParameters.put(purpose, 1.0);
+            distanceCalibrationParameters.put(purpose, 1.0);
         }
 
 
@@ -83,7 +83,7 @@ public final class TripDistributionLogsumEVnoEV extends Module {
                 utilityCalcTasks.add(new DestinationUtilityByPurposeGeneratorEVnoEV(purpose, dataSet,
                         destinationUtilityCalculatorFactory,
                         logsumCalibrationParameters.get(purpose),
-                        attractionCalibrationParameters.get(purpose)));
+                        distanceCalibrationParameters.get(purpose)));
             }
         }
 

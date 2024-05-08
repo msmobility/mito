@@ -29,14 +29,14 @@ public class DestinationUtilityByPurposeGeneratorEVnoEV implements Callable<Tupl
     DestinationUtilityByPurposeGeneratorEVnoEV(Purpose purpose, DataSet dataSet,
                                                DestinationUtilityCalculatorFactory factory,
                                                double travelDistanceCalibrationK,
-                                               double attractionCalibrationK) {
+                                               double distanceCalibrationK) {
         this.purpose = purpose;
         this.zones = dataSet.getZones();
         this.travelDistances = dataSet.getTravelDistancesNMT();
         this.logsum_EV = dataSet.getLogsumByPurpose_EV();
         this.logsum_NoEV = dataSet.getLogsumByPurpose_NoEV();
         this.dataSet = dataSet;
-        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, attractionCalibrationK);
+        calculator = factory.createDestinationUtilityCalculator(purpose,travelDistanceCalibrationK, distanceCalibrationK);
     }
 
     @Override
@@ -47,10 +47,12 @@ public class DestinationUtilityByPurposeGeneratorEVnoEV implements Callable<Tupl
         for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
 
-                double utilityEV = calculator.calculateExpUtility(destination.getTripAttraction(purpose),
-                        dataSet.getLogsumByPurpose_EV().get(purpose).getTravelDistance(origin.getId(), destination.getId()));
-                double utilityNoEV = calculator.calculateExpUtility(destination.getTripAttraction(purpose),
-                        dataSet.getLogsumByPurpose_NoEV().get(purpose).getTravelDistance(origin.getId(), destination.getId()));
+                double utilityEV = calculator.calculateExpUtility2(destination.getTripAttraction(purpose),
+                        dataSet.getLogsumByPurpose_EV().get(purpose).getTravelDistance(origin.getId(), destination.getId()),
+                        travelDistances.getTravelDistance(origin.getId(), destination.getId()));
+                double utilityNoEV = calculator.calculateExpUtility2(destination.getTripAttraction(purpose),
+                        dataSet.getLogsumByPurpose_NoEV().get(purpose).getTravelDistance(origin.getId(), destination.getId()),
+                        travelDistances.getTravelDistance(origin.getId(), destination.getId()));
                 if (Double.isInfinite(utilityEV) || Double.isNaN(utilityEV)) {
                     throw new RuntimeException(utilityEV + " utility calculated! Please check calculation!" +
                             " Origin: " + origin + " | Destination: " + destination + " | Logsum EV: "
