@@ -28,6 +28,8 @@ public class MitoPerson implements Id {
     private MitoHousehold household;
     private Map<SocialNetworkType, ArrayList<Integer> > alterLists = new HashMap<>();
 
+    private Map<String, Double> additionalAttributes = new LinkedHashMap<>();
+
     public MitoPerson(int id, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
         this.mitoOccupationStatus = mitoOccupationStatus;
@@ -62,6 +64,14 @@ public class MitoPerson implements Id {
         return driversLicense;
     }
 
+    public String hasDriversLicenseString() {
+        String license = "p.noDriversLicense";
+        if (driversLicense){
+            license = "p.driversLicense";
+        }
+        return license;
+    }
+
     public Set<MitoTrip> getTrips() {
         return Collections.unmodifiableSet(this.trips);
     }
@@ -93,6 +103,47 @@ public class MitoPerson implements Id {
         this.hasBicycle = Optional.of(hasBicycle);
     }
 
+    public Boolean hasEV(){
+        return household.isHasEV();
+    }
+
+    public String personAgeGroupTripGen(){
+        String ageGroup = "";
+        if (age < 19) {
+            ageGroup= "p.age_gr_1";
+        } else if (age < 30) {
+            ageGroup= "p.age_gr_2";
+        } else if (age < 50) {
+            ageGroup= "p.age_gr_3";
+        } else if (age < 60) {
+            ageGroup= "p.age_gr_4";
+        } else if (age < 70) {
+            ageGroup= "p.age_gr_5";
+        } else {
+            ageGroup= "p.age_gr_6";
+        }
+        return ageGroup;
+    }
+
+    public String personAgeGroupModeChoice(){
+        String ageGroup = "";
+        if (age < 18) {
+            ageGroup= "p.age_0_to_17";
+        } else if (age < 30) {
+            ageGroup= "p.age_18_to_29";
+        } else if (age < 40) {
+            ageGroup= "p.age_30_to_39";
+        } else if (age < 50) {
+            ageGroup= "p.age_age_40_to_49gr_4";
+        } else if (age < 60) {
+            ageGroup= "p.age_50_to_59";
+        } else {
+            ageGroup= "p.age_above_60";
+        }
+        return ageGroup;
+
+    }
+
     public MitoHousehold getHousehold() {
         return household;
     }
@@ -116,6 +167,14 @@ public class MitoPerson implements Id {
 
     public void setActChain(LinkedList<Activity> actChain) {
         this.actChain = actChain;
+    }
+
+    public Map<String, Double> getAdditionalAttributes() {
+        return additionalAttributes;
+    }
+
+    public void setAdditionalAttributes(Map<String, Double> additionalAttributes) {
+        this.additionalAttributes = additionalAttributes;
     }
 
     public static class Activity implements Comparable<Activity>{

@@ -7,7 +7,9 @@ import org.apache.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class PersonsReader extends AbstractCsvReader {
@@ -119,5 +121,24 @@ public class PersonsReader extends AbstractCsvReader {
         pp.setHousehold(hh);
         hh.addPerson(pp);
         dataSet.addPerson(pp);
+
+        Map<String, Double> additionalAttributes = new LinkedHashMap<>();
+        additionalAttributes.put("p.isMobile_HBW_car", 0.);
+        additionalAttributes.put("p.isMobile_HBW_PT", 0.);
+        additionalAttributes.put("p.isMobile_HBW_cycle", 0.);
+        additionalAttributes.put("p.isMobile_HBW_walk", 0.);
+        additionalAttributes.put("p.TTB_HBW_car", 0.);
+        additionalAttributes.put("p.TTB_HBW_PT", 0.);
+        additionalAttributes.put("p.TTB_HBW_cycle", 0.);
+        additionalAttributes.put("p.TTB_HBW_walk", 0.);
+        additionalAttributes.put("p.isMobile_HBE_car", 0.);
+        additionalAttributes.put("p.isMobile_HBE_PT", 0.);
+        additionalAttributes.put("p.isMobile_HBE_cycle", 0.);
+        additionalAttributes.put("p.isMobile_HBE_walk", 0.);
+        additionalAttributes.put("p.TTB_HBE_car", 0.);
+        additionalAttributes.put("p.TTB_HBE_PT", 0.);
+        additionalAttributes.put("p.TTB_HBE_cycle", 0.);
+        additionalAttributes.put("p.TTB_HBE_walk", 0.);
+        pp.setAdditionalAttributes(additionalAttributes);
     }
 }

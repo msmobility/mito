@@ -19,6 +19,8 @@ public class MitoTrip implements Id {
 
     private MitoPerson person;
 
+    private MitoAggregatePersona persona;
+
     private Mode tripMode;
 
     private int departureInMinutes = -1;
@@ -65,8 +67,19 @@ public class MitoTrip implements Id {
         return person;
     }
 
+    public MitoAggregatePersona getPersona() {
+        return persona;
+    }
+
     public void setPerson(MitoPerson person) {
         this.person = person;
+//        if (!person.getTrips().contains(this)) {
+//            person.addTrip(this);
+//        }
+    }
+
+    public void setPersona(MitoAggregatePersona persona) {
+        this.persona = persona;
 //        if (!person.getTrips().contains(this)) {
 //            person.addTrip(this);
 //        }

@@ -24,6 +24,8 @@ public class DataSet {
     private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
+
+    private final Map<Integer, MitoAggregatePersona> aggregatePersonas = new LinkedHashMap<>();
     private final Map<Integer, MitoSchool> schools = new LinkedHashMap<>();
     private final Map<Integer, MitoJob> jobs = new LinkedHashMap<>();
 
@@ -65,6 +67,8 @@ public class DataSet {
     public Map<Integer, MitoPerson> getPersons() {
         return Collections.unmodifiableMap(persons);
     }
+
+    public Map<Integer, MitoAggregatePersona> getAggregatePersonas(){return Collections.unmodifiableMap(aggregatePersonas);}
 
     public Map<Integer, MitoZone> getZones() {
         return Collections.unmodifiableMap(zones);
@@ -128,6 +132,13 @@ public class DataSet {
         MitoPerson test = persons.putIfAbsent(person.getId(), person);
         if(test != null) {
             throw new IllegalArgumentException("MitoPerson id " + person.getId() + " already exists!");
+        }
+    }
+
+    public void addPersona(final MitoAggregatePersona persona) {
+        MitoAggregatePersona test = aggregatePersonas.putIfAbsent(persona.getId(), persona);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoPerson id " + persona.getId() + " already exists!");
         }
     }
 

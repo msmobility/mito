@@ -71,6 +71,10 @@ public class Resources {
         return baseDirectory.resolve(getString(PERSONS));
     }
 
+    public Path getTripsFilePath() {
+        return baseDirectory.resolve(getString(TRIPS));
+    }
+
     public Path getDwellingsFilePath() {
         return baseDirectory.resolve(getString(DWELLINGS));
     }
