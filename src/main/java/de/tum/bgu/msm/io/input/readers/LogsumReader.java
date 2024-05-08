@@ -37,7 +37,7 @@ public class LogsumReader extends AbstractCsvReader {
 
     public void read() {
         for (Purpose purpose : purposes) {
-            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/normalized/" + purpose + "_hasEV" + ".csv";
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_hasEV" + ".csv";
             Path filePath = Paths.get(fileName);
             super.read(filePath, ",");
             logger.info("Reading logsum from csv file" + fileName);
@@ -46,7 +46,7 @@ public class LogsumReader extends AbstractCsvReader {
         }
         dataSet.setLogsumByPurpose_EV(logsumMatricesByPurpose_EV);
         for (Purpose purpose : purposes) {
-            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/normalized/" + purpose + "_noEV" + ".csv";
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
             Path filePath = Paths.get(fileName);
             super.read(filePath, ",");
             logger.info("Reading logsum from csv file" + fileName);
@@ -60,9 +60,9 @@ public class LogsumReader extends AbstractCsvReader {
     @Override
     public void processHeader(String[] header) {
         List<String> headerList = Arrays.asList(header);
-        posOrigin = headerList.indexOf("\"origin\"");
-        posDestination = headerList.indexOf("\"destination\"");
-        posLogsum = headerList.indexOf("\"logsum\"");
+        posOrigin = headerList.indexOf("origin");
+        posDestination = headerList.indexOf("destination");
+        posLogsum = headerList.indexOf("logsum");
     }
 
     @Override
