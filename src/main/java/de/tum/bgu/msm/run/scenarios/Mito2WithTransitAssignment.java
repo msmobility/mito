@@ -7,7 +7,6 @@ import de.tum.bgu.msm.MitoModel2;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.run.scenarios.socialNetwork.MitoModel2WithSN;
 import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
 import de.tum.bgu.msm.trafficAssignment.ConfigureMatsimPt;
