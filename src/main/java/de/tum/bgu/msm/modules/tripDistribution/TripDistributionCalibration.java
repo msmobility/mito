@@ -92,8 +92,8 @@ public class TripDistributionCalibration extends Module {
             ratio = Math.max(ratio, 0.5);
             ratio = Math.min(ratio, 2);
 
-            logsumParameters.put(purpose,logsumParameters.get(purpose)*ratio);
-            //distanceParameters.put(purpose, distanceParameters.get(purpose) * ratio);
+            //logsumParameters.put(purpose,logsumParameters.get(purpose)*ratio);
+            distanceParameters.put(purpose, distanceParameters.get(purpose) * ratio);
             pw.println(iteration + "," +
                     purpose + "," +
                     observedAverageDistances.get(purpose) + "," +

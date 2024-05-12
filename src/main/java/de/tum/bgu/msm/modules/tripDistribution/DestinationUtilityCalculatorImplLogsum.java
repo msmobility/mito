@@ -5,21 +5,21 @@ import de.tum.bgu.msm.data.Purpose;
 public class DestinationUtilityCalculatorImplLogsum implements DestinationUtilityCalculator {
 
     private final static double LOGSUM_PARAM_HBW = 1;
-    private final static double DISTANCE_PARAM_HBW = -0.5*0.122210778859941;
+    private final static double DISTANCE_PARAM_HBW = -0.5*0.123006211921797;
 
     private final static double LOGSUM_PARAM_HBE = 1;
-    private final static double DISTANCE_PARAM_HBE = -0.5*0.468797162530719;
+    private final static double DISTANCE_PARAM_HBE = -0.5*0.466859588673074;
 
     private final static double LOGSUM_PARAM_HBS = 1;
-    private final static double DISTANCE_PARAM_HBS = -0.5*0.710841160126759;
+    private final static double DISTANCE_PARAM_HBS = -0.5*0.707099605214351;
     private final static double LOGSUM_PARAM_HBO = 1;
-    private final static double DISTANCE_PARAM_HBO = -0.5*0.289173930886765;
+    private final static double DISTANCE_PARAM_HBO = -0.5*0.288048089619584;
     private final static double LOGSUM_PARAM_HBR = 1;
-    private final static double DISTANCE_PARAM_HBR = -0.5*0.288421176167328;
+    private final static double DISTANCE_PARAM_HBR = -0.5*0.286911794688365;
     private final static double logsumParamNhbw = 1;
-    private final static double DISTANCE_PARAM_NHBW = -0.5*0.135173960756805;
+    private final static double DISTANCE_PARAM_NHBW = -0.5*0.141392969613424;
     private final static double logsumParamNhbo = 1;
-    private final static double DISTANCE_PARAM_NHBO = -0.5*0.204288310023297;
+    private final static double DISTANCE_PARAM_NHBO = -0.5*0.205053811138059;
     private final static double ALPHA_PARAM =  1;
     private double attractionParam;
     private double logsumParam;
@@ -60,9 +60,9 @@ public class DestinationUtilityCalculatorImplLogsum implements DestinationUtilit
                 throw new RuntimeException("not implemented!");
         }
 
-        logsumParam = logsumParam * logsumCalibrationK;
+        //logsumParam = logsumParam * logsumCalibrationK;
 
-        //distanceParam = distanceParam * distanceCalibrationK;
+        distanceParam = distanceParam * distanceCalibrationK;
 
         attractionParam = ALPHA_PARAM;
 

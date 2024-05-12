@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class LogsumCalculator2 {
@@ -12,6 +13,8 @@ public class LogsumCalculator2 {
     private final Map<Mode, Map<String, Double>> coef;
     private static final double SPEED_WALK_KMH = 4;
     private static final double SPEED_BICYCLE_KMH = 10;
+
+
 
     public LogsumCalculator2(Map<Mode, Map<String, Double>> coef) {
         this.coef = coef;
@@ -24,7 +27,8 @@ public class LogsumCalculator2 {
             TravelTimes travelTimes,
             double travelDistanceAuto,
             double travelDistanceNMT,
-            double peakHour_s) {
+            double peakHour_s,
+            Map<Integer, Boolean> evForbidden) {
 
         EnumMap<Mode, Double> utilities = calculateUtilities(hasEV,
                 originZone, destinationZone, travelTimes
@@ -55,6 +59,12 @@ public class LogsumCalculator2 {
                         Math.exp(utilityBicycle) +
                         Math.exp(utilityWalk) +
                         Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
+
+        if(evForbidden.get(destinationZone.getId()) && !evForbidden.get(originZone.getId())){
+            expsumTopLevel = Math.exp(utilityBicycle) +
+                    Math.exp(utilityWalk) +
+                    Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
+        }
 
         return Math.log(expsumTopLevel);
     }

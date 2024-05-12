@@ -122,7 +122,7 @@ public final class CalibrateDestinationChoiceLogsum {
                 new TripDistributionCalibration(dataSet, Purpose.getMandatoryPurposes(),
                 logsumCalibrationParameters, attractionCalibrationParameters);
 
-        int iterations = 20;
+        int iterations = 30;
         for (int iteration = 0; iteration < iterations; iteration++) {
             tripDistributionCalibrationMandatory.update(iteration);
             distributionMandatory = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getMandatoryPurposes(),

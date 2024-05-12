@@ -11,8 +11,7 @@ import de.tum.bgu.msm.resources.Resources;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,10 +45,32 @@ public class LogsumByAveragePerson_TransportPolicy {
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();
         new EconomicStatusReader(dataSet).read();
+        for (MitoZone zoneId : dataSet.getZones().values()) {
+            evForbidden.put(zoneId.getId(), false);
+        }
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("////nas.ads.mwn.de/tubv/mob/projects/2021/DatSim/abit/transportpolicypaper/lowEmissionZones.csv"));
+            br.readLine();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length > 0) {
+                    int zoneId = Integer.parseInt(values[0].trim());
+                    evForbidden.put(zoneId, true);
+                }
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+
+
     public void run() {
-        boolean[] hasEVOptions = {true,false};
+        //boolean[] hasEVOptions = {true,false};
+        boolean[] hasEVOptions = {false};
         for (Purpose purpose : givenPurposes) {
             for(boolean hasEV : hasEVOptions) {
                 this.coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
@@ -92,15 +113,24 @@ public class LogsumByAveragePerson_TransportPolicy {
         final double travelDistanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(originZone.getId(), destinationZone.getId());
         final double travelDistanceNMT = dataSet.getTravelDistancesNMT().getTravelDistance(originZone.getId(), destinationZone.getId());
 
-        return calculator.calculateLogsumByZone(hasEV, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, 0);
+        return calculator.calculateLogsumByZone(hasEV, originZone, destinationZone, travelTimes, travelDistanceAuto, travelDistanceNMT, 0,
+                evForbidden);
     }
 
 
     private void writeLogsumAccessibility(Map<Integer, Map<Integer, Double>> logsumTable, Purpose purpose, boolean hasEV){
         PrintWriter pw;
         try {
-            String evStatus = hasEV ? "hasEV" : "noEV";
-            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_" + evStatus + ".csv";
+/*            String evStatus = hasEV ? "hasEV" : "noEV";
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + "_" + evStatus + ".csv";
+            pw = new PrintWriter(fileName);
+            pw.println("origin,destination,logsum");
+            for(MitoZone origin : dataSet.getZones().values()){
+                for (MitoZone destination : dataSet.getZones().values()) {
+                    pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
+                }
+            }*/
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
             pw = new PrintWriter(fileName);
             pw.println("origin,destination,logsum");
             for(MitoZone origin : dataSet.getZones().values()){
@@ -108,7 +138,6 @@ public class LogsumByAveragePerson_TransportPolicy {
                     pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
                 }
             }
-
             pw.close();
             logger.info("Output written to " + fileName);
         } catch (FileNotFoundException e) {
