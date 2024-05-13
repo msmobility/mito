@@ -40,16 +40,35 @@ public class LogsumReader extends AbstractCsvReader {
             String fileName = "F:/models/mitoAggregate/mitoMunich/skims/logsum/" + purpose + "_hasEV" + ".csv";
             Path filePath = Paths.get(fileName);
             super.read(filePath, ",");
-            logger.info("Reading logsum from csv file" + fileName);
+            logger.info("Reading logsum for EV hh from csv file" + fileName);
 
             logsumMatricesByPurpose_EV.put(purpose, new MatrixTravelDistances(logsumMatrices.get(purpose)));
         }
         dataSet.setLogsumByPurpose_EV(logsumMatricesByPurpose_EV);
+
+        logsumMatrices.clear();
         for (Purpose purpose : purposes) {
+            logsumMatrices.put(purpose, new IndexedDoubleMatrix2D(dataSet.getZones().values().stream().mapToInt(MitoZone::getId).toArray()));
+        }
+
+        for (Purpose purpose : purposes) {
+            String fileName;
+            // For low emission scenario run, uncomment following to determine file path based on the purpose
+/*            if (Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(purpose)) {
+                fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
+            } else if (Arrays.asList(Purpose.NHBW, Purpose.NHBO).contains(purpose)) {
+                fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
+            } else {
+                continue; // Skip if purpose is not handled (if any other purposes are present)
+            }*/
+
+            //For base scenario, uncomment followign and comment above code segment to read base logsums
+            fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
+
             String fileName = "F:/models/mitoAggregate/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
             Path filePath = Paths.get(fileName);
             super.read(filePath, ",");
-            logger.info("Reading logsum from csv file" + fileName);
+            logger.info("Reading logsum for non EV hh from csv file" + fileName);
 
             logsumMatricesByPurpose_NoEV.put(purpose, new MatrixTravelDistances(logsumMatrices.get(purpose)));
         }

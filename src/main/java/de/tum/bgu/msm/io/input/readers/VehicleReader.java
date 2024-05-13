@@ -32,7 +32,7 @@ public class VehicleReader extends AbstractCsvReader {
     @Override
     public void read() {
         logger.info("Reading vehicles micro data from ascii file");
-        Path filePath = Paths.get("C:\\models\\abit_standalone\\input\\newSP\\vv_2011_20230617.csv");
+        Path filePath = Paths.get("////nas.ads.mwn.de/tubv/mob/projects/2021/DatSim/abit/newSP/vv_2022_20231229.csv");
         super.read(filePath, ",");
     }
 
