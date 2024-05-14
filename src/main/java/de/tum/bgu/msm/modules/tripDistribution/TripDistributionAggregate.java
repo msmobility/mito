@@ -83,10 +83,10 @@ public final class TripDistributionAggregate extends Module {
 
     private void printMatrices() {
 
-        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona + "destinationChoice_"+ purposes.get(0) +"_results.csv");
+        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "destinationChoice_"+ purposes.get(0) +"_results.csv");
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
 
-        Path filePersona1 = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona + "destinationChoice_"+ purposes.get(0) +"_trips.csv");
+        Path filePersona1 = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "destinationChoice_"+ purposes.get(0) +"_trips.csv");
         PrintWriter pwtrips = MitoUtil.openFileForSequentialWriting(filePersona1.toAbsolutePath().toString(), false);
 
         IndexedDoubleMatrix2D destinationChoice = dataSet.getAggregateTripMatrix().get(Mode.taxi);

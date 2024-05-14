@@ -47,7 +47,7 @@ public class RawTripGeneratorAggregate {
     }
 
     private void summarizeResults() {
-        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona + "/TripGen_"+ purposes.get(0) +"_results.csv");
+        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "/TripGen_"+ purposes.get(0) +"_results.csv");
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
 
         IndexedDoubleMatrix2D destinationChoice = dataSet.getAggregateTripMatrix().get(Mode.taxi);

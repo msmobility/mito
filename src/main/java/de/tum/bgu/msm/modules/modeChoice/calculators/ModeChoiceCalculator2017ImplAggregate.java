@@ -11,15 +11,15 @@ import org.apache.log4j.Logger;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class ModeChoiceCalculator2017Aggregate implements ModeChoiceCalculatorAggregate {
+public class ModeChoiceCalculator2017ImplAggregate implements ModeChoiceCalculatorAggregate {
 
     private static final double SPEED_WALK_KMH = 4;
     private static final double SPEED_BICYCLE_KMH = 10;
     private final Purpose purpose;
-    private final static Logger logger = Logger.getLogger(ModeChoiceCalculator2017Aggregate.class);
+    private final static Logger logger = Logger.getLogger(ModeChoiceCalculator2017ImplAggregate.class);
     private final Map<Mode, Map<String, Double>> coef;
 
-    public ModeChoiceCalculator2017Aggregate(Purpose purpose, DataSet dataSet) {
+    public ModeChoiceCalculator2017ImplAggregate(Purpose purpose, DataSet dataSet) {
         this.purpose = purpose;
         coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
     }

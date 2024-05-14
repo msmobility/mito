@@ -3,8 +3,6 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.modeChoice.calculators.*;
-import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
@@ -18,14 +16,13 @@ import java.util.stream.Collectors;
 
 import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
 
-public class ModeChoice extends Module {
+public class ModeChoiceAggregate extends Module {
 
-    private final static Logger logger = Logger.getLogger(ModeChoice.class);
+    private final static Logger logger = Logger.getLogger(ModeChoiceAggregate.class);
 
-    private final Map<Purpose, ModeChoiceCalculator> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
-    private final Map<Purpose, ModeChoiceCalculatorAggregate> modeChoiceCalculatorByPurposeAggregate = new EnumMap<>(Purpose.class);
+    private final Map<Purpose, ModeChoiceCalculatorAggregate> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
 
-    public ModeChoice(DataSet dataSet, List<Purpose> purposes) {
+    public ModeChoiceAggregate(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
         boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
         //AV option is deactivated for now, since it uses outdate mode choice calculators.
@@ -42,15 +39,8 @@ public class ModeChoice extends Module {
 
     }
 
-    public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {
-        final ModeChoiceCalculator prev = modeChoiceCalculatorByPurpose.put(purpose, modeChoiceCalculator);
-        if (prev != null) {
-            logger.info("Overwrote mode choice calculator for purpose " + purpose + " with " + modeChoiceCalculator.getClass());
-        }
-    }
-
-    public void registerModeChoiceCalculatorAggregate(Purpose purpose, ModeChoiceCalculatorAggregate modeChoiceCalculator) {
-        final ModeChoiceCalculatorAggregate prev = modeChoiceCalculatorByPurposeAggregate.put(purpose, modeChoiceCalculator);
+    public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculatorAggregate modeChoiceCalculator) {
+        final ModeChoiceCalculatorAggregate prev = modeChoiceCalculatorByPurpose.put(purpose, modeChoiceCalculator);
         if (prev != null) {
             logger.info("Overwrote mode choice calculator for purpose " + purpose + " with " + modeChoiceCalculator.getClass());
         }
@@ -69,7 +59,7 @@ public class ModeChoice extends Module {
     private void modeChoiceByPurpose() {
         ConcurrentExecutor<Void> executor = ConcurrentExecutor.fixedPoolService(Purpose.values().length);
         for (Purpose purpose : purposes) {
-            executor.addTaskToQueue(new ModeChoiceByPurpose(purpose, dataSet, modeChoiceCalculatorByPurpose.get(purpose)));
+            executor.addTaskToQueue(new modeChoiceByPurposeAggregate(purpose, dataSet, modeChoiceCalculatorByPurpose.get(purpose)));
         }
         executor.execute();
     }
@@ -104,15 +94,15 @@ public class ModeChoice extends Module {
         }
     }
 
-    static class ModeChoiceByPurpose extends RandomizableConcurrentFunction<Void> {
+    static class modeChoiceByPurposeAggregate extends RandomizableConcurrentFunction<Void> {
 
         private final Purpose purpose;
         private final DataSet dataSet;
         private final TravelTimes travelTimes;
-        private final ModeChoiceCalculator modeChoiceCalculator;
+        private final ModeChoiceCalculatorAggregate modeChoiceCalculator;
         private int countTripsSkipped;
 
-        ModeChoiceByPurpose(Purpose purpose, DataSet dataSet, ModeChoiceCalculator modeChoiceCalculator) {
+        modeChoiceByPurposeAggregate(Purpose purpose, DataSet dataSet, ModeChoiceCalculatorAggregate modeChoiceCalculator) {
             super(MitoUtil.getRandomObject().nextLong());
             this.purpose = purpose;
             this.dataSet = dataSet;
@@ -156,7 +146,6 @@ public class ModeChoice extends Module {
         }
 
         private void chooseMode(MitoTrip trip, EnumMap<Mode, Double> probabilities) {
-
             if (probabilities == null) {
                 countTripsSkipped++;
                 return;
