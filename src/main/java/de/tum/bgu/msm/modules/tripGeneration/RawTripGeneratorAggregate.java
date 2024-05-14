@@ -3,9 +3,12 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 
+import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,28 @@ public class RawTripGeneratorAggregate {
     public void run (double scaleFactorForGeneration, MitoAggregatePersona persona) {
         generateByPurposeMultiThreaded(scaleFactorForGeneration);
         logTripGeneration();
+        summarizeResults();
+    }
+
+    private void summarizeResults() {
+        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona + "/TripGen_"+ purposes.get(0) +"_results.csv");
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
+
+        IndexedDoubleMatrix2D destinationChoice = dataSet.getAggregateTripMatrix().get(Mode.taxi);
+        for (MitoZone origin : dataSet.getZones().values()){
+            pwh.print(origin.getId());
+            pwh.print(",");
+        }
+        pwh.println();
+
+        for (MitoZone origin : dataSet.getZones().values()){
+            for(MitoZone destination : dataSet.getZones().values()) {
+                pwh.print(destinationChoice.getIndexed(origin.getId(), destination.getId()));
+                pwh.print(",");
+            }
+            pwh.println();
+        }
+        pwh.close();
     }
 
     private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {

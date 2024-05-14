@@ -76,13 +76,13 @@ public final class MitoModelAggregate {
             for (Purpose purpose : Purpose.getMandatoryPurposes()) {
                 List<Purpose> purposes = Collections.singletonList(purpose);
                 TravelDemandGeneratorAggregate ttd = new TravelDemandGeneratorAggregate.Builder(dataSet, persona, purposes).build();
-                ttd.generateTravelDemand(scenarioName);
+                ttd.generateTravelDemand(scenarioName, purposes.get(0));
                 printOutline(startTime);            }
 
             for (Purpose purpose : Purpose.getDiscretionaryPurposes()) {
                 List<Purpose> purposes = Collections.singletonList(purpose);
                 TravelDemandGeneratorAggregate ttd = new TravelDemandGeneratorAggregate.Builder(dataSet, persona, purposes).build();
-                ttd.generateTravelDemand(scenarioName);
+                ttd.generateTravelDemand(scenarioName, purposes.get(0));
                 printOutline(startTime);
             }
         }
@@ -116,7 +116,7 @@ public final class MitoModelAggregate {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
         new TripListReader(dataSet).read();
-        //new LogsumReader(dataSet).read();
+        new LogsumReader(dataSet).read();
 
 
     }

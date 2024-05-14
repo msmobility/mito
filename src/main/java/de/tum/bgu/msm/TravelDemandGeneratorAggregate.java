@@ -7,8 +7,8 @@ import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.aggregate.PersonaAggregation;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Aggregate;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculatorAggregate;
+import de.tum.bgu.msm.modules.modeChoice.calculators.*;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
@@ -121,29 +121,39 @@ public final class TravelDemandGeneratorAggregate {
         public Builder(DataSet dataSet, MitoAggregatePersona persona, List<Purpose> purposes) {
             this.dataSet = dataSet;
 
-            tripGenerationMandatory = new TripGenerationAggregate(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
+            Purpose purpose = purposes.get(0);
+            if (purpose.equals(Purpose.HBW) ||  purpose.equals(Purpose.HBE)){
+            tripGenerationMandatory = new TripGenerationAggregate(dataSet,
+                    new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, purposes);
-            /*distributionMandatory = new TripDistributionAggregate(dataSet, purposes, false,
-                    new DestinationUtilityCalculatorFactoryImplLogsumAggregate());
+            distributionMandatory = new TripDistributionAggregate(dataSet, purposes, false,
+                    new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
             modeChoiceMandatory = new ModeChoice(dataSet, purposes);
-            Purpose.getMandatoryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Aggregate(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
-            });
-            timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, purposes);
+            //Purpose.getMandatoryPurposes().forEach(purpose -> {
+                ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculatorAggregate(purpose,
+                        new CalibratingModeChoiceCalculatorImplAggregate(
+                                new ModeChoiceCalculator2017ImplAggregate(purpose, dataSet),
+                                dataSet.getModeChoiceCalibrationDataAggregate()));
+           // });
+                /*timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, purposes);
+CalibratingModeChoiceCalculatorImplAggregate(ModeChoiceCalculatorAggregate base, ModeChoiceCalibrationDataAggregate calibrationData)
 */
-            tripGenerationDiscretionary = new TripGenerationAggregate(dataSet, new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
-            //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
-            /*travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, purposes);
-            distributionDiscretionary = new TripDistributionAggregate(dataSet, purposes, false,
-                    new DestinationUtilityCalculatorFactoryImplLogsumAggregate());
-            modeChoiceDiscretionary = new ModeChoice(dataSet, purposes);
-            Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Aggregate(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
-            });
-            timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, purposes);
-            //until here it must be divided into two blocks - mandatory and discretionary
+            } else {
+                tripGenerationDiscretionary = new TripGenerationAggregate(dataSet,
+                    new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
+                //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
+                //travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, purposes);
+                distributionDiscretionary = new TripDistributionAggregate(dataSet, purposes, false,
+                    new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
+                /*modeChoiceDiscretionary = new ModeChoice(dataSet, purposes);
+                Purpose.getDiscretionaryPurposes().forEach(purpose -> {
+                    ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Aggregate(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+                });
+                timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, purposes);
+                //until here it must be divided into two blocks - mandatory and discretionary*/
+            }
 
-            tripScaling = new TripScaling(dataSet, purposes);
+           /* tripScaling = new TripScaling(dataSet, purposes);
             matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, purposes);
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
                 longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
@@ -251,12 +261,13 @@ public final class TravelDemandGeneratorAggregate {
         }
     }
 
-    public void generateTravelDemand(String scenarioName) {
+    public void generateTravelDemand(String scenarioName, Purpose purpose) {
 
 
         logger.info("Running Module: Aggregated Trip Generation");
 
         initializeTripMatrix();
+        if (purpose.equals(Purpose.HBW)|| purpose.equals(Purpose.HBE)){
         tripGenerationMandatory.run();
 
         //new Telework(dataSet, Purpose.getMandatoryPurposes(), 0.5).run();
@@ -267,26 +278,29 @@ public final class TravelDemandGeneratorAggregate {
         //travelTimeBudgetMandatory.run();
         //((TravelTimeBudgetModule) travelTimeBudget).adjustDiscretionaryPurposeBudgets(Purpose.getMandatoryPurposes());
 
-        /*logger.info("Running Module: Microscopic Trip Distribution");
+        logger.info("Running Module: Microscopic Trip Distribution");
         distributionMandatory.run();
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        modeChoiceMandatory.run();
+        /*modeChoiceMandatory.run();
         logger.info("Running time of day choice");
         timeOfDayChoiceMandatory.run();
+
 */
-        tripGenerationDiscretionary.run();
-        //logger.info("Running Module: Person to Trip Assignment");
-        //personTripAssignmentDiscretionary.run();
-        logger.info("Running Module: Travel Time Budget Calculation");
+        } else {
+            tripGenerationDiscretionary.run();
+            //logger.info("Running Module: Person to Trip Assignment");
+            //personTripAssignmentDiscretionary.run();
+            logger.info("Running Module: Travel Time Budget Calculation");
         /*travelTimeBudgetDiscretionary.run();
         ((TravelTimeBudgetModule) travelTimeBudgetDiscretionary).adjustDiscretionaryPurposeBudgets();
-        logger.info("Running Module: Microscopic Trip Distribution");
-        distributionDiscretionary.run();
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
+        logger.info("Running Module: Microscopic Trip Distribution");*/
+            distributionDiscretionary.run();
+        /*logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoiceDiscretionary.run();
         logger.info("Running time of day choice");
         timeOfDayChoiceDiscretionary.run();
 */
+        }
 
         logger.info("Running trip scaling");
         /*tripScaling.run();

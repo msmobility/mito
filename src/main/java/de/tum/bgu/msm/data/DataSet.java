@@ -7,6 +7,7 @@ import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationDataAggregate;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.matsim.api.core.v01.population.Population;
 
@@ -53,6 +54,8 @@ public class DataSet {
 
     private Population population;
     private final ModeChoiceCalibrationData modeChoiceCalibrationData = new ModeChoiceCalibrationData();
+
+    private final ModeChoiceCalibrationDataAggregate modeChoiceCalibrationDataAggregate = new ModeChoiceCalibrationDataAggregate();
 
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
@@ -263,6 +266,10 @@ public class DataSet {
 
     public ModeChoiceCalibrationData getModeChoiceCalibrationData() {
         return modeChoiceCalibrationData;
+    }
+
+    public ModeChoiceCalibrationDataAggregate getModeChoiceCalibrationDataAggregate() {
+        return modeChoiceCalibrationDataAggregate;
     }
 
 
