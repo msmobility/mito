@@ -156,7 +156,8 @@ public class ModeChoice_LowEmissionZone extends Module {
             }
 
 
-            if (evForbidden.get(trip.getTripDestination().getZoneId()) && !trip.getPerson().getHousehold().isHasEV() &&
+            if (evForbidden.get(trip.getTripDestination().getZoneId()) && !evForbidden.get(trip.getTripOrigin().getZoneId()) &&
+                    !trip.getPerson().getHousehold().isHasEV() &&
                     Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(trip.getTripPurpose())) {
                 probabilities.put(Mode.autoDriver, 0.0);
                 probabilities.put(Mode.autoPassenger,0.0);
