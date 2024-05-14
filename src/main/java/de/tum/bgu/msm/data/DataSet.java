@@ -4,11 +4,15 @@ import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
+import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.matsim.api.core.v01.population.Population;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class DataSet {
 
@@ -18,6 +22,8 @@ public class DataSet {
     private TravelDistances travelDistancesNMT;
 
     private TravelDistances logsum;
+
+    private ConcurrentMap<Mode, IndexedDoubleMatrix2D> aggregateTripMatrixByMode = new ConcurrentHashMap<>();
 
     private double peakHour = Double.NaN;
 
@@ -93,6 +99,8 @@ public class DataSet {
     public Map<Integer, MitoTrip> getTripSubsample() {
         return Collections.unmodifiableMap(tripSubsample);
     }
+
+    public double averageTrips;
 
     public void addTrip(final MitoTrip trip) {
         MitoTrip test = trips.putIfAbsent(trip.getId(), trip);
@@ -274,4 +282,18 @@ public class DataSet {
         this.logsumMatrixByPurpose_NoEV = logsumMatrixByPurpose;
     }
 
+
+    public void setAggregateTripMatrix(ConcurrentMap<Mode, IndexedDoubleMatrix2D> trips) {
+        this.aggregateTripMatrixByMode = trips;
+    }
+
+    public ConcurrentMap<Mode, IndexedDoubleMatrix2D> getAggregateTripMatrix(){return aggregateTripMatrixByMode;}
+
+    public double getAverageTrips() {
+        return averageTrips;
+    }
+
+    public void setAverageTrips(double averageTrips) {
+        this.averageTrips = averageTrips;
+    }
 }

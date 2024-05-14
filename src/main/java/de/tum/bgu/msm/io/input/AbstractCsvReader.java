@@ -45,7 +45,7 @@ public abstract class AbstractCsvReader extends AbstractInputReader{
                 e.printStackTrace();
             }
         }
-        logger.info(this.getClass().getSimpleName() + ": Read " + numberOfRecords + " records.");
+        //logger.info(this.getClass().getSimpleName() + ": Read " + numberOfRecords + " records.");
     }
 
     private void initializeReader(Path filePath, String delimiter) {

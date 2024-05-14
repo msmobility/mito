@@ -82,7 +82,7 @@ public class MitoHousehold implements Id, MicroLocation {
     public double getCarsPerAdult(){
         int adults = 0;
         double carsPerAdult = 0.;
-        for (MitoPerson p : persons.values()) {
+        for (MitoPerson p : Collections.unmodifiableMap(persons).values()) {
             if (p.getAge() > 17) {
                 adults++;
             }

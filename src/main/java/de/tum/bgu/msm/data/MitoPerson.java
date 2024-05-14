@@ -30,6 +30,8 @@ public class MitoPerson implements Id {
 
     private Map<String, Double> additionalAttributes = new LinkedHashMap<>();
 
+    private Map<String, String> additionalStringAttributes = new LinkedHashMap<>();
+
     public MitoPerson(int id, MitoOccupationStatus mitoOccupationStatus, MitoOccupation occupation, int age, MitoGender mitoGender, boolean driversLicense) {
         this.id = id;
         this.mitoOccupationStatus = mitoOccupationStatus;
@@ -134,7 +136,7 @@ public class MitoPerson implements Id {
         } else if (age < 40) {
             ageGroup= "p.age_30_to_39";
         } else if (age < 50) {
-            ageGroup= "p.age_age_40_to_49gr_4";
+            ageGroup= "p.age_age_40_to_49";
         } else if (age < 60) {
             ageGroup= "p.age_50_to_59";
         } else {
@@ -142,6 +144,38 @@ public class MitoPerson implements Id {
         }
         return ageGroup;
 
+    }
+
+    public int getSize5(){
+        return household.getSize5();
+    }
+
+    public int getChildren(){
+        return household.getChildren();
+    }
+
+    public int getAutos3(){
+        return household.getAutos3();
+    }
+
+    public int getBikes1(){
+        return household.getBikes1();
+    }
+
+    public int getEconomicStatus(){
+        return household.getEconomicStatus();
+    }
+
+    public String getIncomeClass(){
+        return household.getIncomeClass();
+    }
+
+    public int getBBSR(){
+        return household.getBBSR();
+    }
+
+    public Double getCarsPerAdult(){
+        return household.getCarsPerAdult();
     }
 
     public MitoHousehold getHousehold() {
@@ -169,12 +203,114 @@ public class MitoPerson implements Id {
         this.actChain = actChain;
     }
 
-    public Map<String, Double> getAdditionalAttributes() {
-        return additionalAttributes;
+    public String getIsMobile_HBW_car() {
+        return additionalStringAttributes.get("p.isMobile_HBW_car");
     }
+
+    public String getIsMobile_HBW_PT() {
+        return additionalStringAttributes.get("p.isMobile_HBW_PT");
+    }
+
+    public String getIsMobile_HBW_cycle() {
+        return additionalStringAttributes.get("p.isMobile_HBW_cycle");
+    }
+
+    public String getIsMobile_HBW_walk() {
+        return additionalStringAttributes.get("p.isMobile_HBW_walk");
+    }
+
+    public Double getTTB_HBW_car() {
+        return additionalAttributes.get("p.TTB_HBW_car");
+    }
+
+    public Double getTTB_HBW_PT() {
+        return additionalAttributes.get("p.TTB_HBW_PT");
+    }
+
+    public Double getTTB_HBW_cycle() {
+        return additionalAttributes.get("p.TTB_HBW_cycle");
+    }
+
+    public Double getTTB_HBW_walk() {
+        return additionalAttributes.get("p.TTB_HBW_walk");
+    }
+
+    public String getIsMobile_HBE_car() {
+        return additionalStringAttributes.get("p.isMobile_HBE_car");
+    }
+
+    public String getIsMobile_HBE_PT() {
+        return additionalStringAttributes.get("p.isMobile_HBE_PT");
+    }
+
+    public String getIsMobile_HBE_cycle() {
+        return additionalStringAttributes.get("p.isMobile_HBE_cycle");
+    }
+
+    public String getIsMobile_HBE_walk() {
+        return additionalStringAttributes.get("p.isMobile_HBE_walk");
+    }
+
+    public Double getTTB_HBE_car() {
+        return additionalAttributes.get("p.TTB_HBE_car");
+    }
+
+    public Double getTTB_HBE_PT() {
+        return additionalAttributes.get("p.TTB_HBE_PT");
+    }
+
+    public Double getTTB_HBE_cycle() {
+        return additionalAttributes.get("p.TTB_HBE_cycle");
+    }
+
+    public Double getTTB_HBE_walk() {
+        return additionalAttributes.get("p.TTB_HBE_walk");
+    }
+
+    public Double getHBW_trips() {
+        return additionalAttributes.get("p.HBW_trips");
+    }
+
+    public Double getHBE_trips() {
+        return additionalAttributes.get("p.HBE_trips");
+    }
+
+    public Double getHBS_trips() {
+        return additionalAttributes.get("p.HBS_trips");
+    }
+
+    public Double getHBO_trips() {
+        return additionalAttributes.get("p.HBO_trips");
+    }
+
+    public Double getHBR_trips() {
+        return additionalAttributes.get("p.HBR_trips");
+    }
+
+    public Double getNHBW_trips() {
+        return additionalAttributes.get("p.NHBW_trips");
+    }
+
+    public Double getNHBO_trips() {
+        return additionalAttributes.get("p.NHBO_trips");
+    }
+
+
 
     public void setAdditionalAttributes(Map<String, Double> additionalAttributes) {
         this.additionalAttributes = additionalAttributes;
+    }
+
+    public Map<String, Double> getAdditionalAttributes(){
+        return additionalAttributes;
+    }
+
+    public void setAdditionalStringAttributes(Map<String, String> additionalAttributes) {
+        this.additionalStringAttributes = additionalAttributes;
+    }
+
+    public Map<String, String> getAdditionalStringAttributes(){
+        return additionalStringAttributes;
     }
 
     public static class Activity implements Comparable<Activity>{

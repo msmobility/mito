@@ -62,7 +62,7 @@ public class TripListReader extends AbstractCsvReader {
         posTimeBus = headerList.indexOf("time_bus");
         posMode = headerList.indexOf("mode");
         posTimeAuto = headerList.indexOf("time_auto");
-        posTimeMetro = headerList.indexOf("time_metro");
+        posTimeMetro = headerList.indexOf("time_tram_metro");
         posTimeTrain = headerList.indexOf("time_train");
         posDepartureTime = headerList.indexOf("departure_time");
         posDepartureTimeReturn = headerList.indexOf("departure_time_return");
@@ -78,45 +78,129 @@ public class TripListReader extends AbstractCsvReader {
         if (purposeStr.equals("HBW")){
             final int travelerId = Integer.parseInt(record[posPerson]);
             MitoPerson pp = dataSet.getPersons().get(travelerId);
+            double trips = pp.getAdditionalAttributes().get("p.HBW_trips") + 1;
+            pp.getAdditionalAttributes().put("p.HBW_trips", trips);
+
             final String modeStr = record[posMode];
             if (modeStr.equals("autoDriver")){
-                pp.getAdditionalAttributes().put("p.isMobile_HBW_car",1.);
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBW_car","yes");
                 double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBW_car")+
                         2*Double.parseDouble(record[posTimeAuto]);
                 pp.getAdditionalAttributes().put("p.isMobile_HBW_car",travelTime);
             } else if (modeStr.equals("autoPassenger")){
-                pp.getAdditionalAttributes().put("p.isMobile_HBW_car",1.);
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBW_car","yes");
                 double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBW_car")+
                         2*Double.parseDouble(record[posTimeAuto]);
                 pp.getAdditionalAttributes().put("p.isMobile_HBW_car",travelTime);
             } else if (modeStr.equals("bicycle")){
-                pp.getAdditionalAttributes().put("p.isMobile_HBW_cycle",1.);
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBW_cycle","yes");
                 double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBW_cycle")+
-                        2*Double.parseDouble(record[posDistance])/ Properties.SPEED_BICYCLE_M_MIN;;
+                        2*Double.parseDouble(record[posDistance])/ Properties.SPEED_BICYCLE_M_MIN / 1000;
                 pp.getAdditionalAttributes().put("p.TTB_HBW_cycle",travelTime);
             } else if (modeStr.equals("bus")){
-                pp.getAdditionalAttributes().put("p.isMobile_HBW_PT",1.);
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBW_PT","yes");
                 double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBW_PT")+
                         2*Double.parseDouble(record[posTimeBus]);
                 pp.getAdditionalAttributes().put("p.TTB_HBW_PT",travelTime);
             } else if (modeStr.equals("train")){
-                pp.getAdditionalAttributes().put("p.isMobile_HBW_PT",1.);
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBW_PT","yes");
                 double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBW_PT")+
                         2*Double.parseDouble(record[posTimeTrain]);
                 pp.getAdditionalAttributes().put("p.TTB_HBW_PT",travelTime);
             } else if (modeStr.equals("tramOrMetro")){
-                pp.getAdditionalAttributes().put("p.isMobile_HBW_PT",1.);
+                //logger.info(pp.getId() + "   trip id " + id);
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBW_PT","yes");
                 double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBW_PT")+
                         2*Double.parseDouble(record[posTimeMetro]);
                 pp.getAdditionalAttributes().put("p.TTB_HBW_PT",travelTime);
             } else if (modeStr.equals("walk")){
-                pp.getAdditionalAttributes().put("p.isMobile_HBW_walk",1.);
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBW_walk","yes");
                 double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBW_walk")+
-                        2*Double.parseDouble(record[posDistance])/ Properties.SPEED_WALK_M_MIN;;
+                        2*Double.parseDouble(record[posDistance])/ Properties.SPEED_WALK_M_MIN / 1000;
                 pp.getAdditionalAttributes().put("p.TTB_HBW_walk",travelTime);
             }
         }
 
+        if (purposeStr.equals("HBE")){
+            final int travelerId = Integer.parseInt(record[posPerson]);
+            MitoPerson pp = dataSet.getPersons().get(travelerId);
+
+            double trips = pp.getAdditionalAttributes().get("p.HBE_trips") + 1;
+            pp.getAdditionalAttributes().put("p.HBE_trips", trips);
+
+            final String modeStr = record[posMode];
+            if (modeStr.equals("autoDriver")){
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBE_car","yes");
+                double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBE_car")+
+                        2*Double.parseDouble(record[posTimeAuto]);
+                pp.getAdditionalAttributes().put("p.isMobile_HBE_car",travelTime);
+            } else if (modeStr.equals("autoPassenger")){
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBE_car","yes");
+                double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBE_car")+
+                        2*Double.parseDouble(record[posTimeAuto]);
+                pp.getAdditionalAttributes().put("p.isMobile_HBE_car",travelTime);
+            } else if (modeStr.equals("bicycle")){
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBE_cycle","yes");
+                double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBE_cycle")+
+                        2*Double.parseDouble(record[posDistance])/ Properties.SPEED_BICYCLE_M_MIN / 1000;;
+                pp.getAdditionalAttributes().put("p.TTB_HBE_cycle",travelTime);
+            } else if (modeStr.equals("bus")){
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBE_PT","yes");
+                double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBE_PT")+
+                        2*Double.parseDouble(record[posTimeBus]);
+                pp.getAdditionalAttributes().put("p.TTB_HBE_PT",travelTime);
+            } else if (modeStr.equals("train")){
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBE_PT","yes");
+                double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBE_PT")+
+                        2*Double.parseDouble(record[posTimeTrain]);
+                pp.getAdditionalAttributes().put("p.TTB_HBE_PT",travelTime);
+            } else if (modeStr.equals("tramOrMetro")){
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBE_PT","yes");
+                double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBE_PT")+
+                        2*Double.parseDouble(record[posTimeMetro]);
+                pp.getAdditionalAttributes().put("p.TTB_HBE_PT",travelTime);
+            } else if (modeStr.equals("walk")){
+                pp.getAdditionalStringAttributes().put("p.isMobile_HBE_walk","yes");
+                double travelTime = pp.getAdditionalAttributes().get("p.TTB_HBE_walk")+
+                        2 * Double.parseDouble(record[posDistance])/ Properties.SPEED_WALK_M_MIN / 1000;;
+                pp.getAdditionalAttributes().put("p.TTB_HBE_walk",travelTime);
+            }
+        }
+
+        if(purposeStr.equals("HBS")){
+            final int travelerId = Integer.parseInt(record[posPerson]);
+            MitoPerson pp = dataSet.getPersons().get(travelerId);
+            double trips = pp.getAdditionalAttributes().get("p.HBS_trips") + 1;
+            pp.getAdditionalAttributes().put("p.HBS_trips", trips);
+        }
+
+        if(purposeStr.equals("HBO")){
+            final int travelerId = Integer.parseInt(record[posPerson]);
+            MitoPerson pp = dataSet.getPersons().get(travelerId);
+            double trips = pp.getAdditionalAttributes().get("p.HBO_trips") + 1;
+            pp.getAdditionalAttributes().put("p.HBO_trips", trips);
+        }
+
+        if(purposeStr.equals("HBR")){
+            final int travelerId = Integer.parseInt(record[posPerson]);
+            MitoPerson pp = dataSet.getPersons().get(travelerId);
+            double trips = pp.getAdditionalAttributes().get("p.HBR_trips") + 1;
+            pp.getAdditionalAttributes().put("p.HBR_trips", trips);
+        }
+
+        if(purposeStr.equals("NHBW")){
+            final int travelerId = Integer.parseInt(record[posPerson]);
+            MitoPerson pp = dataSet.getPersons().get(travelerId);
+            double trips = pp.getAdditionalAttributes().get("p.NHBW_trips") + 1;
+            pp.getAdditionalAttributes().put("p.NHBW_trips", trips);
+        }
+
+        if(purposeStr.equals("NHBO")){
+            final int travelerId = Integer.parseInt(record[posPerson]);
+            MitoPerson pp = dataSet.getPersons().get(travelerId);
+            double trips = pp.getAdditionalAttributes().get("p.NHBO_trips") + 1;
+            pp.getAdditionalAttributes().put("p.NHBO_trips", trips);
+        }
 
 
 

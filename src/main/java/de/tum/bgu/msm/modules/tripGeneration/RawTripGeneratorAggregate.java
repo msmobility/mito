@@ -11,40 +11,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 /**
  * Created by Nico on 20.07.2017.
  */
-public class RawTripGenerator {
+public class RawTripGeneratorAggregate {
 
-    private static final Logger logger = Logger.getLogger(RawTripGenerator.class);
+    private static final Logger logger = Logger.getLogger(RawTripGeneratorAggregate.class);
 
     final static AtomicInteger DROPPED_TRIPS_AT_BORDER_COUNTER = new AtomicInteger();
     final static AtomicInteger TRIP_ID_COUNTER = new AtomicInteger();
 
     private final DataSet dataSet;
-    private TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory;
+    private TripsByPurposeGeneratorFactoryAggregate tripsByPurposeGeneratorFactory;
     private final List<Purpose> purposes;
 
+    private final MitoAggregatePersona persona;
     //private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
 
-    public RawTripGenerator(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory, List<Purpose> purposes) {
+    public RawTripGeneratorAggregate(DataSet dataSet, TripsByPurposeGeneratorFactoryAggregate tripsByPurposeGeneratorFactory, List<Purpose> purposes , MitoAggregatePersona persona) {
         this.dataSet = dataSet;
         this.tripsByPurposeGeneratorFactory = tripsByPurposeGeneratorFactory;
         this.purposes = purposes;
+        this.persona = persona;
     }
 
-    public void run (double scaleFactorForGeneration) {
+    public void run (double scaleFactorForGeneration, MitoAggregatePersona persona) {
         generateByPurposeMultiThreaded(scaleFactorForGeneration);
         logTripGeneration();
     }
 
     private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {
-        final ConcurrentExecutor<Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>>> executor =
-                ConcurrentExecutor.fixedPoolService(purposes.size());
-        List<Callable<Tuple<Purpose, Map<MitoHousehold,List<MitoTrip>>>>> tasks = new ArrayList<>();
-        for(Purpose purpose: purposes) {
-            tasks.add(tripsByPurposeGeneratorFactory.createTripGeneratorForThisPurpose(dataSet, purpose, scaleFactorForGeneration));
+        for (Purpose purpose : purposes) {
+            try {
+                tripsByPurposeGeneratorFactory.createTripGeneratorForThisPurpose(dataSet, purpose, scaleFactorForGeneration, persona).call();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

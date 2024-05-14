@@ -1,14 +1,19 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoAggregatePersona;
+import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.aggregate.PersonaAggregation;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -63,11 +68,24 @@ public final class MitoModelAggregate {
 
     public void run() {
         long startTime = System.currentTimeMillis();
-        logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
+        logger.info("Started the Aggregated Transport Orchestrator (MITO)");
 
-        TravelDemandGeneratorAggregate ttd = new TravelDemandGeneratorAggregate.Builder(dataSet).build();
-        ttd.generateTravelDemand(scenarioName);
-        printOutline(startTime);
+        new PersonaAggregation(dataSet, Purpose.getAllPurposes()).run();
+
+        for (MitoAggregatePersona persona : dataSet.getAggregatePersonas().values()) {
+            for (Purpose purpose : Purpose.getMandatoryPurposes()) {
+                List<Purpose> purposes = Collections.singletonList(purpose);
+                TravelDemandGeneratorAggregate ttd = new TravelDemandGeneratorAggregate.Builder(dataSet, persona, purposes).build();
+                ttd.generateTravelDemand(scenarioName);
+                printOutline(startTime);            }
+
+            for (Purpose purpose : Purpose.getDiscretionaryPurposes()) {
+                List<Purpose> purposes = Collections.singletonList(purpose);
+                TravelDemandGeneratorAggregate ttd = new TravelDemandGeneratorAggregate.Builder(dataSet, persona, purposes).build();
+                ttd.generateTravelDemand(scenarioName);
+                printOutline(startTime);
+            }
+        }
     }
 
     private void readStandAlone(ImplementationConfig config) {

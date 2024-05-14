@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.data;
 
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.CloseableThreadContext;
 
 import java.util.*;
 
@@ -19,7 +20,12 @@ public class MitoAggregatePersona implements Id {
 
     private Set<MitoTrip> trips = new LinkedHashSet<>();
 
-    private Map<String, Double> aggregateAttributes = new HashMap<>();
+    private Map<String, Double> aggregateAttributes = new LinkedHashMap<>();
+
+    private Map<String, String> aggregateStringAttributes = new LinkedHashMap<>();
+
+
+    private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
 
     public MitoAggregatePersona(int id, String name) {
         this.id = id;
@@ -60,6 +66,26 @@ public class MitoAggregatePersona implements Id {
 
     public void setAggregateAttributes(Map<String, Double> aggregateAttributes) {
         this.aggregateAttributes = aggregateAttributes;
+    }
+
+    public Map<String, String> getAggregateStringAttributes() {
+        return aggregateStringAttributes;
+    }
+
+    public void setAggregateStringAttributes(Map<String, String> aggregateStringAttributes) {
+        this.aggregateStringAttributes = aggregateStringAttributes;
+    }
+
+    public synchronized void setTripsByPurpose(List<MitoTrip> trips, Purpose purpose) {
+        tripsByPurpose.put(purpose, trips);
+    }
+
+    public List<MitoTrip> getTripsForPurpose(Purpose purpose) {
+        if(tripsByPurpose.get(purpose) != null) {
+            return tripsByPurpose.get(purpose);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
 

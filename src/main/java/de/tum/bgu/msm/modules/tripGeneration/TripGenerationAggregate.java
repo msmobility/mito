@@ -19,36 +19,37 @@ import java.util.List;
  *
  */
 
-public class TripGeneration extends Module {
+public class TripGenerationAggregate extends Module {
 
     private static final Logger logger = Logger.getLogger(TravelDemandGenerator.class);
     private final boolean addAirportDemand;
 
     private double scaleFactorForTripGeneration;
-    private final TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory;
+    private final TripsByPurposeGeneratorFactoryAggregate tripsByPurposeGeneratorFactoryAggregate;
 
-    public TripGeneration(DataSet dataSet, TripsByPurposeGeneratorFactory tripsByPurposeGeneratorFactory, List<Purpose> purposes) {
+    private final MitoAggregatePersona persona;
+
+    public TripGenerationAggregate(DataSet dataSet, TripsByPurposeGeneratorFactoryAggregate tripsByPurposeGeneratorFactoryAggregate, List<Purpose> purposes
+            , MitoAggregatePersona persona) {
         super(dataSet, purposes);
+        this.persona = persona;
         addAirportDemand = Resources.instance.getBoolean(Properties.ADD_AIRPORT_DEMAND, false);
         scaleFactorForTripGeneration = Resources.instance.getDouble(Properties.SCALE_FACTOR_FOR_TRIP_GENERATION, 1.0);
-        this.tripsByPurposeGeneratorFactory = tripsByPurposeGeneratorFactory;
+        this.tripsByPurposeGeneratorFactoryAggregate = tripsByPurposeGeneratorFactoryAggregate;
     }
 
     @Override
     public void run() {
-        logger.info("  Started microscopic trip generation model.");
+        logger.info("  Started aggregate trip generation model.");
         generateRawTrips();
-//        if (addAirportDemand){
-//            generateAirportTrips(scaleFactorForTripGeneration);
-//        }
         calculateAttractions();
         balanceTrips();
-        logger.info("  Completed microscopic trip generation model.");
+        logger.info("  Completed aggregate trip generation model.");
     }
 
     private void generateRawTrips() {
-        RawTripGenerator rawTripGenerator = new RawTripGenerator(dataSet, tripsByPurposeGeneratorFactory, purposes);
-        rawTripGenerator.run(scaleFactorForTripGeneration);
+        RawTripGeneratorAggregate rawTripGenerator = new RawTripGeneratorAggregate(dataSet, tripsByPurposeGeneratorFactoryAggregate, purposes, persona);
+        rawTripGenerator.run(scaleFactorForTripGeneration, persona);
     }
 
     private void generateAirportTrips(double scaleFactorForTripGeneration) {

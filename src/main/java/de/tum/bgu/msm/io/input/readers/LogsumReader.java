@@ -37,10 +37,10 @@ public class LogsumReader extends AbstractCsvReader {
 
     public void read() {
         for (Purpose purpose : purposes) {
-            String fileName = "F:/models/mitoAggregate/mitoMunich/skims/logsum/" + purpose + "_hasEV" + ".csv";
-            Path filePath = Paths.get(fileName);
+            String fileNameEV = "F:/models/mitoAggregate/mitoMunich/skims/logsum/" + purpose + "_hasEV" + ".csv";
+            Path filePath = Paths.get(fileNameEV);
             super.read(filePath, ",");
-            logger.info("Reading logsum for EV hh from csv file" + fileName);
+            logger.info("Reading logsum for EV hh from csv file" + fileNameEV);
 
             logsumMatricesByPurpose_EV.put(purpose, new MatrixTravelDistances(logsumMatrices.get(purpose)));
         }
@@ -52,18 +52,21 @@ public class LogsumReader extends AbstractCsvReader {
         }
 
         for (Purpose purpose : purposes) {
-            String fileName;
+
             // For low emission scenario run, uncomment following to determine file path based on the purpose
-/*            if (Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(purpose)) {
-                fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
+
+/*
+            String fileName = "";
+            if (Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(purpose)) {
+                fileName = "F:/models/mitoAggregate/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
             } else if (Arrays.asList(Purpose.NHBW, Purpose.NHBO).contains(purpose)) {
-                fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
+                fileName = "F:/models/mitoAggregate/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
             } else {
                 continue; // Skip if purpose is not handled (if any other purposes are present)
             }*/
 
             //For base scenario, uncomment followign and comment above code segment to read base logsums
-            fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
+            //fileName = "F:/models/mitoAggregate/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
 
             String fileName = "F:/models/mitoAggregate/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
             Path filePath = Paths.get(fileName);

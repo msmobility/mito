@@ -7,11 +7,13 @@ import cern.colt.map.tint.OpenIntIntHashMap;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import de.tum.bgu.msm.data.Id;
+import edu.emory.mathcs.utils.ConcurrencyUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * @author nkuehnel
@@ -120,8 +122,8 @@ public class IndexedDoubleMatrix2D {
      * Constructs and returns a new <i>slice view</i> representing the columns
      * of the given row. The returned view is backed by this matrix, so changes
      * in the returned view are reflected in this matrix, and vice-versa.
-     * @param row
-     *            the row to fix.
+     *
+     * @param row the row to fix.
      * @return a new slice view.
      */
     public IndexedDoubleMatrix1D viewRow(int row) {
@@ -210,6 +212,54 @@ public class IndexedDoubleMatrix2D {
         return this;
     }
 
+    public IndexedDoubleMatrix2D assign(double[] val) {
+        delegate.assign(val);
+        return this;
+    }
+
+    public DoubleMatrix2D assign(final double[] values, int rowToChange) {
+        if (values.length != delegate.rows() * delegate.columns()) {
+            throw new IllegalArgumentException("Must have same length: length=" + values.length + "rows()*columns()=" + this.rows() * this.columns());
+        } else {
+            int nthreads = ConcurrencyUtils.getNumberOfThreads();
+            int r;
+            int c;
+            if (nthreads > 1 && 1 * delegate.columns() >= ConcurrencyUtils.getThreadsBeginN_2D()) {
+                nthreads = Math.min(nthreads, 1);
+                Future<?>[] futures = new Future[nthreads];
+                r = 1 / nthreads;
+
+                for(c = 0; c < nthreads; ++c) {
+                    final int firstRow = c * r;
+                    final int lastRow = c == nthreads - 1 ? 1 : firstRow + r;
+                    futures[c] = ConcurrencyUtils.submit(new Runnable() {
+                        public void run() {
+                            int idx = firstRow * delegate.columns();
+
+                            //for(int r = firstRow; r < lastRow; ++r) {
+                                for(int c = 0; c < delegate.columns(); ++c) {
+                                    delegate.setQuick(rowToChange, c, values[idx++]);
+                                }
+                            //}
+
+                        }
+                    });
+                }
+
+                ConcurrencyUtils.waitForCompletion(futures);
+            } else {
+                int idx = 0;
+
+                //for(r = 0; r < this.rows; ++r) {
+                    for(c = 0; c < delegate.columns(); ++c) {
+                        delegate.setQuick(rowToChange, c, values[idx++]);
+                    }
+                //}
+            }
+
+            return delegate;
+        }
+    }
     /**
      * Sets all cells to the state specified by value.
      */
