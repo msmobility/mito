@@ -368,6 +368,11 @@ public class ModeChoiceCalculatorImplAggregate implements ModeChoiceCalculatorAg
     }
 
     @Override
+    public EnumMap<Mode, Double> calculateProbabilities(Purpose purpose, MitoAggregatePersona persona, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+        return null;
+    }
+
+    @Override
     public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         int purpIdx;
         if (purpose.equals(Purpose.HBR)){

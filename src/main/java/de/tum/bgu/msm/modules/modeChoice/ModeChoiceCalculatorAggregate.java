@@ -27,6 +27,15 @@ public interface ModeChoiceCalculatorAggregate {
                                                  double travelDistanceNMT,
                                                  double peakHour_s);
 
+    EnumMap<Mode, Double> calculateProbabilities(Purpose purpose,
+                                                 MitoAggregatePersona persona,
+                                                 MitoZone originZone,
+                                                 MitoZone destinationZone,
+                                                 TravelTimes travelTimes,
+                                                 double travelDistanceAuto,
+                                                 double travelDistanceNMT,
+                                                 double peakHour_s);
+
     /**
      * For the time being implementations of this interface should adhere to the following order in the result array:
      * [0] probability Auto driver
