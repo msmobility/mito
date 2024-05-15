@@ -53,7 +53,6 @@ public class DestinationUtilityByPurposeGeneratorAggregate implements Callable<T
         //for (MitoZone origin : zones.values()) {
             for (MitoZone destination : zones.values()) {
                 //Using Logsum
-
                 final double expUtility =  calculator.calculateExpUtility(destination.getTripAttraction(purpose),
                         logsum_EV.get(purpose).getTravelDistance(origins.get(1).getId(), destination.getId()));
 

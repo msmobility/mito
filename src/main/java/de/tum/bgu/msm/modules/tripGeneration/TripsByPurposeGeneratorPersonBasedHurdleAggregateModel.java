@@ -6,11 +6,14 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
 import umontreal.ssj.probdist.NegativeBinomialDist;
 
+import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -37,9 +40,10 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
     private double speed_walk_m_min = Properties.SPEED_WALK_M_MIN;
 
     private MitoAggregatePersona persona;
+    private AreaTypes.SGType areaType;
 
     protected TripsByPurposeGeneratorPersonBasedHurdleAggregateModel(DataSet dataSet, Purpose purpose, double scaleFactorForGeneration,
-                                                                     MitoAggregatePersona persona) {
+                                                                     MitoAggregatePersona persona, AreaTypes.SGType areaType) {
         super(MitoUtil.getRandomObject().nextLong());
         this.dataSet = dataSet;
         this.purpose = purpose;
@@ -52,22 +56,23 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
                 new TripGenerationHurdleCoefficientReader(dataSet, purpose,
                         Resources.instance.getTripGenerationCoefficientsHurdleNegativeBinomial()).readCoefficientsForThisPurpose();
         this.persona = persona;
-
+        this.areaType = areaType;
     }
 
     @Override
     public Tuple<Purpose, Map<MitoHousehold, List<MitoTrip>>> call() throws Exception {
-        generateTripsForPersona(persona);
+        generateTripsForPersona(persona, areaType);
         logger.warn("Cases with more than ten trips per household - might be a problem if too frequent: " + casesWithMoreThanTen +
                 " for purpose " + purpose);
         return new Tuple<>(purpose, tripsByHH);
+
     }
 
-    private void generateTripsForPersona(MitoAggregatePersona persona) {
+    private void generateTripsForPersona(MitoAggregatePersona persona, AreaTypes.SGType areaType) {
 
-        double utilityTravel = calculateUtility(persona, binLogCoef, "zero");
+        double utilityTravel = calculateUtility(persona, binLogCoef, areaType);
         double probabilityTravel = Math.exp(utilityTravel) / (1. + Math.exp(utilityTravel)); // travel trip probability
-        double averageTripsNegBin = calculateUtility(persona, negBinCoef, "negBin"); //average trips of those who travel with negative binomial
+        double averageTripsNegBin = calculateUtility(persona, negBinCoef, areaType); //average trips of those who travel with negative binomial
         averageTripsNegBin = Math.exp(averageTripsNegBin);
 
         double theta = negBinCoef.get("theta");
@@ -89,19 +94,62 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
 
         double averageTripsAll = averageTripsTravelers * probabilityTravel;
 
-        dataSet.setAverageTrips(averageTripsAll);
+        dataSet.getAverageTripsByPurpose().get(persona).get(purpose).put(areaType, averageTripsAll);
 
-        ConcurrentMap<Mode, IndexedDoubleMatrix2D> tripMatrix = new ConcurrentHashMap<>();
-        //for (Mode mode : Mode.values()) {
-            final IndexedDoubleMatrix2D matrix = dataSet.getAggregateTripMatrix().get(Mode.taxi);
-            matrix.assign(averageTripsAll);
-            tripMatrix.put(Mode.taxi, matrix);
-        //}
-        dataSet.setAggregateTripMatrix(tripMatrix);
+        //assign origin to home based trips. Non-home based trips origins and destinations are assigned in trip distribution
+        if (!purpose.equals(Purpose.NHBW)){
+            if (!purpose.equals(Purpose.NHBO)){
+
+                ConcurrentMap<Mode, IndexedDoubleMatrix2D> tripMatrix = new ConcurrentHashMap<>();
+                final IndexedDoubleMatrix2D matrix = dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi);
+                for (MitoZone origin : dataSet.getZones().values()){
+                    if (origin.getAreaTypeSG().equals(areaType)) {
+                        IndexedDoubleMatrix1D residents = dataSet.getPersonsByZone();
+                        for (MitoZone destination : dataSet.getZones().values()) {
+                            double tripsZone = averageTripsAll * residents.getIndexed(origin.getId());
+                            matrix.setIndexed(origin.getId(), destination.getId(),tripsZone);
+                        }
+                    }
+                }
+                tripMatrix.put(Mode.pooledTaxi, matrix);
+                dataSet.setAggregateTripMatrix(tripMatrix);
+            } else {
+                //for NHBO trips, calculate total NHBO trips generated
+                ConcurrentMap<Mode, IndexedDoubleMatrix2D> tripMatrix = new ConcurrentHashMap<>();
+                final IndexedDoubleMatrix2D matrix = dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi);
+                for (MitoZone origin : dataSet.getZones().values()){
+                    if (origin.getAreaTypeSG().equals(areaType)) {
+                        IndexedDoubleMatrix1D residents = dataSet.getPersonsByZone();
+                        double tripsZone = averageTripsAll * residents.getIndexed(origin.getId());
+                        dataSet.setTotalNHBOTrips(dataSet.getTotalNHBOTrips() + tripsZone);
+                        matrix.setIndexed(origin.getId(), 1,tripsZone);
+                    }
+                }
+                tripMatrix.put(Mode.pooledTaxi, matrix);
+                dataSet.setAggregateTripMatrix(tripMatrix);
+            }
+        } else {
+            // for NHBW trips
+            ConcurrentMap<Mode, IndexedDoubleMatrix2D> tripMatrix = new ConcurrentHashMap<>();
+            final IndexedDoubleMatrix2D matrix = dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi);
+            for (MitoZone origin : dataSet.getZones().values()){
+                if (origin.getAreaTypeSG().equals(areaType)) {
+                    IndexedDoubleMatrix1D residents = dataSet.getPersonsByZone();
+                    double tripsZone = averageTripsAll * residents.getIndexed(origin.getId());
+                    dataSet.setTotalNHBWTrips(dataSet.getTotalNHBWTrips() + tripsZone);
+                    matrix.setIndexed(origin.getId(), 1,tripsZone);
+                }
+            }
+            tripMatrix.put(Mode.pooledTaxi, matrix);
+            dataSet.setAggregateTripMatrix(tripMatrix);
+        }
+
 
         logger.info("Trip generation. Purpose: " + purpose + " ----------------- ");
         logger.info("Trip generation. Proportion of travelers: " + probabilityTravel);
         logger.info("Trip generation. Average trips per traveler: " + averageTripsTravelers);
+
+        summarizeTripGeneration();
 
         /*for (Mode mode : Mode.values()) {
             for (int i : dataSet.getZones().keySet()) {
@@ -112,7 +160,26 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
         }*/
     }
 
-     private double calculateUtility(MitoAggregatePersona persona, Map<String, Double> coefficients, String model) {
+    private void summarizeTripGeneration(){
+        Path fileTripGen = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "TripGen_summary.csv");
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileTripGen.toAbsolutePath().toString(), true);
+        if (purpose.equals(Purpose.HBW) && areaType.equals(AreaTypes.SGType.CORE_CITY)) {
+            pw.println("persona,purpose,areaType,averageTrips,totalTrips");
+        }
+        pw.print(persona.getId());
+        pw.print(",");
+        pw.print(purpose);
+        pw.print(",");
+        pw.print(areaType);
+        pw.print(",");
+        pw.print(dataSet.getAverageTripsByPurpose().get(persona).get(purpose).get(areaType).toString());
+        pw.print(",");
+        pw.print(dataSet.getTotalTripsGenByPurpose().get(persona).get(purpose).get(areaType).toString());
+        pw.println();
+        pw.close();
+    }
+
+     private double calculateUtility(MitoAggregatePersona persona, Map<String, Double> coefficients, AreaTypes.SGType areaType) {
 
         double utilityTravel = coefficients.get("(Intercept)");
 
@@ -138,9 +205,13 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
         utilityTravel += coefficients.get("hh.econStatus_4")*persona.getAggregateAttributes().get("hh.econStatus_4");
         utilityTravel += coefficients.get("hh.econStatus_5")*persona.getAggregateAttributes().get("hh.econStatus_5");
 
-        utilityTravel += coefficients.get("hh.BBSR_2")*persona.getAggregateAttributes().get("hh.BBSR_20");
-        utilityTravel += coefficients.get("hh.BBSR_3")*persona.getAggregateAttributes().get("hh.BBSR_30");
-        utilityTravel += coefficients.get("hh.BBSR_4")*persona.getAggregateAttributes().get("hh.BBSR_40");
+        if (areaType.equals(AreaTypes.SGType.MEDIUM_SIZED_CITY)) {
+            utilityTravel += coefficients.get("hh.BBSR_2") * persona.getAggregateAttributes().get("hh.BBSR_20");
+        } else if (areaType.equals(AreaTypes.SGType.TOWN)) {
+            utilityTravel += coefficients.get("hh.BBSR_3") * persona.getAggregateAttributes().get("hh.BBSR_30");
+        } else if (areaType.equals(AreaTypes.SGType.RURAL)) {
+            utilityTravel += coefficients.get("hh.BBSR_4") * persona.getAggregateAttributes().get("hh.BBSR_40");
+        }
 
         utilityTravel += coefficients.get("p.age_gr_1")*persona.getAggregateAttributes().get("tripGenp.age_gr_1");
         utilityTravel += coefficients.get("p.age_gr_2")*persona.getAggregateAttributes().get("tripGenp.age_gr_2");

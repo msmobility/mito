@@ -4,10 +4,10 @@ import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Table;
 import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
-import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationDataAggregate;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.matsim.api.core.v01.population.Population;
 
@@ -25,6 +25,14 @@ public class DataSet {
     private TravelDistances logsum;
 
     private ConcurrentMap<Mode, IndexedDoubleMatrix2D> aggregateTripMatrixByMode = new ConcurrentHashMap<>();
+
+    private IndexedDoubleMatrix1D personsByZone;
+
+    private IndexedDoubleMatrix1D hbwTripsAttracted;
+
+    private IndexedDoubleMatrix1D homeBasedTripsAttractedByZone;
+
+    private Map<AreaTypes.SGType, MitoZone> zonesByAreaType = new LinkedHashMap<>();
 
     private double peakHour = Double.NaN;
 
@@ -103,7 +111,11 @@ public class DataSet {
         return Collections.unmodifiableMap(tripSubsample);
     }
 
-    public double averageTrips;
+    public double totalNHBOTrips = 0;
+    public double totalNHBWTrips = 0;
+
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> averageTripsByPurpose = new LinkedHashMap<>();
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> totalTripsGenByPurpose = new LinkedHashMap<>();
 
     public void addTrip(final MitoTrip trip) {
         MitoTrip test = trips.putIfAbsent(trip.getId(), trip);
@@ -296,11 +308,67 @@ public class DataSet {
 
     public ConcurrentMap<Mode, IndexedDoubleMatrix2D> getAggregateTripMatrix(){return aggregateTripMatrixByMode;}
 
-    public double getAverageTrips() {
-        return averageTrips;
+    public double getTotalNHBOTrips() {
+        return totalNHBOTrips;
     }
 
-    public void setAverageTrips(double averageTrips) {
-        this.averageTrips = averageTrips;
+    public void setTotalNHBOTrips(double totalNHBOTrips) {
+        this.totalNHBOTrips = totalNHBOTrips;
+    }
+
+    public double getTotalNHBWTrips() {
+        return totalNHBWTrips;
+    }
+
+    public void setTotalNHBWTrips(double totalNHBWTrips) {
+        this.totalNHBWTrips = totalNHBWTrips;
+    }
+
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> getAverageTripsByPurpose() {
+        return averageTripsByPurpose;
+    }
+
+    public void setAverageTripsByPurpose(Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> averageTripsByPurpose) {
+        this.averageTripsByPurpose = averageTripsByPurpose;
+    }
+
+    public IndexedDoubleMatrix1D getPersonsByZone() {
+        return personsByZone;
+    }
+
+    public void setPersonsByZone(IndexedDoubleMatrix1D personsByZone) {
+        this.personsByZone = personsByZone;
+    }
+
+    public IndexedDoubleMatrix1D getHBWtripsAttracted() {
+        return hbwTripsAttracted;
+    }
+
+    public void setHBWtripsAttracted(IndexedDoubleMatrix1D workersByZone) {
+        this.hbwTripsAttracted = workersByZone;
+    }
+
+    public IndexedDoubleMatrix1D getHomeBasedTripsAttractedToZone() {
+        return homeBasedTripsAttractedByZone;
+    }
+
+    public void setHomeBasedTripsAttractedToZone(IndexedDoubleMatrix1D homeBasedTripsByZone) {
+        this.homeBasedTripsAttractedByZone = homeBasedTripsByZone;
+    }
+
+    public Map<AreaTypes.SGType, MitoZone> getZonesByAreaType() {
+        return zonesByAreaType;
+    }
+
+    public void setZonesByAreaType(Map<AreaTypes.SGType, MitoZone> zonesByAreaType){
+        this.zonesByAreaType = zonesByAreaType;
+    }
+
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> getTotalTripsGenByPurpose() {
+        return totalTripsGenByPurpose;
+    }
+
+    public void setTotalTripsGenByPurpose(Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> totalTripsGenByPurpose) {
+        this.totalTripsGenByPurpose = totalTripsGenByPurpose;
     }
 }

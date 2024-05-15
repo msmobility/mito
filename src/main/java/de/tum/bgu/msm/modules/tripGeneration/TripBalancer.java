@@ -38,7 +38,7 @@ public class TripBalancer {
             long tripsByPurp = 0 ;
             for (int origin : zoneIds){
                 for (int destination : zoneIds){
-                    tripsByPurp += dataSet.getAggregateTripMatrix().get(Mode.taxi).getIndexed(origin, destination);
+                    tripsByPurp += dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi).getIndexed(origin, destination);
                 }
             }
             //long tripsByPurp = dataSet.getHouseholds().values().stream().mapToInt(household -> household.getTripsForPurpose(purpose).size()).sum();

@@ -1,8 +1,6 @@
 package de.tum.bgu.msm;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoAggregatePersona;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.modules.aggregate.PersonaAggregation;
@@ -10,8 +8,11 @@ import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.ImplementationConfig;
 import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import org.apache.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -104,7 +105,7 @@ public final class MitoModelAggregate {
         dataSet.setTravelTimes(new SkimTravelTimes());
         new OmxSkimsReader(dataSet).read();
         readAdditionalData();
-
+        summarizePersonsAndWorkersByZone();
     }
 
     private void readAdditionalData() {
@@ -116,9 +117,7 @@ public final class MitoModelAggregate {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
         new TripListReader(dataSet).read();
-        new LogsumReader(dataSet).read();
-
-
+        //new LogsumReader(dataSet).read();
     }
 
 
@@ -144,6 +143,16 @@ public final class MitoModelAggregate {
         MitoUtil.initializeRandomNumber(random);
     }
 
+    private void summarizePersonsAndWorkersByZone() {
 
+        final IndexedDoubleMatrix1D personsMatrix = new IndexedDoubleMatrix1D(dataSet.getZones().values());
+        personsMatrix.assign(0.);
+        for (MitoPerson pp : dataSet.getPersons().values()){
+            int zoneId = pp.getHousehold().getZoneId();
+            personsMatrix.setIndexed(zoneId, personsMatrix.getIndexed(zoneId) + 1);
+        }
+        dataSet.setPersonsByZone(personsMatrix);
+
+    }
 
 }

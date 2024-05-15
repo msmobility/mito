@@ -1,29 +1,22 @@
 package de.tum.bgu.msm;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.data.travelDistances.MatrixTravelDistances;
-import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
-import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.aggregate.PersonaAggregation;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculatorAggregate;
-import de.tum.bgu.msm.modules.modeChoice.calculators.*;
-import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
-import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
-import de.tum.bgu.msm.modules.scaling.TripScaling;
-import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceAggregate;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImplAggregate;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017ImplAggregate;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.*;
-import de.tum.bgu.msm.modules.tripGeneration.TripGeneration;
 import de.tum.bgu.msm.modules.tripGeneration.TripGenerationAggregate;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate;
-import de.tum.bgu.msm.resources.Properties;
-import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -123,34 +116,29 @@ public final class TravelDemandGeneratorAggregate {
 
             Purpose purpose = purposes.get(0);
             if (purpose.equals(Purpose.HBW) ||  purpose.equals(Purpose.HBE)){
-            tripGenerationMandatory = new TripGenerationAggregate(dataSet,
-                    new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
-            travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, purposes);
-            distributionMandatory = new TripDistributionAggregate(dataSet, purposes, false,
-                    new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
-            modeChoiceMandatory = new ModeChoice(dataSet, purposes);
-            //Purpose.getMandatoryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculatorAggregate(purpose,
+                tripGenerationMandatory = new TripGenerationAggregate(dataSet,
+                        new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
+                travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, purposes);
+                //distributionMandatory = new TripDistributionAggregate(dataSet, purposes, false,
+                        //new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
+                modeChoiceMandatory = new ModeChoiceAggregate(dataSet, purposes, persona);
+                ((ModeChoiceAggregate) modeChoiceMandatory).registerModeChoiceCalculatorAggregate(purpose,
                         new CalibratingModeChoiceCalculatorImplAggregate(
                                 new ModeChoiceCalculator2017ImplAggregate(purpose, dataSet),
                                 dataSet.getModeChoiceCalibrationDataAggregate()));
-           // });
-                /*timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, purposes);
-CalibratingModeChoiceCalculatorImplAggregate(ModeChoiceCalculatorAggregate base, ModeChoiceCalibrationDataAggregate calibrationData)
-*/
+                //timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, purposes);
+
             } else {
                 tripGenerationDiscretionary = new TripGenerationAggregate(dataSet,
                     new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
-                //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
-                //travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, purposes);
-                distributionDiscretionary = new TripDistributionAggregate(dataSet, purposes, false,
-                    new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
-                /*modeChoiceDiscretionary = new ModeChoice(dataSet, purposes);
-                Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                    ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Aggregate(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
-                });
-                timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, purposes);
-                //until here it must be divided into two blocks - mandatory and discretionary*/
+                //distributionDiscretionary = new TripDistributionAggregate(dataSet, purposes, false,
+                    //new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
+                modeChoiceDiscretionary = new ModeChoiceAggregate(dataSet, purposes, persona);
+                ((ModeChoiceAggregate) modeChoiceDiscretionary).registerModeChoiceCalculatorAggregate(purpose,
+                        new CalibratingModeChoiceCalculatorImplAggregate(
+                                new ModeChoiceCalculator2017ImplAggregate(purpose, dataSet),
+                                dataSet.getModeChoiceCalibrationDataAggregate()));
+                //timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, purposes);
             }
 
            /* tripScaling = new TripScaling(dataSet, purposes);
@@ -268,37 +256,25 @@ CalibratingModeChoiceCalculatorImplAggregate(ModeChoiceCalculatorAggregate base,
 
         initializeTripMatrix();
         if (purpose.equals(Purpose.HBW)|| purpose.equals(Purpose.HBE)){
-        tripGenerationMandatory.run();
-
-        //new Telework(dataSet, Purpose.getMandatoryPurposes(), 0.5).run();
-
-        //logger.info("Running Module: Person to Trip Assignment");
-        //personTripAssignmentMandatory.run();
-        logger.info("Running Module: Travel Time Budget Calculation");
-        //travelTimeBudgetMandatory.run();
-        //((TravelTimeBudgetModule) travelTimeBudget).adjustDiscretionaryPurposeBudgets(Purpose.getMandatoryPurposes());
-
-        logger.info("Running Module: Microscopic Trip Distribution");
-        distributionMandatory.run();
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        /*modeChoiceMandatory.run();
-        logger.info("Running time of day choice");
-        timeOfDayChoiceMandatory.run();
+            logger.info("Running Module: Aggregated Trip Generation. Purpose " + purpose);
+            tripGenerationMandatory.run();
+            logger.info("Running Module: Aggregated Trip Distribution. Purpose " + purpose);
+            //distributionMandatory.run();
+            logger.info("Running Module: Aggregated Mode Choice. Purpose " + purpose);
+            modeChoiceMandatory.run();
+            /*logger.info("Running time of day choice");
+            timeOfDayChoiceMandatory.run();
 
 */
         } else {
+            logger.info("Running Module: Aggregated Trip Generation. Purpose " + purpose);
             tripGenerationDiscretionary.run();
-            //logger.info("Running Module: Person to Trip Assignment");
-            //personTripAssignmentDiscretionary.run();
-            logger.info("Running Module: Travel Time Budget Calculation");
-        /*travelTimeBudgetDiscretionary.run();
-        ((TravelTimeBudgetModule) travelTimeBudgetDiscretionary).adjustDiscretionaryPurposeBudgets();
-        logger.info("Running Module: Microscopic Trip Distribution");*/
-            distributionDiscretionary.run();
-        /*logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        modeChoiceDiscretionary.run();
-        logger.info("Running time of day choice");
-        timeOfDayChoiceDiscretionary.run();
+            logger.info("Running Module: Aggregated Trip Distribution. Purpose " + purpose);
+            //distributionDiscretionary.run();
+            logger.info("Running Module: Aggregated Mode Choice. Purpose " + purpose);
+            modeChoiceDiscretionary.run();
+            /*logger.info("Running time of day choice");
+            timeOfDayChoiceMandatory.run();
 */
         }
 
@@ -330,13 +306,55 @@ CalibratingModeChoiceCalculatorImplAggregate(ModeChoiceCalculatorAggregate base,
 
     private void initializeTripMatrix() {
         int[] zoneIds = convertArrayListToIntArray(dataSet.getZones().values());
+        IndexedDoubleMatrix1D homeBasedTrips = new IndexedDoubleMatrix1D(dataSet.getZones().values());
+        homeBasedTrips.assign(0.);
 
         ConcurrentMap<Mode, IndexedDoubleMatrix2D> tripMatrix = new ConcurrentHashMap<>();
-        //for (Mode mode : Mode.values()) {
-            final IndexedDoubleMatrix2D matrix = new IndexedDoubleMatrix2D(zoneIds);
-            matrix.assign(0.);
-            tripMatrix.put(Mode.taxi, matrix);
-        //}
+        IndexedDoubleMatrix2D matrix = new IndexedDoubleMatrix2D(zoneIds);
+        matrix.assign(0.);
+        tripMatrix.put(Mode.pooledTaxi, matrix);
+
+        Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> personas = new LinkedHashMap<>();
+        for (MitoAggregatePersona pp : dataSet.getAggregatePersonas().values()){
+            Map<Purpose, Map<AreaTypes.SGType, Double>> purposes = new LinkedHashMap<>();
+            for (Purpose purpose : Purpose.values()){
+                Map<AreaTypes.SGType, Double> areas = new LinkedHashMap<>();
+                for (AreaTypes.SGType area : AreaTypes.SGType.values()){
+                    areas.putIfAbsent(area, 0.);
+                }
+                purposes.putIfAbsent(purpose, areas);
+            }
+            personas.putIfAbsent(pp, purposes);
+        }
+
+        Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> totalTrips = new LinkedHashMap<>();
+        for (MitoAggregatePersona pp : dataSet.getAggregatePersonas().values()){
+            Map<Purpose, Map<AreaTypes.SGType, Double>> purposes = new LinkedHashMap<>();
+            for (Purpose purpose : Purpose.values()){
+                Map<AreaTypes.SGType, Double> areas = new LinkedHashMap<>();
+                for (AreaTypes.SGType area : AreaTypes.SGType.values()){
+                    areas.putIfAbsent(area, 0.);
+                }
+                purposes.putIfAbsent(purpose, areas);
+            }
+            totalTrips.putIfAbsent(pp, purposes);
+        }
+
+        Map<AreaTypes.SGType, MitoZone> zonesByAreaType = new LinkedHashMap<>();
+        zonesByAreaType.put(AreaTypes.SGType.CORE_CITY, dataSet.getZones().get(3351));
+        zonesByAreaType.put(AreaTypes.SGType.MEDIUM_SIZED_CITY, dataSet.getZones().get(1426));
+        zonesByAreaType.put(AreaTypes.SGType.TOWN, dataSet.getZones().get(1248));
+        zonesByAreaType.put(AreaTypes.SGType.RURAL, dataSet.getZones().get(1564));
+
+        final IndexedDoubleMatrix1D hbwTripsAttracted = new IndexedDoubleMatrix1D(dataSet.getZones().values());
+        hbwTripsAttracted.assign(0.);
+
         dataSet.setAggregateTripMatrix(tripMatrix);
+        dataSet.setHomeBasedTripsAttractedToZone(homeBasedTrips);
+        dataSet.setAverageTripsByPurpose(personas);
+        dataSet.setTotalTripsGenByPurpose(personas);
+        dataSet.setZonesByAreaType(zonesByAreaType);
+        dataSet.setHBWtripsAttracted(hbwTripsAttracted);
+
     }
 }

@@ -3,6 +3,7 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.collections.Tuple;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -47,17 +50,17 @@ public class RawTripGeneratorAggregate {
     }
 
     private void summarizeResults() {
-        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "/TripGen_"+ purposes.get(0) +"_results.csv");
+        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_TripGen_"+ purposes.get(0) +"_results.csv");
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
 
-        IndexedDoubleMatrix2D destinationChoice = dataSet.getAggregateTripMatrix().get(Mode.taxi);
+        IndexedDoubleMatrix2D destinationChoice = dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi);
         for (MitoZone origin : dataSet.getZones().values()){
             pwh.print(origin.getId());
             pwh.print(",");
         }
         pwh.println();
 
-        for (MitoZone origin : dataSet.getZones().values()){
+        for (MitoZone origin : dataSet.getZonesByAreaType().values()){
             for(MitoZone destination : dataSet.getZones().values()) {
                 pwh.print(destinationChoice.getIndexed(origin.getId(), destination.getId()));
                 pwh.print(",");
@@ -68,12 +71,23 @@ public class RawTripGeneratorAggregate {
     }
 
     private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {
-        for (Purpose purpose : purposes) {
+        for (AreaTypes.SGType area : AreaTypes.SGType.values()) {
             try {
-                tripsByPurposeGeneratorFactory.createTripGeneratorForThisPurpose(dataSet, purpose, scaleFactorForGeneration, persona).call();
+                tripsByPurposeGeneratorFactory.createTripGeneratorForThisPurpose(dataSet, purposes.get(0), scaleFactorForGeneration, persona, area).call();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            IndexedDoubleMatrix2D matrix = dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi);
+            double tripsbyarea = 0.;
+            for (MitoZone origin : dataSet.getZones().values()){
+                if (origin.getAreaTypeSG().equals(area)) {
+                    for (MitoZone destination : dataSet.getZones().values()) {
+                        double tripsZone = matrix.getIndexed(origin.getId(), destination.getId());
+                        tripsbyarea = tripsbyarea + tripsZone;
+                    }
+                }
+            }
+            dataSet.getTotalTripsGenByPurpose().get(persona).get(purposes.get(0)).put(area, tripsbyarea);
         }
     }
 
