@@ -118,9 +118,9 @@ public final class TravelDemandGenerator2 {
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
             distributionMandatory = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getMandatoryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImplLogsum());
-            modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
+            modeChoiceMandatory = new ModeChoice_LowEmissionZone(dataSet, Purpose.getMandatoryPurposes());
             Purpose.getMandatoryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+                ((ModeChoice_LowEmissionZone) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
             });
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
@@ -129,9 +129,9 @@ public final class TravelDemandGenerator2 {
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
             distributionDiscretionary = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getDiscretionaryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImplLogsum());
-            modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
+            modeChoiceDiscretionary = new ModeChoice_LowEmissionZone(dataSet, Purpose.getDiscretionaryPurposes());
             Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+                ((ModeChoice_LowEmissionZone) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
             });
             timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
