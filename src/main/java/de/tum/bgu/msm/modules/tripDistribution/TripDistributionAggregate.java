@@ -78,6 +78,59 @@ public final class TripDistributionAggregate extends Module {
             distributeHomeBasedTrips();
         }
         printMatrices();
+        summarizeTripLength();
+    }
+
+    private void summarizeTripLength() {
+        Path fileTripGen = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_DestChoice_summary.csv");
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileTripGen.toAbsolutePath().toString(), true);
+
+        Path fileTripGen1 = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_DestChoice_zonalSummary.csv");
+        PrintWriter pwZne = MitoUtil.openFileForSequentialWriting(fileTripGen1.toAbsolutePath().toString(), true);
+
+        if (purpose.equals(Purpose.HBW)) {
+            pw.println("persona,purpose,totalLength,averageTripLength");
+            pwZne.println("persona,purpose,zone,totalLength,averageTripLength");
+        }
+        pw.print(persona.getId());
+        pwZne.print(persona.getId());
+        pw.print(",");
+        pwZne.print(",");
+        pw.print(purpose);
+        pwZne.print(purpose);
+        pw.print(",");
+        double totalTripLength = calculateTotalLength().getFirst();
+        pw.print(totalTripLength);
+        pw.print(",");
+        pw.print(totalTripLength / dataSet.getTotalTripsByPurpose().get(purpose));
+        IndexedDoubleMatrix1D totalDistanceByOrigin = calculateTotalLength().getSecond();
+        for (MitoZone zone : dataSet.getZones().values()){
+            pwZne.print(",");
+            pwZne.print(totalDistanceByOrigin.getIndexed(zone.getId()));
+            pwZne.print(",");
+            pwZne.print(totalDistanceByOrigin.getIndexed(zone.getId())/ dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi).getIndexed(zone.getId(), 1));
+        }
+        pw.println();
+        pwZne.println();
+        pw.close();
+        pwZne.close();
+
+    }
+
+    private Tuple< Double, IndexedDoubleMatrix1D> calculateTotalLength() {
+        IndexedDoubleMatrix1D totalDistanceByOrigin = new IndexedDoubleMatrix1D(dataSet.getZones().values());
+        double totalLength = 0.;
+        for (MitoZone origin : dataSet.getZones().values()){
+            double totalLength0 = 0.;
+            for (MitoZone destination : dataSet.getZones().values()){
+                totalLength0 += dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi).getIndexed(origin.getId(), destination.getId()) *
+                        dataSet.getTravelDistancesAuto().getTravelDistance(origin.getId(), destination.getId());
+            }
+            totalDistanceByOrigin.setIndexed(origin.getId(), totalLength0);
+            totalLength += totalLength;
+        }
+
+        return new Tuple<>(totalLength, totalDistanceByOrigin);
     }
 
     private void distributeNonHomeBasedTrips() {
@@ -89,7 +142,7 @@ public final class TripDistributionAggregate extends Module {
             double totalWorkers = Arrays.stream(dataSet.getHBWtripsAttracted().toNonIndexedArray()).sum();
             IndexedDoubleMatrix2D tripMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
             for (MitoZone origin : dataSet.getZones().values()){
-                double tripsOriginated = dataSet.getTotalNHBWTrips() *
+                double tripsOriginated = dataSet.getTotalTripsByPurpose().get(Purpose.NHBW) *
                         dataSet.getHBWtripsAttracted().getIndexed(origin.getId()) / totalWorkers;
                 for (MitoZone destination : dataSet.getZones().values()) {
                     double tripsDistributed = tripsOriginated * probabilityMatrices.get(origin.getId()).getIndexed(origin.getId(), destination.getId());
@@ -102,7 +155,7 @@ public final class TripDistributionAggregate extends Module {
             double totalTripsOtherPurposes = Arrays.stream(dataSet.getHomeBasedTripsAttractedToZone().toNonIndexedArray()).sum();
             IndexedDoubleMatrix2D tripMatrix = new IndexedDoubleMatrix2D(dataSet.getZones().values(), dataSet.getZones().values());
             for (MitoZone origin : dataSet.getZones().values()){
-                double tripsOriginated = dataSet.getTotalNHBOTrips() *
+                double tripsOriginated = dataSet.getTotalTripsByPurpose().get(Purpose.NHBO) *
                                 dataSet.getHomeBasedTripsAttractedToZone().getIndexed(origin.getId()) / totalTripsOtherPurposes;
                 for (MitoZone destination : dataSet.getZones().values()) {
                     double tripsDistributed = tripsOriginated * probabilityMatrices.get(origin.getId()).getIndexed(origin.getId(), destination.getId());
@@ -114,10 +167,10 @@ public final class TripDistributionAggregate extends Module {
 
     private void printMatrices() {
 
-        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_destinationChoice_"+ purposes.get(0) +"_results.csv");
+        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_destinationChoice_"+ purposes.get(0) +"_trips.csv");
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
 
-        Path filePersona1 = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_destinationChoice_"+ purposes.get(0) +"_trips.csv");
+        Path filePersona1 = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_destinationChoice_"+ purposes.get(0) +"_results.csv");
         PrintWriter pwtrips = MitoUtil.openFileForSequentialWriting(filePersona1.toAbsolutePath().toString(), false);
 
         for (MitoZone origin : dataSet.getZones().values()){

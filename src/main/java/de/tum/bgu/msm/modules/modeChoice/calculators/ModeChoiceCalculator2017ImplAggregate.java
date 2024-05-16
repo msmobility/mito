@@ -194,6 +194,11 @@ public class ModeChoiceCalculator2017ImplAggregate implements ModeChoiceCalculat
     }
 
     @Override
+    public EnumMap<Mode, Double> calculateProbabilities(Purpose purpose, MitoAggregatePersona persona, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s, Map<Mode, Map<String, Double>> coef) {
+        return null;
+    }
+
+    @Override
     public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         int age = person.getAge();
         int isMale = person.getMitoGender() == MitoGender.MALE ? 1 : 0;

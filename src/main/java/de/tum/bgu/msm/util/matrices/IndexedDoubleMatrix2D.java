@@ -218,7 +218,7 @@ public class IndexedDoubleMatrix2D {
     }
 
     public DoubleMatrix2D assign(final double[] values, int rowToChange) {
-        if (values.length != delegate.rows() * delegate.columns()) {
+        if (values.length != 1 * delegate.columns()) {
             throw new IllegalArgumentException("Must have same length: length=" + values.length + "rows()*columns()=" + this.rows() * this.columns());
         } else {
             int nthreads = ConcurrencyUtils.getNumberOfThreads();

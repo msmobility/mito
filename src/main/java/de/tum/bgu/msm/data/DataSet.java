@@ -11,6 +11,7 @@ import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.matsim.api.core.v01.population.Population;
 
+import java.awt.geom.Area;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -112,7 +113,10 @@ public class DataSet {
     }
 
     public double totalNHBOTrips = 0;
-    public double totalNHBWTrips = 0;
+
+    public Map<Purpose, Double> totalTripsByPurpose = new LinkedHashMap<>();
+
+    public Map<MitoAggregatePersona, Map<AreaTypes.SGType, Double>> personsByAreaType = new LinkedHashMap<>();
 
     public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> averageTripsByPurpose = new LinkedHashMap<>();
     public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> totalTripsGenByPurpose = new LinkedHashMap<>();
@@ -308,20 +312,12 @@ public class DataSet {
 
     public ConcurrentMap<Mode, IndexedDoubleMatrix2D> getAggregateTripMatrix(){return aggregateTripMatrixByMode;}
 
-    public double getTotalNHBOTrips() {
-        return totalNHBOTrips;
+    public Map<Purpose, Double> getTotalTripsByPurpose() {
+        return totalTripsByPurpose;
     }
 
-    public void setTotalNHBOTrips(double totalNHBOTrips) {
-        this.totalNHBOTrips = totalNHBOTrips;
-    }
-
-    public double getTotalNHBWTrips() {
-        return totalNHBWTrips;
-    }
-
-    public void setTotalNHBWTrips(double totalNHBWTrips) {
-        this.totalNHBWTrips = totalNHBWTrips;
+    public void setTotalTripsByPurpose(Map<Purpose, Double> totalTripsByPurpose) {
+        this.totalTripsByPurpose = totalTripsByPurpose;
     }
 
     public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> getAverageTripsByPurpose() {
@@ -370,5 +366,13 @@ public class DataSet {
 
     public void setTotalTripsGenByPurpose(Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> totalTripsGenByPurpose) {
         this.totalTripsGenByPurpose = totalTripsGenByPurpose;
+    }
+
+    public Map<MitoAggregatePersona, Map<AreaTypes.SGType, Double>> getPersonsByAreaType() {
+        return personsByAreaType;
+    }
+
+    public void setPersonsByAreaType(Map<MitoAggregatePersona, Map<AreaTypes.SGType, Double>> personsByAreaType) {
+        this.personsByAreaType = personsByAreaType;
     }
 }

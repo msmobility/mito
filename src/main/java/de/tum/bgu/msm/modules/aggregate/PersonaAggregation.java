@@ -48,6 +48,26 @@ public class PersonaAggregation extends Module {
         personaWithoutEV.setAggregateAttributes(personaCounters.get(Boolean.FALSE));
         dataSet.addPersona(personaWithoutEV);
 
+        Map<MitoAggregatePersona, Map<AreaTypes.SGType, Double>> map = new LinkedHashMap<>();
+        for (MitoAggregatePersona persona : dataSet.getAggregatePersonas().values()){
+            if (persona.getId() ==1){
+                Map<AreaTypes.SGType, Double> mapEV = new LinkedHashMap<>();
+                mapEV.put(AreaTypes.SGType.CORE_CITY, personaWithEV.getAggregateAttributes().get("hh.BBSR_count_10"));
+                mapEV.put(AreaTypes.SGType.MEDIUM_SIZED_CITY, personaWithEV.getAggregateAttributes().get("hh.BBSR_count_20"));
+                mapEV.put(AreaTypes.SGType.TOWN, personaWithEV.getAggregateAttributes().get("hh.BBSR_count_30"));
+                mapEV.put(AreaTypes.SGType.RURAL, personaWithEV.getAggregateAttributes().get("hh.BBSR_count_40"));
+                map.put(persona, mapEV);
+            } else {
+                Map<AreaTypes.SGType, Double> mapnoEV = new LinkedHashMap<>();
+                mapnoEV.put(AreaTypes.SGType.CORE_CITY, personaWithoutEV.getAggregateAttributes().get("hh.BBSR_count_10"));
+                mapnoEV.put(AreaTypes.SGType.MEDIUM_SIZED_CITY, personaWithoutEV.getAggregateAttributes().get("hh.BBSR_count_20"));
+                mapnoEV.put(AreaTypes.SGType.TOWN, personaWithoutEV.getAggregateAttributes().get("hh.BBSR_count_30"));
+                mapnoEV.put(AreaTypes.SGType.RURAL, personaWithoutEV.getAggregateAttributes().get("hh.BBSR_count_40"));
+                map.put(persona, mapnoEV);
+            }
+        }
+        dataSet.setPersonsByAreaType(map);
+
         Path filePersona = Resources.instance.getPersonaFilePath();
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
 
@@ -291,6 +311,17 @@ public class PersonaAggregation extends Module {
                     });
         });
 
+        personsByEV.forEach((ev, persons) -> {
+            persons.parallelStream()
+                    //group number of trips by mode
+                    .collect(Collectors.groupingBy(MitoPerson::getBBSR, Collectors.counting()))
+                    //calculate and add share to data set table
+                    .forEach((size, count) -> {
+                        personaCounters.get(ev).put("hh.BBSR_count_".concat(String.valueOf(size)),(double) count);
+                    });
+        });
+
+
         //average car per adults by EV ownership
         personaCounters.get(Boolean.TRUE).put("hh.carsPerAdult",
                 personsByEV.get(Boolean.TRUE).parallelStream().collect(Collectors.averagingDouble(MitoPerson::getCarsPerAdult)));
@@ -317,7 +348,7 @@ public class PersonaAggregation extends Module {
                     .collect(Collectors.groupingBy(MitoPerson::personAgeGroupModeChoice, Collectors.counting()))
                     //calculate and add share to data set table
                     .forEach((size, count) -> {
-                        personaCounters.get(ev).put("modeChoice" + size,(double) count/totalPersons.get(ev));
+                        personaCounters.get(ev).put("modeChoice_" + size,(double) count/totalPersons.get(ev));
                     });
         });
 

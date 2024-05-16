@@ -118,9 +118,9 @@ public final class TravelDemandGeneratorAggregate {
             if (purpose.equals(Purpose.HBW) ||  purpose.equals(Purpose.HBE)){
                 tripGenerationMandatory = new TripGenerationAggregate(dataSet,
                         new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
-                travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, purposes);
-                //distributionMandatory = new TripDistributionAggregate(dataSet, purposes, false,
-                        //new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
+                //travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, purposes);
+                distributionMandatory = new TripDistributionAggregate(dataSet, purposes, false,
+                        new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
                 modeChoiceMandatory = new ModeChoiceAggregate(dataSet, purposes, persona);
                 ((ModeChoiceAggregate) modeChoiceMandatory).registerModeChoiceCalculatorAggregate(purpose,
                         new CalibratingModeChoiceCalculatorImplAggregate(
@@ -131,8 +131,8 @@ public final class TravelDemandGeneratorAggregate {
             } else {
                 tripGenerationDiscretionary = new TripGenerationAggregate(dataSet,
                     new TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate(), purposes, persona);
-                //distributionDiscretionary = new TripDistributionAggregate(dataSet, purposes, false,
-                    //new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
+                distributionDiscretionary = new TripDistributionAggregate(dataSet, purposes, false,
+                    new DestinationUtilityCalculatorFactoryImplLogsumAggregate(), persona);
                 modeChoiceDiscretionary = new ModeChoiceAggregate(dataSet, purposes, persona);
                 ((ModeChoiceAggregate) modeChoiceDiscretionary).registerModeChoiceCalculatorAggregate(purpose,
                         new CalibratingModeChoiceCalculatorImplAggregate(
@@ -259,9 +259,9 @@ public final class TravelDemandGeneratorAggregate {
             logger.info("Running Module: Aggregated Trip Generation. Purpose " + purpose);
             tripGenerationMandatory.run();
             logger.info("Running Module: Aggregated Trip Distribution. Purpose " + purpose);
-            //distributionMandatory.run();
+            distributionMandatory.run();
             logger.info("Running Module: Aggregated Mode Choice. Purpose " + purpose);
-            modeChoiceMandatory.run();
+            //modeChoiceMandatory.run();
             /*logger.info("Running time of day choice");
             timeOfDayChoiceMandatory.run();
 
@@ -270,9 +270,9 @@ public final class TravelDemandGeneratorAggregate {
             logger.info("Running Module: Aggregated Trip Generation. Purpose " + purpose);
             tripGenerationDiscretionary.run();
             logger.info("Running Module: Aggregated Trip Distribution. Purpose " + purpose);
-            //distributionDiscretionary.run();
+            distributionDiscretionary.run();
             logger.info("Running Module: Aggregated Mode Choice. Purpose " + purpose);
-            modeChoiceDiscretionary.run();
+            //modeChoiceDiscretionary.run();
             /*logger.info("Running time of day choice");
             timeOfDayChoiceMandatory.run();
 */
@@ -349,12 +349,18 @@ public final class TravelDemandGeneratorAggregate {
         final IndexedDoubleMatrix1D hbwTripsAttracted = new IndexedDoubleMatrix1D(dataSet.getZones().values());
         hbwTripsAttracted.assign(0.);
 
+        Map<Purpose, Double> tripsPurpose = new LinkedHashMap<>();
+        for (Purpose purpose : Purpose.values()){
+            tripsPurpose.putIfAbsent(purpose, 0.);
+        }
+
         dataSet.setAggregateTripMatrix(tripMatrix);
         dataSet.setHomeBasedTripsAttractedToZone(homeBasedTrips);
         dataSet.setAverageTripsByPurpose(personas);
-        dataSet.setTotalTripsGenByPurpose(personas);
+        dataSet.setTotalTripsGenByPurpose(totalTrips);
         dataSet.setZonesByAreaType(zonesByAreaType);
         dataSet.setHBWtripsAttracted(hbwTripsAttracted);
+        dataSet.setTotalTripsByPurpose(tripsPurpose);
 
     }
 }

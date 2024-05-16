@@ -117,7 +117,7 @@ public final class MitoModelAggregate {
         new CalibrationRegionMapReader(dataSet).read();
         new BicycleOwnershipReaderAndModel(dataSet).read();
         new TripListReader(dataSet).read();
-        //new LogsumReader(dataSet).read();
+        new LogsumReader(dataSet).read();
     }
 
 

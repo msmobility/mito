@@ -136,7 +136,7 @@ public class MitoPerson implements Id {
         } else if (age < 40) {
             ageGroup= "p.age_30_to_39";
         } else if (age < 50) {
-            ageGroup= "p.age_age_40_to_49";
+            ageGroup= "p.age_40_to_49";
         } else if (age < 60) {
             ageGroup= "p.age_50_to_59";
         } else {

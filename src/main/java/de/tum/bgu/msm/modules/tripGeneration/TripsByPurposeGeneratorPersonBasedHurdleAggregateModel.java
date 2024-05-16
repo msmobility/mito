@@ -93,8 +93,10 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
         double averageTripsTravelers = averageTrips / (1-pOfAtLeastZero);
 
         double averageTripsAll = averageTripsTravelers * probabilityTravel;
+        double totalTripsAll = averageTripsAll * dataSet.getPersonsByAreaType().get(persona).get(areaType);
 
         dataSet.getAverageTripsByPurpose().get(persona).get(purpose).put(areaType, averageTripsAll);
+        dataSet.getTotalTripsGenByPurpose().get(persona).get(purpose).put(areaType, totalTripsAll);
 
         //assign origin to home based trips. Non-home based trips origins and destinations are assigned in trip distribution
         if (!purpose.equals(Purpose.NHBW)){
@@ -107,6 +109,8 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
                         IndexedDoubleMatrix1D residents = dataSet.getPersonsByZone();
                         for (MitoZone destination : dataSet.getZones().values()) {
                             double tripsZone = averageTripsAll * residents.getIndexed(origin.getId());
+                            double prevTrips = dataSet.getTotalTripsByPurpose().get(purpose);
+                            dataSet.getTotalTripsByPurpose().put(purpose, prevTrips + tripsZone);
                             matrix.setIndexed(origin.getId(), destination.getId(),tripsZone);
                         }
                     }
@@ -121,7 +125,8 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
                     if (origin.getAreaTypeSG().equals(areaType)) {
                         IndexedDoubleMatrix1D residents = dataSet.getPersonsByZone();
                         double tripsZone = averageTripsAll * residents.getIndexed(origin.getId());
-                        dataSet.setTotalNHBOTrips(dataSet.getTotalNHBOTrips() + tripsZone);
+                        double prevTrips = dataSet.getTotalTripsByPurpose().get(purpose);
+                        dataSet.getTotalTripsByPurpose().put(purpose, prevTrips + tripsZone);
                         matrix.setIndexed(origin.getId(), 1,tripsZone);
                     }
                 }
@@ -136,7 +141,8 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
                 if (origin.getAreaTypeSG().equals(areaType)) {
                     IndexedDoubleMatrix1D residents = dataSet.getPersonsByZone();
                     double tripsZone = averageTripsAll * residents.getIndexed(origin.getId());
-                    dataSet.setTotalNHBWTrips(dataSet.getTotalNHBWTrips() + tripsZone);
+                    double prevTrips = dataSet.getTotalTripsByPurpose().get(purpose);
+                    dataSet.getTotalTripsByPurpose().put(purpose, prevTrips + tripsZone);
                     matrix.setIndexed(origin.getId(), 1,tripsZone);
                 }
             }
@@ -161,16 +167,26 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
     }
 
     private void summarizeTripGeneration(){
-        Path fileTripGen = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "TripGen_summary.csv");
+        Path fileTripGen = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_TripGen_summary.csv");
         PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileTripGen.toAbsolutePath().toString(), true);
         if (purpose.equals(Purpose.HBW) && areaType.equals(AreaTypes.SGType.CORE_CITY)) {
-            pw.println("persona,purpose,areaType,averageTrips,totalTrips");
+            pw.println("persona,purpose,areaType,persons,averageTrips,totalTrips");
         }
         pw.print(persona.getId());
         pw.print(",");
         pw.print(purpose);
         pw.print(",");
         pw.print(areaType);
+        pw.print(",");
+        if (areaType.equals(AreaTypes.SGType.CORE_CITY)) {
+            pw.print(persona.getAggregateAttributes().get("hh.BBSR_count_10").toString());
+        } else if (areaType.equals(AreaTypes.SGType.MEDIUM_SIZED_CITY)){
+            pw.print(persona.getAggregateAttributes().get("hh.BBSR_count_20").toString());
+        } else if (areaType.equals(AreaTypes.SGType.TOWN)){
+            pw.print(persona.getAggregateAttributes().get("hh.BBSR_count_30").toString());
+        } else if (areaType.equals(AreaTypes.SGType.RURAL)){
+            pw.print(persona.getAggregateAttributes().get("hh.BBSR_count_40").toString());
+        }
         pw.print(",");
         pw.print(dataSet.getAverageTripsByPurpose().get(persona).get(purpose).get(areaType).toString());
         pw.print(",");
