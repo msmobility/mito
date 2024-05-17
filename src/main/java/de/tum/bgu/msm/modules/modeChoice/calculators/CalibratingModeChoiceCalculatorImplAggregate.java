@@ -2,18 +2,17 @@ package de.tum.bgu.msm.modules.modeChoice.calculators;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculatorAggregate;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationDataAggregate;
 
 import java.util.EnumMap;
 
-public class CalibratingModeChoiceCalculatorImpl extends ModeChoiceCalculatorImpl {
+public class CalibratingModeChoiceCalculatorImplAggregate extends ModeChoiceCalculatorImplAggregate {
 
-    private final ModeChoiceCalculator base;
-    private final ModeChoiceCalibrationData calibrationData;
+    private final ModeChoiceCalculatorAggregate base;
+    private final ModeChoiceCalibrationDataAggregate calibrationData;
 
-    public CalibratingModeChoiceCalculatorImpl(ModeChoiceCalculator base, ModeChoiceCalibrationData calibrationData) {
+    public CalibratingModeChoiceCalculatorImplAggregate(ModeChoiceCalculatorAggregate base, ModeChoiceCalibrationDataAggregate calibrationData) {
         super();
         this.base = base;
         this.calibrationData = calibrationData;

@@ -71,6 +71,18 @@ public class Resources {
         return baseDirectory.resolve(getString(PERSONS));
     }
 
+    public Path getTripsFilePath() {
+        return baseDirectory.resolve(getString(TRIPS));
+    }
+
+    public Path getVehiclesFilePath() {
+        return baseDirectory.resolve(getString(VEHICLES));
+    }
+
+    public Path getPersonaFilePath() {
+        return baseDirectory.resolve(getString(PERSONA));
+    }
+
     public Path getDwellingsFilePath() {
         return baseDirectory.resolve(getString(DWELLINGS));
     }

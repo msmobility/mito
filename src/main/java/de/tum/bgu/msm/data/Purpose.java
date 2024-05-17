@@ -11,11 +11,12 @@ public enum Purpose implements Id {
     HBW,
     HBE,
     HBS,
+    HBR,
     HBO,
     NHBW,
     NHBO,
-    AIRPORT,
-    HBR;
+    AIRPORT;
+
 
 
     @Override
@@ -45,8 +46,8 @@ public enum Purpose implements Id {
         list.add(HBS);
         list.add(HBO);
         list.add(HBR);
-        list.add(NHBO);
         list.add(NHBW);
+        list.add(NHBO);
         return list;
     }
 
@@ -63,8 +64,8 @@ public enum Purpose implements Id {
         list.add(HBS);
         list.add(HBO);
         list.add(HBR);
-        list.add(NHBO);
         list.add(NHBW);
+        list.add(NHBO);
         return list;
     }
 

@@ -80,6 +80,10 @@ public class IndexedDoubleMatrix1D  {
         return this.internalIndex2ExternalId.get(index);
     }
 
+    public int getInternalIndex(int index) {
+        return this.externalId2InternalIndex.get(index);
+    }
+
     /**
      * Returns the sum of all cells; Sum( x[i] ).
      * @return

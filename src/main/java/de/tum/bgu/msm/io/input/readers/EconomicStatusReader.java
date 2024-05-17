@@ -166,9 +166,9 @@ public class EconomicStatusReader extends AbstractCsvReader {
             economicStatusCounts.put(economicStatus, economicStatusCounts.get(economicStatus) + 1);
         }
 
-        for (int es : economicStatusCounts.keySet()){
+/*        for (int es : economicStatusCounts.keySet()){
             logger.warn("Economic status: " + es + " count: " + economicStatusCounts.get(es));
-        }
+        }*/
         logger.info("Assigned economic status to all households");
     }
 }

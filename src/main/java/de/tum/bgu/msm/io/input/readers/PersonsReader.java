@@ -7,7 +7,9 @@ import org.apache.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class PersonsReader extends AbstractCsvReader {
@@ -25,6 +27,8 @@ public class PersonsReader extends AbstractCsvReader {
     private int posSchoolId = -1;
 
     private int occupationCounter = 0;
+
+    private int retireeCounter = 0;
 
     public PersonsReader(DataSet dataSet) {
         super(dataSet);
@@ -119,5 +123,33 @@ public class PersonsReader extends AbstractCsvReader {
         pp.setHousehold(hh);
         hh.addPerson(pp);
         dataSet.addPerson(pp);
+
+        Map<String, Double> additionalAttributes = new LinkedHashMap<>();
+        Map<String, String> additionalStringAttributes = new LinkedHashMap<>();
+        additionalStringAttributes.put("p.isMobile_HBW_car", "no");
+        additionalStringAttributes.put("p.isMobile_HBW_PT", "no");
+        additionalStringAttributes.put("p.isMobile_HBW_cycle", "no");
+        additionalStringAttributes.put("p.isMobile_HBW_walk", "no");
+        additionalAttributes.put("p.TTB_HBW_car", 0.);
+        additionalAttributes.put("p.TTB_HBW_PT", 0.);
+        additionalAttributes.put("p.TTB_HBW_cycle", 0.);
+        additionalAttributes.put("p.TTB_HBW_walk", 0.);
+        additionalStringAttributes.put("p.isMobile_HBE_car", "no");
+        additionalStringAttributes.put("p.isMobile_HBE_PT", "no");
+        additionalStringAttributes.put("p.isMobile_HBE_cycle", "no");
+        additionalStringAttributes.put("p.isMobile_HBE_walk", "no");
+        additionalAttributes.put("p.TTB_HBE_car", 0.);
+        additionalAttributes.put("p.TTB_HBE_PT", 0.);
+        additionalAttributes.put("p.TTB_HBE_cycle", 0.);
+        additionalAttributes.put("p.TTB_HBE_walk", 0.);
+        additionalAttributes.put("p.HBW_trips", 0.);
+        additionalAttributes.put("p.HBE_trips", 0.);
+        additionalAttributes.put("p.HBS_trips", 0.);
+        additionalAttributes.put("p.HBO_trips", 0.);
+        additionalAttributes.put("p.NHBW_trips", 0.);
+        additionalAttributes.put("p.NHBO_trips", 0.);
+        additionalAttributes.put("p.HBR_trips", 0.);
+        pp.setAdditionalAttributes(additionalAttributes);
+        pp.setAdditionalStringAttributes(additionalStringAttributes);
     }
 }

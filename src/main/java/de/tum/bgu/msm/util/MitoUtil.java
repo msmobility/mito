@@ -60,8 +60,8 @@ public final class MitoUtil {
             }
         }
         if (ind == -1) {
-            logger.error("Could not find element " + element +
-                    " in array (see method <findPositionInArray> in class <SiloUtil>");
+            //logger.error("Could not find element " + element +
+              //      " in array (see method <findPositionInArray> in class <SiloUtil>");
         }
         return ind;
     }

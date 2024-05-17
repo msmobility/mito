@@ -13,6 +13,11 @@ public class Properties {
     static final String SCHOOLS = "school.file.ascii";
     static final String HOUSEHOLDS = "household.file.ascii";
     static final String PERSONS = "person.file.ascii";
+
+    static final String TRIPS = "trip.file.ascii";
+    static final String VEHICLES = "vehicle.file.ascii";
+
+    static final String PERSONA = "persona.file.ascii";
     static final String DWELLINGS = "dwelling.file.ascii";
 
     public static final String SCENARIO_NAME = "scenario.name";

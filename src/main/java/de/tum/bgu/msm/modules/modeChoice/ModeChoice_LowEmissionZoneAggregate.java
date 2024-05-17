@@ -3,30 +3,30 @@ package de.tum.bgu.msm.modules.modeChoice;
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.modeChoice.calculators.*;
-import de.tum.bgu.msm.modules.modeChoice.calculators.av.AVModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.concurrent.ConcurrentExecutor;
 import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.tum.bgu.msm.resources.Properties.AUTONOMOUS_VEHICLE_CHOICE;
 
-public class ModeChoice extends Module {
+public class ModeChoice_LowEmissionZoneAggregate extends Module {
 
-    private final static Logger logger = Logger.getLogger(ModeChoice.class);
+    private final static Logger logger = Logger.getLogger(ModeChoice_LowEmissionZoneAggregate.class);
 
     private final Map<Purpose, ModeChoiceCalculator> modeChoiceCalculatorByPurpose = new EnumMap<>(Purpose.class);
-    private final Map<Purpose, ModeChoiceCalculatorAggregate> modeChoiceCalculatorByPurposeAggregate = new EnumMap<>(Purpose.class);
+    private static Map<Integer, Boolean> evForbidden = new HashMap<>();
 
-    public ModeChoice(DataSet dataSet, List<Purpose> purposes) {
+    public ModeChoice_LowEmissionZoneAggregate(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
+        readEvForbiddenZones();
         boolean includeAV = Resources.instance.getBoolean(AUTONOMOUS_VEHICLE_CHOICE, false);
         //AV option is deactivated for now, since it uses outdate mode choice calculators.
 
@@ -44,13 +44,6 @@ public class ModeChoice extends Module {
 
     public void registerModeChoiceCalculator(Purpose purpose, ModeChoiceCalculator modeChoiceCalculator) {
         final ModeChoiceCalculator prev = modeChoiceCalculatorByPurpose.put(purpose, modeChoiceCalculator);
-        if (prev != null) {
-            logger.info("Overwrote mode choice calculator for purpose " + purpose + " with " + modeChoiceCalculator.getClass());
-        }
-    }
-
-    public void registerModeChoiceCalculatorAggregate(Purpose purpose, ModeChoiceCalculatorAggregate modeChoiceCalculator) {
-        final ModeChoiceCalculatorAggregate prev = modeChoiceCalculatorByPurposeAggregate.put(purpose, modeChoiceCalculator);
         if (prev != null) {
             logger.info("Overwrote mode choice calculator for purpose " + purpose + " with " + modeChoiceCalculator.getClass());
         }
@@ -120,7 +113,6 @@ public class ModeChoice extends Module {
             this.modeChoiceCalculator = modeChoiceCalculator;
         }
 
-
         @Override
         public Void call() {
             countTripsSkipped = 0;
@@ -163,6 +155,13 @@ public class ModeChoice extends Module {
                 return;
             }
 
+
+            if (evForbidden.get(trip.getTripDestination().getZoneId()) && !trip.getPerson().getHousehold().isHasEV() &&
+                    Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(trip.getTripPurpose())) {
+                probabilities.put(Mode.autoDriver, 0.0);
+                probabilities.put(Mode.autoPassenger,0.0);
+            }
+
             //found Nan when there is no transit!!
             probabilities.replaceAll((mode, probability) ->
                     probability.isNaN() ? 0 : probability);
@@ -175,6 +174,26 @@ public class ModeChoice extends Module {
                 logger.error("Negative probabilities for trip " + trip.getId());
                 trip.setTripMode(null);
             }
+        }
+    }
+    private void readEvForbiddenZones() {
+        // Initially set all zones to not forbidden
+        for (MitoZone zone : dataSet.getZones().values()) {
+            evForbidden.put(zone.getId(), false);
+        }
+        // Read the file
+        try (BufferedReader br = new BufferedReader(new FileReader("////nas.ads.mwn.de/tubv/mob/projects/2021/DatSim/abit/transportpolicypaper/lowEmissionZones.csv"))) {
+            br.readLine(); // skip header
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length > 0) {
+                    int zoneId = Integer.parseInt(values[0].trim());
+                    evForbidden.put(zoneId, true);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,13 +1,15 @@
 package de.tum.bgu.msm.modules.tripGeneration;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.MitoZone;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static de.tum.bgu.msm.io.input.readers.LogsumReader.convertArrayListToIntArray;
 
 public class TripBalancer {
 
@@ -30,7 +32,16 @@ public class TripBalancer {
         logger.info("  Balancing trip production and attractions");
 
         for (Purpose purpose : purposes) {
-            long tripsByPurp = dataSet.getHouseholds().values().stream().mapToInt(household -> household.getTripsForPurpose(purpose).size()).sum();
+
+            int[] zoneIds = convertArrayListToIntArray(dataSet.getZones().values());
+
+            long tripsByPurp = 0 ;
+            for (int origin : zoneIds){
+                for (int destination : zoneIds){
+                    tripsByPurp += dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi).getIndexed(origin, destination);
+                }
+            }
+            //long tripsByPurp = dataSet.getHouseholds().values().stream().mapToInt(household -> household.getTripsForPurpose(purpose).size()).sum();
             double attrSum = dataSet.getZones().values().stream().mapToDouble(zone -> zone.getTripAttraction(purpose)).sum();
             if (tripsByPurp == 0) {
                 logger.warn("No trips for purpose " + purpose + " were generated.");

@@ -184,11 +184,11 @@ public class BicycleOwnershipReaderAndModel extends AbstractCsvReader {
                 pp.setHasBicycle(hasBicycle);
             }
         }
-        logger.info("Age bin" + "\t" + "Share of bicycles");
+        //logger.info("Age bin" + "\t" + "Share of bicycles");
         int totalPersons = 0;
         int totalBikes = 0;
         for (AgeBin ab : AgeBin.values()){
-            logger.info(ab.toString() + "\t" + Double.valueOf(bikesPerAgeBin.get(ab)) / personsPerAgeBin.get(ab));
+            //logger.info(ab.toString() + "\t" + Double.valueOf(bikesPerAgeBin.get(ab)) / personsPerAgeBin.get(ab));
             totalPersons += personsPerAgeBin.get(ab);
             totalBikes += bikesPerAgeBin.get(ab);
         }

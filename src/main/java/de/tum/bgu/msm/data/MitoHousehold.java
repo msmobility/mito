@@ -60,6 +60,65 @@ public class MitoHousehold implements Id, MicroLocation {
         return autos;
     }
 
+    public int getChildren(){
+        int children = 0;
+        for (MitoPerson p : Collections.unmodifiableMap(persons).values()) {
+            if (p.getAge() < 18) {
+                children++;
+            }
+        }
+        return Math.min(children, 3);
+    }
+
+
+    public int getSize5(){
+        return Math.min(Collections.unmodifiableMap(persons).size(), 5);
+    }
+
+    public int getAutos3(){
+        return Math.min(autos, 3);
+    }
+
+    public double getCarsPerAdult(){
+        int adults = 0;
+        double carsPerAdult = 0.;
+        for (MitoPerson p : Collections.unmodifiableMap(persons).values()) {
+            if (p.getAge() > 17) {
+                adults++;
+            }
+        }
+        if (adults > 0){
+            carsPerAdult = autos/adults;
+        }
+        return carsPerAdult;
+    }
+
+    public int getBikes1(){
+        int hhBicycles = 0;
+        for (MitoPerson p : persons.values()) {
+            if (p.getHasBicycle().get()) {
+                hhBicycles++;
+            }
+        }
+        return Math.min(hhBicycles,1);
+    }
+
+    public String getIncomeClass(){
+        String incomeClass = "1500";
+        if (monthlyIncome_EUR > 1500){
+            if (monthlyIncome_EUR < 5600){
+                incomeClass = "1500_5600";
+            } else {
+                incomeClass = "5600";
+            }
+        }
+        return incomeClass;
+    }
+
+    public int getBBSR(){
+        return homeZone.getAreaTypeSG().code();
+    }
+
     public void setHomeZone(MitoZone homeZone) {
         this.homeZone = homeZone;
     }

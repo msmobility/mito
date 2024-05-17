@@ -6,9 +6,15 @@ import de.tum.bgu.msm.data.timeOfDay.TimeOfDayDistribution;
 import de.tum.bgu.msm.data.travelDistances.TravelDistances;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationDataAggregate;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.matsim.api.core.v01.population.Population;
 
+import java.awt.geom.Area;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class DataSet {
 
@@ -19,11 +25,23 @@ public class DataSet {
 
     private TravelDistances logsum;
 
+    private ConcurrentMap<Mode, IndexedDoubleMatrix2D> aggregateTripMatrixByMode = new ConcurrentHashMap<>();
+
+    private IndexedDoubleMatrix1D personsByZone;
+
+    private IndexedDoubleMatrix1D hbwTripsAttracted;
+
+    private IndexedDoubleMatrix1D homeBasedTripsAttractedByZone;
+
+    private Map<AreaTypes.SGType, MitoZone> zonesByAreaType = new LinkedHashMap<>();
+
     private double peakHour = Double.NaN;
 
     private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
     private final Map<Integer, MitoHousehold> households = new LinkedHashMap<>();
     private final Map<Integer, MitoPerson> persons = new LinkedHashMap<>();
+
+    private final Map<Integer, MitoAggregatePersona> aggregatePersonas = new LinkedHashMap<>();
     private final Map<Integer, MitoSchool> schools = new LinkedHashMap<>();
     private final Map<Integer, MitoJob> jobs = new LinkedHashMap<>();
 
@@ -46,6 +64,8 @@ public class DataSet {
     private Population population;
     private final ModeChoiceCalibrationData modeChoiceCalibrationData = new ModeChoiceCalibrationData();
 
+    private final ModeChoiceCalibrationDataAggregate modeChoiceCalibrationDataAggregate = new ModeChoiceCalibrationDataAggregate();
+
     public TravelDistances getTravelDistancesAuto(){return this.travelDistancesAuto;}
 
     public TravelDistances getTravelDistancesNMT(){return this.travelDistancesNMT;}
@@ -65,6 +85,8 @@ public class DataSet {
     public Map<Integer, MitoPerson> getPersons() {
         return Collections.unmodifiableMap(persons);
     }
+
+    public Map<Integer, MitoAggregatePersona> getAggregatePersonas(){return Collections.unmodifiableMap(aggregatePersonas);}
 
     public Map<Integer, MitoZone> getZones() {
         return Collections.unmodifiableMap(zones);
@@ -89,6 +111,15 @@ public class DataSet {
     public Map<Integer, MitoTrip> getTripSubsample() {
         return Collections.unmodifiableMap(tripSubsample);
     }
+
+    public double totalNHBOTrips = 0;
+
+    public Map<Purpose, Double> totalTripsByPurpose = new LinkedHashMap<>();
+
+    public Map<MitoAggregatePersona, Map<AreaTypes.SGType, Double>> personsByAreaType = new LinkedHashMap<>();
+
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> averageTripsByPurpose = new LinkedHashMap<>();
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> totalTripsGenByPurpose = new LinkedHashMap<>();
 
     public void addTrip(final MitoTrip trip) {
         MitoTrip test = trips.putIfAbsent(trip.getId(), trip);
@@ -128,6 +159,13 @@ public class DataSet {
         MitoPerson test = persons.putIfAbsent(person.getId(), person);
         if(test != null) {
             throw new IllegalArgumentException("MitoPerson id " + person.getId() + " already exists!");
+        }
+    }
+
+    public void addPersona(final MitoAggregatePersona persona) {
+        MitoAggregatePersona test = aggregatePersonas.putIfAbsent(persona.getId(), persona);
+        if(test != null) {
+            throw new IllegalArgumentException("MitoPerson id " + persona.getId() + " already exists!");
         }
     }
 
@@ -246,6 +284,10 @@ public class DataSet {
         return modeChoiceCalibrationData;
     }
 
+    public ModeChoiceCalibrationDataAggregate getModeChoiceCalibrationDataAggregate() {
+        return modeChoiceCalibrationDataAggregate;
+    }
+
 
     public EnumMap<Purpose, TravelDistances> getLogsumByPurpose_EV() {
         return logsumMatrixByPurpose_EV;
@@ -263,4 +305,74 @@ public class DataSet {
         this.logsumMatrixByPurpose_NoEV = logsumMatrixByPurpose;
     }
 
+
+    public void setAggregateTripMatrix(ConcurrentMap<Mode, IndexedDoubleMatrix2D> trips) {
+        this.aggregateTripMatrixByMode = trips;
+    }
+
+    public ConcurrentMap<Mode, IndexedDoubleMatrix2D> getAggregateTripMatrix(){return aggregateTripMatrixByMode;}
+
+    public Map<Purpose, Double> getTotalTripsByPurpose() {
+        return totalTripsByPurpose;
+    }
+
+    public void setTotalTripsByPurpose(Map<Purpose, Double> totalTripsByPurpose) {
+        this.totalTripsByPurpose = totalTripsByPurpose;
+    }
+
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> getAverageTripsByPurpose() {
+        return averageTripsByPurpose;
+    }
+
+    public void setAverageTripsByPurpose(Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> averageTripsByPurpose) {
+        this.averageTripsByPurpose = averageTripsByPurpose;
+    }
+
+    public IndexedDoubleMatrix1D getPersonsByZone() {
+        return personsByZone;
+    }
+
+    public void setPersonsByZone(IndexedDoubleMatrix1D personsByZone) {
+        this.personsByZone = personsByZone;
+    }
+
+    public IndexedDoubleMatrix1D getHBWtripsAttracted() {
+        return hbwTripsAttracted;
+    }
+
+    public void setHBWtripsAttracted(IndexedDoubleMatrix1D workersByZone) {
+        this.hbwTripsAttracted = workersByZone;
+    }
+
+    public IndexedDoubleMatrix1D getHomeBasedTripsAttractedToZone() {
+        return homeBasedTripsAttractedByZone;
+    }
+
+    public void setHomeBasedTripsAttractedToZone(IndexedDoubleMatrix1D homeBasedTripsByZone) {
+        this.homeBasedTripsAttractedByZone = homeBasedTripsByZone;
+    }
+
+    public Map<AreaTypes.SGType, MitoZone> getZonesByAreaType() {
+        return zonesByAreaType;
+    }
+
+    public void setZonesByAreaType(Map<AreaTypes.SGType, MitoZone> zonesByAreaType){
+        this.zonesByAreaType = zonesByAreaType;
+    }
+
+    public Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> getTotalTripsGenByPurpose() {
+        return totalTripsGenByPurpose;
+    }
+
+    public void setTotalTripsGenByPurpose(Map<MitoAggregatePersona, Map<Purpose, Map<AreaTypes.SGType, Double>>> totalTripsGenByPurpose) {
+        this.totalTripsGenByPurpose = totalTripsGenByPurpose;
+    }
+
+    public Map<MitoAggregatePersona, Map<AreaTypes.SGType, Double>> getPersonsByAreaType() {
+        return personsByAreaType;
+    }
+
+    public void setPersonsByAreaType(Map<MitoAggregatePersona, Map<AreaTypes.SGType, Double>> personsByAreaType) {
+        this.personsByAreaType = personsByAreaType;
+    }
 }
