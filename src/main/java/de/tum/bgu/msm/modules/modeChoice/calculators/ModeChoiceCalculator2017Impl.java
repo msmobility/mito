@@ -24,6 +24,7 @@ public class ModeChoiceCalculator2017Impl implements ModeChoiceCalculator {
     }
 
 
+
     @Override
     public EnumMap<Mode, Double> calculateProbabilities(
             Purpose purpose,

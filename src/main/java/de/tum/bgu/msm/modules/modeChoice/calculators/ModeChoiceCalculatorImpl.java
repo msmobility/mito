@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalculator;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 public class ModeChoiceCalculatorImpl implements ModeChoiceCalculator {
 
@@ -302,6 +303,11 @@ public class ModeChoiceCalculatorImpl implements ModeChoiceCalculator {
 
 
     @Override
+    public EnumMap<Mode, Double> calculateProbabilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+        return null;
+    }
+
+    @Override
     public EnumMap<Mode, Double> calculateProbabilities(
             Purpose purpose,
             MitoHousehold household,
@@ -311,7 +317,8 @@ public class ModeChoiceCalculatorImpl implements ModeChoiceCalculator {
             TravelTimes travelTimes,
             double travelDistanceAuto,
             double travelDistanceNMT,
-            double peakHour_s) {
+            double peakHour_s,
+            Map<Mode, Map<String, Double>> coef) {
 
         EnumMap<Mode, Double> utilities = calculateUtilities(
                 purpose, household, person, originZone, destinationZone, travelTimes

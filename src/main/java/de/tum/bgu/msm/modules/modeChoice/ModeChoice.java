@@ -111,6 +111,7 @@ public class ModeChoice extends Module {
             this.travelTimes = dataSet.getTravelTimes();
             this.modeChoiceCalculator = modeChoiceCalculator;
         }
+        
 
         @Override
         public Void call() {
