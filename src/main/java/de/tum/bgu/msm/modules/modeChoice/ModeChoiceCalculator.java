@@ -28,17 +28,7 @@ public interface ModeChoiceCalculator {
                                                  double travelDistanceNMT,
                                                  double peakHour_s);
 
-    EnumMap<Mode, Double> calculateProbabilities(
-            Purpose purpose,
-            MitoHousehold household,
-            MitoPerson person,
-            MitoZone originZone,
-            MitoZone destinationZone,
-            TravelTimes travelTimes,
-            double travelDistanceAuto,
-            double travelDistanceNMT,
-            double peakHour_s,
-            Map<Mode, Map<String, Double>> coef);
+
 
     /**
      * For the time being implementations of this interface should adhere to the following order in the result array:
