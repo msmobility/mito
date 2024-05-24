@@ -7,8 +7,11 @@ import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.io.output.DistancePlots;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceLogsum;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImplLogsum;
 import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017Impl;
+import de.tum.bgu.msm.modules.modeChoice.calculators.ModeChoiceCalculator2017ImplLogsum;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
 import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.*;
@@ -134,9 +137,9 @@ public final class CalibrateDestinationChoiceLogsum {
 
         tripDistributionCalibrationMandatory.close();
 
-        modeChoiceMandatory = new ModeChoice(dataSet, Purpose.getMandatoryPurposes());
+        modeChoiceMandatory = new ModeChoiceLogsum(dataSet, Purpose.getMandatoryPurposes());
         Purpose.getMandatoryPurposes().forEach(purpose -> {
-            ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+            ((ModeChoiceLogsum) modeChoiceMandatory).registerModeChoiceCalculatorLogsum(purpose, new CalibratingModeChoiceCalculatorImplLogsum(new ModeChoiceCalculator2017ImplLogsum(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
         });
         modeChoiceMandatory.run();
 
@@ -147,9 +150,9 @@ public final class CalibrateDestinationChoiceLogsum {
         //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
         travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
 
-        modeChoiceDiscretionary = new ModeChoice(dataSet, Purpose.getDiscretionaryPurposes());
+        modeChoiceDiscretionary = new ModeChoiceLogsum(dataSet, Purpose.getDiscretionaryPurposes());
         Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-            ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+            ((ModeChoiceLogsum) modeChoiceDiscretionary).registerModeChoiceCalculatorLogsum(purpose, new CalibratingModeChoiceCalculatorImplLogsum(new ModeChoiceCalculator2017ImplLogsum(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
         });
         timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
 

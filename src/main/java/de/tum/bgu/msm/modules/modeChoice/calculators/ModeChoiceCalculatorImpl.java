@@ -304,11 +304,6 @@ public class ModeChoiceCalculatorImpl implements ModeChoiceCalculator {
 
 
     @Override
-    public EnumMap<Mode, Double> calculateProbabilities(Purpose purpose, MitoHousehold household, MitoPerson person, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
-        return null;
-    }
-
-    @Override
     public EnumMap<Mode, Double> calculateProbabilities(
             Purpose purpose,
             MitoHousehold household,
@@ -318,8 +313,7 @@ public class ModeChoiceCalculatorImpl implements ModeChoiceCalculator {
             TravelTimes travelTimes,
             double travelDistanceAuto,
             double travelDistanceNMT,
-            double peakHour_s,
-            Map<Mode, Map<String, Double>> coef) {
+            double peakHour_s) {
 
         EnumMap<Mode, Double> utilities = calculateUtilities(
                 purpose, household, person, originZone, destinationZone, travelTimes

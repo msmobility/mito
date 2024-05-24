@@ -2,26 +2,28 @@ package de.tum.bgu.msm.analysis.logsumAccessibility;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.data.travelTimes.TravelTimes;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 public class LogsumCalculator2 {
 
     //private final ModeChoiceCalculator base;
     private final Map<Mode, Map<String, Double>> coef;
+    private final ModeChoiceCalibrationData calibrationData;
     private static final double SPEED_WALK_KMH = 4;
     private static final double SPEED_BICYCLE_KMH = 10;
 
 
 
-    public LogsumCalculator2(Map<Mode, Map<String, Double>> coef) {
+    public LogsumCalculator2(Map<Mode, Map<String, Double>> coef, ModeChoiceCalibrationData calibrationData) {
         this.coef = coef;
+        this.calibrationData = calibrationData;
   }
 
     public double calculateLogsumByZone(
-            Boolean hasEV,
+            Purpose purpose, Boolean hasEV,
             MitoZone originZone,
             MitoZone destinationZone,
             TravelTimes travelTimes,
@@ -30,7 +32,7 @@ public class LogsumCalculator2 {
             double peakHour_s,
             Map<Integer, Boolean> evForbidden) {
 
-        EnumMap<Mode, Double> utilities = calculateUtilities(hasEV,
+        EnumMap<Mode, Double> utilities = calculateUtilities(purpose, hasEV,
                 originZone, destinationZone, travelTimes
                 , travelDistanceAuto, travelDistanceNMT, peakHour_s);
 
@@ -60,16 +62,16 @@ public class LogsumCalculator2 {
                         Math.exp(utilityWalk) +
                         Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
 
-        if(evForbidden.get(destinationZone.getId()) && !evForbidden.get(originZone.getId())){
+/*        if(evForbidden.get(destinationZone.getId()) && !evForbidden.get(originZone.getId())){
             expsumTopLevel = Math.exp(utilityBicycle) +
                     Math.exp(utilityWalk) +
                     Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
-        }
+        }*/
 
         return Math.log(expsumTopLevel);
     }
 
-    public EnumMap<Mode, Double> calculateUtilities(Boolean hasEV, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
+    public EnumMap<Mode, Double> calculateUtilities(Purpose purpose, Boolean hasEV, MitoZone originZone, MitoZone destinationZone, TravelTimes travelTimes, double travelDistanceAuto, double travelDistanceNMT, double peakHour_s) {
         float hhSize1, hhSize2, hhSize3, hhSize4,isMale, isFemale,worker, unemployed, student, retired,age_0_to_17,
                 age_18_to_29,age_30_to_39,age_40_to_49,age_50_to_59, age_above_60, econStatus1, econStatus2, econStatus3,
                 econStatus4, econStatus5, hhAutos0, hhAutos1,hhAutos2, monthlyInc;
@@ -171,6 +173,9 @@ public class LogsumCalculator2 {
 
             utilities.put(mode, utility);
         }
+
+        double[] calibrationFactors = calibrationData.getCalibrationFactorsAsArray(purpose, originZone); // Assuming Purpose is COMMUTE, you can pass the correct Purpose
+        utilities.replaceAll((mode, utility) -> utility + calibrationFactors[mode.ordinal()]);
 
         return utilities;
     }

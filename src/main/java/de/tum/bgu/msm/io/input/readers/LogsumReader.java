@@ -54,16 +54,16 @@ public class LogsumReader extends AbstractCsvReader {
         for (Purpose purpose : purposes) {
             String fileName;
             // For low emission scenario run, uncomment following to determine file path based on the purpose
-            if (Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(purpose)) {
+/*            if (Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(purpose)) {
                 fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
             } else if (Arrays.asList(Purpose.NHBW, Purpose.NHBO).contains(purpose)) {
                 fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
             } else {
                 continue; // Skip if purpose is not handled (if any other purposes are present)
-            }
+            }*/
 
-            //For base scenario, uncomment followign and comment above code segment to read base logsums
-            //fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
+            // base scenario, uncomment followign and comment above code segment to read base logsums
+            fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
 
             Path filePath = Paths.get(fileName);
             super.read(filePath, ",");

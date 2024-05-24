@@ -121,7 +121,7 @@ public class TripsByPurposeGeneratorPersonBasedHurdleModel extends RandomizableC
                             / speed_bicycle_m_min;
                     times.putIfAbsent("cycle", 0.);
                     times.put("cycle", time + times.get("cycle"));
-                } else if (t.getTripMode().equals(Mode.autoPassenger) || t.getTripMode().equals(Mode.autoDriver)) {
+                } else if (t.getTripMode().equals(Mode.autoPassenger) || t.getTripMode().equals(Mode.autoDriver) ||t.getTripMode().equals(Mode.taxi)) {
                     double time = dataSet.
                             getTravelTimes().
                             getTravelTime(t.getTripDestination(), t.getTripOrigin(), t.getDepartureInMinutes(), "car");
