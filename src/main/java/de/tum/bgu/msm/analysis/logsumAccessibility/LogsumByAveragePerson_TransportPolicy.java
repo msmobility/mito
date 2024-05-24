@@ -70,8 +70,8 @@ public class LogsumByAveragePerson_TransportPolicy {
 
 
     public void run() {
-        boolean[] hasEVOptions = {true,false};
-        //boolean[] hasEVOptions = {false};
+        //boolean[] hasEVOptions = {true,false};
+        boolean[] hasEVOptions = {false};
         for (Purpose purpose : givenPurposes) {
             for(boolean hasEV : hasEVOptions) {
                 this.coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
@@ -122,7 +122,7 @@ public class LogsumByAveragePerson_TransportPolicy {
     private void writeLogsumAccessibility(Map<Integer, Map<Integer, Double>> logsumTable, Purpose purpose, boolean hasEV){
         PrintWriter pw;
         try {
-            String evStatus = hasEV ? "hasEV" : "noEV";
+/*            String evStatus = hasEV ? "hasEV" : "noEV";
             String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_" + evStatus + ".csv";
             pw = new PrintWriter(fileName);
             pw.println("origin,destination,logsum");
@@ -130,15 +130,15 @@ public class LogsumByAveragePerson_TransportPolicy {
                 for (MitoZone destination : dataSet.getZones().values()) {
                     pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
                 }
-            }
-/*            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
+            }*/
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
             pw = new PrintWriter(fileName);
             pw.println("origin,destination,logsum");
             for(MitoZone origin : dataSet.getZones().values()){
                 for (MitoZone destination : dataSet.getZones().values()) {
                     pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
                 }
-            }*/
+            }
             pw.close();
             logger.info("Output written to " + fileName);
         } catch (FileNotFoundException e) {
