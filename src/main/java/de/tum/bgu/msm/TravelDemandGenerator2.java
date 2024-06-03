@@ -6,6 +6,7 @@ import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoiceLogsum;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceLogsum_LowEmissionZone;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice_LowEmissionZone;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.calculators.CalibratingModeChoiceCalculatorImplLogsum;
@@ -123,9 +124,9 @@ public final class TravelDemandGenerator2 {
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, Purpose.getMandatoryPurposes());
             distributionMandatory = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getMandatoryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImplLogsum());
-            modeChoiceMandatory = new ModeChoiceLogsum(dataSet, Purpose.getMandatoryPurposes());
+            modeChoiceMandatory = new ModeChoiceLogsum_LowEmissionZone(dataSet, Purpose.getMandatoryPurposes());
             Purpose.getMandatoryPurposes().forEach(purpose -> {
-                ((ModeChoiceLogsum) modeChoiceMandatory).registerModeChoiceCalculatorLogsum(purpose, new CalibratingModeChoiceCalculatorImplLogsum(new ModeChoiceCalculator2017ImplLogsum(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+                ((ModeChoiceLogsum_LowEmissionZone) modeChoiceMandatory).registerModeChoiceCalculatorLogsum(purpose, new CalibratingModeChoiceCalculatorImplLogsum(new ModeChoiceCalculator2017ImplLogsum(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
             });
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, Purpose.getMandatoryPurposes());
 
@@ -134,9 +135,9 @@ public final class TravelDemandGenerator2 {
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, Purpose.getDiscretionaryPurposes());
             distributionDiscretionary = new TripDistributionLogsumEVnoEV(dataSet, Purpose.getDiscretionaryPurposes(), false,
                     new DestinationUtilityCalculatorFactoryImplLogsum());
-            modeChoiceDiscretionary = new ModeChoiceLogsum(dataSet, Purpose.getDiscretionaryPurposes());
+            modeChoiceDiscretionary = new ModeChoiceLogsum_LowEmissionZone(dataSet, Purpose.getDiscretionaryPurposes());
             Purpose.getDiscretionaryPurposes().forEach(purpose -> {
-                ((ModeChoiceLogsum) modeChoiceDiscretionary).registerModeChoiceCalculatorLogsum(purpose, new CalibratingModeChoiceCalculatorImplLogsum(new ModeChoiceCalculator2017ImplLogsum(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
+                ((ModeChoiceLogsum_LowEmissionZone) modeChoiceDiscretionary).registerModeChoiceCalculatorLogsum(purpose, new CalibratingModeChoiceCalculatorImplLogsum(new ModeChoiceCalculator2017ImplLogsum(purpose, dataSet), dataSet.getModeChoiceCalibrationData()));
             });
             timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, Purpose.getDiscretionaryPurposes());
             //until here it must be divided into two blocks - mandatory and discretionary
