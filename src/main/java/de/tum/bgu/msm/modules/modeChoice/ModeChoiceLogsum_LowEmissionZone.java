@@ -165,6 +165,14 @@ public class ModeChoiceLogsum_LowEmissionZone extends Module {
                 probabilities.put(Mode.autoDriver, 0.0);
                 probabilities.put(Mode.autoPassenger,0.0);
             }
+
+            if ((evForbidden.get(trip.getTripDestination().getZoneId())||evForbidden.get(trip.getTripOrigin().getZoneId())) &&
+                    !evForbidden.get(trip.getPerson().getHousehold().getZoneId()) &&
+                    !trip.getPerson().getHousehold().isHasEV() &&
+                    Arrays.asList(Purpose.NHBW, Purpose.NHBO).contains(trip.getTripPurpose())) {
+                probabilities.put(Mode.autoDriver, 0.0);
+                probabilities.put(Mode.autoPassenger,0.0);
+            }
             //found Nan when there is no transit!!
             probabilities.replaceAll((mode, probability) ->
                     probability.isNaN() ? 0 : probability);
