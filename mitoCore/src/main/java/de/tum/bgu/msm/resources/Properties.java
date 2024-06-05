@@ -103,5 +103,5 @@ public class Properties {
 
     public static final String MODE_SET_COEFFICIENTS = "modeSet.coeffs";
     public static final String MODE_SET_CONSTANTS = "modeSet.ASCs";
-
+    public static final String RUN_CALIBRATION = "run.calibration.mc";
 }

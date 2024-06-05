@@ -7,6 +7,7 @@ import de.tum.bgu.msm.modules.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
@@ -290,6 +291,18 @@ public final class TravelDemandGenerator7days {
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoice.run();
+
+        if(Resources.instance.getBoolean(Properties.RUN_CALIBRATION,false)) {
+            int modeChoiceCalibrationIterations = Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 0);
+            if (modeChoiceCalibrationIterations > 0) {
+                ModeChoiceCalibrationData modeChoiceCalibrationData = dataSet.getModeChoiceCalibrationData();
+                for (int i = 1; i <= modeChoiceCalibrationIterations; i++) {
+                    modeChoiceCalibrationData.updateCalibrationCoefficients(dataSet, i, getAllPurposes());
+                    modeChoice.run();
+                }
+                modeChoiceCalibrationData.close();
+            }
+        }
 
         logger.info("Running day of week choice");
         dayOfWeekChoice.run();

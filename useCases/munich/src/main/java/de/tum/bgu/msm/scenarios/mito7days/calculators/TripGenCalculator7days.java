@@ -161,7 +161,7 @@ public class TripGenCalculator7days implements TripGenPredictor {
             double meanWorkKm = eduTrips.stream().
                     mapToDouble(t -> dataSet.getTravelDistancesNMT().
                             getTravelDistance(homeZoneId, t.getTripDestination().getZoneId())).average().getAsDouble();
-            predictor += Math.log(meanWorkKm) * coefficients.get("p.log_km_mean_HBW");
+            predictor += Math.log(meanWorkKm) * coefficients.get("p.log_km_mean_HBE");
         }
 
         return predictor;
