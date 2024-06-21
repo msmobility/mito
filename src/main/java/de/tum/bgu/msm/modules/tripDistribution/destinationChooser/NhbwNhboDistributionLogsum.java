@@ -17,6 +17,9 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.core.utils.collections.Tuple;
 import org.matsim.core.utils.geometry.CoordUtils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -86,7 +89,8 @@ public final class NhbwNhboDistributionLogsum extends RandomizableConcurrentFunc
                         + "\nIdeal budget sum: " + idealBudgetSum + " | actual budget sum: " + actualBudgetSum);
             }
             if (hasTripsForPurpose(household)) {
-                IndexedDoubleMatrix2D selectedMatrix = household.isHasEV() ? baseProbabilities.get(purpose).getFirst() : baseProbabilities.get(purpose).getSecond();
+                IndexedDoubleMatrix2D selectedMatrix =
+                        (household.isHasEV() || household.isInsideLEZ()) ? baseProbabilities.get(purpose).getFirst() : baseProbabilities.get(purpose).getSecond();
                 if (USE_BUDGETS_IN_DESTINATION_CHOICE){
                     if (hasBudgetForPurpose(household)) {
                         updateBudgets(household);
@@ -235,7 +239,7 @@ public final class NhbwNhboDistributionLogsum extends RandomizableConcurrentFunc
 
     private MitoZone findRandomOrigin(MitoHousehold household, Purpose priorPurpose) {
         TripDistributionLogsumEVnoEV.completelyRandomNhbTrips.incrementAndGet();
-        IndexedDoubleMatrix2D matrix = household.isHasEV() ? baseProbabilities.get(priorPurpose).getFirst() : baseProbabilities.get(priorPurpose).getSecond();
+        IndexedDoubleMatrix2D matrix = (household.isHasEV() || household.isInsideLEZ()) ? baseProbabilities.get(priorPurpose).getFirst() : baseProbabilities.get(priorPurpose).getSecond();
         final IndexedDoubleMatrix1D originProbabilities = matrix.viewRow(household.getHomeZone().getId());
         final int destinationInternalId = MitoUtil.select(originProbabilities.toNonIndexedArray(), random);
         return zonesCopy.get(originProbabilities.getIdForInternalIndex(destinationInternalId));
@@ -246,4 +250,6 @@ public final class NhbwNhboDistributionLogsum extends RandomizableConcurrentFunc
                 trip.getTripDestination(), peakHour, "car");
         idealBudgetSum += hhBudgetPerTrip;
     }
+
+
 }

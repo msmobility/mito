@@ -8,6 +8,10 @@ import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 import de.tum.bgu.msm.data.Purpose;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -24,7 +28,7 @@ public class LogsumReader extends AbstractCsvReader {
     private final EnumMap<Purpose, TravelDistances> logsumMatricesByPurpose_NoEV = new EnumMap<Purpose, TravelDistances>(Purpose.class);
 
     private List<Purpose> purposes = Arrays.asList(Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR);
-
+    private Purpose currentPurpose;
 
     public LogsumReader(DataSet dataSet) {
         super(dataSet);
@@ -37,6 +41,7 @@ public class LogsumReader extends AbstractCsvReader {
 
     public void read() {
         for (Purpose purpose : purposes) {
+            currentPurpose = purpose;
             String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_hasEV" + ".csv";
             Path filePath = Paths.get(fileName);
             super.read(filePath, ",");
@@ -52,12 +57,13 @@ public class LogsumReader extends AbstractCsvReader {
         }
 
         for (Purpose purpose : purposes) {
+            currentPurpose = purpose;
             String fileName;
             // For low emission scenario run, uncomment following to determine file path based on the purpose
             if (Arrays.asList(Purpose.HBE, Purpose.HBW, Purpose.HBS, Purpose.HBR, Purpose.HBO).contains(purpose)) {
                 fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
             } else if (Arrays.asList(Purpose.NHBW, Purpose.NHBO).contains(purpose)) {
-                fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_noEV" + ".csv";
+                fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
             } else {
                 continue; // Skip if purpose is not handled (if any other purposes are present)
             }
@@ -89,10 +95,10 @@ public class LogsumReader extends AbstractCsvReader {
         final int destination = Integer.parseInt(record[posDestination]);
         final double logsum = Double.parseDouble(record[posLogsum]);
 
-        for (Purpose purpose : purposes) {
-            IndexedDoubleMatrix2D matrix = logsumMatrices.get(purpose);
-            matrix.setIndexed(origin, destination, logsum);
-        }
+
+        IndexedDoubleMatrix2D matrix = logsumMatrices.get(currentPurpose);
+        matrix.setIndexed(origin, destination, logsum);
+
     }
 
     public static int[] convertArrayListToIntArray (Collection<MitoZone> zones) {
@@ -104,4 +110,5 @@ public class LogsumReader extends AbstractCsvReader {
         }
         return list;
     }
+
 }

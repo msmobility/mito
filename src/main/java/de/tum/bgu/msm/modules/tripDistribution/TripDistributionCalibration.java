@@ -52,7 +52,7 @@ public class TripDistributionCalibration extends Module {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        pw.println("iteration,purpose,observed,simulated,factorDistance,factorImpedance");
+        pw.println("iteration,purpose,observed,simulated,factorLogsum,factorDistance");
 
     }
 

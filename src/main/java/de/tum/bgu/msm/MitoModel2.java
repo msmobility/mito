@@ -100,6 +100,7 @@ public final class MitoModel2 {
         new BicycleOwnershipReaderAndModel(dataSet).read();
 
         new LogsumReader(dataSet).read();
+        new LowEmissionZoneReader(dataSet).read();
 
     }
 
