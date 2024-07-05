@@ -62,11 +62,11 @@ public class LogsumCalculator2 {
                         Math.exp(utilityWalk) +
                         Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
 
-        if(evForbidden.get(destinationZone.getId()) && !evForbidden.get(originZone.getId())){
+/*        if(evForbidden.get(destinationZone.getId()) && !evForbidden.get(originZone.getId())){
             expsumTopLevel = Math.exp(utilityBicycle) +
                     Math.exp(utilityWalk) +
                     Math.exp(nestingCoefficientPtModes * Math.log(expsumNestTransit));
-        }
+        }*/
 
         return Math.log(expsumTopLevel);
     }

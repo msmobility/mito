@@ -198,7 +198,6 @@ public final class CalibrateDestinationChoiceLogsum {
         tripDistributionCalibrationDiscretionary.close();
 
 
-
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoiceDiscretionary.run();
         logger.info("Running time of day choice");

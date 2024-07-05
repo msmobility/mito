@@ -23,7 +23,8 @@ public class LogsumByAveragePerson_TransportPolicy {
     private static final Map<Integer, Boolean> evForbidden = new HashMap<>();
 
     private final DataSet dataSet = new DataSet();
-    private Purpose[] givenPurposes = {Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR};
+    //private Purpose[] givenPurposes = {Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR};
+    private Purpose[] givenPurposes = {Purpose.NHBW};
     private Map<Mode, Map<String, Double>> coef;
     private ModeChoiceCalibrationData calibrationData;
 
@@ -122,16 +123,9 @@ public class LogsumByAveragePerson_TransportPolicy {
     private void writeLogsumAccessibility(Map<Integer, Map<Integer, Double>> logsumTable, Purpose purpose, boolean hasEV){
         PrintWriter pw;
         try {
-/*            String evStatus = hasEV ? "hasEV" : "noEV";
-            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_" + evStatus + ".csv";
-            pw = new PrintWriter(fileName);
-            pw.println("origin,destination,logsum");
-            for(MitoZone origin : dataSet.getZones().values()){
-                for (MitoZone destination : dataSet.getZones().values()) {
-                    pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
-                }
-            }*/
-            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
+            //String evStatus = hasEV ? "hasEV" : "noEV";
+            //String fileName = "C:/models/MITO/mitoMunich/skims/logsum/baseScenario/" + purpose + "_" + evStatus + ".csv";
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/baseScenario/" + purpose + "_noEV.csv";
             pw = new PrintWriter(fileName);
             pw.println("origin,destination,logsum");
             for(MitoZone origin : dataSet.getZones().values()){
@@ -139,6 +133,14 @@ public class LogsumByAveragePerson_TransportPolicy {
                     pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
                 }
             }
+/*            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/lowEmissionScenario/" + purpose + ".csv";
+            pw = new PrintWriter(fileName);
+            pw.println("origin,destination,logsum");
+            for(MitoZone origin : dataSet.getZones().values()){
+                for (MitoZone destination : dataSet.getZones().values()) {
+                    pw.println(origin.getId() + "," + destination.getId() + "," + logsumTable.get(origin.getId()).get(destination.getId()));
+                }
+            }*/
             pw.close();
             logger.info("Output written to " + fileName);
         } catch (FileNotFoundException e) {
