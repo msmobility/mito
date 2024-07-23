@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 public class DataSetImpl implements DataSet {
 
     private TravelTimes travelTimes;
-
     private TravelDistances travelDistancesAuto;
     private TravelDistances travelDistancesNMT;
-
+    private TravelDistances travelDistancesWalk;
+    private TravelDistances travelDistancesBike;
     private double peakHour = Double.NaN;
 
     private final Map<Integer, MitoZone> zones= new LinkedHashMap<>();
@@ -256,4 +256,19 @@ public class DataSetImpl implements DataSet {
     }
 
 
+    public TravelDistances getTravelDistancesBike() {
+        return travelDistancesBike;
+    }
+
+    public void setTravelDistancesBike(TravelDistances travelDistancesBike) {
+        this.travelDistancesBike = travelDistancesBike;
+    }
+
+    public TravelDistances getTravelDistancesWalk() {
+        return travelDistancesWalk;
+    }
+
+    public void setTravelDistancesWalk(TravelDistances travelDistancesWalk) {
+        this.travelDistancesWalk = travelDistancesWalk;
+    }
 }

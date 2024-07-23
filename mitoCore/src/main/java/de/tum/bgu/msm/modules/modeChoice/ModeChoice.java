@@ -10,6 +10,7 @@ import de.tum.bgu.msm.util.concurrent.RandomizableConcurrentFunction;
 import org.apache.log4j.Logger;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,6 +81,30 @@ public class ModeChoice extends Module {
                 if (share != null) {
                     logger.info(mode + " = " + share * 100 + "%");
                 }
+            }
+        }
+
+        // mode share of intrazonal trips
+        //filter intrazonal trips
+        logger.info("#################################################");
+        logger.info("Intrazonal trip mode shares :");
+        Map<Mode,Double> intrazonalModeShare = new HashMap<>();
+        List<MitoTrip> intrazonalTrips = dataSet.getTrips().values().stream()
+                .filter(trip -> trip.getTripOrigin().getZoneId() == trip.getTripDestination().getZoneId())
+                .collect(Collectors.toList());
+
+        final long totalIntrazonalTrips = intrazonalTrips.size();
+        intrazonalTrips.stream()
+                // Group number of persons by mode set
+                .collect(Collectors.groupingBy(MitoTrip::getTripMode, Collectors.counting()))
+                //calculate and add share to data set table
+                .forEach((mode, count) ->
+                        intrazonalModeShare.put(mode, (double) count / totalIntrazonalTrips));
+
+        for (Mode mode : Mode.values()) {
+            Double share = intrazonalModeShare.get(mode);
+            if (share != null) {
+                logger.info(mode + " = " + share * 100 + "%");
             }
         }
     }

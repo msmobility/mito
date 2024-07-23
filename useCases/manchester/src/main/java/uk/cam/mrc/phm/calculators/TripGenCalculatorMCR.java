@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.scenarios.mito7days.calculators;
+package uk.cam.mrc.phm.calculators;
 
 import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.modules.tripGeneration.TripGenPredictor;
@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TripGenCalculator7days implements TripGenPredictor {
+public class TripGenCalculatorMCR implements TripGenPredictor {
 
     private final DataSet dataSet;
 
-    public TripGenCalculator7days(DataSet dataSet) {
+    public TripGenCalculatorMCR(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 
@@ -26,32 +26,32 @@ public class TripGenCalculator7days implements TripGenPredictor {
         // Household size
         int householdSize = hh.getHhSize();
         if(householdSize == 1) {
-            predictor += coefficients.get("hh.size_1");
+            predictor += coefficients.get("hh.sized_1");
         }
         else if(householdSize == 2) {
-            predictor += coefficients.get("hh.size_2");
+            predictor += coefficients.get("hh.sized_2");
         }
         else if(householdSize == 3) {
-            predictor += coefficients.get("hh.size_3");
+            predictor += coefficients.get("hh.sized_3");
         }
         else if(householdSize == 4) {
-            predictor += coefficients.get("hh.size_4");
+            predictor += coefficients.get("hh.sized_4");
         }
         else  {
             assert(householdSize >= 5);
-            predictor += coefficients.get("hh.size_5");
+            predictor += coefficients.get("hh.sized_5");
         }
 
         // Number of children in household
         int householdChildren = hh.getChildrenForHousehold();
         if(householdChildren == 1) {
-            predictor += coefficients.get("hh.children_1");
+            predictor += coefficients.get("hh.childrend_1");
         }
         else if (householdChildren == 2) {
-            predictor += coefficients.get("hh.children_2");
+            predictor += coefficients.get("hh.childrend_2");
         }
         else if (householdChildren >= 3) {
-            predictor += coefficients.get("hh.children_3");
+            predictor += coefficients.get("hh.childrend_3");
         }
 
         // Household in urban region
@@ -62,19 +62,19 @@ public class TripGenCalculator7days implements TripGenPredictor {
         // Household autos
         int householdAutos = hh.getAutos();
         if(householdAutos == 1) {
-            predictor += coefficients.get("hh.cars_1");
+            predictor += coefficients.get("hh.carsd_1");
         }
         else if(householdAutos == 2) {
-            predictor += coefficients.get("hh.cars_2");
+            predictor += coefficients.get("hh.carsd_2");
         }
         else if(householdAutos >= 3) {
-            predictor += coefficients.get("hh.cars_3");
+            predictor += coefficients.get("hh.carsd_3");
         }
 
         // Autos per adult
         int householdAdults = householdSize - householdChildren;
         double autosPerAdult = Math.min((double) hh.getAutos() / (double) householdAdults , 1.0);
-        predictor += autosPerAdult * coefficients.get("hh.autosPerAdult");
+        predictor += autosPerAdult * coefficients.get("hh.cars_per_adult");
 
         // Age
         int age = pp.getAge();
@@ -102,22 +102,14 @@ public class TripGenCalculator7days implements TripGenPredictor {
             predictor += coefficients.get("p.female");
         }
 
-        // Has drivers Licence
-        if (pp.hasDriversLicense()) {
-            predictor += coefficients.get("p.driversLicense");
-        }
-
-        // Has bicycle
-        if (pp.getHasBicycle().get()) {
-            predictor += coefficients.get("p.ownBicycle");
-        }
-
         // Mito occupation Status
         MitoOccupationStatus occupationStatus = pp.getMitoOccupationStatus();
         if (occupationStatus.equals(MitoOccupationStatus.STUDENT)) {
-            predictor += coefficients.get("p.occupationStatus_Student");
+            predictor += coefficients.get("p.status_student");
         } else if (occupationStatus.equals(MitoOccupationStatus.UNEMPLOYED)) {
-            predictor += coefficients.get("p.occupationStatus_Unemployed");
+            predictor += coefficients.get("p.status_unemployed");
+        } else if (occupationStatus.equals(MitoOccupationStatus.RETIRED)) {
+            predictor += coefficients.get("p.status_retired");
         }
 
         // Work trips & mean distance

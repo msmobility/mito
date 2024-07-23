@@ -283,11 +283,20 @@ public class TripDistribution extends Module {
         int categories = calibrationData.size();
 
         double[] adjustments = new double[categories];
-        for(int i = 0 ; i < categories ; i++) {
-            double mean = calibrationData.get(i).distributedTripDistance.get() / calibrationData.get(i).distributedTripCounter.get();
-            adjustments[i] = Math.max(0.5, Math.min(2, mean / referenceMeans[i]));
-            logger.info("Index: "+ i + " Mean: " + mean + " Ref: " + referenceMeans[i] + " Adjustment: " + adjustments[i]);
+        if(purpose.equals(HBW) || purpose.equals(HBE)){
+            for(int i = 0 ; i < categories ; i++) {
+                double mean = calibrationData.get(i).randomTripDistance.get() / calibrationData.get(i).randomTripCounter.get();
+                adjustments[i] = Math.max(0.5, Math.min(2, mean / referenceMeans[i]));
+                logger.info("Index: "+ i + " Mean: " + mean + " Ref: " + referenceMeans[i] + " Adjustment: " + adjustments[i]);
+            }
+        }else{
+            for(int i = 0 ; i < categories ; i++) {
+                double mean = calibrationData.get(i).distributedTripDistance.get() / calibrationData.get(i).distributedTripCounter.get();
+                adjustments[i] = Math.max(0.5, Math.min(2, mean / referenceMeans[i]));
+                logger.info("Index: "+ i + " Mean: " + mean + " Ref: " + referenceMeans[i] + " Adjustment: " + adjustments[i]);
+            }
         }
+
         return adjustments;
 
     }

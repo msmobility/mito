@@ -2,8 +2,7 @@ package de.tum.bgu.msm.data;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator.ExplanatoryVariable;
+import de.tum.bgu.msm.modules.tripGeneration.ExplanatoryVariable;
 
 public enum Purpose implements Id {
     HBW,
@@ -14,7 +13,8 @@ public enum Purpose implements Id {
     NHBO,
     AIRPORT,
     HBR,
-    RRT;
+    RRT,
+    HBA;
 
 
     @Override

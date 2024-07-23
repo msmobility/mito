@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.output;
 
 import de.tum.bgu.msm.data.*;
+import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
@@ -133,6 +134,7 @@ public class SummarizeDataToVisualize {
             if (trip.getTripOrigin() != null && trip.getTripDestination() != null) {
                 Purpose purpose = trip.getTripPurpose();
                 Location tripOrigin = trip.getTripOrigin();
+                //TODO: use NMT distance instead of auto distance
                 double rawDistance = dataSet.getTravelDistancesAuto().getTravelDistance(tripOrigin.getZoneId(), trip.getTripDestination().getZoneId());
                 int refinedDistance = (int) Math.round(rawDistance);
                 double rawTime = dataSet.getTravelTimes().getTravelTime(tripOrigin, trip.getTripDestination(), dataSet.getPeakHour(), "car");
@@ -161,7 +163,7 @@ public class SummarizeDataToVisualize {
         for (MitoZone zone : dataSet.getZones().values()) {
             final int zoneId = zone.getId();
             String txt = String.valueOf(zoneId);
-            for (Purpose purpose : Purpose.getAllPurposes()) {
+            for (Purpose purpose : Purpose.getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES))) {
                 int tripsProduced = tripProdByZoneAndPurp.get(zoneId).get(purpose);
                 int tripsAttracted = (int) zone.getTripAttraction(purpose);
                 double avTripDist = avDistByZoneAndPurp.get(zoneId).get(purpose) / tripsProduced;

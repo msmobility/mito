@@ -17,6 +17,7 @@ public enum TripDistributorType {
             case HBW:
             case HBE:
                 return HomeBasedMandatory;
+            case HBA:
             case HBS:
             case HBO:
             case HBR:

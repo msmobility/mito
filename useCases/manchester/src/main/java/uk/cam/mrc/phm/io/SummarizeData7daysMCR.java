@@ -1,4 +1,4 @@
-package de.tum.bgu.msm.io;
+package uk.cam.mrc.phm.io;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -27,7 +27,7 @@ import java.util.*;
  * Author: Ana Moreno, Munich
  * Created on 11/07/2017.
  */
-public class SummarizeData7days {
+public class SummarizeData7daysMCR {
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(SummarizeData.class);
 
     public static void writeOutSyntheticPopulationWithTrips(DataSet dataSet) {
@@ -85,9 +85,13 @@ public class SummarizeData7days {
                     pwp.print(",");
                     pwp.print(pp.hasDriversLicense());
                     pwp.print(",");
-                    pwp.print(pp.getHasBicycle());
+                    pwp.print(pp.getHasBicycle().get());
                     pwp.print(",");
-                    pwp.print(((MitoPerson7days)pp).getModeSet().toString());
+                    if(((MitoPerson7days)pp).getModeSet()==null){
+                        pwp.print("null");
+                    }else {
+                        pwp.print(((MitoPerson7days)pp).getModeSet().toString());
+                    }
                     pwp.print(",");
                     pwp.print(pp.getTrips().size());
                     pwp.print(",");
@@ -114,9 +118,10 @@ public class SummarizeData7days {
     }
 
     public static void writeTrips(DataSet dataSet, PrintWriter pwh, Collection<MitoTrip> tripsToPrint) {
-        pwh.println("hh.id,p.ID,t.id,origin,originPAZ,originX,originY,destination,destinationPAZ,destinationX,destinationY," +
-                "t.purpose,t.distance,t.distance_auto,time_auto,time_bus,time_train,time_tram_metro,distanceMoped,mode,departure_day," +
-                "departure_time,departure_time_return");
+        pwh.println("hh.id,p.ID,t.id,origin,originX,originY,destination,destinationX,destinationY," +
+                "t.purpose,t.distance_walk,t.distance_bike,t.distance_auto,time_auto,time_pt," +
+                "cost_bike_commute,cost_bike_disc,cost_walk_commute,cost_walk_disc," +
+                "mode,departure_day,departure_time,departure_time_return");
 
         for(MitoTrip trip : tripsToPrint) {
             pwh.print(trip.getPerson().getHousehold().getId());
@@ -131,10 +136,6 @@ public class SummarizeData7days {
                 originId = String.valueOf(origin.getZoneId());
             }
             pwh.print(originId);
-            pwh.print(",");
-
-            //TODO: moped related features need to be added  trip.getTripOriginMopedZoneId()
-            pwh.print("null");
             pwh.print(",");
 
             if(origin instanceof MicroLocation){
@@ -165,9 +166,6 @@ public class SummarizeData7days {
             }
             pwh.print(destinationId);
             pwh.print(",");
-            pwh.print("null");
-            pwh.print(",");
-
             if(destination instanceof MicroLocation){
                 pwh.print(((MicroLocation) destination).getCoordinate().x);
                 pwh.print(",");
@@ -192,8 +190,11 @@ public class SummarizeData7days {
             pwh.print(trip.getTripPurpose());
             pwh.print(",");
             if(origin != null && destination != null) {
-                double distance = dataSet.getTravelDistancesNMT().getTravelDistance(origin.getZoneId(), destination.getZoneId());
-                pwh.print(distance);
+                double distanceWalk = ((DataSetImpl)dataSet).getTravelDistancesWalk().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                pwh.print(distanceWalk);
+                pwh.print(",");
+                double distanceBike = ((DataSetImpl)dataSet).getTravelDistancesBike().getTravelDistance(origin.getZoneId(), destination.getZoneId());
+                pwh.print(distanceBike);
                 pwh.print(",");
                 double distanceAuto = dataSet.getTravelDistancesAuto().getTravelDistance(origin.getZoneId(), destination.getZoneId());
                 pwh.print(distanceAuto);
@@ -201,20 +202,23 @@ public class SummarizeData7days {
                 double timeAuto = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "car");
                 pwh.print(timeAuto);
                 pwh.print(",");
-                double timeBus = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "bus");
-                pwh.print(timeBus);
+                double timePt = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "pt");
+                pwh.print(timePt);
                 pwh.print(",");
-                double timeTrain = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "train");
-                pwh.print(timeTrain);
+                double costBikeCommute = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "bikeCommute");
+                pwh.print(costBikeCommute);
                 pwh.print(",");
-                double timeTramMetro = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "tramMetro");
-                pwh.print(timeTramMetro);
+                double costBikeDisc = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "bikeDiscretionary");
+                pwh.print(costBikeDisc);
+                pwh.print(",");
+                double costWalkCommute = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "walkCommute");
+                pwh.print(costWalkCommute);
+                pwh.print(",");
+                double costWalkDisc = dataSet.getTravelTimes().getTravelTime(origin, destination, dataSet.getPeakHour(), "walkDiscretionary");
+                pwh.print(costWalkDisc);
             } else {
-                pwh.print("NA,NA,NA,NA,NA,NA");
+                pwh.print("NA,NA,NA,NA,NA,NA,NA,NA,NA");
             }
-            pwh.print(",");
-            //TODO:trip.getMopedTripDistance()
-            pwh.print("null");
             pwh.print(",");
             pwh.print(trip.getTripMode());
             pwh.print(",");

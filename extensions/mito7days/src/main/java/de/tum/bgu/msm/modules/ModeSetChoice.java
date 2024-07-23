@@ -11,6 +11,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class ModeSetChoice extends Module {
@@ -41,6 +42,7 @@ public class ModeSetChoice extends Module {
     public void run() {
         logger.info(" Calculating mode set.");
         modeSet();
+        printModeSetShares();
     }
 
     private void modeSet() {
@@ -69,5 +71,38 @@ public class ModeSetChoice extends Module {
             logger.error("Zero/negative probabilities for person " + person.getId());
             ((MitoPerson7days)person).setModeSet(null);
         }
+    }
+
+
+    private void printModeSetShares() {
+        Map<ModeSet,Double> modeSetShare = new HashMap<>();
+
+        //filter valid persons
+        List<MitoPerson> persons = dataSet.getPersons().values().stream()
+                .filter(p -> ((MitoPerson7days)p).getModeSet() != null).
+                collect(Collectors.toList());
+
+        final long totalPersons = persons.size();
+        persons.stream()
+                .map(person -> (MitoPerson7days) person)
+                // Group number of persons by mode set
+                .collect(Collectors.groupingBy(MitoPerson7days::getModeSet, Collectors.counting()))
+                //calculate and add share to data set table
+                .forEach((modeset, count) ->
+                        modeSetShare.put(modeset, (double) count / totalPersons));
+
+
+        logger.info("#################################################");
+        logger.info("Mode set share :");
+        for (ModeSet modeSet : ModeSet.values()) {
+            Double share = modeSetShare.get(modeSet);
+            if (share != null) {
+                logger.info(modeSet + " = " + share * 100 + "%");
+            }
+        }
+
+
+
+
     }
 }

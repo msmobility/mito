@@ -6,6 +6,7 @@ import de.tum.bgu.msm.data.MitoTripFactoryImpl;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
+import de.tum.bgu.msm.modules.AttractionCalculatorImpl;
 import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImpl2;
 import de.tum.bgu.msm.modules.TripGenCalculatorPersonBasedHurdleNegBin;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
@@ -79,7 +80,7 @@ public final class MitoModel2ForModeChoiceCalibration {
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet, purposes);
         purposes.forEach(purpose -> {
-            ((TripGeneration) tg).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
+            ((TripGeneration) tg).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet),new AttractionCalculatorImpl(dataSet,purpose));
         });
 
         tg.run();

@@ -25,6 +25,7 @@ public class TripGeneration extends Module {
     private static final Logger logger = Logger.getLogger(TripGeneration.class);
     private final boolean addAirportDemand;
     private final Map<Purpose, TripGenerator> tripGeneratorByPurpose = new EnumMap<>(Purpose.class);
+    private final Map<Purpose, AttractionCalculator> attractionCalculatorByPurpose = new EnumMap<>(Purpose.class);
 
     public TripGeneration(DataSet dataSet, List<Purpose> purposes) {
         super(dataSet, purposes);
@@ -33,7 +34,7 @@ public class TripGeneration extends Module {
     }
 
 
-    public void registerTripGenerator(Purpose purpose, MitoTripFactory mitoTripFactory, TripGeneratorType tripGeneratorType, TripGenPredictor tripGenerationCalculator) {
+    public void registerTripGenerator(Purpose purpose, MitoTripFactory mitoTripFactory, TripGeneratorType tripGeneratorType, TripGenPredictor tripGenerationCalculator, AttractionCalculator attractionCalculator) {
         TripGenerator tripsByPurposeGenerator;
 
         switch (tripGeneratorType){
@@ -53,6 +54,11 @@ public class TripGeneration extends Module {
                 logger.warn("Trip generator type is not given. The default generator: " + TripGeneratorPersonBasedHurdleNegBin.class.getName() + " will be applied.");
                 tripsByPurposeGenerator = new TripGeneratorPersonBasedHurdleNegBin(dataSet, purpose, mitoTripFactory, tripGenerationCalculator);
 
+        }
+
+        final AttractionCalculator previous = attractionCalculatorByPurpose.put(purpose, attractionCalculator);
+        if (previous != null) {
+            logger.info("Overwrote attraction calculator for purpose " + purpose + " with " + attractionCalculator.getClass());
         }
 
         final TripGenerator prev = tripGeneratorByPurpose.put(purpose, tripsByPurposeGenerator);
@@ -85,8 +91,9 @@ public class TripGeneration extends Module {
     }
 
     private void calculateAttractions() {
-        AttractionCalculator calculator = new AttractionCalculator(dataSet, purposes);
-        calculator.run();
+        for (Purpose purpose : purposes){
+            attractionCalculatorByPurpose.get(purpose).run();
+        }
     }
 
     private void balanceTrips() {

@@ -7,10 +7,8 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.output.SummarizeData;
 import de.tum.bgu.msm.io.output.SummarizeDataToVisualize;
 import de.tum.bgu.msm.io.output.TripGenerationWriter;
-import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImplGermany;
-import de.tum.bgu.msm.modules.ModeChoiceCalculator2017Impl;
+import de.tum.bgu.msm.modules.*;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.TripGenCalculatorPersonBasedHurdleNegBin;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
 import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
@@ -128,7 +126,7 @@ public final class TravelDemandGeneratorGermany {
 
             tripGenerationMandatory = new TripGeneration(dataSet, mandatoryPurposes);
             mandatoryPurposes.forEach(purpose -> {
-                ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet));
+                ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet), new AttractionCalculatorGermany(dataSet,purpose));
             });
             //personTripAssignmentMandatory = new PersonTripAssignment(dataSet, mandatoryPurposes);
             travelTimeBudgetMandatory = new TravelTimeBudgetModule(dataSet, mandatoryPurposes);
@@ -141,7 +139,7 @@ public final class TravelDemandGeneratorGermany {
             timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, mandatoryPurposes);
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, Purpose.getDiscretionaryPurposes());
-            Purpose.getDiscretionaryPurposes().forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet)));
+            Purpose.getDiscretionaryPurposes().forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet),new AttractionCalculatorGermany(dataSet,purpose)));
             //personTripAssignmentDiscretionary = new PersonTripAssignment(dataSet, Purpose.getDiscretionaryPurposes());
 
             travelTimeBudgetDiscretionary = new TravelTimeBudgetModule(dataSet, discretionaryPurposes);
