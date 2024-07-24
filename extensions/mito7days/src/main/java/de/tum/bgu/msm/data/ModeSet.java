@@ -62,4 +62,39 @@ public enum ModeSet implements Id {
                 return null;
         }
     }
+
+    public EnumSet<Mode> getModesMNL() {
+        switch (this) {
+            case Auto:
+                return EnumSet.of(autoDriver, autoPassenger);
+            case AutoPt:
+                return EnumSet.of(autoDriver, autoPassenger, pt);
+            case AutoCycle:
+                return EnumSet.of(autoDriver, autoPassenger, bicycle);
+            case AutoWalk:
+                return EnumSet.of(autoDriver, autoPassenger, walk);
+            case AutoPtCycle:
+                return EnumSet.of(autoDriver, autoPassenger, pt, bicycle);
+            case AutoPtWalk:
+                return EnumSet.of(autoDriver, autoPassenger, pt, walk);
+            case AutoPtCycleWalk:
+                return EnumSet.of(autoDriver, autoPassenger, pt, bicycle, walk);
+            case Pt:
+                return EnumSet.of(pt);
+            case PtCycle:
+                return EnumSet.of(pt, bicycle);
+            case PtWalk:
+                return EnumSet.of(pt, walk);
+            case PtCycleWalk:
+                return EnumSet.of(pt, bicycle, walk);
+            case Cycle:
+                return EnumSet.of(bicycle);
+            case CycleWalk:
+                return EnumSet.of(bicycle, walk);
+            case Walk:
+                return EnumSet.of(walk);
+            default:
+                return null;
+        }
+    }
 }

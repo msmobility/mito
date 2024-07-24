@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator;
+import de.tum.bgu.msm.modules.tripGeneration.ExplanatoryVariable;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
 
@@ -15,11 +16,11 @@ public class TripAttractionRatesReader extends AbstractCsvReader {
 
     private final Map<Purpose, Integer> indexForPurpose = new EnumMap<>(Purpose.class);
     private int variableIndex;
-    private List<Purpose> purposes;
+    private Purpose purpose;
 
-    public TripAttractionRatesReader(DataSet dataSet, List<Purpose> purposes) {
+    public TripAttractionRatesReader(DataSet dataSet, Purpose purpose) {
         super(dataSet);
-        this.purposes = purposes;
+        this.purpose = purpose;
     }
 
     @Override
@@ -30,17 +31,15 @@ public class TripAttractionRatesReader extends AbstractCsvReader {
     @Override
     protected void processHeader(String[] header) {
         variableIndex = MitoUtil.findPositionInArray("IndependentVariable", header);
-        for(Purpose purpose: purposes) {
-            indexForPurpose.put(purpose, MitoUtil.findPositionInArray(purpose.name(), header));
-        }
+
+        indexForPurpose.put(purpose, MitoUtil.findPositionInArray(purpose.name(), header));
+
     }
 
     @Override
     protected void processRecord(String[] record) {
-        for(Purpose purpose: purposes) {
-            AttractionCalculator.ExplanatoryVariable variable = AttractionCalculator.ExplanatoryVariable.valueOf(record[variableIndex]);
+            ExplanatoryVariable variable = ExplanatoryVariable.valueOf(record[variableIndex]);
             double rate = Double.parseDouble(record[indexForPurpose.get(purpose)]);
             purpose.setTripAttractionForVariable(variable, rate);
-        }
     }
 }

@@ -9,6 +9,7 @@ public enum Mode implements Id {
     autoDriver,
     autoPassenger,
     bicycle,
+    pt,
     bus,
     train,
     tramOrMetro,
@@ -58,6 +59,8 @@ public enum Mode implements Id {
                 return TransportMode.car;
             case autoPassenger:
                 return "car_passenger";
+            case pt:
+                return TransportMode.pt;
             case bus:
                 return TransportMode.pt;
             case tramOrMetro:

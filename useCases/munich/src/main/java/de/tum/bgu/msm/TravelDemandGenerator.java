@@ -97,7 +97,7 @@ public final class TravelDemandGenerator {
 
             tripGeneration = new TripGeneration(dataSet, purposes);
             purposes.forEach(purpose -> {
-                ((TripGeneration) tripGeneration).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.SampleEnumeration,null);
+                ((TripGeneration) tripGeneration).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.SampleEnumeration,null, new AttractionCalculatorImpl(dataSet,purpose));
             });
 
             personTripAssignment = new PersonTripAssignment(dataSet, purposes);

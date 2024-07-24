@@ -30,7 +30,7 @@ public class TripGenerationWriter {
         PrintWriter pwAttr = MitoUtil.openFileForSequentialWriting(fileNameAttr, false);
         pwProd.print("MitoZone");
         pwAttr.print("MitoZone");
-        for (Purpose purpose: Purpose.getAllPurposes()) {
+        for (Purpose purpose: Purpose.getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES))) {
             pwProd.print("," + purpose + "P");
             pwAttr.print("," + purpose + "A");
         }
@@ -38,8 +38,8 @@ public class TripGenerationWriter {
         Map<Integer, Map<Purpose, Integer>> tripProdByZoneAndPurp = new HashMap<>(dataSet.getZones().size());
 
         for(Integer zoneId: dataSet.getZones().keySet()) {
-            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.getAllPurposes().size());
-            for(Purpose purpose: Purpose.getAllPurposes()) {
+            Map<Purpose, Integer> initialValues = new HashMap<>(Purpose.getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES)).size());
+            for(Purpose purpose: Purpose.getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES))) {
                 initialValues.put(purpose, 0);
             }
             tripProdByZoneAndPurp.put(zoneId, initialValues);
@@ -60,7 +60,7 @@ public class TripGenerationWriter {
             final int zoneId = zone.getId();
             pwProd.print(zoneId);
             pwAttr.print(zoneId);
-            for (Purpose purpose: Purpose.getAllPurposes()) {
+            for (Purpose purpose: Purpose.getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES))) {
                 int tripProdTmp = tripProdByZoneAndPurp.get(zoneId).get(purpose);
                 totalTrips += tripProdTmp;
                 pwProd.print("," + tripProdTmp);

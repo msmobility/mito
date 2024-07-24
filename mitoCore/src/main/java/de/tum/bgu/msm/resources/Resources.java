@@ -204,4 +204,8 @@ public class Resources {
         return baseDirectory.resolve(Resources.instance.getString(DAY_OF_WEEK_PROBABILITIES));
     }
 
+    public Path getPoiWeightsFilePath(){
+        return baseDirectory.resolve(Resources.instance.getString(POI_WEIGHTS));
+    }
+
 }

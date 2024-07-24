@@ -12,6 +12,7 @@ import org.locationtech.jts.geom.Point;
 import org.matsim.core.utils.geometry.geotools.MGC;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -32,6 +33,9 @@ public class MitoZone implements Id, Location {
 
     private final EnumMap<Purpose, Double> tripAttraction = new EnumMap<>(Purpose.class);
     private final Multiset<JobType> employeesByType = HashMultiset.create();
+
+    //TODO: Manchester use case
+    private HashMap<String, Float> poiWeightsByType = new HashMap<>();
 
     private final AreaTypes.SGType areaTypeSG;
     private AreaTypes.RType areaTypeR;
@@ -185,4 +189,9 @@ public class MitoZone implements Id, Location {
     public int getZoneId() {
         return zoneId;
     }
+
+    public HashMap<String, Float> getPoiWeightsByType() {
+        return poiWeightsByType;
+    }
+
 }

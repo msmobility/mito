@@ -98,10 +98,26 @@ public class Properties {
 
     public final static double SPEED_WALK_M_MIN = 5 * 1000 / 60;
     public final static double SPEED_BICYCLE_M_MIN = 12 * 1000 / 60;
-
     public static final String DAY_OF_WEEK_PROBABILITIES = "day.of.week.probabilities.file";
-
     public static final String MODE_SET_COEFFICIENTS = "modeSet.coeffs";
     public static final String MODE_SET_CONSTANTS = "modeSet.ASCs";
-    public static final String RUN_CALIBRATION = "run.calibration.mc";
+    public static final String POI_WEIGHTS = "poi.weights";
+    public static final String PT_PEAK_SKIM = "transit.peak.travelTime";
+    public static final String PT_PEAK_SKIM_MATRIX = "transit.travelTime.matrix";
+    public static final String BIKE_DIST_SKIM = "bike.travelDistance";
+    public static final String BIKE_DIST_SKIM_MATRIX = "bike.travelDistance.matrix";
+    public static final String BIKE_COST_COMMUTE_SKIM = "bike.travelCost.commute";
+    public static final String BIKE_COST_COMMUTE_SKIM_MATRIX = "bike.travelCost.commute.matrix";
+    public static final String BIKE_COST_DISC_SKIM = "bike.travelCost.discretionary";
+    public static final String BIKE_COST_DISC_SKIM_MATRIX = "bike.travelCost.discretionary.matrix";
+    public static final String WALK_DIST_SKIM = "walk.travelDistance";
+    public static final String WALK_DIST_SKIM_MATRIX = "walk.travelDistance.matrix";
+    public static final String WALK_COST_COMMUTE_SKIM = "walk.travelCost.commute";
+    public static final String WALK_COST_COMMUTE_SKIM_MATRIX = "walk.travelCost.commute.matrix";
+    public static final String WALK_COST_DISC_SKIM = "walk.travelCost.discretionary";
+    public static final String WALK_COST_DISC_SKIM_MATRIX = "walk.travelCost.discretionary.matrix";
+
+    public static final String RUN_CALIBRATION_MC = "run.mc.calibration";
+
+    public static final String RUN_MODESET = "run.modeset";
 }

@@ -1,15 +1,14 @@
-package de.tum.bgu.msm;
+package uk.cam.mrc.phm;
 
-import de.tum.bgu.msm.data.DataSet;
-import de.tum.bgu.msm.data.DataSetImpl;
-import de.tum.bgu.msm.data.MitoTripFactoryImpl;
-import de.tum.bgu.msm.data.Purpose;
+import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.output.*;
-import de.tum.bgu.msm.modules.*;
+import de.tum.bgu.msm.modules.DayOfWeekChoice;
+import de.tum.bgu.msm.modules.MatsimPopulationGenerator7days;
+import de.tum.bgu.msm.modules.ModeSetChoice;
 import de.tum.bgu.msm.modules.Module;
-import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.CalibratingModeChoiceCalculatorImpl;
-import de.tum.bgu.msm.modules.plansConverter.MatsimPopulationGenerator;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
+import de.tum.bgu.msm.modules.modeChoice.ModeChoiceCalibrationData;
 import de.tum.bgu.msm.modules.plansConverter.externalFlows.LongDistanceTraffic;
 import de.tum.bgu.msm.modules.scaling.TripScaling;
 import de.tum.bgu.msm.modules.timeOfDay.TimeOfDayChoice;
@@ -19,11 +18,16 @@ import de.tum.bgu.msm.modules.tripGeneration.TripGeneratorType;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
 import org.apache.log4j.Logger;
+import uk.cam.mrc.phm.calculators.*;
+import uk.cam.mrc.phm.io.SummarizeData7daysMCR;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static de.tum.bgu.msm.data.Purpose.*;
+import static de.tum.bgu.msm.data.Purpose.RRT;
+import static de.tum.bgu.msm.data.Purpose.getListedPurposes;
 
 /**
  * Generates travel demand for the Microscopic Transport Orchestrator (MITO)
@@ -31,11 +35,9 @@ import static de.tum.bgu.msm.data.Purpose.*;
  * @author Rolf Moeckel
  * Created on Sep 18, 2016 in Munich, Germany
  */
-public final class TravelDemandGenerator2 {
+public final class TravelDemandGeneratorMCR {
 
-    private static final Logger logger = Logger.getLogger(TravelDemandGenerator2.class);
-
-    private static final List<Purpose> PURPOSES = List.of(HBW,HBE,HBS,HBR,HBO,NHBW,NHBO);
+    private static final Logger logger = Logger.getLogger(TravelDemandGeneratorMCR.class);
 
     private final DataSet dataSet;
 
@@ -43,32 +45,32 @@ public final class TravelDemandGenerator2 {
     private final Module personTripAssignmentMandatory;
     private final Module travelTimeBudgetMandatory;
     private final Module distributionMandatory;
-    private final Module modeChoiceMandatory;
     private final Module tripGenerationDiscretionary;
     private final Module personTripAssignmentDiscretionary;
     private final Module travelTimeBudgetDiscretionary;
+    private final Module modeSetChoice;
     private final Module distributionDiscretionary;
-    private final Module modeChoiceDiscretionary;
-    private final Module timeOfDayChoiceMandatory;
-    private final Module timeOfDayChoiceDiscretionary;
+    private final Module modeChoice;
+    private final Module dayOfWeekChoice;
+    private final Module timeOfDayChoice;
     private final Module tripScaling;
     private final Module matsimPopulationGenerator;
     private final Module longDistanceTraffic;
 
-    private TravelDemandGenerator2(
+    private TravelDemandGeneratorMCR(
             DataSet dataSet,
             Module tripGenerationMandatory,
             Module personTripAssignmentMandatory,
             Module travelTimeBudgetMandatory,
             Module distributionMandatory,
-            Module modeChoiceMandatory,
-            Module timeOfDayChoiceMandatory,
             Module tripGenerationDiscretionary,
             Module personTripAssignmentDiscretionary,
             Module travelTimeBudgetDiscretionary,
+            Module modeSetChoice,
             Module distributionDiscretionary,
-            Module modeChoiceDiscretionary,
-            Module timeOfDayChoiceDiscretionary,
+            Module modeChoice,
+            Module dayOfWeekChoice,
+            Module timeOfDayChoice,
             Module tripScaling,
             Module matsimPopulationGenerator,
             Module longDistanceTraffic) {
@@ -78,17 +80,17 @@ public final class TravelDemandGenerator2 {
         this.personTripAssignmentMandatory = personTripAssignmentMandatory;
         this.travelTimeBudgetMandatory = travelTimeBudgetMandatory;
         this.distributionMandatory = distributionMandatory;
-        this.modeChoiceMandatory = modeChoiceMandatory;
-        this.timeOfDayChoiceMandatory = timeOfDayChoiceMandatory;
         this.tripGenerationDiscretionary = tripGenerationDiscretionary;
         this.personTripAssignmentDiscretionary = personTripAssignmentDiscretionary;
         this.travelTimeBudgetDiscretionary = travelTimeBudgetDiscretionary;
         this.distributionDiscretionary = distributionDiscretionary;
-        this.modeChoiceDiscretionary = modeChoiceDiscretionary;
-        this.timeOfDayChoiceDiscretionary = timeOfDayChoiceDiscretionary;
+        this.modeChoice = modeChoice;
+        this.dayOfWeekChoice = dayOfWeekChoice;
+        this.timeOfDayChoice = timeOfDayChoice;
         this.tripScaling = tripScaling;
         this.matsimPopulationGenerator = matsimPopulationGenerator;
         this.longDistanceTraffic = longDistanceTraffic;
+        this.modeSetChoice = modeSetChoice;
     }
 
 
@@ -100,75 +102,81 @@ public final class TravelDemandGenerator2 {
         private Module personTripAssignmentMandatory;
         private Module travelTimeBudgetMandatory;
         private Module distributionMandatory;
-        private Module modeChoiceMandatory;
-        private Module timeOfDayChoiceMandatory;
-
         private Module tripGenerationDiscretionary;
+        private Module modeSetChoice;
         private Module personTripAssignmentDiscretionary;
         private Module travelTimeBudgetDiscretionary;
         private Module distributionDiscretionary;
-        private Module modeChoiceDiscretionary;
-        private Module timeOfDayChoiceDiscretionary;
-
+        private Module modeChoice;
+        private Module dayOfWeekChoice;
+        private Module timeOfDayChoice;
         private Module tripScaling;
         private Module matsimPopulationGenerator;
         private Module longDistanceTraffic;
 
-        public Builder(DataSetImpl dataSet) {
+
+        public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
 
-            List<Purpose> purposes = PURPOSES;
-            List<Purpose> mandatoryPurposes = new ArrayList<>(PURPOSES);
+            List<Purpose> purposes = Purpose.getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES));
+            logger.info("Simulating trips for the following purposes: " + purposes.stream().map(Enum::toString).collect(Collectors.joining(",")));
+
+            List<Purpose> mandatoryPurposes = new ArrayList<>(purposes);
             mandatoryPurposes.retainAll(Purpose.getMandatoryPurposes());
-            List<Purpose> discretionaryPurposes = new ArrayList<>(PURPOSES);
+            List<Purpose> discretionaryPurposes = new ArrayList<>(purposes);
             discretionaryPurposes.removeAll(mandatoryPurposes);
 
             //from here
             tripGenerationMandatory = new TripGeneration(dataSet, mandatoryPurposes);
-            mandatoryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet),new AttractionCalculatorImpl(dataSet,purpose)));
+            mandatoryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationMandatory).registerTripGenerator(purpose, new MitoTripFactory7days(), TripGeneratorType.PersonBasedHurdlePolr,new TripGenCalculatorMCR(dataSet),
+                    new AttractionCalculatorMCR(dataSet,purpose)));
 
             distributionMandatory = new TripDistribution(dataSet, mandatoryPurposes);
-            mandatoryPurposes.forEach(purpose -> ((TripDistribution) distributionMandatory).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl3(purpose)));
-
-            modeChoiceMandatory = new ModeChoice(dataSet, mandatoryPurposes);
-            mandatoryPurposes.forEach(purpose -> ((ModeChoice) modeChoiceMandatory).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData())));
-
-            timeOfDayChoiceMandatory = new TimeOfDayChoice(dataSet, mandatoryPurposes);
+            mandatoryPurposes.forEach(purpose -> ((TripDistribution) distributionMandatory).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorMCR(purpose)));
 
             tripGenerationDiscretionary = new TripGeneration(dataSet, discretionaryPurposes);
-            discretionaryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorPersonBasedHurdleNegBin(dataSet),new AttractionCalculatorImpl(dataSet,purpose)));
+            discretionaryPurposes.forEach(purpose -> ((TripGeneration) tripGenerationDiscretionary).registerTripGenerator(purpose, new MitoTripFactory7days(),TripGeneratorType.PersonBasedHurdleNegBin,new TripGenCalculatorMCR(dataSet),
+                    new AttractionCalculatorMCR(dataSet,purpose)));
+
+            modeSetChoice = new ModeSetChoice(dataSet, purposes, new ModeSetCalculatorMCR(dataSet));
 
             distributionDiscretionary = new TripDistribution(dataSet, discretionaryPurposes);
             // Register ALL purposes here, because we need the mandatory purpose matrices for NHBW / NHBO
-            purposes.forEach(purpose -> ((TripDistribution) distributionDiscretionary).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorImpl3(purpose)));
+            purposes.forEach(purpose -> ((TripDistribution) distributionDiscretionary).registerDestinationUtilityCalculator(purpose, new DestinationUtilityCalculatorMCR(purpose)));
+            //Override the calculator for RRT, because the categorisePerson is different
+            ((TripDistribution) distributionDiscretionary).registerDestinationUtilityCalculator(RRT, new DestinationUtilityCalculatorRrtMCR(RRT));
 
-            modeChoiceDiscretionary = new ModeChoice(dataSet, discretionaryPurposes);
-            discretionaryPurposes.forEach(purpose -> ((ModeChoice) modeChoiceDiscretionary).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculator2017Impl(purpose, dataSet), dataSet.getModeChoiceCalibrationData())));
+            modeChoice = new ModeChoice(dataSet, purposes);
+            purposes.forEach(purpose -> ((ModeChoice) modeChoice).registerModeChoiceCalculator(purpose, new CalibratingModeChoiceCalculatorImpl(new ModeChoiceCalculatorMCR(purpose, dataSet), dataSet.getModeChoiceCalibrationData())));
+            //Override the calculator for RRT, because so far we don't have calibration factors for RRT
+            ((ModeChoice) modeChoice).registerModeChoiceCalculator(RRT, new ModeChoiceCalculatorRrtMCR(dataSet));
 
-            timeOfDayChoiceDiscretionary = new TimeOfDayChoice(dataSet, discretionaryPurposes);
+            dayOfWeekChoice = new DayOfWeekChoice(dataSet, purposes);
+
+            timeOfDayChoice = new TimeOfDayChoice(dataSet, purposes);
             //until here it must be divided into two blocks - mandatory and discretionary
 
             tripScaling = new TripScaling(dataSet, purposes);
-            matsimPopulationGenerator = new MatsimPopulationGenerator(dataSet, purposes);
+            matsimPopulationGenerator = new MatsimPopulationGenerator7days(dataSet, purposes);
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
                 longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
             }
         }
 
-        public TravelDemandGenerator2 build() {
-            return new TravelDemandGenerator2(dataSet,
+        public TravelDemandGeneratorMCR build() {
+            return new TravelDemandGeneratorMCR(dataSet,
                     tripGenerationMandatory,
                     personTripAssignmentMandatory,
                     travelTimeBudgetMandatory,
                     distributionMandatory,
-                    modeChoiceMandatory,
-                    timeOfDayChoiceMandatory,
                     tripGenerationDiscretionary,
                     personTripAssignmentDiscretionary,
                     travelTimeBudgetDiscretionary,
+                    modeSetChoice,
                     distributionDiscretionary,
-                    modeChoiceDiscretionary,
-                    timeOfDayChoiceDiscretionary,
+                    modeChoice,
+                    dayOfWeekChoice,
+                    timeOfDayChoice,
                     tripScaling,
                     matsimPopulationGenerator,
                     longDistanceTraffic);
@@ -191,11 +199,11 @@ public final class TravelDemandGenerator2 {
         }
 
         public void setModeChoice(Module modeChoice) {
-            this.modeChoiceMandatory = modeChoice;
+            this.modeChoice = modeChoice;
         }
 
-        public void setTimeOfDayChoiceMandatory(Module timeOfDayChoiceMandatory) {
-            this.timeOfDayChoiceMandatory = timeOfDayChoiceMandatory;
+        public void setTimeOfDayChoice(Module timeOfDayChoice) {
+            this.timeOfDayChoice= timeOfDayChoice;
         }
 
         public void setTripScaling(Module tripScaling) {
@@ -231,11 +239,11 @@ public final class TravelDemandGenerator2 {
         }
 
         public Module getModeChoice() {
-            return modeChoiceMandatory;
+            return modeChoice;
         }
 
-        public Module getTimeOfDayChoiceMandatory() {
-            return timeOfDayChoiceMandatory;
+        public Module getTimeOfDayChoice() {
+            return timeOfDayChoice;
         }
 
         public Module getTripScaling() {
@@ -267,10 +275,6 @@ public final class TravelDemandGenerator2 {
         //((TravelTimeBudgetModule) travelTimeBudget).adjustDiscretionaryPurposeBudgets(Purpose.getMandatoryPurposes());
         logger.info("Running Module: Microscopic Trip Distribution");
         distributionMandatory.run();
-        logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        modeChoiceMandatory.run();
-        logger.info("Running time of day choice");
-        timeOfDayChoiceMandatory.run();
 
         tripGenerationDiscretionary.run();
         //logger.info("Running Module: Person to Trip Assignment");
@@ -278,17 +282,50 @@ public final class TravelDemandGenerator2 {
         logger.info("Running Module: Travel Time Budget Calculation");
 //        travelTimeBudgetDiscretionary.run();
 //        ((TravelTimeBudgetModule) travelTimeBudgetDiscretionary).adjustDiscretionaryPurposeBudgets();
+
+
+        logger.info("Running Module: Mode set choice");
+        if(Resources.instance.getBoolean(Properties.RUN_MODESET,false)) {
+            modeSetChoice.run();
+        }
+
         logger.info("Running Module: Microscopic Trip Distribution");
         distributionDiscretionary.run();
 
         // Trip distribution calibration example: todo: specify these in properties file, keep in generator and do similar for mode choice.
-        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBR, new double[] {8.,11.,13.});
+//        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBW, new double[] {5.195,8.976,11.525});
+//        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBE, new double[] {2.546,3.395,2.617});
+//        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBS, new double[] {2.579,4.19,4.919});
+//        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBO, new double[] {3.641,5.633,7.071});
+//        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBR, new double[] {3.592,5.793,6.842});
+//        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.NHBO, new double[] {1.588,4.179,4.916});
+//        ((TripDistribution) distributionDiscretionary).calibrate(Purpose.NHBW, new double[] {1.764,5.172,7.817});
+//       ((TripDistribution) distributionDiscretionary).calibrate(Purpose.RRT, new double[] {0.622,1.427,1.427});
+
+
+
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
-        modeChoiceDiscretionary.run();
-        logger.info("Running time of day choice");
-        timeOfDayChoiceDiscretionary.run();
+        modeChoice.run();
 
+        // MODE CHOICE CALIBRATION CODE
+        if(Resources.instance.getBoolean(Properties.RUN_CALIBRATION_MC,false)) {
+            int modeChoiceCalibrationIterations = Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 0);
+            if (modeChoiceCalibrationIterations > 0) {
+                ModeChoiceCalibrationData modeChoiceCalibrationData = dataSet.getModeChoiceCalibrationData();
+                for (int i = 1; i <= modeChoiceCalibrationIterations; i++) {
+                    modeChoiceCalibrationData.updateCalibrationCoefficients(dataSet, i,getListedPurposes(Resources.instance.getString(Properties.TRIP_PURPOSES)));
+                    modeChoice.run();
+                }
+                modeChoiceCalibrationData.close();
+            }
+        }
+
+        logger.info("Running day of week choice");
+        dayOfWeekChoice.run();
+
+        logger.info("Running time of day choice");
+        timeOfDayChoice.run();
 
         logger.info("Running trip scaling");
         tripScaling.run();
@@ -302,17 +339,30 @@ public final class TravelDemandGenerator2 {
         TripGenerationWriter.writeTripsByPurposeAndZone(dataSet, scenarioName);
         SummarizeDataToVisualize.writeFinalSummary(dataSet, scenarioName);
 
+
+
         if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
-            SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
-            SummarizeData.writeOutTrips(dataSet, scenarioName);
+            SummarizeData7daysMCR.writeOutSyntheticPopulationWithTrips(dataSet);
+            SummarizeData7daysMCR.writeAllTrips(dataSet,scenarioName);
+            /*for(Day day : Day.values()){
+                for(Mode mode : Mode.values()){
+                    Collection<MitoTrip> tripsToPrint = dataSet.getTrips().values().stream().filter(tt -> day.equals(((MitoTrip7days)tt).getDepartureDay()) & mode.equals(tt.getTripMode())).collect(Collectors.toList());
+                    if(tripsToPrint.size()>0){
+                        SummarizeData7daysMCR.writeOutTripsByDayByMode(dataSet,scenarioName,day,mode,tripsToPrint);
+                    }else{
+                        logger.info("No trips for mode: " + mode + ",day: " + day);
+                    }
+
+                }
+            }*/
         }
         if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
             DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
             ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
-            SummarizeData.writeCharts(dataSet, scenarioName);
+            SummarizeData7daysMCR.writeCharts(dataSet, scenarioName);
         }
         if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
-            //SummarizeData.writeMatsimPlans(dataSet, scenarioName);
+            SummarizeData7daysMCR.writeMatsimPlans(dataSet, scenarioName);
         }
     }
 }

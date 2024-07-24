@@ -7,6 +7,7 @@ import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.io.output.*;
+import de.tum.bgu.msm.modules.AttractionCalculatorImpl;
 import de.tum.bgu.msm.modules.DestinationUtilityCalculatorImpl;
 import de.tum.bgu.msm.modules.modeChoice.ModeChoice;
 import de.tum.bgu.msm.modules.modeChoice.calculators.AirportModeChoiceCalculator;
@@ -74,7 +75,7 @@ public final class MitoModelForModeChoiceCalibration {
         logger.info("Running Module: Microscopic Trip Generation");
         TripGeneration tg = new TripGeneration(dataSet, purposes);
         purposes.forEach(purpose -> {
-            ((TripGeneration) tg).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.SampleEnumeration,null);
+            ((TripGeneration) tg).registerTripGenerator(purpose, new MitoTripFactoryImpl(), TripGeneratorType.SampleEnumeration,null,new AttractionCalculatorImpl(dataSet,purpose));
         });
 
         tg.run();
