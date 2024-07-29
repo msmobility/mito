@@ -10,28 +10,28 @@ import java.util.function.Predicate;
 
 public class DestinationUtilityCalculatorImpl3 extends AbstractDestinationUtilityCalculator {
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBW = {-0.03404, -0.02821, -0.01712};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBW = {-0.02752, -0.02602, -0.01710};
     private final static double IMPEDANCE_PARAM_HBW = 9;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBE = {-0.006599,-0.006599,-0.006599};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBE = {-0.005791, -0.005791, -0.005791};
     private final static double IMPEDANCE_PARAM_HBE = 28.3;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBS = {-0.08805, -0.03948, -0.03362};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBS = {-0.04593, -0.03493, -0.03075};
     private final static double IMPEDANCE_PARAM_HBS = 14.5;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBR = {-0.011585, -0.010204, -0.0096598};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBR = {-0.008269, -0.008626, -0.008143};
     private final static double IMPEDANCE_PARAM_HBR = 20;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBO = {-0.006823, -0.004451, -0.004141};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBO = {-0.004626, -0.003937, -0.003739};
     private final static double IMPEDANCE_PARAM_HBO = 53;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_RRT = {-0.05204,-0.05204,-0.05204};
-    private final static double IMPEDANCE_PARAM_RRT = 12;
+    private final static double[] TRAVEL_DISTANCE_PARAM_RRT = {-0.058139, -0.025304, -0.010405};
+    private final static double IMPEDANCE_PARAM_RRT = 14;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_NHBW = {-0.027959,  -0.015731, -0.010706}; // -0.012747;
+    private final static double[] TRAVEL_DISTANCE_PARAM_NHBW = {-0.016240, -0.012459, -0.009441}; // -0.012747;
     private final static double IMPEDANCE_PARAM_NHBW = 15.1;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_NHBO = {-0.022910, -0.013904, -0.011814}; // -0.0130997;
+    private final static double[] TRAVEL_DISTANCE_PARAM_NHBO = {-0.012754, -0.011711, -0.010579}; // -0.0130997;
     private final static double IMPEDANCE_PARAM_NHBO = 20;
 
     public DestinationUtilityCalculatorImpl3(Purpose purpose) {

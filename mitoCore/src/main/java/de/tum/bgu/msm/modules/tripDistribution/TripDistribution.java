@@ -103,7 +103,7 @@ public class TripDistribution extends Module {
             distributeTrips(Collections.singletonList(purpose));
             adjustments = getAdjustments(purpose, referenceMeans);
             tripDistributionCalculatorsByPurpose.get(purpose).getFirst().adjustDistanceParams(adjustments, logger);
-        } while (Arrays.stream(adjustments).map(b -> Math.abs(b-1.)).max().orElseThrow() > 0.01);
+        } while (Arrays.stream(adjustments).map(b -> Math.abs(b-1.)).max().orElseThrow() > 0.02);
         logger.info("Calibration complete! \uD83C\uDF89");
     }
 

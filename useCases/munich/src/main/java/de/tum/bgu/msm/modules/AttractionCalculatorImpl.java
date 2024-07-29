@@ -9,6 +9,7 @@ import de.tum.bgu.msm.modules.tripGeneration.AttractionCalculator;
 import de.tum.bgu.msm.modules.tripGeneration.ExplanatoryVariable;
 import org.apache.log4j.Logger;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class AttractionCalculatorImpl implements AttractionCalculator {
@@ -30,7 +31,8 @@ public class AttractionCalculatorImpl implements AttractionCalculator {
         logger.info("  Calculating trip attractions");
         for (MitoZone zone : dataSet.getZones().values()) {
                 float tripAttraction = 0;
-                for (ExplanatoryVariable variable : ExplanatoryVariable.values()) {
+                for (ExplanatoryVariable variable : EnumSet.of(ExplanatoryVariable.HH,ExplanatoryVariable.TOT,
+                        ExplanatoryVariable.RE, ExplanatoryVariable.OFF, ExplanatoryVariable.OTH, ExplanatoryVariable.ENR)) {
                     float attribute;
                     switch (variable) {
                         case HH:
@@ -52,7 +54,7 @@ public class AttractionCalculatorImpl implements AttractionCalculator {
                             attribute = zone.getSchoolEnrollment();
                             break;
                         default:
-                            throw new RuntimeException("Unknown trip attraction Variable.");
+                            throw new RuntimeException("Unknown trip attraction Variable " + variable + ".");
                     }
                     Double rate = purpose.getTripAttractionForVariable(variable);
                     if(rate == null) {

@@ -11,28 +11,28 @@ import java.util.function.Predicate;
 
 public class DestinationUtilityCalculatorImpl7days extends AbstractDestinationUtilityCalculator {
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBW = {-0.02752, -0.02602, -0.01710};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBW = {-0.025800133507709294, -0.021167624669922537, -0.014055080245173423};
     private final static double IMPEDANCE_PARAM_HBW = 9;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBE = {-0.005791, -0.005791, -0.005791};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBE = {-0.003554915803471327, -0.006447797093297055, -0.006810388633786645};
     private final static double IMPEDANCE_PARAM_HBE = 28.3;
 
     private final static double[] TRAVEL_DISTANCE_PARAM_HBS = {-0.04593, -0.03493, -0.03075};
-    private final static double IMPEDANCE_PARAM_HBS = 14.5;
+    private final static double IMPEDANCE_PARAM_HBS = 50;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBR = {-0.008269, -0.008626, -0.008143};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBR = {-0.009944686933173689, -0.009241843507574019, -0.008736433116592727};
     private final static double IMPEDANCE_PARAM_HBR = 20;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBO = {-0.004626, -0.003937, -0.003739};
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBO = {-0.004000351053144032, -0.0033042359235793046, -0.003359528360854156};
     private final static double IMPEDANCE_PARAM_HBO = 53;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_RRT = {-0.058139, -0.025304, -0.010405};
-    private final static double IMPEDANCE_PARAM_RRT = 14;
+    //private final static double[] TRAVEL_DISTANCE_PARAM_RRT = {-0.058139, -0.025304, -0.010405};
+    //private final static double IMPEDANCE_PARAM_RRT = 50;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_NHBW = {-0.016240, -0.012459, -0.009441}; // -0.012747;
+    private final static double[] TRAVEL_DISTANCE_PARAM_NHBW = {-0.01437656108488677, -0.011044223273121899, -0.008043508731979848}; // -0.012747;
     private final static double IMPEDANCE_PARAM_NHBW = 15.1;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_NHBO = {-0.012754, -0.011711, -0.010579}; // -0.0130997;
+    private final static double[] TRAVEL_DISTANCE_PARAM_NHBO = {-0.018460905261276462, -0.012236997775383089, -0.010813321037005713}; // -0.0130997;
     private final static double IMPEDANCE_PARAM_NHBO = 20;
 
 
@@ -60,8 +60,8 @@ public class DestinationUtilityCalculatorImpl7days extends AbstractDestinationUt
                 impedanceParam = IMPEDANCE_PARAM_HBO;
                 break;
             case RRT:
-                distanceParams = TRAVEL_DISTANCE_PARAM_RRT;
-                impedanceParam = IMPEDANCE_PARAM_RRT;
+                //distanceParams = TRAVEL_DISTANCE_PARAM_RRT;
+                //impedanceParam = IMPEDANCE_PARAM_RRT;
                 break;
             case NHBW:
                 distanceParams = TRAVEL_DISTANCE_PARAM_NHBW;

@@ -12,8 +12,8 @@ import java.util.function.Predicate;
 
 public class DestinationUtilityCalculatorImplRrt7days extends AbstractDestinationUtilityCalculator {
 
-    private final static double[] DISTANCE_PARAMS_RRT = {-0.05204,-0.05204,-0.05204};
-    private final static double IMPEDANCE_PARAM_RRT = 12;
+    private final static double[] DISTANCE_PARAMS_RRT = {-0.05202034055668481, -0.024497796775790632, -0.010877261479470652};
+    private final static double IMPEDANCE_PARAM_RRT = 15;
 
     public DestinationUtilityCalculatorImplRrt7days(Purpose purpose) {
         if (purpose != Purpose.RRT) {

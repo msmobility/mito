@@ -271,6 +271,9 @@ public final class TravelDemandGenerator7days {
         logger.info("Running Module: Microscopic Trip Distribution");
         distributionMandatory.run();
 
+        //((TripDistribution) distributionMandatory).calibrate(Purpose.HBW, new double[] {11.57,17.44,22.20});
+        //((TripDistribution) distributionMandatory).calibrate(Purpose.HBE, new double[] {14.18,11.32,12.17});
+
         tripGenerationDiscretionary.run();
         //logger.info("Running Module: Person to Trip Assignment");
         //personTripAssignmentDiscretionary.run();
@@ -286,13 +289,19 @@ public final class TravelDemandGenerator7days {
         distributionDiscretionary.run();
 
         // Trip distribution calibration example: todo: specify these in properties file, keep in generator and do similar for mode choice.
-        //((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBR, new double[] {8.,11.,13.});
+        //((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBO, new double[] {8.46,11.58,11.97});
+        //((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBR, new double[] {9.58,12.24,13.38});
+        //((TripDistribution) distributionDiscretionary).calibrate(Purpose.NHBW, new double[] {9.58,13.62,17.89});
+        //((TripDistribution) distributionDiscretionary).calibrate(Purpose.NHBO, new double[] {5.56,8.46,9.71});
+        //((TripDistribution) distributionDiscretionary).calibrate(Purpose.HBS, new double[] {2.43,4.86,5.73});
+        //((TripDistribution) distributionDiscretionary).calibrate(Purpose.RRT, new double[] {3.58,6.79,15.5});
+
 
 
         logger.info("Running Module: Trip to Mode Assignment (Mode Choice)");
         modeChoice.run();
 
-        if(Resources.instance.getBoolean(Properties.RUN_CALIBRATION,false)) {
+        if(Resources.instance.getBoolean(Properties.RUN_CALIBRATION_MC,false)) {
             int modeChoiceCalibrationIterations = Resources.instance.getInt(Properties.MC_CALIBRATION_ITERATIONS, 0);
             if (modeChoiceCalibrationIterations > 0) {
                 ModeChoiceCalibrationData modeChoiceCalibrationData = dataSet.getModeChoiceCalibrationData();
@@ -324,7 +333,7 @@ public final class TravelDemandGenerator7days {
 
 
 
-        if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, true)) {
+        if (Resources.instance.getBoolean(Properties.PRINT_MICRO_DATA, false)) {
             SummarizeData.writeOutSyntheticPopulationWithTrips(dataSet);
             for(Day day : Day.values()){
                 for(Mode mode : Mode.values()){
@@ -338,12 +347,12 @@ public final class TravelDemandGenerator7days {
                 }
             }
         }
-        if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, true)) {
+        if (Resources.instance.getBoolean(Properties.CREATE_CHARTS, false)) {
             DistancePlots.writeDistanceDistributions(dataSet, scenarioName);
             ModeChoicePlots.writeModeChoice(dataSet, scenarioName);
             SummarizeData.writeCharts(dataSet, scenarioName);
         }
-        if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, true)) {
+        if (Resources.instance.getBoolean(Properties.WRITE_MATSIM_POPULATION, false)) {
             SummarizeData.writeMatsimPlans(dataSet, scenarioName);
         }
     }
