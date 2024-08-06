@@ -41,8 +41,8 @@ public class HouseholdsReaderTengos extends HouseholdsReader {
         // is the household modelled? (depends on scale factor)
         boolean isModelled = MitoUtil.getRandomObject().nextDouble() < scaleFactorForTripGeneration;
 
-        MitoHouseholdTengos hh = new MitoHouseholdTengos(id, 0, autos, isModelled);
-        hh.setNursingHome(nursingHome>=0);
+        MitoHousehold hh = new MitoHouseholdTengos(id, 0, autos, isModelled);
+        ((MitoHouseholdTengos) hh).setNursingHome(nursingHome>=0);
         if(nursingHome>=0){
             hh.setHomeLocation(dataSet.getZones().get(taz).getGeometry().getCoordinate());
             hh.setHomeZone(dataSet.getZones().get(taz));
