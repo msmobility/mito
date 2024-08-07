@@ -3,8 +3,7 @@ package de.tum.bgu.msm.scenarios.tengos;
 import de.tum.bgu.msm.data.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class MitoPersonTengos extends MitoPerson7days {
     private ArrayList<Integer> alterLists;

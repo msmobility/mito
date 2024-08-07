@@ -4,6 +4,9 @@ import de.tum.bgu.msm.data.*;
 import de.tum.bgu.msm.io.PersonsReader7days;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PersonReaderTengos extends PersonsReader7days {
 
     private static final Logger logger = Logger.getLogger(PersonReaderTengos.class);
@@ -22,6 +25,20 @@ public class PersonReaderTengos extends PersonsReader7days {
 
     public PersonReaderTengos(DataSet dataSet) {
         super(dataSet);
+    }
+
+    @Override
+    public void processHeader(String[] header) {
+        List<String> headerList = Arrays.asList(header);
+        posId = headerList.indexOf("id");
+        posHhId = headerList.indexOf("hhid");
+        posAge = headerList.indexOf("age");
+        posSex = headerList.indexOf("gender");
+        posOccupation = headerList.indexOf("occupation");
+        posWorkplaceId = headerList.indexOf("workplace");
+        posSchoolId = headerList.indexOf("schoolId");
+        posLicence = headerList.indexOf("driversLicense");
+        posIncome = headerList.indexOf("income");
     }
 
     @Override

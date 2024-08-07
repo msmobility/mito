@@ -8,6 +8,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -140,8 +141,11 @@ public class DestinationCoordinationWithCliques extends Module {
             if(person instanceof MitoPersonTengos) {
                 MitoPersonTengos ego = (MitoPersonTengos) person;
                 loopedThroughEgos.add(ego.getId());
-                //System.out.println("Processed " + loopedThroughEgos.size() + " egos");
-
+                System.out.println("Processed " + loopedThroughEgos.size() + " egos");
+                if(ego.getAlterLists()==null){
+                    System.out.println(ego.getId() + "'s alter list is null");
+                    continue;
+                }
                 for (int alterId : ego.getAlterLists()) {
                     if (loopedThroughEgos.contains(alterId)) {
                         continue; // Skip this alter because this particular ego-alter pair has been through coordination already
@@ -193,7 +197,14 @@ public class DestinationCoordinationWithCliques extends Module {
 
                     Trip trip = new Trip();
                     trip.destination = egoTripTengos.getTripDestination();
-                    trip.coord = egoTripTengos.getDestinationCoord();
+                    Coord destinationCoord;
+                    if(egoTripTengos.getTripDestination() instanceof MicroLocation) {
+                        destinationCoord = CoordUtils.createCoord(((MicroLocation) egoTripTengos.getTripDestination()).getCoordinate());
+                    } else {
+                        destinationCoord =
+                                CoordUtils.createCoord(dataSet.getZones().get(egoTripTengos.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
+                    }
+                    trip.coord = destinationCoord;
                     trip.arrivalDay = egoTripTengos.getArrivalDay();
                     trip.arrivalInMinutes = egoTripTengos.getArrivalInMinutes();
                     if (isNonHomeBasedPurpose(egoTripTengos.getTripPurpose())) {
@@ -410,6 +421,7 @@ public class DestinationCoordinationWithCliques extends Module {
     }
 
     public static Coord calculateMidpoint(Coord coord1, Coord coord2, int tripAGroupSize, int tripBGroupSize) {
+
         double midX = roundToNearest0_5((coord1.getX()*tripAGroupSize + coord2.getX()*tripBGroupSize) / (tripAGroupSize+tripBGroupSize));
         double midY = roundToNearest0_5((coord1.getY()*tripAGroupSize + coord2.getY()*tripBGroupSize) / (tripAGroupSize+tripBGroupSize));
         return new Coord(midX, midY);

@@ -27,7 +27,9 @@ public class HouseholdsReaderTengos extends HouseholdsReader {
 
     @Override
     protected void processHeader(String[] header) {
-        super.processHeader(header);
+        posId = MitoUtil.findPositionInArray("id", header);
+        posTaz = MitoUtil.findPositionInArray("zone", header);
+        posAutos = MitoUtil.findPositionInArray("autos", header);
         posNursingHome = MitoUtil.findPositionInArray("nursingHome", header);
     }
 

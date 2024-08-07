@@ -50,7 +50,7 @@ public class SocialNetworkReader extends AbstractCsvReader{
 //		super.read(filePath, ",");
 //		logger.info(countError + " Egos are not existed in the trip person map.");
         logger.info("  Reading ego-alter friend data from csv file");
-        Path filePath = Paths.get("C:\\models\\tengos_episim\\input\\social_net_edge_list_v_3.0\\egoAlterFriends5pct.csv");
+        Path filePath = Paths.get("C:\\models\\tengos_episim\\input\\social_net_edge_list_v_3.0\\egoAlterFriends5pct_reflected.csv");
         //socialNetworkType = SocialNetworkType.FRIEND;
         super.read(filePath, ",");
         logger.info(countError + " Egos are not existed in the trip person map.");
@@ -70,9 +70,13 @@ public class SocialNetworkReader extends AbstractCsvReader{
 
         MitoPerson egoPerson = dataSet.getPersons().get(ego);
 
+        if(egoPerson.getId()==877961){
+            System.out.println("problematic person without alter list");
+        }
+
         if(egoPerson ==null){
             countError++;
-            //logger.error("Ego: " + ego + " is not in the person map!");
+            logger.error("Ego: " + ego + " is not in the person map!");
         }else {
             if(egoPerson instanceof MitoPersonTengos){
                 MitoPersonTengos egoPersonTengos = (MitoPersonTengos) egoPerson;
@@ -82,7 +86,7 @@ public class SocialNetworkReader extends AbstractCsvReader{
                 egoPersonTengos.getAlterLists().add(alter);
             }else{
                 countError++;
-                //logger.error("Ego: " + ego + " is not an instance of MitoPersonTengos!");
+                logger.error("Ego: " + ego + " is not an instance of MitoPersonTengos!");
             }
 
         }
