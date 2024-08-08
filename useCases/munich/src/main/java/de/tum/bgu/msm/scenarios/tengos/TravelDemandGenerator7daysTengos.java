@@ -1,7 +1,6 @@
 package de.tum.bgu.msm.scenarios.tengos;
 
 import de.tum.bgu.msm.data.*;
-import de.tum.bgu.msm.io.SummarizeData7days;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.*;
@@ -349,7 +348,7 @@ public final class TravelDemandGenerator7daysTengos {
                 for(Mode mode : Mode.values()){
                     Collection<MitoTrip> tripsToPrint = dataSet.getTrips().values().stream().filter(tt -> day.equals(((MitoTrip7days)tt).getDepartureDay()) & mode.equals(tt.getTripMode())).collect(Collectors.toList());
                     if(tripsToPrint.size()>0){
-                        SummarizeData7days.writeOutTripsByDayByMode(dataSet,scenarioName,day,mode,tripsToPrint);
+                        SummarizeData7daysTengos.writeOutTripsByDayByMode(dataSet,scenarioName,day,mode,tripsToPrint);
                     }else{
                         logger.info("No trips for mode: " + mode + ",day: " + day);
                     }
