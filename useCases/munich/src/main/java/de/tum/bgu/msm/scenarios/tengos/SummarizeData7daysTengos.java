@@ -231,10 +231,10 @@ public class SummarizeData7daysTengos {
             int departureOfReturnTrip = trip.getDepartureInMinutesReturnTrip();
             if (departureOfReturnTrip != -1){
                 pwh.print(",");
-                pwh.println(departureOfReturnTrip);
+                pwh.print(departureOfReturnTrip);
             } else {
                 pwh.print(",");
-                pwh.println("NA");
+                pwh.print("NA");
             }
             pwh.print(",");
             pwh.println(((MitoTripTengos) trip).getCoordinatedTripId());
