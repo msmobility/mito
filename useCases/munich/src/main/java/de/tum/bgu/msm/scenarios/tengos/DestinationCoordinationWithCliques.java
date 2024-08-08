@@ -200,10 +200,13 @@ public class DestinationCoordinationWithCliques extends Module {
                     Coord destinationCoord;
                     if(egoTripTengos.getTripDestination() instanceof MicroLocation) {
                         destinationCoord = CoordUtils.createCoord(((MicroLocation) egoTripTengos.getTripDestination()).getCoordinate());
+                    } else if (egoTripTengos.getDestinationCoord()!=null) {
+                        destinationCoord = egoTripTengos.getDestinationCoord();
                     } else {
-                        destinationCoord =
-                                CoordUtils.createCoord(dataSet.getZones().get(egoTripTengos.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
-                    }
+                            destinationCoord =
+                                    CoordUtils.createCoord(dataSet.getZones().get(egoTripTengos.getTripDestination().getZoneId()).getRandomCoord(MitoUtil.getRandomObject()));
+                        }
+
                     trip.coord = destinationCoord;
                     trip.arrivalDay = egoTripTengos.getArrivalDay();
                     trip.arrivalInMinutes = egoTripTengos.getArrivalInMinutes();

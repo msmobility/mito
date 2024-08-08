@@ -30,6 +30,11 @@
             <version>master-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>sbb-extensions</artifactId>
+            <version>13.0</version>
+        </dependency>
     </dependencies>
 
 

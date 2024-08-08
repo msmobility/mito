@@ -156,7 +156,7 @@ public final class TravelDemandGenerator7daysTengos {
             //until here it must be divided into two blocks - mandatory and discretionary
 
             tripScaling = new TripScaling(dataSet, purposes);
-            matsimPopulationGenerator = new MatsimPopulationGenerator7days(dataSet, purposes);
+            matsimPopulationGenerator = new MatsimPopulationGenerator7daysTengos(dataSet, purposes);
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
                 longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
             }
