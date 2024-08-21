@@ -50,7 +50,17 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
         AtomicInteger assignedTripCounter = new AtomicInteger(0);
         AtomicInteger nonAssignedTripCounter = new AtomicInteger(0);
         dataSet.getTripSubsample().values().forEach(trip ->{
-            try {
+
+            Set<Mode> mode = new HashSet<>();
+            mode.add(Mode.pt);
+            mode.add(Mode.train);
+            mode.add(Mode.bus);
+            mode.add(Mode.tramOrMetro);
+
+
+            if (mode.contains(trip.getTripMode())){
+                logger.info("Trip "+trip.getTripId()+"is created in plan.");
+                try {
                 if (modeSet.contains(trip.getTripMode()) && !trip.getTripPurpose().equals(Purpose.RRT)) {
                     Person person = factory.createPerson(Id.createPersonId(trip.getId()));
                     person.getAttributes().putAttribute("age", Math.min(trip.getPerson().getAge(), 100));
@@ -124,8 +134,12 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
             if (ConcurrencyUtils.isPowerOf2(assignedTripCounter.incrementAndGet())){
                 logger.warn( assignedTripCounter.get()  + " MATSim agents created");
             }
+            }else{
+                logger.warn("Trip "+trip.getTripId()+"is not included in plan.");
+            }
 
         });
+
         logger.warn( nonAssignedTripCounter.get()  + " trips do not have trip origin, destination or mode and cannot be assigned in MATSim");
         return population;
     }

@@ -12,13 +12,15 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.*;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
+import org.matsim.pt.config.TransitConfigGroup;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ConfigureMatsimPt {
 
-    private final static double SILO_SAMPLING_RATE = 0.05;
+    private final static double SILO_SAMPLING_RATE = 0.25;
 
     public static Config configureMatsim(int lastItration, double reroute,  double planScale,int ptCapactityFactor, int maxPlan) {
         Config config = ConfigUtils.createConfig();
@@ -42,9 +44,9 @@ public class ConfigureMatsimPt {
 
         //transit config
         config.transit().setUseTransit(true);
-        config.network().setInputFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/network_pt_road.xml.gz");
-        config.transit().setTransitScheduleFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/schedule.xml");
-        config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/vehicles_scale_0.05_10.xml");
+        config.network().setInputFile("trafficAssignment\\pt\\network_pt_road.xml.gz");
+        config.transit().setTransitScheduleFile("trafficAssignment\\pt\\tengos\\schedule.xml");
+        config.transit().setVehiclesFile("trafficAssignment\\pt\\tengos\\vehicles_scale_0.25_10_newcapacity.xml");
         //config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/vehicles_scale_" +
         //planScale + "_" + ptCapactityFactor + ".xml");
         config.transitRouter().setDirectWalkFactor(2);
@@ -110,6 +112,14 @@ public class ConfigureMatsimPt {
         walk.setTeleportedModeSpeed(4 / 3.6);
         config.plansCalcRoute().addModeRoutingParams(walk);
 
+        // Teleported car mode
+        PlansCalcRouteConfigGroup.ModeRoutingParams autoDriver = new PlansCalcRouteConfigGroup.ModeRoutingParams("autoDriver");
+        autoDriver.setTeleportedModeFreespeedFactor(1.0);
+        config.plansCalcRoute().addModeRoutingParams(autoDriver);
+
+        // Teleported car mode ?
+        // config.plansCalcRoute().getOrCreateModeRoutingParams("autoDriver").setTeleportedModeFreespeedFactor(1.0);
+
 
         //strategy config
         {
@@ -130,7 +140,10 @@ public class ConfigureMatsimPt {
         config.strategy().setFractionOfIterationsToDisableInnovation(0.8);
         config.strategy().setMaxAgentPlanMemorySize(maxPlan);
 
-        String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
+
+
+        // Default: autodriver as network mode
+/*        String[] networkModes = Resources.instance.getArray(Properties.MATSIM_NETWORK_MODES, new String[]{"autoDriver"});
         Set<String> networkModesSet = new HashSet<>();
 
         for (String mode : networkModes) {
@@ -140,7 +153,7 @@ public class ConfigureMatsimPt {
             }
         }
 
-        config.plansCalcRoute().setNetworkModes(networkModesSet);
+        config.plansCalcRoute().setNetworkModes(networkModesSet);*/
 
        /* </module>
 

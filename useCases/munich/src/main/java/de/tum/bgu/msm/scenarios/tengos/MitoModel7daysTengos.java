@@ -2,6 +2,7 @@ package de.tum.bgu.msm.scenarios.tengos;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.DataSetImpl;
+import de.tum.bgu.msm.data.MitoHousehold;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
 import de.tum.bgu.msm.resources.Properties;
@@ -81,6 +82,7 @@ public final class MitoModel7daysTengos {
         new JobReader(dataSet, config.getJobTypeFactory()).read();
         new SchoolsReader(dataSet).read();
         new HouseholdsReaderTengos(dataSet).read();
+
         new HouseholdsCoordReader(dataSet).read();
         new PersonReaderTengos(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());

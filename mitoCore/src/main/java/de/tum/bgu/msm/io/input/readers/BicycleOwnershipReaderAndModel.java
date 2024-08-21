@@ -41,6 +41,14 @@ public class BicycleOwnershipReaderAndModel extends AbstractCsvReader {
     }
 
     private void assignBicycleOwnership() {
+        int count = 0;
+        for (MitoHousehold hh : dataSet.getHouseholds().values()){
+            if(hh.getHomeZone() == null){
+                count +=1;
+            }
+
+        }
+        logger.error("The number of error record"+count);
         for (MitoHousehold hh : dataSet.getHouseholds().values()){
             int economicStatus = hh.getEconomicStatus();
             AreaTypes.SGType areaTypeSG = hh.getHomeZone().getAreaTypeSG();

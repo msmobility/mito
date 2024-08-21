@@ -50,7 +50,7 @@ public class SocialNetworkReader extends AbstractCsvReader{
 //		super.read(filePath, ",");
 //		logger.info(countError + " Egos are not existed in the trip person map.");
         logger.info("  Reading ego-alter friend data from csv file");
-        Path filePath = Paths.get("C:\\models\\tengos_episim\\input\\social_net_edge_list_v_3.0\\egoAlterFriends5pct_reflected.csv");
+        Path filePath = Paths.get("\\\\nas.ads.mwn.de\\tubv\\mob\\indiv\\yukun\\mito7\\muc\\input\\social_network\\egoAlterFriends25pct_reflected.csv");
         //socialNetworkType = SocialNetworkType.FRIEND;
         super.read(filePath, ",");
         logger.info(countError + " Egos are not existed in the trip person map.");
@@ -70,9 +70,10 @@ public class SocialNetworkReader extends AbstractCsvReader{
 
         MitoPerson egoPerson = dataSet.getPersons().get(ego);
 
-        if(egoPerson.getId()==877961){
-            System.out.println("problematic person without alter list");
-        }
+
+//        if(egoPerson.getId()==877961){
+//            System.out.println("problematic person without alter list");
+//        }
 
         if(egoPerson ==null){
             countError++;
@@ -92,4 +93,6 @@ public class SocialNetworkReader extends AbstractCsvReader{
         }
 
     }
+
+
 }

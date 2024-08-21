@@ -46,9 +46,13 @@ public class HouseholdsReaderTengos extends HouseholdsReader {
         MitoHousehold hh = new MitoHouseholdTengos(id, 0, autos, isModelled);
         ((MitoHouseholdTengos) hh).setNursingHome(nursingHome>=0);
         if(nursingHome>=0){
+
             hh.setHomeLocation(dataSet.getZones().get(taz).getGeometry().getCoordinate());
             hh.setHomeZone(dataSet.getZones().get(taz));
         }
         dataSet.addHousehold(hh);
-    }
+
+
+        }
 }
+

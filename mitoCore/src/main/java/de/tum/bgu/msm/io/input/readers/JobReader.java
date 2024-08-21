@@ -55,7 +55,7 @@ public class JobReader extends AbstractCsvReader {
         int zoneId = Integer.parseInt(record[posZone]);
         int worker = Integer.parseInt(record[posWorker]);
         String type = record[posType];
-        if (worker > 0) {
+        //if (worker > 0) {
             MitoZone zone = dataSet.getZones().get(zoneId);
             if (zone == null) {
                 logger.warn(String.format("Job %d refers to non-existing zone %d! Ignoring it.", id, zoneId));
@@ -73,6 +73,6 @@ public class JobReader extends AbstractCsvReader {
 
             MitoJob job = new MitoJob(zone, coordinate, id);
             dataSet.addJob(job);
-        }
+       // }
     }
 }

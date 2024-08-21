@@ -1,5 +1,6 @@
 package de.tum.bgu.msm.scenarios.tengos;
 
+
 import ch.sbb.matsim.mobsim.qsim.SBBTransitModule;
 import ch.sbb.matsim.mobsim.qsim.pt.SBBTransitEngineQSimModule;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
@@ -16,25 +17,31 @@ import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
+import org.matsim.core.config.groups.QSimConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.scenario.MutableScenario;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.pt.config.TransitConfigGroup;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.matsim.core.config.groups.ControlerConfigGroup.MobsimType.qsim;
 
 public class Mito7daysTengos {
 
     private static final Logger logger = Logger.getLogger(Mito7daysTengos.class);
 
-    private static boolean runPtAssignment = false;
+    private static boolean runPtAssignment = true;
 
-    private static double planScale = 0.05;
+    private static double planScale = 0.25;
     private static int lastItration = 25;
     private static double reroute = 0.2;
-    private static boolean useSBB = true;
+    private static boolean useSBB = true
+            ;
     private static boolean deterministic = false;
     private static int maxPlan = 5;
     private static double maxSearchRadius = 1000;
@@ -53,10 +60,13 @@ public class Mito7daysTengos {
             Config config;
             if (runPtAssignment) {
                 logger.info("Running traffic assignment in MATsim car and pt");
+                // pt capacity factor?
                 config = ConfigureMatsimPt.configureMatsim(lastItration,reroute,planScale,10, maxPlan);
 
                 String outputSubDirectory = "scenOutput/" + model.getScenarioName() + "/" + dataSet.getYear();
-                config.controler().setOutputDirectory(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + "/trafficAssignment");
+                String basePath ="\\\\nas.ads.mwn.de\\tubv\\mob\\indiv\\yukun\\mito7\\muc";
+                //config.controler().setOutputDirectory(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + "/trafficAssignment");
+                config.controler().setOutputDirectory(basePath  +"/" + outputSubDirectory + "/trafficAssignment");
 
                 MutableScenario matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(config);
                 matsimScenario.setPopulation(dataSet.getPopulation());
@@ -83,6 +93,7 @@ public class Mito7daysTengos {
 
 
                 }
+
 
                 long start = System.currentTimeMillis();
                 controler.run();
