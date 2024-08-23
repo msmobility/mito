@@ -41,6 +41,7 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
     @Override
     public void run() {
         Population population = generateMatsimPopulation();
+        validatePopulationPlans(population);
         dataSet.setPopulation(population);
     }
 
@@ -57,6 +58,7 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
                     person.getAttributes().putAttribute("sex",trip.getPerson().getMitoGender());
                     //use for 7 day extension
                     person.getAttributes().putAttribute("day",((MitoTrip7days)trip).getDepartureDay().toString());
+                    person.getAttributes().putAttribute("job",((MitoJobTengos)trip.getPerson().getOccupation()).getJobType());
                     trip.setMatsimPerson(person);
 
                     Plan plan = factory.createPlan();
@@ -90,9 +92,9 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
 
                     //For work trips that worker’s job type is NURSING, destination end activity is “nursing_home”
                     if(activityTypeAtDestination.equals("work")){
-                        MitoOccupationImpl occupation = (MitoOccupationImpl)trip.getPerson().getOccupation();
+                        MitoJobTengos occupation = ((MitoJobTengos)trip.getPerson().getOccupation());
                         if(occupation!=null){
-                            if(MunichJobTypeTengos.NURSINGHOME.equals(((MitoOccupationImplTengos)occupation).getJobType())){
+                            if(MunichJobTypeTengos.NURSINGHOME.equals(occupation.getJobType())){
                                 activityTypeAtDestination = "nursing_work";
                             }
                         }
@@ -116,6 +118,10 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
                         plan.addActivity(destinationActivity);
                     }
 
+                    if(person.getSelectedPlan().getPlanElements().size()<3){
+                        System.out.println("debug from here");
+                    }
+
                 }
             } catch (Exception e){
                 nonAssignedTripCounter.incrementAndGet();
@@ -130,6 +136,14 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
         return population;
     }
 
+    private void validatePopulationPlans(Population population) {
+        for (Person person : population.getPersons().values()) {
+            Plan plan = person.getSelectedPlan();
+            if (plan.getPlanElements().size() < 3) {
+                logger.error("Person " + person.getId() + " has an invalid plan with only " + plan.getPlanElements().size() + " elements.");
+            }
+        }
+    }
 
     private static String getOriginActivity(MitoTrip trip){
         Purpose purpose = trip.getTripPurpose();

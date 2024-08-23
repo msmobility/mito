@@ -1,9 +1,10 @@
-package de.tum.bgu.msm.io.input.readers;
+package de.tum.bgu.msm.scenarios.tengos;
 
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoJob;
 import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.jobTypes.JobTypeFactory;
+import de.tum.bgu.msm.data.jobTypes.MunichJobType;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -15,9 +16,9 @@ import java.nio.file.Path;
 /**
  * Created by Nico on 17.07.2017.
  */
-public class JobReader extends AbstractCsvReader {
+public class JobReaderTengos extends AbstractCsvReader {
 
-    private static final Logger logger = Logger.getLogger(JobReader.class);
+    private static final Logger logger = Logger.getLogger(JobReaderTengos.class);
     private final JobTypeFactory factory;
 
     private int posId = -1;
@@ -27,7 +28,7 @@ public class JobReader extends AbstractCsvReader {
     private int posJobCoordX = -1;
     private int posJobCoordY = -1;
 
-    public JobReader(DataSet dataSet, JobTypeFactory factory) {
+    public JobReaderTengos(DataSet dataSet, JobTypeFactory factory) {
         super(dataSet);
         this.factory = factory;
     }
@@ -71,8 +72,8 @@ public class JobReader extends AbstractCsvReader {
             Coordinate coordinate = (new Coordinate(Double.parseDouble(record[posJobCoordX]),
             		Double.parseDouble(record[posJobCoordY])));
 
-            MitoJob job = new MitoJob(zone, coordinate, id);
-
+            MitoJob job = new MitoJobTengos(zone, coordinate, id);
+            ((MitoJobTengos) job).setJobType((MunichJobTypeTengos)factory.getType(type.toUpperCase().replaceAll("\"","")));
             dataSet.addJob(job);
         }
     }

@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class ConfigureMatsimPt {
 
-    private final static double SILO_SAMPLING_RATE = 0.05;
+    private final static double SILO_SAMPLING_RATE = 0.25;
 
     public static Config configureMatsim(int lastItration, double reroute,  double planScale,int ptCapactityFactor, int maxPlan) {
         Config config = ConfigUtils.createConfig();
@@ -44,7 +44,10 @@ public class ConfigureMatsimPt {
         config.transit().setUseTransit(true);
         config.network().setInputFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/network_pt_road.xml.gz");
         config.transit().setTransitScheduleFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/schedule.xml");
-        config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/vehicles_scale_0.05_10.xml");
+        //config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/vehicles_scale_0.05_10.xml");
+        //config.network().setInputFile("trafficAssignment\\pt\\network_pt_road.xml.gz");
+        //config.transit().setTransitScheduleFile("trafficAssignment\\pt\\tengos\\schedule.xml");
+        config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt\\tengos\\vehicles_scale_0.25_10_newcapacity.xml");
         //config.transit().setVehiclesFile("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/vehicles_scale_" +
         //planScale + "_" + ptCapactityFactor + ".xml");
         config.transitRouter().setDirectWalkFactor(2);
@@ -109,6 +112,11 @@ public class ConfigureMatsimPt {
         walk.setBeelineDistanceFactor(2.0);
         walk.setTeleportedModeSpeed(4 / 3.6);
         config.plansCalcRoute().addModeRoutingParams(walk);
+
+        // Teleported car mode
+        PlansCalcRouteConfigGroup.ModeRoutingParams autoDriver = new PlansCalcRouteConfigGroup.ModeRoutingParams("autoDriver");
+        autoDriver.setTeleportedModeFreespeedFactor(1.0);
+        config.plansCalcRoute().addModeRoutingParams(autoDriver);
 
 
         //strategy config

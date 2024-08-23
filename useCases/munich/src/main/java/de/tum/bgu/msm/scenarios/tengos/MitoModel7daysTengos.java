@@ -78,7 +78,7 @@ public final class MitoModel7daysTengos {
         if (Resources.instance.getBoolean(Properties.REMOVE_TRIPS_AT_BORDER)) {
             new BorderDampersReader(dataSet).read();
         }
-        new JobReader(dataSet, config.getJobTypeFactory()).read();
+        new JobReaderTengos(dataSet, config.getJobTypeFactory()).read();
         new SchoolsReader(dataSet).read();
         new HouseholdsReaderTengos(dataSet).read();
         new HouseholdsCoordReader(dataSet).read();
