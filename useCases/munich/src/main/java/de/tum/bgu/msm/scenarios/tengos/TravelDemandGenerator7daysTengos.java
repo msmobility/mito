@@ -72,7 +72,8 @@ public final class TravelDemandGenerator7daysTengos {
             Module tripScaling,
             Module matsimPopulationGenerator,
             Module longDistanceTraffic,
-            Module destinationCoordinationCliques) {
+            Module destinationCoordinationCliques
+    ) {
 
         this.dataSet = dataSet;
         this.tripGenerationMandatory = tripGenerationMandatory;
@@ -180,7 +181,8 @@ public final class TravelDemandGenerator7daysTengos {
                     tripScaling,
                     matsimPopulationGenerator,
                     longDistanceTraffic,
-                    destinationCoordinationCliques);
+                    destinationCoordinationCliques
+            );
         }
 
         public void setTripGeneration(Module tripGeneration) {

@@ -141,7 +141,7 @@ public class DestinationCoordinationWithCliques extends Module {
             if(person instanceof MitoPersonTengos) {
                 MitoPersonTengos ego = (MitoPersonTengos) person;
                 loopedThroughEgos.add(ego.getId());
-                //System.out.println("Processed " + loopedThroughEgos.size() + " egos");
+                System.out.println("Processed " + loopedThroughEgos.size() + " egos");
                 if(ego.getAlterLists()==null){
                     System.out.println(ego.getId() + "'s alter list is null");
                     continue;
