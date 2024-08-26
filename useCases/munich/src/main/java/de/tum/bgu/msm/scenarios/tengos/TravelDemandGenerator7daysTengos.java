@@ -161,7 +161,7 @@ public final class TravelDemandGenerator7daysTengos {
             if (Resources.instance.getBoolean(Properties.ADD_EXTERNAL_FLOWS, false)) {
                 longDistanceTraffic = new LongDistanceTraffic(dataSet, Double.parseDouble(Resources.instance.getString(Properties.TRIP_SCALING_FACTOR)), purposes);
             }
-            //destinationCoordinationCliques = new DestinationCoordinationWithCliques(dataSet, purposes);
+            destinationCoordinationCliques = new DestinationCoordinationWithCliques(dataSet, purposes);
         }
 
         public TravelDemandGenerator7daysTengos build() {
@@ -330,8 +330,8 @@ public final class TravelDemandGenerator7daysTengos {
         logger.info("Running trip scaling");
         tripScaling.run();
 
-        //logger.info("Running Module: Destination Coordination with Cliques");
-        //destinationCoordinationCliques.run();
+        logger.info("Running Module: Destination Coordination with Cliques");
+        destinationCoordinationCliques.run();
 
         matsimPopulationGenerator.run();
 

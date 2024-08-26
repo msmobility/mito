@@ -15,6 +15,8 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.utils.geometry.CoordUtils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,13 +54,13 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
         AtomicInteger nonAssignedTripCounter = new AtomicInteger(0);
         dataSet.getTripSubsample().values().forEach(trip ->{
             try {
-                if (modeSet.contains(trip.getTripMode()) && !trip.getTripPurpose().equals(Purpose.RRT)) {
+                if (modeSet.contains(trip.getTripMode()) && !trip.getTripPurpose().equals(Purpose.RRT) &&
+                        !(trip.getTripPurpose().equals(Purpose.HBW)&&trip.getPerson().getAge()<15)) {
                     Person person = factory.createPerson(Id.createPersonId(trip.getId()));
                     person.getAttributes().putAttribute("age", Math.min(trip.getPerson().getAge(), 100));
                     person.getAttributes().putAttribute("sex",trip.getPerson().getMitoGender());
                     //use for 7 day extension
                     person.getAttributes().putAttribute("day",((MitoTrip7days)trip).getDepartureDay().toString());
-                    person.getAttributes().putAttribute("job",((MitoJobTengos)trip.getPerson().getOccupation()).getJobType());
                     trip.setMatsimPerson(person);
 
                     Plan plan = factory.createPlan();
@@ -91,7 +93,7 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
                     String activityTypeAtDestination = getDestinationActivity(trip);
 
                     //For work trips that worker’s job type is NURSING, destination end activity is “nursing_home”
-                    if(activityTypeAtDestination.equals("work")){
+                    if(activityTypeAtDestination.equals("work")&&!trip.getPerson().getMitoOccupationStatus().equals(MitoOccupationStatus.STUDENT)){
                         MitoJobTengos occupation = ((MitoJobTengos)trip.getPerson().getOccupation());
                         if(occupation!=null){
                             if(MunichJobTypeTengos.NURSINGHOME.equals(occupation.getJobType())){
@@ -118,13 +120,21 @@ public final class MatsimPopulationGenerator7daysTengos extends Module {
                         plan.addActivity(destinationActivity);
                     }
 
-                    if(person.getSelectedPlan().getPlanElements().size()<3){
-                        System.out.println("debug from here");
-                    }
-
                 }
             } catch (Exception e){
                 nonAssignedTripCounter.incrementAndGet();
+
+                // Log the exception details
+                logger.error("Exception encountered for trip ID: " + trip.getId(), e);
+
+                // Log the full stack trace for debugging purposes
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                logger.error("Stack Trace:\n" + sw.toString());
+
+                // Optionally, you could log additional details about the trip
+                logger.error("Trip details: " + trip.toString());
             }
 
             if (ConcurrencyUtils.isPowerOf2(assignedTripCounter.incrementAndGet())){

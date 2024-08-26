@@ -7,11 +7,9 @@ import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.Day;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
-import de.tum.bgu.msm.scenarios.mito7days.MitoModel7days;
 import de.tum.bgu.msm.trafficAssignment.CarSkimUpdater;
-import de.tum.bgu.msm.trafficAssignment.ConfigureMatsim;
-import de.tum.bgu.msm.util.MunichImplementationConfig;
 import org.apache.log4j.Logger;
+import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.population.Population;
@@ -30,7 +28,7 @@ public class Mito7daysTengos {
 
     private static final Logger logger = Logger.getLogger(Mito7daysTengos.class);
 
-    private static boolean runPtAssignment = true;
+    private static boolean runPtAssignment = false;
 
     private static double planScale = 0.25;
     private static int lastIteration = 25;
@@ -51,9 +49,10 @@ public class Mito7daysTengos {
             logger.info("Running traffic assignment in MATsim for car and PT");
 
             Config config = ConfigureMatsimPt.configureMatsim(lastIteration, reroute, planScale, 10, maxPlan);
-
+            if(useSBB) {
+                ConfigureMatsimPt.setSBBConfig(config, deterministic, maxSearchRadius, betaTransfer);
+            }
             String outputSubDirectory = "scenOutput/" + model.getScenarioName() + "/" + dataSet.getYear();
-            config.controler().setOutputDirectory(Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + "/trafficAssignment");
 
             // Handle day-specific simulation
             final EnumMap<Day, Controler> controlers = new EnumMap<>(Day.class);
@@ -64,6 +63,20 @@ public class Mito7daysTengos {
                 populationByDay.computeIfAbsent(day, k -> PopulationUtils.createPopulation(ConfigUtils.createConfig())).addPerson(person);
             }
 
+           /* for (Person person : dataSet.getPopulation().getPersons().values()) {
+                Day day = Day.valueOf((String) person.getAttributes().getAttribute("day"));
+
+                // Check if the person's plan contains a leg with mode "pt"
+                boolean hasPtLeg = person.getSelectedPlan().getPlanElements().stream()
+                        .filter(planElement -> planElement instanceof Leg)
+                        .map(planElement -> (Leg) planElement)
+                        .anyMatch(leg -> leg.getMode().equals("pt"));
+
+                // If the plan contains a "pt" leg, add the person to the corresponding day population
+                if (hasPtLeg) {
+                    populationByDay.computeIfAbsent(day, k -> PopulationUtils.createPopulation(ConfigUtils.createConfig())).addPerson(person);
+                }
+            }*/
 
             for (Day day : Day.values()) {
                 logger.info("Starting " + day.toString().toUpperCase() + " MATSim simulation");
@@ -72,30 +85,38 @@ public class Mito7daysTengos {
                 MutableScenario matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(config);
                 matsimScenario.setPopulation(populationByDay.get(day));
 
-                Controler controler = new Controler(matsimScenario);
 
                 for (Person person : populationByDay.get(day).getPersons().values()) {
                     Plan plan = person.getSelectedPlan();
-                    if (plan.getPlanElements().size() < 4) {
+                    if (plan.getPlanElements().size() < 3) {
                         logger.error("Person " + person.getId() + " has an invalid plan with only " + plan.getPlanElements().size() + " elements.");
                     }
                 }
 
-                if(useSBB) {
-                    controler.addOverridingModule(new SBBTransitModule());
-                    controler.addOverridingModule(new SwissRailRaptorModule());
-                    controler.configureQSimComponents(components -> {
-                        new SBBTransitEngineQSimModule().configure(components);
-                    });
-                    ConfigureMatsimPt.setSBBConfig(controler.getConfig(), deterministic, maxSearchRadius, betaTransfer);
-                }
+                controlers.put(day, new Controler(matsimScenario));
+                if(useSBB){
 
+                    // To use the deterministic pt simulation (Part 1 of 2):
+                    controlers.get(day).addOverridingModule(new SBBTransitModule());
+
+                    // To use the fast pt router (Part 1 of 1)
+                    controlers.get(day).addOverridingModule(new SwissRailRaptorModule());
+
+                    // To use the deterministic pt simulation (Part 2 of 2):
+                    controlers.get(day).configureQSimComponents(components -> {
+                        new SBBTransitEngineQSimModule().configure(components);
+
+                        // if you have other extensions that provide QSim components, call their configure-method here
+                    });
+
+                }
+                ConfigUtils.writeConfig(config,Resources.instance.getBaseDirectory().toString() + "/" + outputSubDirectory + "/trafficAssignment/" + day.toString() + "Config.xml");
                 long start = System.currentTimeMillis();
-                controler.run();
+                controlers.get(day).run();
                 long runTime = System.currentTimeMillis() - start;
                 logger.warn("Run time for " + day.toString() + ": " + runTime);
 
-                controlers.put(day, controler);
+
             }
 
             // Optional: Generate skims if necessary
