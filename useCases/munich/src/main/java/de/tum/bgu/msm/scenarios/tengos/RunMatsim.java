@@ -23,8 +23,8 @@ public class RunMatsim {
 
     public static void main(String[] args) {
         // Assume args[0] is the config file path or base directory for resources
-        String configFilePath = "C:\\models\\abit_standalone\\configBaseAbit.xml";
-        String populationFilePath = "C:\\models\\abit_standalone\\output\\matsimPlans.xml.gz";
+        String configFilePath = "C:\\models\\mito7\\muc\\scenOutput\\tengos_debug_2\\2011\\trafficAssignment\\mondayConfig.xml";
+        String populationFilePath = "C:\\models\\mito7\\muc\\scenOutput\\tengos_debug_2\\2011\\matsimPlans.xml.gz";
 
         logger.info("Loading MATSim configuration from: " + configFilePath);
         Config config = ConfigUtils.loadConfig(configFilePath);
@@ -39,7 +39,7 @@ public class RunMatsim {
 
         config.plans().setInputFile(populationFilePath);
 
-        config.controler().setOutputDirectory("C:\\models\\MITO/mitoMunich/input/trafficAssignment/pt/tengos/schedule.xml");
+        config.controler().setOutputDirectory("C:\\models\\mito7\\muc\\scenOutput\\tengos_debug_2\\2011\\trafficAssignment\\test");
 
         // Set other configurations as needed
         double scaleFactor = 1;
@@ -53,15 +53,20 @@ public class RunMatsim {
         // Filter population by mode "pt"
         Population filteredPopulation = PopulationUtils.createPopulation(config);
         for (Person person : scenario.getPopulation().getPersons().values()) {
-            // Check if the person's plan contains a leg with mode "pt"
-            boolean hasPtLeg = person.getSelectedPlan().getPlanElements().stream()
-                    .filter(planElement -> planElement instanceof Leg)
-                    .map(planElement -> (Leg) planElement)
-                    .anyMatch(leg -> leg.getMode().equals("pt"));
+            // Check if the person's "day" attribute is "monday"
+            String day = (String) person.getAttributes().getAttribute("day");
 
-            // If the plan contains a "pt" leg, add the person to the filtered population
-            if (hasPtLeg) {
-                filteredPopulation.addPerson(person);
+            if ("monday".equals(day)) {
+                // Check if the person's plan contains a leg with mode "pt"
+                boolean hasPtLeg = person.getSelectedPlan().getPlanElements().stream()
+                        .filter(planElement -> planElement instanceof Leg)
+                        .map(planElement -> (Leg) planElement)
+                        .anyMatch(leg -> leg.getMode().equals("pt"));
+
+                // If both conditions are met, add the person to the filtered population
+                if (hasPtLeg) {
+                    filteredPopulation.addPerson(person);
+                }
             }
         }
 
@@ -70,7 +75,12 @@ public class RunMatsim {
 
         // Initialize the controler with the filtered scenario
         Controler controler = new Controler(scenario);
-        
+
+        controler.addOverridingModule(new SBBTransitModule());
+        controler.addOverridingModule(new SwissRailRaptorModule());
+
+        controler.configureQSimComponents(components -> {
+            new SBBTransitEngineQSimModule().configure(components);});
 
         // Run the simulation
         logger.info("Running MATSim simulation with the filtered population...");
