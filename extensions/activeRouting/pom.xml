@@ -5,31 +5,24 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.tum.bgu.msm</groupId>
-        <artifactId>mito-parent</artifactId>
+        <artifactId>extensions</artifactId>
         <version>master-SNAPSHOT</version>
     </parent>
 
-    <artifactId>extensions</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>moped2mito</module>
-        <module>mito7days</module>
-        <module>activeRouting</module>
-    </modules>
+    <artifactId>activeRouting</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.matsim.contrib</groupId>
+            <artifactId>bicycle</artifactId>
+            <version>14.0</version>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>de.tum.bgu.msm</groupId>
-            <artifactId>mitoCore</artifactId>
-            <version>master-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
 
 </project>

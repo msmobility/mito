@@ -30,6 +30,12 @@
             <version>master-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>de.tum.bgu.msm</groupId>
+            <artifactId>activeRouting</artifactId>
+            <version>master-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

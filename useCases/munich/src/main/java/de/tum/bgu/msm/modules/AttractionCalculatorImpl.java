@@ -52,7 +52,8 @@ public class AttractionCalculatorImpl implements AttractionCalculator {
                             attribute = zone.getSchoolEnrollment();
                             break;
                         default:
-                            throw new RuntimeException("Unknown trip attraction Variable.");
+                            logger.warn("Unknown trip attraction Variable: " + variable);
+                            continue;
                     }
                     Double rate = purpose.getTripAttractionForVariable(variable);
                     if(rate == null) {
