@@ -96,11 +96,12 @@ public class RunMatsimActiveMode {
                 //initialize scenario
                 MutableScenario matsimScenario = (MutableScenario) ScenarioUtils.loadScenario(bikePedConfig);
                 matsimScenario.setPopulation(populationBikePedByDay.get(day));
-                logger.info("total population " + day + " | Bike Walk: " + populationBikePedByDay.size());
+                logger.info("total population " + day + " | Bike Walk: " + populationBikePedByDay.get(day).getPersons().size());
 
                 //set vehicle types
                 VehicleType walk = VehicleUtils.getFactory().createVehicleType(Id.create(TransportMode.walk, VehicleType.class));
                 walk.setMaximumVelocity(MAX_WALKSPEED / 3.6);
+                walk.setPcuEquivalents(0.);
                 matsimScenario.getVehicles().addVehicleType(walk);
 
                 VehicleType bicycle = VehicleUtils.getFactory().createVehicleType(Id.create(TransportMode.bike, VehicleType.class));

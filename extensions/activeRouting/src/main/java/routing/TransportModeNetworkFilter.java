@@ -93,7 +93,13 @@ public final class TransportModeNetworkFilter {
 				//TODO: quick and dirty way to solve the issue in PerpareForSimImpl, car-only network
 				intersection.add(TransportMode.car);
 				link2.setAllowedModes(intersection);
-				link2.setCapacity(link.getCapacity());
+				//TODO: quick and dirty way to solve the bug that active links has no capacity. bike and ped are stucked in the simulation
+				if(!link.getAllowedModes().contains(TransportMode.car)){
+					link2.setCapacity(300.);
+				}else{
+					link2.setCapacity(link.getCapacity());
+				}
+
 				link2.setFreespeed(link.getFreespeed());
 				link2.setLength(link.getLength());
 				link2.setNumberOfLanes(link.getNumberOfLanes());
