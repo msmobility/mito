@@ -1,5 +1,6 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
@@ -27,7 +28,7 @@ class MitoMuc {
         logger.info("Started the Microsimulation Transport Orchestrator (MITO)");
         MitoModel model = MitoModel.standAloneModel(args[0], MunichImplementationConfig.get());
         model.run();
-        final DataSetImpl dataSet = model.getData();
+        final DataSet dataSet = model.getData();
 
         boolean runAssignment = Resources.instance.getBoolean(Properties.RUN_TRAFFIC_ASSIGNMENT, false);
 

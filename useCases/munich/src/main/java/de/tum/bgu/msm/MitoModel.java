@@ -1,5 +1,6 @@
 package de.tum.bgu.msm;
 
+import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.DataSetImpl;
 import de.tum.bgu.msm.data.travelTimes.SkimTravelTimes;
 import de.tum.bgu.msm.io.input.readers.*;
@@ -34,9 +35,9 @@ public final class MitoModel {
     private static final Logger logger = Logger.getLogger(MitoModel.class);
     private final String scenarioName;
 
-    private DataSetImpl dataSet;
+    private DataSet dataSet;
 
-    private MitoModel(DataSetImpl dataSet, String scenarioName) {
+    private MitoModel(DataSet dataSet, String scenarioName) {
         this.dataSet = dataSet;
         this.scenarioName = scenarioName;
         MitoUtil.initializeRandomNumber();
@@ -50,7 +51,7 @@ public final class MitoModel {
         return model;
     }
 
-    public static MitoModel initializeModelFromSilo(String propertiesFile, DataSetImpl dataSet, String scenarioName) {
+    public static MitoModel initializeModelFromSilo(String propertiesFile, DataSet dataSet, String scenarioName) {
         logger.info(" Initializing MITO from SILO");
         Resources.initializeResources(propertiesFile);
         MitoModel model = new MitoModel(dataSet, scenarioName);
@@ -104,7 +105,7 @@ public final class MitoModel {
         logger.info("Runtime: " + hours + " hours and " + min + " minutes.");
     }
 
-    public DataSetImpl getData() {
+    public DataSet getData() {
         return dataSet;
     }
 

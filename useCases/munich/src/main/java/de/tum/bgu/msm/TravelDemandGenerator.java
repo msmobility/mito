@@ -91,7 +91,7 @@ public final class TravelDemandGenerator {
         private Module matsimPopulationGenerator;
         private Module longDistanceTraffic;
 
-        public Builder(DataSetImpl dataSet) {
+        public Builder(DataSet dataSet) {
             this.dataSet = dataSet;
             List<Purpose> purposes = PURPOSES; // todo: specify this in properties file
 
