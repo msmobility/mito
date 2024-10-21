@@ -45,13 +45,15 @@ public class ZonesReaderMCR extends AbstractCsvReader {
     @Override
     protected void processHeader(String[] header) {
         idIndex = MitoUtil.findPositionInArray("oaID", header);
+        areaTypeIndex = MitoUtil.findPositionInArray("urbanType", header);
     }
 
     @Override
     protected void processRecord(String[] record) {
         int zoneId = Integer.parseInt(record[idIndex]);
+        int urbanType = Integer.parseInt(record[areaTypeIndex]);
         MitoZone zone = new MitoZone(zoneId, null);
-        zone.setAreaTypeR(AreaTypes.RType.URBAN);
+        zone.setAreaTypeR(urbanType == 1? AreaTypes.RType.URBAN : AreaTypes.RType.RURAL);
         dataSet.addZone(zone);
     }
 }
