@@ -18,7 +18,7 @@ public class DailyVolumeEventHandler implements LinkEnterEventHandler {
     public void handleEvent(LinkEnterEvent event) {
         Id<Link> linkId = event.getLinkId();
 
-        String mode = event.getAttributes().get("networkMode");
+        String mode = event.getVehicleId().toString().split("_")[1];
 
         if(mode.equals("bike")) {
             bikeVolumes.put(linkId, bikeVolumes.getOrDefault(linkId,0) + 1);

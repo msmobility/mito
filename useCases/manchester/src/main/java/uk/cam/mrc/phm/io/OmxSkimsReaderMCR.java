@@ -48,37 +48,32 @@ public class OmxSkimsReaderMCR extends AbstractOmxReader implements SkimsReader 
                 Resources.instance.getString(Properties.PT_PEAK_SKIM_MATRIX), 1/60.);
     }
 
-    public void readNMTTravelTimes(){
-        //todo has to be probably in silo
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bikeCommute", Resources.instance.getRelativePath(Properties.BIKE_COST_COMMUTE_SKIM).toString(),
-                Resources.instance.getString(Properties.BIKE_COST_COMMUTE_SKIM_MATRIX), 1.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bikeDiscretionary", Resources.instance.getRelativePath(Properties.BIKE_COST_DISC_SKIM).toString(),
-                Resources.instance.getString(Properties.BIKE_COST_DISC_SKIM_MATRIX), 1.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("walkCommute", Resources.instance.getRelativePath(Properties.WALK_COST_COMMUTE_SKIM).toString(),
-                Resources.instance.getString(Properties.WALK_COST_COMMUTE_SKIM_MATRIX), 1.);
-        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("walkDiscretionary", Resources.instance.getRelativePath(Properties.WALK_COST_DISC_SKIM).toString(),
-                Resources.instance.getString(Properties.WALK_COST_DISC_SKIM_MATRIX), 1.);
-
-    }
-
     private void readTravelTimeSkims() {
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("car", Resources.instance.getRelativePath(Properties.AUTO_PEAK_SKIM).toString(),
-                Resources.instance.getString(Properties.AUTO_PEAK_SKIM_MATRIX), 1/60.);
+                Resources.instance.getString(Properties.AUTO_PEAK_SKIM_MATRIX), 1/60.); //convert second to min, because time is translated to min in mode choice estimation
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("pt", Resources.instance.getRelativePath(Properties.PT_PEAK_SKIM).toString(),
                 Resources.instance.getString(Properties.PT_PEAK_SKIM_MATRIX), 1/60.);
+        //read bike walk generalized travel time by purpose
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bikeCommute", Resources.instance.getRelativePath(Properties.BIKE_COST_COMMUTE_SKIM).toString(),
                 Resources.instance.getString(Properties.BIKE_COST_COMMUTE_SKIM_MATRIX), 1.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("bikeDiscretionary", Resources.instance.getRelativePath(Properties.BIKE_COST_DISC_SKIM).toString(),
                 Resources.instance.getString(Properties.BIKE_COST_DISC_SKIM_MATRIX), 1.);
+        //TODO: no bike time skim for HBA, NHBO, NHBW
+
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("walkCommute", Resources.instance.getRelativePath(Properties.WALK_COST_COMMUTE_SKIM).toString(),
                 Resources.instance.getString(Properties.WALK_COST_COMMUTE_SKIM_MATRIX), 1.);
         ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("walkDiscretionary", Resources.instance.getRelativePath(Properties.WALK_COST_DISC_SKIM).toString(),
                 Resources.instance.getString(Properties.WALK_COST_DISC_SKIM_MATRIX), 1.);
+        //TODO: no walk time skim for NHBW
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("walkHBA", Resources.instance.getRelativePath(Properties.WALK_COST_HBA_SKIM).toString(),
+                Resources.instance.getString(Properties.WALK_COST_HBA_SKIM_MATRIX), 1/60.);
+        ((SkimTravelTimes) dataSet.getTravelTimes()).readSkim("walkNHBO", Resources.instance.getRelativePath(Properties.WALK_COST_NHBO_SKIM).toString(),
+                Resources.instance.getString(Properties.WALK_COST_NHBO_SKIM_MATRIX), 1/60.);
     }
 
     private void readTravelDistances(){
         IndexedDoubleMatrix2D distanceSkimAuto = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.instance.getRelativePath(Properties.AUTO_TRAVEL_DISTANCE_SKIM).toString(),
-                Resources.instance.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM_MATRIX), 1. / 1000.);
+                Resources.instance.getString(Properties.AUTO_TRAVEL_DISTANCE_SKIM_MATRIX), 1. / 1000.); //meter to km
         dataSet.setTravelDistancesAuto(new MatrixTravelDistances(distanceSkimAuto));
         IndexedDoubleMatrix2D distanceSkimWalk = AbstractOmxReader.readAndConvertToDoubleMatrix(Resources.instance.getRelativePath(Properties.WALK_DIST_SKIM).toString(),
                 Resources.instance.getString(Properties.WALK_DIST_SKIM_MATRIX), 1. / 1000.);
