@@ -14,22 +14,23 @@ import java.io.PrintWriter;
 
 public class VolumeEventAnalysis {
 
+    private static final String MATSIM_NETWORK = "/home/qin/models/manchester/input/mito/trafficAssignment/network.xml";
+    private static final String MATSIM_EVENT = "/home/qin/models/manchester/scenOutput/mito_1_0_baseStress_basePOI_fullModeset_matsim/2021/trafficAssignment/thursday/bikePed/2021.output_events.xml.gz";
+    private static final String OUTPUT_PATH = "/home/qin/models/manchester/scenOutput/mito_1_0_baseStress_basePOI_fullModeset_matsim/2021/trafficAssignment/thursday/bikePed/dailyVolume_bikePed.csv";
 
     public static void main(String[] args) {
 
-        String networkPath = "";
         Network network = NetworkUtils.createNetwork();
-        new MatsimNetworkReader(network).readFile(networkPath);
+        new MatsimNetworkReader(network).readFile(MATSIM_NETWORK);
 
-        String eventFileName = "";
         EventsManager eventsManager = new EventsManagerImpl();
         DailyVolumeEventHandler volumeEventHandler = new DailyVolumeEventHandler();
         eventsManager.addHandler(volumeEventHandler);
-        EventsUtils.readEvents(eventsManager,eventFileName);
+        EventsUtils.readEvents(eventsManager,MATSIM_EVENT);
 
         PrintWriter pw = null;
         try {
-            pw = new PrintWriter(new File(""));
+            pw = new PrintWriter(new File(OUTPUT_PATH));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

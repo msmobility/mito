@@ -15,7 +15,7 @@ public class DestinationUtilityCalculatorMCR extends AbstractDestinationUtilityC
     private final static double[] TRAVEL_DISTANCE_PARAM_HBE = {-0.03393849928010303, -0.024919982277472854, -0.034643147626042946};
     private final static double IMPEDANCE_PARAM_HBE = 28.3;
 
-    private final static double[] TRAVEL_DISTANCE_PARAM_HBA = {-0.005791, -0.005791, -0.005791};//TODO: calibrate
+    private final static double[] TRAVEL_DISTANCE_PARAM_HBA = {-0.06860267001217993, -0.021260390087119333, -0.022562320939764922};
     private final static double IMPEDANCE_PARAM_HBA = 28.3;
 
     private final static double[] TRAVEL_DISTANCE_PARAM_HBS = {-0.08049319544639906, -0.04706601235281219, -0.04016499605940564};
