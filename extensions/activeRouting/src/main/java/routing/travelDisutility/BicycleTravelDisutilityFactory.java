@@ -40,6 +40,10 @@ public final class BicycleTravelDisutilityFactory implements TravelDisutilityFac
 	BicycleConfigGroup bicycleConfigGroup;
 
 	/* package-private */ BicycleTravelDisutilityFactory(){}
+
+	public BicycleTravelDisutilityFactory(BicycleConfigGroup bicycleConfigGroup){
+		this.bicycleConfigGroup = bicycleConfigGroup;
+	}
 	
 	@Override
 	public TravelDisutility createTravelDisutility(TravelTime timeCalculator) {

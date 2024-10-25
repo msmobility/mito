@@ -26,6 +26,10 @@ public class BicycleTravelTime implements TravelTime {
     @Inject
     private BicycleTravelTime() {}
 
+    public BicycleTravelTime(BicycleLinkSpeedCalculator linkSpeedCalculator) {
+        this.linkSpeedCalculator =  linkSpeedCalculator;
+    }
+
     public void setLinkStressThreshold(String threshold) {
         this.stressThreshold = LinkStressDiscrete.valueOf(threshold.toUpperCase());
         logger.info("Set bicycle stress threshold to " + this.stressThreshold);

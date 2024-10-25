@@ -41,7 +41,9 @@ public final class WalkTravelDisutilityFactory implements TravelDisutilityFactor
 	WalkConfigGroup walkConfigGroup;
 
 	/* package-private */ WalkTravelDisutilityFactory(){}
-	
+	public WalkTravelDisutilityFactory(WalkConfigGroup walkConfigGroup){
+		this.walkConfigGroup = walkConfigGroup;
+	}
 	@Override
 	public TravelDisutility createTravelDisutility(TravelTime timeCalculator) {
 		return new WalkTravelDisutility(walkConfigGroup, timeCalculator);

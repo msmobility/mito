@@ -19,6 +19,10 @@ public class BicycleLinkSpeedCalculatorDefaultImpl implements BicycleLinkSpeedCa
     public BicycleLinkSpeedCalculatorDefaultImpl() {
     }
 
+    public BicycleLinkSpeedCalculatorDefaultImpl(BicycleConfigGroup bicycleConfigGroup) {
+        this.bicycleConfigGroup = bicycleConfigGroup;
+    }
+
     @Override
     public double getMaximumVelocity(QVehicle qVehicle, Link link, double time) {
 
