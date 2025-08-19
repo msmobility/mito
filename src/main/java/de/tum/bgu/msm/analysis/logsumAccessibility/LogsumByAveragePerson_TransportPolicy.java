@@ -23,7 +23,8 @@ public class LogsumByAveragePerson_TransportPolicy {
     private static final Map<Integer, Boolean> evForbidden = new HashMap<>();
 
     private final DataSet dataSet = new DataSet();
-    private Purpose[] givenPurposes = {Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR};
+    //private Purpose[] givenPurposes = {Purpose.HBW, Purpose.HBE, Purpose.HBS, Purpose.HBO, Purpose.NHBW, Purpose.NHBO, Purpose.HBR};
+    private Purpose[] givenPurposes = {Purpose.NHBW};
     private Map<Mode, Map<String, Double>> coef;
     private ModeChoiceCalibrationData calibrationData;
 
@@ -70,8 +71,8 @@ public class LogsumByAveragePerson_TransportPolicy {
 
 
     public void run() {
-        boolean[] hasEVOptions = {true,false};
-        //boolean[] hasEVOptions = {false};
+        //boolean[] hasEVOptions = {true,false};
+        boolean[] hasEVOptions = {false};
         for (Purpose purpose : givenPurposes) {
             for(boolean hasEV : hasEVOptions) {
                 this.coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
@@ -122,8 +123,9 @@ public class LogsumByAveragePerson_TransportPolicy {
     private void writeLogsumAccessibility(Map<Integer, Map<Integer, Double>> logsumTable, Purpose purpose, boolean hasEV){
         PrintWriter pw;
         try {
-            String evStatus = hasEV ? "hasEV" : "noEV";
-            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/" + purpose + "_" + evStatus + ".csv";
+            //String evStatus = hasEV ? "hasEV" : "noEV";
+            //String fileName = "C:/models/MITO/mitoMunich/skims/logsum/baseScenario/" + purpose + "_" + evStatus + ".csv";
+            String fileName = "C:/models/MITO/mitoMunich/skims/logsum/baseScenario/" + purpose + "_noEV.csv";
             pw = new PrintWriter(fileName);
             pw.println("origin,destination,logsum");
             for(MitoZone origin : dataSet.getZones().values()){

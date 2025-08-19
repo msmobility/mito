@@ -27,6 +27,7 @@ public class MitoHousehold implements Id, MicroLocation {
 
 
     private boolean hasEV = false;
+    private boolean insideLEZ = false;
 
     private final EnumMap<Purpose, List<MitoTrip>> tripsByPurpose = new EnumMap<>(Purpose.class);
     private final EnumMap<Purpose, Double> travelTimeBudgetByPurpose= new EnumMap<>(Purpose.class);
@@ -217,5 +218,13 @@ public class MitoHousehold implements Id, MicroLocation {
 
     public void setHasEV(boolean hasEV) {
         this.hasEV = hasEV;
+    }
+
+    public boolean isInsideLEZ() {
+        return insideLEZ;
+    }
+
+    public void setInsideLEZ(boolean insideLEZ) {
+        this.insideLEZ = insideLEZ;
     }
 }
