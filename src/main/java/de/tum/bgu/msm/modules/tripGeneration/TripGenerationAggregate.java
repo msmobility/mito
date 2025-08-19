@@ -3,13 +3,18 @@ package de.tum.bgu.msm.modules.tripGeneration;
 import de.tum.bgu.msm.TravelDemandGenerator;
 import de.tum.bgu.msm.data.DataSet;
 import de.tum.bgu.msm.data.MitoAggregatePersona;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.data.Purpose;
 import de.tum.bgu.msm.modules.Module;
 import de.tum.bgu.msm.modules.tripGeneration.airport.AirportTripGeneration;
 import de.tum.bgu.msm.resources.Properties;
 import de.tum.bgu.msm.resources.Resources;
+import de.tum.bgu.msm.util.MitoUtil;
+import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import org.apache.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -60,6 +65,23 @@ public class TripGenerationAggregate extends Module {
     private void calculateAttractions() {
         AttractionCalculator calculator = new AttractionCalculator(dataSet, purposes);
         calculator.run();
+        Path fileTripGen = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_DestChoice_attractors"  + purposes.get(0) + ".csv");
+        PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileTripGen.toAbsolutePath().toString(), true);
+        pw.print("id");
+        for (Purpose purpose : purposes) {
+            pw.print(",");
+            pw.print(purpose.toString());
+        }
+        pw.println();
+        for (MitoZone zone : dataSet.getZones().values()){
+            pw.print(zone.getId());
+            for (Purpose purpose : purposes) {
+                pw.print(",");
+                pw.print(zone.getTripAttraction(purpose));
+            }
+            pw.println();
+        }
+        pw.close();
     }
 
     private void balanceTrips() {

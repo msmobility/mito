@@ -42,6 +42,8 @@ public class MitoZone implements Id, Location {
     private float distanceToNearestRailStop;
     private Geometry geometry;
 
+    private String calibrRegion;
+
 
     public MitoZone(int id, AreaTypes.SGType areaType, double zoneArea) {
         this.zoneId = id;
@@ -53,6 +55,10 @@ public class MitoZone implements Id, Location {
     //TODO: this decision should be handled by some other class that takes zone candidates as an argument
     public boolean isMunichZone() {
          return 9162000 == ags;
+    }
+
+    public boolean isMunichSurroundingZone() {
+        return 9162000 == ags;
     }
 
     public AreaTypes.SGType getAreaTypeSG() {
@@ -192,4 +198,12 @@ public class MitoZone implements Id, Location {
     }
 
     public double getZoneArea(){return zoneArea;}
+
+    public String getCalibrRegion() {
+        return calibrRegion;
+    }
+
+    public void setCalibrRegion(String calibrRegion) {
+        this.calibrRegion = calibrRegion;
+    }
 }

@@ -10,10 +10,13 @@ import de.tum.bgu.msm.modules.travelTimeBudget.TravelTimeBudgetModule;
 import de.tum.bgu.msm.modules.tripDistribution.*;
 import de.tum.bgu.msm.modules.tripGeneration.TripGenerationAggregate;
 import de.tum.bgu.msm.modules.tripGeneration.TripsByPurposeGeneratorFactoryPersonBasedHurdleAggregate;
+import de.tum.bgu.msm.util.MitoUtil;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix1D;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import org.apache.log4j.Logger;
 
+import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -261,7 +264,7 @@ public final class TravelDemandGeneratorAggregate {
             logger.info("Running Module: Aggregated Trip Distribution. Purpose " + purpose);
             distributionMandatory.run();
             logger.info("Running Module: Aggregated Mode Choice. Purpose " + purpose);
-            //modeChoiceMandatory.run();
+            modeChoiceMandatory.run();
             /*logger.info("Running time of day choice");
             timeOfDayChoiceMandatory.run();
 
@@ -272,7 +275,7 @@ public final class TravelDemandGeneratorAggregate {
             logger.info("Running Module: Aggregated Trip Distribution. Purpose " + purpose);
             distributionDiscretionary.run();
             logger.info("Running Module: Aggregated Mode Choice. Purpose " + purpose);
-            //modeChoiceDiscretionary.run();
+            modeChoiceDiscretionary.run();
             /*logger.info("Running time of day choice");
             timeOfDayChoiceMandatory.run();
 */
@@ -361,6 +364,23 @@ public final class TravelDemandGeneratorAggregate {
         dataSet.setZonesByAreaType(zonesByAreaType);
         dataSet.setHBWtripsAttracted(hbwTripsAttracted);
         dataSet.setTotalTripsByPurpose(tripsPurpose);
+
+        Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/1_destinationChoice_nmtDistance.csv");
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
+
+        pwh.println("origin,destination,distanceNMT");
+
+        // print only four selected zones by area type
+        for (MitoZone origin : dataSet.getZonesByAreaType().values()) {
+            for (MitoZone destination : dataSet.getZones().values()) {
+                pwh.print(origin.getId());
+                pwh.print(",");
+                pwh.print(destination.getId());
+                pwh.print(",");
+                pwh.println(dataSet.getTravelDistancesNMT().getTravelDistance(origin.getId(), destination.getId()));
+            }
+        }
+        pwh.close();
 
     }
 }

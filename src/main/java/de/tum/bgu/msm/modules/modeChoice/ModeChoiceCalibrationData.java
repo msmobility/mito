@@ -15,6 +15,8 @@ public class ModeChoiceCalibrationData {
     private Map<String, Map<Purpose, Map<Mode, Double>>> observedModalShare;
     private Map<String, Map<Purpose, Map<Mode, Integer>>> simulatedTripsByRegionPurposeAndMode;
     private Map<String, Map<Purpose, Map<Mode, Double>>> calibrationFactors;
+
+    private Map<Purpose, Map<Mode, Map<String, Double>>> calibrationFactorsByPurpose;
     private Map<Integer, String> zoneToRegionMap;
 
     private PrintWriter pw = null;
@@ -24,6 +26,7 @@ public class ModeChoiceCalibrationData {
     public ModeChoiceCalibrationData() {
         this.observedModalShare = new HashMap<>();
         this.calibrationFactors = new HashMap<>();
+        this.calibrationFactorsByPurpose = new HashMap<>();
         this.simulatedTripsByRegionPurposeAndMode = new HashMap<>();
         zoneToRegionMap = new HashMap<>();
     }
@@ -44,6 +47,10 @@ public class ModeChoiceCalibrationData {
 
     public Map<String, Map<Purpose, Map<Mode, Double>>> getCalibrationFactors() {
         return calibrationFactors;
+    }
+
+    public Map<Purpose, Map<Mode, Map<String, Double>>> getCalibrationFactorsByPurpose() {
+        return calibrationFactorsByPurpose;
     }
 
     public Map<Integer, String> getZoneToRegionMap() {

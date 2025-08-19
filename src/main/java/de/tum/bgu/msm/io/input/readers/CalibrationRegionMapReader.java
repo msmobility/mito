@@ -1,6 +1,7 @@
 package de.tum.bgu.msm.io.input.readers;
 
 import de.tum.bgu.msm.data.DataSet;
+import de.tum.bgu.msm.data.MitoZone;
 import de.tum.bgu.msm.io.input.AbstractCsvReader;
 import de.tum.bgu.msm.resources.Resources;
 import de.tum.bgu.msm.util.MitoUtil;
@@ -24,6 +25,9 @@ public class CalibrationRegionMapReader extends AbstractCsvReader {
     protected void processRecord(String[] record) {
         int zone = Integer.parseInt(record[zoneIndex]);
         String region = record[regionIndex];
+
+        MitoZone zoneM = dataSet.getZones().get(zone);
+        zoneM.setCalibrRegion(region);
 
         dataSet.getModeChoiceCalibrationData().getZoneToRegionMap().put(zone, region);
         //return null;

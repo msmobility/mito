@@ -2,24 +2,26 @@ package de.tum.bgu.msm.modules.tripDistribution;
 
 import de.tum.bgu.msm.data.Purpose;
 
+import static java.lang.Double.*;
+
 public class DestinationUtilityCalculatorImplLogsumAggregate implements DestinationUtilityCalculatorAggregate {
 
     private final static double LOGSUM_PARAM_HBW = 1;
-    private final static double DISTANCE_PARAM_HBW = -0.5*0.123006211921797;
+    private final static double DISTANCE_PARAM_HBW = -0.5*0.0777520131749877;
 
     private final static double LOGSUM_PARAM_HBE = 1;
-    private final static double DISTANCE_PARAM_HBE = -0.5*0.466859588673074;
+    private final static double DISTANCE_PARAM_HBE = -0.5*0.330875626394118;
 
     private final static double LOGSUM_PARAM_HBS = 1;
-    private final static double DISTANCE_PARAM_HBS = -0.5*0.707099605214351;
+    private final static double DISTANCE_PARAM_HBS = -0.5*0.518760210754947;
     private final static double LOGSUM_PARAM_HBO = 1;
-    private final static double DISTANCE_PARAM_HBO = -0.5*0.288048089619584;
+    private final static double DISTANCE_PARAM_HBO = -0.5*0.191541297072671;
     private final static double LOGSUM_PARAM_HBR = 1;
-    private final static double DISTANCE_PARAM_HBR = -0.5*0.286911794688365;
+    private final static double DISTANCE_PARAM_HBR = -0.5*0.190380485614451;
     private final static double logsumParamNhbw = 1;
-    private final static double DISTANCE_PARAM_NHBW = -0.5*0.141392969613424;
+    private final static double DISTANCE_PARAM_NHBW = -0.5*0.0883518244383502;
     private final static double logsumParamNhbo = 1;
-    private final static double DISTANCE_PARAM_NHBO = -0.5*0.205053811138059;
+    private final static double DISTANCE_PARAM_NHBO = -0.5*0.127675456535262;
     private final static double ALPHA_PARAM =  1;
     private double attractionParam;
     private double logsumParam;

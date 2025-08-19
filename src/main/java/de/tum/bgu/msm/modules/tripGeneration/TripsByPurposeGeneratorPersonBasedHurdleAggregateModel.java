@@ -170,7 +170,7 @@ public class TripsByPurposeGeneratorPersonBasedHurdleAggregateModel extends Rand
         Path fileTripGen = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_TripGen_summary.csv");
         PrintWriter pw = MitoUtil.openFileForSequentialWriting(fileTripGen.toAbsolutePath().toString(), true);
         if (purpose.equals(Purpose.HBW) && areaType.equals(AreaTypes.SGType.CORE_CITY)) {
-            pw.println("persona,purpose,areaType,persons,averageTrips,totalTrips");
+            pw.println("persona,purpose,areaType,persons,averageTrips,totalTrips,obsAverageTrips");
         }
         pw.print(persona.getId());
         pw.print(",");

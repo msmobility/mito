@@ -28,6 +28,8 @@ public class ModeChoiceAggregate extends Module {
 
     private MitoAggregatePersona persona;
 
+    private final Map<Mode, Double> modalShare = new LinkedHashMap<>();
+
 
     List<Mode> modesModeChoice = Arrays.asList(Mode.autoDriver, Mode.autoPassenger, Mode.train, Mode.tramOrMetro,
             Mode.bus, Mode.bicycle, Mode.walk, Mode.taxi);
@@ -107,30 +109,59 @@ public class ModeChoiceAggregate extends Module {
         totalTripsByZone.assign(0.);
 
         Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_modeChoice_"+ purposes.get(0) +"_trips.csv");
-        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
-        pwh.println("origin,mode,trips");
+        PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), true);
+        pwh.println("origin,type,mode,tripsByMode,tripsOrigin,modeShare");
 
         double totalTrips = 0.;
-
+        modalShare.putIfAbsent(Mode.pooledTaxi, 0.);
         for (Mode mode : modesModeChoice){
-            IndexedDoubleMatrix2D tripMatrix = dataSet.getAggregateTripMatrix().get(mode);
+            //IndexedDoubleMatrix2D tripMatrix = dataSet.getAggregateTripMatrix().get(mode);
             IndexedDoubleMatrix1D trips = new IndexedDoubleMatrix1D(dataSet.getZones().values());
-
+            modalShare.put(mode, 0.);
             for (MitoZone origin : dataSet.getZonesByAreaType().values()){
 
                 //double tripsByModeOrigin = Arrays.stream(tripMatrix.viewRow(origin.getId()).toNonIndexedArray()).sum();
                 //logger.info("Trips by mode " + mode.toString() + ": " + tripMatrix.getIndexed(origin.getId(), 1) + ". total trips: " + tripsByModeOrigin);
 
-                int inde1x = trips.getIdForInternalIndex(origin.getId());
-                double tripsByModeOrigin = Arrays.stream(tripMatrix.viewRow(inde1x).toNonIndexedArray()).sum();
+                //todo debug here the index of the matrix1D for visualization purposes - check if the previous implementation is the correct one or not
+                //it seems that it is only applicable when having viewRow - all other get/set indexed seem to work!
+
+                //int inde1x = trips.getIdForInternalIndex(origin.getId());
+                /*double tripsByModeOrigin = Arrays.stream(tripMatrix.viewRow(origin.getId()).toNonIndexedArray()).sum();
                 //logger.info("Trips by mode " + mode.toString() + ": " + tripMatrix.getIndexed(inde1x, 1) + ". total trips: " + tripsByModeOrigin);
-                trips.setIndexed(inde1x, tripsByModeOrigin);
-                totalTripsByZone.setIndexed(inde1x, totalTripsByZone.getIndexed(inde1x)+ tripsByModeOrigin);
+                trips.setIndexed(origin.getId(), tripsByModeOrigin);
+                totalTripsByZone.setIndexed(origin.getId(), totalTripsByZone.getIndexed(origin.getId())+ tripsByModeOrigin);
                 pwh.print(origin.getId());
                 pwh.print(",");
                 pwh.print(mode.toString());
                 pwh.print(",");
-                pwh.println(tripsByModeOrigin);
+                pwh.println(tripsByModeOrigin);*/
+                pwh.print(origin.getId());
+                pwh.print(",");
+                pwh.print(origin.getCalibrRegion().toString());
+                pwh.print(",");
+                pwh.print(mode.toString());
+                pwh.print(",");
+                double tripsByMode = 0.;
+                double tripsOrigin = 0.;
+                for (MitoZone destination : dataSet.getZones().values()){
+                    tripsByMode += dataSet.getAggregateTripMatrix().get(mode).getIndexed(origin.getId(), destination.getId())*
+                            dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi).getIndexed(origin.getId(), destination.getId());
+                    tripsOrigin += dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi).getIndexed(origin.getId(), destination.getId());
+                }
+                trips.setIndexed(origin.getId(), tripsByMode);
+                pwh.print(tripsByMode);
+                modalShare.put(mode, modalShare.get(mode) + tripsByMode);
+                modalShare.put(Mode.pooledTaxi, modalShare.get(Mode.pooledTaxi) + tripsByMode);
+                pwh.print(",");
+                pwh.print(tripsOrigin);
+                pwh.print(",");
+                if (tripsOrigin>0) {
+                    pwh.println(tripsByMode/tripsOrigin);
+                } else {
+                    pwh.println(0);
+                }
+                pwh.close();
             }
             tripMatrixByMode.putIfAbsent(mode, trips);
             totalTrips = totalTrips + Arrays.stream(trips.toNonIndexedArray()).sum();
@@ -140,8 +171,10 @@ public class ModeChoiceAggregate extends Module {
         //for (Purpose purpose : Purpose.values()) {
             logger.info("#################################################");
             logger.info("Mode shares for purpose " + purposes.get(0) + ":");
+
             for (Mode mode : modesModeChoice) {
-                Double share  = Arrays.stream(tripMatrixByMode.get(mode).toNonIndexedArray()).sum() / totalTrips;
+                //Double share  = Arrays.stream(tripMatrixByMode.get(mode).toNonIndexedArray()).sum() / totalTrips;
+                Double share = modalShare.get(mode) / modalShare.get(Mode.pooledTaxi);
                 if (share != null) {
                     logger.info(mode + " = " + share * 100 + "%");
                 }
@@ -165,6 +198,8 @@ public class ModeChoiceAggregate extends Module {
 
         private Map<Mode, Map<String, Double>> coef;
 
+        private Map<Mode, Map<String, Double>> coefCalibr;
+
         List<Mode> modesModeChoice = Arrays.asList(Mode.autoDriver, Mode.autoPassenger, Mode.train, Mode.tramOrMetro,
                 Mode.bus, Mode.bicycle, Mode.walk, Mode.taxi);
 
@@ -177,6 +212,7 @@ public class ModeChoiceAggregate extends Module {
             this.origin = zone;
             this.persona = persona;
             coef = new ModeChoiceCoefficientReader(dataSet, purpose, Resources.instance.getModeChoiceCoefficients(purpose)).readCoefficientsForThisPurpose();
+            coefCalibr = dataSet.getModeChoiceCalibrationData().getCalibrationFactorsByPurpose().get(purpose);
         }
 
         @Override
@@ -201,8 +237,8 @@ public class ModeChoiceAggregate extends Module {
                 }
 
                 for (Mode mode : modesModeChoice){
-                    //int index = probabilitiesModeChoice.get(mode).getIdForInternalIndex(origin.getId());
-                    dataSet.getAggregateTripMatrix().get(mode).assign(probabilitiesModeChoice.get(mode).toNonIndexedArray(), origin.getId());
+                    int index = probabilitiesModeChoice.get(mode).getIdForInternalIndex(origin.getId());
+                    dataSet.getAggregateTripMatrix().get(mode).assign(probabilitiesModeChoice.get(mode).toNonIndexedArray(), index);
                     //logger.info("Trips after setting matrix " + mode + ": " + dataSet.getAggregateTripMatrix().get(mode).getIndexed(index, destination.getId()));
                 }
 
@@ -224,7 +260,7 @@ public class ModeChoiceAggregate extends Module {
                     destinationId);
 
             return modeChoiceCalculator.calculateProbabilities(purpose, persona, origin, destination, travelTimes, travelDistanceAuto,
-                    travelDistanceNMT, dataSet.getPeakHour(), coef);
+                    travelDistanceNMT, dataSet.getPeakHour(), coef, coefCalibr);
         }
 
         private EnumMap<Mode, Double>  calculateUtilities(EnumMap<Mode, Double> probabilities) {

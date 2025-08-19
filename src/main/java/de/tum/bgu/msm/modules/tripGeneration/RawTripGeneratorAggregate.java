@@ -11,6 +11,7 @@ import org.matsim.core.utils.collections.Tuple;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -33,6 +34,8 @@ public class RawTripGeneratorAggregate {
     private TripsByPurposeGeneratorFactoryAggregate tripsByPurposeGeneratorFactory;
     private final List<Purpose> purposes;
 
+    private Map<Purpose, Double> observedAverageDistances = new HashMap<>();
+
     private final MitoAggregatePersona persona;
     //private final EnumSet<Purpose> PURPOSES = EnumSet.of(HBW, HBE, HBS, HBO, NHBW, NHBO);
 
@@ -41,6 +44,13 @@ public class RawTripGeneratorAggregate {
         this.tripsByPurposeGeneratorFactory = tripsByPurposeGeneratorFactory;
         this.purposes = purposes;
         this.persona = persona;
+        observedAverageDistances.put(Purpose.HBE , 0.114928);
+        observedAverageDistances.put(Purpose.HBW , 0.234121);
+        observedAverageDistances.put(Purpose.HBO , 0.288026);
+        observedAverageDistances.put(Purpose.HBS , 0.187289);
+        observedAverageDistances.put(Purpose.HBR , 0.241495);
+        observedAverageDistances.put(Purpose.NHBO , 0.236892);
+        observedAverageDistances.put(Purpose.NHBW , 0.051595);
     }
 
     public void run (double scaleFactorForGeneration, MitoAggregatePersona persona) {
@@ -53,12 +63,16 @@ public class RawTripGeneratorAggregate {
         Path filePersona = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_TripGen_"+ purposes.get(0) +"_results.csv");
         PrintWriter pwh = MitoUtil.openFileForSequentialWriting(filePersona.toAbsolutePath().toString(), false);
 
+        Path filePersonaYones = Path.of("F:/models/mitoAggregate/mitoMunich/interimFiles/" + persona.getId() + "_TripGen_"+ purposes.get(0) +"_trips.csv");
+        PrintWriter pwhzn = MitoUtil.openFileForSequentialWriting(filePersonaYones.toAbsolutePath().toString(), false);
+
         IndexedDoubleMatrix2D destinationChoice = dataSet.getAggregateTripMatrix().get(Mode.pooledTaxi);
         for (MitoZone origin : dataSet.getZones().values()){
             pwh.print(origin.getId());
             pwh.print(",");
         }
         pwh.println();
+        pwhzn.println("origin,type,population,trips,avTrips,obsAvTrips");
 
         for (MitoZone origin : dataSet.getZonesByAreaType().values()){
             for(MitoZone destination : dataSet.getZones().values()) {
@@ -68,6 +82,25 @@ public class RawTripGeneratorAggregate {
             pwh.println();
         }
         pwh.close();
+
+        for (MitoZone origin : dataSet.getZones().values()){
+            pwhzn.print(origin.getId());
+            pwhzn.print(",");
+            pwhzn.print(origin.getAreaTypeSG().toString());
+            pwhzn.print(",");
+            pwhzn.print(dataSet.getPersonsByZone().getIndexed(origin.getId()));
+            pwhzn.print(",");
+            pwhzn.print(destinationChoice.getIndexed(origin.getId(), origin.getId()));
+            pwhzn.print(",");
+            if (dataSet.getPersonsByZone().getIndexed(origin.getId())>0) {
+                pwhzn.print(destinationChoice.getIndexed(origin.getId(), origin.getId())/dataSet.getPersonsByZone().getIndexed(origin.getId()));
+            } else {
+                pwhzn.print(0);
+            }
+            pwhzn.print(observedAverageDistances.get(purposes.get(0)));
+            pwhzn.println(",");
+        }
+        pwhzn.close();
     }
 
     private void generateByPurposeMultiThreaded(double scaleFactorForGeneration) {

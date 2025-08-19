@@ -47,6 +47,9 @@ public class CalibrationDataReader extends AbstractCsvReader {
         dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).putIfAbsent(purpose, new HashMap<>());
         dataSet.getModeChoiceCalibrationData().getCalibrationFactors().get(region).get(purpose).put(mode, factor);
 
+        dataSet.getModeChoiceCalibrationData().getCalibrationFactorsByPurpose().putIfAbsent(purpose, new HashMap<>());
+        dataSet.getModeChoiceCalibrationData().getCalibrationFactorsByPurpose().get(purpose).putIfAbsent(mode, new HashMap<>());
+        dataSet.getModeChoiceCalibrationData().getCalibrationFactorsByPurpose().get(purpose).get(mode).put(region, factor);
         //return null;
     }
 
