@@ -73,8 +73,10 @@ public class ModeChoiceCalculatorMCR extends AbstractModeChoiceCalculator {
                 utility += modeCoef.get("age_40_54");
             } else if (age < 70) {
                 utility += modeCoef.get("age_55_69");
-            } else {
+            } else if (age < 85){
                 utility += modeCoef.get("age_70");
+            } else {
+                utility += modeCoef.get("age_85_plus");
             }
 
             // gender
