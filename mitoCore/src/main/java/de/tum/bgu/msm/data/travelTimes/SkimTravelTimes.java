@@ -5,6 +5,7 @@ import de.tum.bgu.msm.data.Location;
 import de.tum.bgu.msm.data.Region;
 import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.io.input.readers.CsvGzSkimMatrixReader;
+import de.tum.bgu.msm.io.input.readers.ParquetSkimMatrixReader;
 import de.tum.bgu.msm.io.output.OmxMatrixWriter;
 import de.tum.bgu.msm.util.matrices.IndexedDoubleMatrix2D;
 import de.tum.bgu.msm.util.matrices.Matrices;
@@ -74,6 +75,15 @@ public class SkimTravelTimes implements TravelTimes {
     public final void readSkimFromCsvGz(final String mode, final String file, final double factor,Collection<? extends Id> zoneLookup) {
         logger.info("Reading " + mode + " skim");
         IndexedDoubleMatrix2D skim = new CsvGzSkimMatrixReader().readAndConvertToDoubleMatrix2D(file, factor, zoneLookup);
+        matricesByMode.put(mode, skim);
+        travelTimesFromRegion.clear();
+        travelTimesToRegion.clear();
+    }
+
+
+    public final void readSkimFromParquet(final String mode, final String file, String FROM, String TO, String Value, final double factor,Collection<? extends Id> zoneLookup) {
+        logger.info("Reading " + mode + " skim");
+        IndexedDoubleMatrix2D skim = new ParquetSkimMatrixReader().readAndConvertToDoubleMatrix(file, FROM, TO, Value, factor, zoneLookup);
         matricesByMode.put(mode, skim);
         travelTimesFromRegion.clear();
         travelTimesToRegion.clear();
