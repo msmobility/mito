@@ -86,7 +86,11 @@ public final class MitoModel2 {
         new HouseholdsCoordReader(dataSet).read();
         new PersonsReader(dataSet).read();
         dataSet.setTravelTimes(new SkimTravelTimes());
-        new OmxSkimsReader(dataSet).read();
+        if (Resources.instance.getRelativePath(Properties.AUTO_PEAK_SKIM).toString().contains(".omx"))  {
+            new OmxSkimsReader(dataSet).read();
+        } else if (Resources.instance.getRelativePath(Properties.AUTO_PEAK_SKIM).toString().contains(".parquet")) {
+            new ParquetSkimsReader(dataSet).read();
+        }
         readAdditionalData();
     }
 
